@@ -47,7 +47,7 @@ public class SecurityConfig {
 			.authorizeHttpRequests((requests) -> requests
 					.antMatchers(HttpMethod.GET, "/api/loanList","/api/loanCnt","/api/*","/api/exchange/*"
 							,"/api/loanTypeSearch/","/api/loanTypeCnt/","/api/loanNameSearch/","/api/loanNameCnt/","/api/loanDetail/").permitAll() 
-					.antMatchers(HttpMethod.POST, "/api/login.do","/api/refresh-token").permitAll()
+					.antMatchers(HttpMethod.POST, "/api/*", "/api/login.do","/api/refresh-token").permitAll()
 					.anyRequest().authenticated()
 					
 		);			

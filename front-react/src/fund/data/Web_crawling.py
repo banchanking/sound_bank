@@ -3,12 +3,19 @@ import requests
 from itertools import count
 import io  # 파일 입출력
 import sys
+from dotenv import load_dotenv
+import os
+
 
 
 # python 표준 출력 스트림(sys.stdout)의 인코딩을 UTF-8로 변경하는 코드
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
-accessToken = 'XT9mT2J%2B83N0usXkqjWkPH4EgdIbRZ%2BeJuqmfrLNUYEERMf4mQeXxDqydemAr8i0c45qQKqvwP3SZNKtEvFN%2BA%3D%3D'
+
+load_dotenv()
+
+api_key = os.getenv('accessToken')
+
 pageSize = 10
 totallist = list()
 
@@ -18,7 +25,7 @@ for pageNumber in count():
     numOfRows = str(pageSize)
     pageNo = str(pageNumber + 1)
     url = 'https://api.odcloud.kr/api/15020770/v1/uddi:255bef4b-49cd-4e6c-9c32-b86f51ffbef6?page=1&perPage=50&serviceKey='
-    url += accessToken
+    url += {'accessToken'}
     url += '&numOfRows=' + numOfRows + '&pageNo=' + pageNo
     url += '&resultType=json'
     print(url)
