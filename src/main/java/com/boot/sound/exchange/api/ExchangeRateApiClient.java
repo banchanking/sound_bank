@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.boot.sound.exchange.ExchangeRateDTO;
@@ -18,14 +19,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class ExchangeRateApiClient {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final String apiKey = "TzsQ31CAai0yWB3qXIhrtFyxqpxNO7H6";
+    @Value("${api-key}")
+    private String apikey;
+    public String getApiKey() {
+       return apikey;
+    }
 
     public List<ExchangeRateDTO> getExchangeRateDTOsForToday() {
         try {
             String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));            	
 
             String url = "https://www.koreaexim.go.kr/site/program/financial/exchangeJSON"
-                    + "?authkey=" + apiKey
+                    + "?authkey=" + apikey
                     + "&searchdate=" + date
                     + "&data=AP01";
 

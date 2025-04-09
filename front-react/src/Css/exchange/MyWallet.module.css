@@ -1,0 +1,60 @@
+/* MyWallet.module.css */
+
+.container {
+    min-height: 600px;
+    padding: 20px;
+    background-color: #ffffff;
+    color: #000000;
+    max-width: 600px; /* 테이블 포함한 전체 너비 제한 */
+    margin: 0 auto;   /* 가운데 정렬 */
+    border: 1px solid #ddd;
+    border-radius: 12px;
+  }
+  
+  .title {
+    font-size: 24px;
+    margin-bottom: 10px;
+    font-weight: bold;
+  }
+  
+  .subtitle {
+    font-size: 18px;
+    margin-bottom: 10px;
+    margin-top: 30px;
+    font-weight: 500;
+  }
+  
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  
+  .theadRow {
+    background-color: #000000;
+    color: #ffffff;
+  }
+  
+  .th {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    text-align: left;
+    font-size: 14px;
+  }
+  
+  .td {
+    padding: 8px 12px;
+    border: 1px solid #eee;
+    font-size: 14px;
+  }
+  
+  .trBody {
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .loading,
+  .error {
+    font-size: 16px;
+    color: #333333;
+    padding: 20px;
+  }

@@ -3,6 +3,7 @@ import axios from "axios";
 import styles from "../../Css/exchange/ExRate.module.css";
 
 import ExCalc from "./ExCalc";
+import RefreshToken from "../../jwt/RefreshToken";
 
 const ExRate = () => {
   
@@ -24,7 +25,7 @@ const ExRate = () => {
       console.log("조회할 날짜:", formattedDate);
       setLoading(true); // 로딩 시작
 
-      axios.get('http://localhost:8081/api/exchange/rates', {
+      RefreshToken.get('http://localhost:8081/api/exchange/rates', {
         params: { date: formattedDate }
       })
         .then((res) => {

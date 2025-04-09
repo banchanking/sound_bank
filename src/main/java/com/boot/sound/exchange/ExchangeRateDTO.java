@@ -29,3 +29,15 @@ public class ExchangeRateDTO {
 
 }
 
+//-- 환율저장테이블
+//CREATE TABLE exchange_rate (
+//  base_date DATE NOT NULL,                      -- 기준일  PK
+//  currency_code VARCHAR(10) NOT NULL,           -- 통화코드 (예: USD, JPY) PK
+//  currency_name VARCHAR(50),                    -- 통화 이름 (예: 미국 달러)
+//  base_rate DECIMAL(12,6) NOT NULL,             -- 기준 환율
+//  buy_rate DECIMAL(12,6),                       -- 매입 환율
+//  sell_rate DECIMAL(12,6),                      -- 매도 환율
+//  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+//
+//  PRIMARY KEY (base_date, currency_code)        -- 복합 PK로 지정
+//) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

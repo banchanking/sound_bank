@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "../../Css/exchange/ExCreateAccount.module.css";
 import { useNavigate } from "react-router-dom"; 
+import { getCustomerID } from "../../jwt/AxiosToken";
 
 const ExCreateAccount = () => {
   const navigate = useNavigate();
@@ -12,19 +13,18 @@ const ExCreateAccount = () => {
   const [agreed, setAgreed] = useState(false);
   const [currencyType, setCurrencyType] = useState("");
   const [exchangePwd, setExchangePwd] = useState("");
-
-  const customerId = "milk";
-
   const goToNext = () => setStep((prev) => prev + 1);
 
+  const customer_id = getCustomerID();
+  
   useEffect(() => {
     if (step === 2) {
       axios
-        .get(`http://localhost:8081/api/exchange/account/${customerId}`)
+        .get(`http://localhost:8081/api/exchange/account/${customer_id}`)
         .then((res) => setAccounts(res.data))
         .catch((err) => console.error("계좌 목록 조회 실패", err));
     }
-  }, [step, customerId]);
+  }, [step, customer_id]);
 
   const handlePwdCheck = async () => {
     if (!selectedAccount || !inputPwd || !currencyType || !exchangePwd) {
@@ -48,7 +48,7 @@ const ExCreateAccount = () => {
   const handleCreateAccount = async () => {
     try {
       const ExchangeAccountRequestDTO = {
-        CUSTOMER_ID: customerId,
+        CUSTOMER_ID: customer_id,
         WITHDRAW_ACCOUNT_NUMBER: selectedAccount,
         CURRENCY_TYPE: currencyType,
         EXCHANGE_ACCOUNT_PWD: exchangePwd,

@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.boot.sound.exchange.ExchangeServiceImpl;
+import com.boot.sound.exchange.ExchangeService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 @CrossOrigin
 public class ApiController {
 
-    private final ExchangeServiceImpl exchangeService;
+    private final ExchangeService exchangeService;
     // 테스트용 컨트롤러
     @PostMapping("/save") // 실제 호출 경로: POST /api/exchange/save 
     public ResponseEntity<String> saveExchangeRates() {

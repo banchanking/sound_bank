@@ -41,12 +41,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<!-- 환전 내역 저장 -->
 	<insert id="chargeWallet" parameterType="com.boot.sound.exchange.ExchangeTransactionDTO">
 	  INSERT INTO exchange_transaction (
-	    customer_id, withdraw_account_number, to_currency,
-	    request_amount, exchanged_amount, exchange_rate
+	    customer_id, withdraw_account_number, currency_code,
+	    request_amount, exchanged_amount, exchange_rate, transaction_type ,exchange_transaction_date, base_date
 	  )
 	  VALUES (
-	    #{customer_id}, #{withdraw_account_number}, #{to_currency},
-	    #{request_amount}, #{exchanged_amount}, #{exchange_rate}
+	    #{customer_id}, #{withdraw_account_number}, #{currency_code},
+	    #{request_amount}, #{exchanged_amount},#{exchange_rate},#{transaction_type} , NOW(), CURDATE()
 	  )
 	</insert>
 	
@@ -70,6 +70,20 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		WHERE CUSTOMER_ID = #{customer_id} 
 	</select>
 	
+	<select id="getListById" parameterType="String" resultType="com.boot.sound.exchange.ExchangeTransactionDTO">
+		SELECT *
+        FROM exchange_transaction
+        WHERE customer_id = #{customer_id}
+        ORDER BY exchange_transaction_date DESC
+	</select>
+	
+	<!-- 지갑조회 -->
+	<select id="myWallet" parameterType="String" resultType="com.boot.sound.exchange.ExchangeWalletDTO">
+		SELECT *
+		FROM exchange_wallet
+		WHERE CUSTOMER_ID = #{customer_id}
+	</select>
+	
 	<!-- 날짜별로 DB에 환율 자동저장 -->
 	<insert id="insertExchangeRate" parameterType="map">
 	    INSERT INTO exchange_rate (
@@ -89,4 +103,34 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	        #{sell_rate}
 	    )
 	</insert>
+	
+	<!-- 고객 지갑 목록 + 평균 매입 환율 조회 -->
+	<select id="findWalletsWithAvgRate" resultType="com.boot.sound.exchange.ExchangeWalletDTO" parameterType="String">
+	  SELECT 
+	    ew.wallet_id,
+	    ew.customer_id,
+	    ew.currency_code,
+	    ew.balance,
+	    ew.created_at,
+	    ew.updated_at,
+	    ew.status,
+	    IFNULL(avg_rates.average_rate, 0) AS average_rate
+	  FROM exchange_wallet ew
+	  LEFT JOIN (
+	    SELECT 
+	      et.customer_id,
+	      et.currency_code,
+	      AVG(er.base_rate) AS average_rate
+	    FROM exchange_transaction et
+	    JOIN exchange_rate er
+	      ON et.base_date = er.base_date AND et.currency_code = er.currency_code
+	    WHERE et.transaction_type = 'buy'
+	    GROUP BY et.customer_id, et.currency_code
+	  ) avg_rates
+	    ON ew.customer_id = avg_rates.customer_id
+	    AND ew.currency_code = avg_rates.currency_code
+	  WHERE ew.customer_id = #{customer_id}
+	</select>
+	
+	
 </mapper>   

@@ -1,63 +1,58 @@
 package com.boot.sound.exchange;
 
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.time.LocalDateTime;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Data
-@Table(name="exchange_transaction")
+@Table(name = "exchange_transaction")
 public class ExchangeTransactionDTO {
-	
-	@JsonProperty("exchange_transaction_id")
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Id
-    private Long exchange_transaction_id;	// 거래 ID(PK)
 
-	@JsonProperty("exchange_rate_id")
-    private Long exchangeRate_id;             // 환율 정보 (FK)
-	
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty("exchange_transaction_id")
+    private Long exchange_transaction_id;  // 거래 ID (PK)
+
     @JsonProperty("customer_id")
-    private String customer_id;				// 사용자 ID (FK)
+    private String customer_id;            // 고객 ID (FK)
 
     @JsonProperty("withdraw_account_number")
-    private String withdraw_account_number;	// 계좌번호(FK)
-
-    @JsonProperty("to_currency")
-    private String to_currency;
+    private String withdraw_account_number; // 출금 계좌 번호 (FK)
 
     @JsonProperty("request_amount")
-    private BigDecimal request_amount;
+    private BigDecimal request_amount;     // 요청한 원화 금액
 
     @JsonProperty("exchanged_amount")
-    private BigDecimal exchanged_amount;
+    private BigDecimal exchanged_amount;   // 환전된 외화 금액
 
     @JsonProperty("exchange_rate")
-    private BigDecimal exchange_rate;
+    private BigDecimal exchange_rate;      // 적용 환율
 
     @JsonProperty("exchange_transaction_date")
-    private LocalDateTime exchange_transaction_date;
-    
-    
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime exchange_transaction_date; // 거래 일시
 
+    @JsonProperty("currency_code")
+    private String currency_code;          // 환전 대상 통화 코드 (예: USD)
+
+    @JsonProperty("base_date")
+    private Date base_date;                // 환율 기준일 (환율 테이블과 FK 연결)
+    
+    @JsonProperty("transaction_type")
+    private String transaction_type; // "buy" or "sell"
 }
+
 //-- 지갑 충전(환전)
 //drop table exchange_transaction;
 //CREATE TABLE exchange_transaction (
