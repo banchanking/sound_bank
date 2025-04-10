@@ -11,23 +11,29 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          ORDER BY fund_id ASC
     </select>
     
-    <!-- 펀드상품 등록 -->
+    <!-- 펀드상품 등록 (AI 학습 후 fund_risk_type 컬럼 update까지) -->
     <insert id="insertFund" parameterType="com.boot.sound.fund.FundDTO">
-	    INSERT INTO fund_tbl(fund_name, fund_company, fund_type, fund_grade, fund_fee_rate, fund_upfront_fee, return_1m, return_3m, return_6m, return_12m, fund_risk_type)
-	    VALUES (
-	        #{fund_name},
-	        #{fund_company},
-	        #{fund_type},
-	        #{fund_grade},
-	        #{fund_fee_rate},
-	        #{fund_upfront_fee},
-	        #{return_1m},
-	        #{return_3m},
-	        #{return_6m},
-	        #{return_12m},
-	        #{fund_risk_type}
+	    INSERT INTO fund_tbl (
+	        fund_name, fund_company, fund_type, fund_grade,
+	        fund_fee_rate, fund_upfront_fee,
+	        return_1m, return_3m, return_6m, return_12m, fund_risk_type
+	    ) VALUES (
+	        #{fund_name}, #{fund_company}, #{fund_type}, #{fund_grade},
+	        #{fund_fee_rate}, #{fund_upfront_fee},
+	        #{return_1m}, #{return_3m}, #{return_6m}, #{return_12m}, #{fund_risk_type}
 	    )
-	</insert>
+	    ON DUPLICATE KEY UPDATE
+	        fund_company = VALUES(fund_company),
+	        fund_type = VALUES(fund_type),
+	        fund_grade = VALUES(fund_grade),
+	        fund_fee_rate = VALUES(fund_fee_rate),
+	        fund_upfront_fee = VALUES(fund_upfront_fee),
+	        return_1m = VALUES(return_1m),
+	        return_3m = VALUES(return_3m),
+	        return_6m = VALUES(return_6m),
+	        return_12m = VALUES(return_12m),
+	        fund_risk_type = VALUES(fund_risk_type)
+</insert>
 	
 	<!-- 등록된 펀드 상품 목록 조회 -->
     <select id="getRegisteredFunds" resultType="com.boot.sound.fund.FundDTO">

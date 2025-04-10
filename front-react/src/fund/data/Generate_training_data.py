@@ -33,37 +33,34 @@ def generate_investment_data(num_samples):
         4: "공격형"
     }
     
-    for _ in range(num_samples):
-        # 질문에 대한 랜덤 응답 생성
-        answers = [np.random.choice(len(q["weights"])) + 1 for q in questions]
-
-        # 점수 계산
-        total_score = sum([questions[i]["weights"][answers[i] - 1] for i in range(len(answers))])
+    # 각 성향당 필요한 샘플 수
+    per_type = num_samples # 5개
     
-        # 투자 성향 레이블 설정
-        if total_score <= 20:
-            risk_type = 0  # 안정형
-        elif total_score <= 25:
-            risk_type = 1  # 보수형
-        elif total_score <= 30:
-            risk_type = 2  # 위험중립형
-        elif total_score <= 35:
-            risk_type = 3  # 적극형
-        else:
-            risk_type = 4  # 공격형
+    type_ranges = {
+        0: (10, 18),   # 안정형
+        1: (19, 23),   # 보수형
+        2: (24, 28),   # 위험중립형
+        3: (29, 33),   # 적극형
+        4: (34, 40)    # 공격형
+    }
+    
+    np.random.seed(42)  # 재현성 보장을 위한 시드 설정
+    
+    while len(data) < num_samples:
+        answers = [np.random.choice(len(q["weights"])) + 1 for q in questions]
+        total_score = sum([questions[i]["weights"][answers[i] - 1] for i in range(len(answers))])
 
-        # 투자 성향 문자열로 변환
-        risk_type_str = risk_type_mapping[risk_type]
-        
-        # 데이터 추가
-        data.append(answers + [risk_type, risk_type_str])
+        for label, (low, high) in type_ranges.items():
+            if low <= total_score <= high:
+                count = sum(1 for d in data if d[-2] == label)
+                if count < per_type:
+                    data.append(answers + [label, risk_type_mapping[label]])
+                break
 
-    # 데이터프레임 생성
     columns = [f"question_{i+1}" for i in range(len(questions))] + ["label", "fund_risk_type"]
     df = pd.DataFrame(data, columns=columns)
-
-    print(df['fund_risk_type'].unique())
-    return df  # 데이터프레임 반환
+    print(df["fund_risk_type"].value_counts())
+    return df        
 
 # ----------- 투자성향에 맞는 펀드 상품추천을 위한 샘플 데이터 전처리 및 증강(SMOTE) -----------
 def preprocess_data(input_file, output_file):

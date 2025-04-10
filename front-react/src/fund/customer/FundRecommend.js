@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import RefreshToken from "../../jwt/RefreshToken"; // 인증 포함된 인스턴스 사용
 
 const FundRecommend = () => {
     const [funds, setFunds] = useState([]);
@@ -8,7 +8,7 @@ const FundRecommend = () => {
     useEffect(() => {
         const fetchRecommendedFunds = async () => {
             try {
-                const response = await axios.get(`http://localhost:8081/api/fundRecommend/${customerId}`);
+                const response = await RefreshToken.get(`http://localhost:8081/api/fundRecommend/${customerId}`);
                 setFunds(response.data); // 추천 펀드 목록 설정
             } catch (error) {
                 console.error("펀드 추천 목록을 가져오는 중 오류 발생:", error);

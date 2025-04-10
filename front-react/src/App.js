@@ -76,9 +76,7 @@ import LoanCreditScore from "./sound_loan/customer/LoanCreditScore";
 import Join from "./customer/Join";
 import Login from "./customer/Login";
 import Authcenter from "./customer_center/Authcenter";
-<<<<<<< HEAD
 import DepositJoin from "./productSubscription/DepositJoin";
-=======
 import LoanAgreement from "./sound_loan/customer/LoanAgreement";
 import LoanInfoApply from "./sound_loan/customer/LoanInfoApply";
 import ExchangeWalletStatus from "./exchange/customer/ExchangeWalletStatus";

@@ -28,7 +28,7 @@ const FundProductAdmin = () => {
       
       // 2. 등록된 펀드 상품 목록 가져오기
       const registeredFundsResponse = await RefreshToken.get("http://localhost:8081/api/registeredFunds");
-      const registeredFunds = await registeredFundsResponse.json();
+      const registeredFunds = registeredFundsResponse.data;
       const registeredFundNames = registeredFunds.map((fund) => fund.fund_name);
 
       // 3. CSV 데이터를 파싱하여 JSON 형식으로 변환
@@ -79,6 +79,7 @@ const FundProductAdmin = () => {
       return_3m: fund["return_3m"] || 0,
       return_6m: fund["return_6m"] || 0,
       return_12m: fund["return_12m"] || 0,
+      fund_risk_type: fund["fund_risk_type"] || "",
     });
     setIsPopupOpen(true); // 팝업창 열기
   };
@@ -109,53 +110,39 @@ const FundProductAdmin = () => {
   // 등록된 펀드 목록 저장
   const saveRegisteredFunds = async (funds) => {
     try {
-        const response = await RefreshToken("http://localhost:8081/api/saveRegisteredFunds", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(funds),
-        });
-        if (!response.ok) {
-            throw new Error("Failed to save registered funds");
-        }
-        console.log("Registered funds saved successfully");
+      await RefreshToken.post(
+        "http://localhost:8081/api/saveRegisteredFunds",
+        funds // ✅ Axios는 두 번째 인자가 전송할 데이터입니다
+      );
+      console.log("Registered funds saved successfully");
     } catch (error) {
-        console.error("Error saving registered funds:", error);
+      console.error("Error saving registered funds:", error);
     }
-};
+  };
 
   // 펀드 등록
   const handleSaveFund = async () => {
     try {
-      const token = localStorage.getItem("customer_id"); // 로컬 스토리지에서 토큰 가져오기
-      if (!token) {           
-        alert("로그인이 필요합니다."); // 토큰이 없으면 로그인 필요 알림
-        return;
+      const customerId = localStorage.getItem("customer_id");
+      if (!customerId) {
+        alert("로그인이 필요합니다.");
+      return;
     }
       // 1. 등록된 펀드 상품 목록 가져오기     
-      const response = await RefreshToken.get("http://localhost:8081/api/fundSave", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        throw new Error("펀드 등록 실패");
-      }
+      // Axios 인스턴스 RefreshToken 사용
+      await RefreshToken.post(
+        "http://localhost:8081/api/fundSave",
+        formData
+      );
 
       console.log("펀드 등록 성공");
       alert("펀드상품 등록 성공!");
 
       // 등록된 펀드를 목록에서 제거
-      const updatedFunds = funds.filter((fund) => fund["상품명"] !== formData.fund_name);
+      const updatedFunds = funds.filter(
+        (fund) => fund.fund_name !== formData.fund_name
+      );
       setFunds(updatedFunds);
-
-      // 등록된 펀드 목록 저장
-      await saveRegisteredFunds(updatedFunds);
 
       handleClosePopup(); // 팝업창 닫기
 

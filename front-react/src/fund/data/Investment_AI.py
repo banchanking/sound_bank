@@ -2,6 +2,8 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import numpy as np
 import pandas as pd
+import os
+from Generate_model import train_model  
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 from fastapi.middleware.cors import CORSMiddleware
@@ -25,6 +27,21 @@ model = load_model("../../../public/data/investment_model.h5")
 class InvestmentRequest(BaseModel):
     answers: list # 사용자가 입력한 투자 성향 질문에 대한 답변 리스트
 
+# 관리자가 직접 학습한 모델을 재학습시키는 엔드포인트
+@app.post("/retrain")
+async def retrain_model():
+    try:
+        input_file = "../../../public/data/training_data.csv"
+        model_file = "../../../public/data/investment_model.h5"
+        
+        if not os.path.exists(input_file):
+            return {"message": "training_data.csv 파일이 존재하지 않습니다."}
+
+        train_model(input_file, model_file)
+        return {"message": "모델이 성공적으로 재학습되었습니다."}
+    except Exception as e:
+        return {"message": f"모델 재학습 중 오류 발생: {str(e)}"}
+    
 # 투자성향을 예측하는 엔드포인트
 @app.post("/predict")
 async def predict(data: InvestmentRequest):
