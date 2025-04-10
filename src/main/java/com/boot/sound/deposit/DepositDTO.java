@@ -22,21 +22,37 @@ import lombok.ToString;
 @Table(name="DEPOSIT_ACCOUNT_TBL")
 public class DepositDTO {
 
+	// 데이터베이스 컬럼 이름과 매핑
     @Id
-    @Column(name = "dat_account_num") // 데이터베이스 컬럼 이름과 매핑
+    @Column(name = "dat_id")                     // 예금 번호
+    private int dat_id;
+    
+    @Column(name = "dat_account_num")            // 출금계좌번호
     private String dat_account_Num;
+    
+    @Column(name = "dat_account_pwd")            // 출금계좌번호 비밀번호
+    private String dat_account_pwd;
 
-    @Column(name = "dat_customer_name")
-    private String dat_customer_Name;
+    @Column(name = "dat_deposit_account_num")    // 예금계좌
+    private String dat_deposit_account_num;
+    
+    @Column(name = "dat_deposit_account_pwd")    // 예금계좌 비밀번호
+    private String dat_deposit_account_pwd;
 
-    @Column(name = "dat_balance")
+    @Column(name = "dat_new_amount")             // 신규 금액
+    private Double dat_new_amount;
+    
+    @Column(name = "dat_balance")                // 현재 잔액
     private int dat_balance;
 
-    @Column(name = "dat_account_type")
-    private String dat_account_Type;
+    @Column(name = "dat_term")                   // 가입기간 3,6,12개월중 하나
+    private String dat_term;
 
-    @Column(name = "dat_open_date")
-    private Date dat_openDate;
+    @Column(name = "dat_start_day")              // 가입일
+    private Date dat_start_day;
+    
+    @Column(name = "dat_end_day")                // 만료일
+    private Date dat_end_day;
 	
 	
 }

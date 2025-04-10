@@ -26,7 +26,16 @@ public class ExchangeTransactionDTO {
 
     @JsonProperty("customer_id")
     private String customer_id;            // 고객 ID (FK)
+    
+    @JsonProperty("from_currency")          
+    private String from_currency;
 
+    @JsonProperty("to_currency")
+    private String to_currency;
+    
+    @JsonProperty("approval_status")
+    private String approval_status; // 'APPROVED', 'PENDING', 'REJECTED'
+    
     @JsonProperty("withdraw_account_number")
     private String withdraw_account_number; // 출금 계좌 번호 (FK)
 

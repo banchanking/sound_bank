@@ -18,7 +18,9 @@ import InquireAssets from "./inquire/InquireAssets";
 import Transfer from "./transfer/customer/Transfer";
 import TransInstant from "./transfer/customer/TransInstant";
 import TransAuto from "./transfer/customer/TransAuto";
+import TransAutoEdit from "./transfer/customer/TransAutoEdit";
 import TransMulti from "./transfer/customer/TransMulti";
+import TransMultiEdit from "./transfer/customer/TransMultiEdit";
 import TransLimit from "./transfer/customer/TransLimit";
 import TransferAdmin from "./transfer/admin/TransferAdmin";
 import LimitAdmin from "./transfer/admin/LimitAdmin";
@@ -122,7 +124,9 @@ function App() {
           <Route path="/transfer" element={<Transfer />} />
           <Route path="/transInstant" element={<TransInstant />} />
           <Route path="/transAuto" element={<TransAuto />} />
+          <Route path="/transAutoEdit" element={<TransAutoEdit />} />
           <Route path="/transMulti" element={<TransMulti />} />
+          <Route path="/transMultiEdit" element={<TransMultiEdit />} />
           <Route path="/transLimit" element={<TransLimit />} />
           {/* 이체(고객) Route 끝 */}
           {/* 이체(관리자) Route 시작 */}

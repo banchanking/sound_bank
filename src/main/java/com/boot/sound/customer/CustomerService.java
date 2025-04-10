@@ -53,11 +53,11 @@ public class CustomerService {
         
         // 고객정보 데이터베이스에 저장
     	CustomerDTO dto = new CustomerDTO();
-        dto.setCustomer_id(signUp.getCustomer_id());
-        dto.setCustomer_name(signUp.getCustomer_name());
+        dto.setCustomerId(signUp.getCustomer_id());
+        dto.setCustomerName(signUp.getCustomer_name());
         dto.setCustomer_resident_number(signUp.getCustomer_resident_number());
         dto.setCustomer_address(signUp.getCustomer_address());
-        dto.setCustomer_phone_number(signUp.getCustomer_phone_number());
+        dto.setCustomerPhoneNumber(signUp.getCustomer_phone_number());
         dto.setCustomer_email(signUp.getCustomer_email());
         dto.setCustomer_job(signUp.getCustomer_job());
         dto.setCustomer_account_number(signUp.getCustomer_account_number());
@@ -72,7 +72,7 @@ public class CustomerService {
         // 2. 입출금 계좌 자동 생성
         AccountDTO account = new AccountDTO();
         account.setAccount_number(accountNumber);
-        account.setCustomer_id(dto.getCustomer_id());
+        account.setCustomer_id(dto.getCustomerId());
         account.setAccount_type("입출금");
         account.setBalance(BigDecimal.valueOf(0));
         account.setInterest_rate(BigDecimal.valueOf(0.0));
@@ -90,7 +90,7 @@ public class CustomerService {
     public CustomerDTO login(CredentialsDTO dto) {
     		System.out.println("<<< CustomerService - login() >>>");
     		
-		CustomerDTO user = customerRepository.findById(dto.getCustomer_id())
+		CustomerDTO user = customerRepository.findById(dto.getCustomerId())
 				.orElseThrow(() -> new AppException("UnKnown user", HttpStatus.NOT_FOUND));
 		
 		// import java.nio.CharBuffer; // 주의
@@ -103,10 +103,10 @@ public class CustomerService {
 	}
     
     // 사용자 토큰 검증
-    public CustomerDTO findById(String customer_id) {
+    public CustomerDTO findById(String customerId) {
 	System.out.println("<<< UserService - findById() >>>");
 
-	CustomerDTO user = customerRepository.findById(customer_id)
+	CustomerDTO user = customerRepository.findById(customerId)
 			.orElseThrow(() -> new AppException("Unknown customer", HttpStatus.NOT_FOUND));
 	return customerMapper.toCustomerDTO(user);
 	}

@@ -51,8 +51,8 @@ const ExList = () => {
                 <td className={styles.td}>
                   {new Date(tx.exchange_transaction_date.replace(' ', 'T')).toLocaleString('ko-KR')}
                 </td>
-                <td className={styles.td}>{tx.request_amount.toLocaleString()}원</td>
-                <td className={styles.td}>{tx.exchanged_amount.toLocaleString()}{tx.currency_code}</td>
+                <td className={styles.td}>{tx.request_amount.toLocaleString()}{tx.from_currency}</td>
+                <td className={styles.td}>{tx.exchanged_amount.toLocaleString()}{tx.to_currency}</td>
                 <td className={styles.td}>{tx.transaction_type}</td>
               </tr>
             ))

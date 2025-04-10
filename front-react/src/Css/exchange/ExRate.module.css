@@ -30,7 +30,7 @@
   }
   
   .dateInput input[type="date"] {
-    width: 200px;           /* 👈 크기 줄임 */
+    width: 200px;           /*  크기 줄임 */
     padding: 6px 10px;
     font-size: 14px;
     border: 2px solid #6e6a6a;
@@ -41,7 +41,7 @@
   .calcButton {
     margin-top: 20px;
     display: flex;
-    justify-content: center; /* 👈 가운데 정렬 */
+    justify-content: center; /*  가운데 정렬 */
   }
   
   .calcButtonWrapper {
@@ -59,7 +59,7 @@
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    width: auto; /* ✅ Join.css의 width: 100% 방지 */
+    width: auto; /* Join.css의 width: 100% 방지 */
   }
   
   .calcButton:hover {

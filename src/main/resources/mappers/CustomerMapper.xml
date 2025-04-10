@@ -2,12 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.boot.sound.jwt.mappers.CustomerMapper">
     <select id="toCustomerDTO" parameterType="String" resultType="com.boot.sound.customer.CustomerDTO">
-        SELECT * FROM customer_tbl WHERE customer_id = #{customer_id}
+        SELECT * FROM customer_tbl WHERE customer_id = #{customerId}
     </select>
     
     <update id="saveRefreshToken" parameterType="String">
     	UPDATE CUSTOMER_TBL
     	SET refresh_token = #{refresh_token}
-    	WHERE customer_id = #{customer_id}
+    	WHERE customer_id = #{customerId}
     </update>
 </mapper>

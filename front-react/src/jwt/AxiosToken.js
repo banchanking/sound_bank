@@ -8,15 +8,15 @@ export const getAuthToken = () => {
 };
 
 export const getCustomerID = () => {
-  return window.localStorage.getItem("customer_id");
+  return window.localStorage.getItem("customerId");
 };
 
 export const setAuthToken = (customer_token) => {
   window.localStorage.setItem("auth_token", customer_token);
 };
 
-export const setCustomerID = (customer_id) => {
-  window.localStorage.setItem("customer_id", customer_id);
+export const setCustomerID = (customerId) => {
+  window.localStorage.setItem("customerId", customerId);
 };
 
 export const setRefreshToken = (refresh_token) => {

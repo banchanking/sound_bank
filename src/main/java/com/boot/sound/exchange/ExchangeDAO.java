@@ -1,5 +1,6 @@
 package com.boot.sound.exchange;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -41,16 +42,28 @@ public interface ExchangeDAO {
     // 기존 지갑 잔액조회
     public ExchangeWalletDTO findWalletByCustomerAndCurrency(@Param("customer_id") String customer_id,
             @Param("currency_code") String currency_code);
-    // 환율 내역 조회
-    public List<ExchangeTransactionDTO> getListById(String customer_id);
-   
-    // 지갑 정보 조회
-    public List<ExchangeWalletDTO> myWallet(String customer_id);
+            
+    // 환전 내역전체 조회
+    public List<ExchangeTransactionDTO> getListById(String customer_id);       
     
-    // 통화별 평균 매입 환율
+    // id별 지갑과 통화별 평균 매입 환율
     public List<ExchangeWalletDTO>findWalletsWithAvgRate(String customer_id);
     
+    // 환전 신청목록 조회(100만이상)
+    public List<ExchangeTransactionDTO> getExRequestListById(String customer_id);
+
+    // DB 저장된 환율 조회
+    public List<Map<String, Object>> getRateByDate(String base_date);
+
     // 환율 DB에 자동저장
     public int insertExchangeRate(Map<String, Object> rate);
+
+    // 관리자 승인/거절 처리
+    public int updateApprovalStatus(@Param("exchange_transaction_id") Long exchange_transaction_id,
+            @Param("approval_status") String approval_status);
+
+    // 환전 내역 거래번호로 조회
+    public ExchangeTransactionDTO findTransByTransactionId(Long exchange_transaction_id);
+
 }
 

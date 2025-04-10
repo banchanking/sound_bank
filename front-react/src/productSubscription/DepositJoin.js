@@ -1,20 +1,45 @@
-import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useLocation, useParams } from "react-router-dom";
 import "../Css/Deposit/DepositJoin.css"; // CSS 파일 import
 import DepositCalculator from "../Deposit/DepositCalculator"; // DepositCalculator 컴포넌트 import
+import axios from "axios"; 
 
 const DepositJoin = () => {
   const { name } = useParams(); // URL에서 상품 ID 가져오기
   const [selectedTerm, setSelectedTerm] = useState("3개월"); // 가입기간 상태 추가
   const [showCalculator, setShowCalculator] = useState(false); // DepositCalculator 표시 상태
   const [activeTab, setActiveTab] = useState("상품설명"); // 현재 활성화된 탭 상태
+  const location = useLocation(); // location 객체 가져오기
+  const { product, customerId: stateCustomerId, customerAccountNumber } = location.state || {};
+
+  const customerId = stateCustomerId || localStorage.getItem("customerId"); // 로컬 스토리지에서 고객 ID 가져오기
 
   // 입력값 상태 추가
-  const [accountNumber, setAccountNumber] = useState("");
+  const [accountNumber, setAccountNumber] = useState(customerAccountNumber || ""); // 계좌번호 상태
   const [accountPassword, setAccountPassword] = useState("");
   const [newAmount, setNewAmount] = useState("");
   const [newAccountPassword, setNewAccountPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  
+
+  useEffect(() => {
+
+    if (!accountNumber) {
+      // 서버에서 계좌번호 가져오기
+      axios
+        .get(`http://localhost:8081/api/accounts/allAccount/${customerId}`)
+        .then((response) => {
+          if (response.status === 200) {
+            setAccountNumber(response.data.customer_account_number);
+          } else {
+            console.error("Failed to fetch account data:", response.statusText);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching account data:", error);
+        });
+    }
+  }, [customerId, accountNumber]);
 
   const handleTermChange = (event) => {
     setSelectedTerm(event.target.value); // 선택한 가입기간 업데이트
@@ -28,14 +53,26 @@ const DepositJoin = () => {
     setActiveTab(tab); // 활성화된 탭 변경
   };
 
-  const handleSubmit = (e) => {
+  const calculateEndDate = (term) => {
+  const startDate = new Date();
+  let monthsToAdd = 0;
+
+  if (term === "3개월") {
+    monthsToAdd = 3;
+  } else if (term === "6개월") {
+    monthsToAdd = 6;
+  } else if (term === "12개월") {
+    monthsToAdd = 12;
+  }
+
+  startDate.setMonth(startDate.getMonth() + monthsToAdd);
+  return startDate.toISOString().split("T")[0]; // YYYY-MM-DD 형식으로 반환
+};
+
+  const handleSubmit = async(e) => {
     e.preventDefault(); // 폼 제출 기본 동작 방지
 
     // 입력값 검증
-    if (!accountNumber.trim()) {
-      alert("출금계좌번호를 입력해주세요.");
-      return;
-    }
     if (!accountPassword.trim()) {
       alert("계좌비밀번호를 입력해주세요.");
       return;
@@ -53,8 +90,32 @@ const DepositJoin = () => {
       return;
     }
 
-    // 모든 입력값이 유효한 경우 처리 로직
-    alert("예금 가입이 완료되었습니다!");
+  // 서버로 전송할 데이터 (테이블 구조에 맞춤)
+  const depositData = {
+    dat_account_num: accountNumber, // 출금계좌번호
+    dat_account_pwd: accountPassword, // 출금계좌 비밀번호
+    dat_deposit_account_pwd: newAccountPassword, // 예금계좌 비밀번호
+    dat_new_amount: parseFloat(newAmount), // 신규금액
+    dat_balance: parseFloat(newAmount), // 현재잔액 (신규금액과 동일)
+    dat_term: selectedTerm, // 가입기간
+    dat_start_day: new Date().toISOString().split("T")[0], // 개설일자 (오늘 날짜)
+    dat_end_day: null, // 만기일은 서버에서 처리
+  };
+
+  try {
+    const response = await axios.post("http://localhost:8081/api/depositInsert", depositData);
+    if (response.status === 200) {
+      alert("예금 가입이 완료되었습니다!");
+    } else {
+      alert("예금 가입에 실패했습니다.");
+    }
+  } catch (error) {
+    console.error("Error inserting deposit:", error);
+    alert("예금 가입 중 오류가 발생했습니다.");
+  
+
+  };
+
   };
 
   return (
@@ -73,7 +134,7 @@ const DepositJoin = () => {
                   type="text"
                   className="input-field"
                   value={accountNumber}
-                  onChange={(e) => setAccountNumber(e.target.value)}
+                  readOnly
                 />
               </td>
             </tr>
@@ -195,12 +256,14 @@ const DepositJoin = () => {
       {/* 탭 메뉴 */}
       <div className="tab-container">
         <button
+          type="button"
           className={`tab-button ${activeTab === "상품설명" ? "active" : ""}`}
           onClick={() => handleTabChange("상품설명")}
         >
           상품설명
         </button>
         <button
+          type="button"
           className={`tab-button ${activeTab === "금리설명" ? "active" : ""}`}
           onClick={() => handleTabChange("금리설명")}
         >

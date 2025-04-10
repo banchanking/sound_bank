@@ -5,6 +5,8 @@ package com.boot.sound.inquire.transfer;
 import lombok.Data;
 
 import javax.persistence.*;
+
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
@@ -24,7 +26,7 @@ public class TransActionDTO {
  private String transaction_type; // 입금, 출금 등
 
  @Column(name = "AMOUNT")
- private long amount; // 거래 금액
+ private BigDecimal amount; // 거래 금액
 
  @Column(name = "CURRENCY")
  private String currency; // 통화 (예: KRW)

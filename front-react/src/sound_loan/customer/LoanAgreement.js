@@ -10,7 +10,7 @@ const LoanAgreement = () => {
   const [consent, setConsent] = useState([
     {
       loan_id: 0,
-      customer_id: "",
+      customerId: "",
       consent_use1: "N",
       consent_use2: "N",
       consent_use3: "N",
@@ -40,7 +40,7 @@ const LoanAgreement = () => {
     setConsent((prevConsent) => ({
       ...prevConsent,
       loan_id: loan_id,
-      customer_id: localStorage.getItem("customer_id"),
+      customerId: localStorage.getItem("customerId"),
     }));
   }, [loan_id]); // loan_id 가 변경될 때만 useEffect 가 실행됩니다.
 

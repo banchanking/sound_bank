@@ -1,0 +1,119 @@
+.edit-wrap {
+  flex-grow: 1;
+  padding: 30px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.edit-wrap h2 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* 테이블 스타일 */
+.edit-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.edit-table th,
+.edit-table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.edit-table th {
+  background-color: #f9f9f9;
+}
+
+/* 승인 상태 글자 색 */
+.status-approved {
+  color: green;
+  font-weight: bold;
+}
+
+.status-pending {
+  color: gray;
+  font-weight: bold;
+}
+
+.status-rejected {
+  color: red;
+  font-weight: bold;
+}
+
+/* 버튼 스타일 */
+.btn-blue {
+  background-color: #2b73ec;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 5px;
+}
+
+.btn-red {
+  background-color: #ec7a7a;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-red:hover {
+  background-color: #dd4444;
+}
+
+/* 모달창 오버레이 */
+.edit-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* 모달창 내부 */
+.edit-modal-box {
+  background-color: white;
+  padding: 25px;
+  border-radius: 10px;
+  width: 400px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.edit-modal-box h3 {
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.edit-modal-box label {
+  display: block;
+  margin-top: 10px;
+  font-weight: 500;
+}
+
+.edit-modal-box input,
+.edit-modal-box select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.modal-buttons {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+}

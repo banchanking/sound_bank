@@ -1,0 +1,50 @@
+/* 테이블 전체 감싸는 컨테이너 */
+.auto-list-wrap {
+    padding: 30px;
+    flex-grow: 1;
+    background-color: #ffffff;
+  }
+  
+  /* 테이블 기본 스타일 */
+  .auto-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin-top: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  /*  테이블 헤더 스타일 */
+  .auto-table th {
+    background-color: #f1f3f5;
+    font-weight: bold;
+    padding: 12px 10px;
+    text-align: center;
+    border-bottom: 1px solid #dee2e6;
+    color: #333;
+  }
+  
+  /* 테이블 데이터 셀 스타일 */
+  .auto-table td {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #e9ecef;
+    color: #555;
+  }
+  
+  /* 마우스 오버 시 줄 강조 */
+  .auto-table tbody tr:hover {
+    background-color: #f8f9fa;
+    cursor: default;
+  }
+  
+  /*  조회 결과 없을 때 텍스트 */
+  .auto-list-wrap p {
+    margin-top: 20px;
+    font-size: 15px;
+    color: #888;
+    text-align: center;
+  }
+  

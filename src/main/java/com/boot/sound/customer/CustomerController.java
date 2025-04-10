@@ -43,7 +43,7 @@ public class CustomerController {
        
     	CustomerDTO customer = service.registerCustomer(dto);
     	
-    	return ResponseEntity.created(URI.create("/users/" + customer.getCustomer_id()))
+    	return ResponseEntity.created(URI.create("/users/" + customer.getCustomerId()))
 				.body(customer);  // 크롬 Network - Headers : 201  Created 반환 
     }
 
@@ -81,17 +81,17 @@ public class CustomerController {
         // 로그인한 사용자 정보 가져오기
         CustomerDTO customer = service.login(dto);
         // Access Token 및 Refresh Token 생성
-        String accessToken = provider.createToken(customer.getCustomer_id());
-        String refresh_token = provider.createRefreshToken(customer.getCustomer_id());
+        String accessToken = provider.createToken(customer.getCustomerId());
+        String refresh_token = provider.createRefreshToken(customer.getCustomerId());
 
         // Refresh Token DB에 저장
-        customerMapper.saveRefreshToken(customer.getCustomer_id(), refresh_token);
+        customerMapper.saveRefreshToken(customer.getCustomerId(), refresh_token);
 
         // 클라이언트에게 Access Token, Refresh Token 및 Customer ID 전달
         Map<String, String> response = new HashMap<>();
         response.put("customer_token", accessToken);
         response.put("refresh_token", refresh_token);
-        response.put("customer_id", customer.getCustomer_id()); // Customer ID 추가
+        response.put("customerId", customer.getCustomerId()); // Customer ID 추가
 
         System.out.println(accessToken);
         System.out.println(refresh_token);

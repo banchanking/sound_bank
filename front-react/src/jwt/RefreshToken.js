@@ -3,6 +3,9 @@ import { getAuthToken, refreshAccessToken } from "./AxiosToken";
 
 const RefreshToken = axios.create({
   baseURL: "http://localhost:8081/api",
+  headers: {
+    "Content-Type": "application/json;charset=utf-8",
+  },
 });
 
 RefreshToken.interceptors.request.use((config) => {
@@ -24,7 +27,7 @@ RefreshToken.interceptors.response.use(
         return RefreshToken(error.config); // 원래 요청 재시도
       } else {
         // window.location.href = "/login";
-        alert("진짜 ㅈ같다");
+        alert("서버 오류 발생");
       }
     }
     return Promise.reject(error);

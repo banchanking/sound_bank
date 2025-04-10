@@ -5,6 +5,8 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
+import com.boot.sound.customer.CustomerDTO;
+
 @Mapper
 @Repository
 public interface LoanDAO  {
@@ -42,5 +44,20 @@ public interface LoanDAO  {
 	
 	// 대출실행 필수동의내역 저장
 	public int consentInsert(LoanConsentDTO dto);
+	
+	// 대출 신청 고객정보
+	public LoanCustomerDTO loanCustomer(String customerId, String loan_id);
+	
+	// 대출 신청정보 저장
+	public int loanApply(LoanStatusDTO dto);
+	
+	// 대출 현황 리스트
+	public List<LoanStatusDTO>loanStatus();
+	
+	// 대출 상태 변경
+	public boolean loanStatusUpdate(int loan_status_no, String loan_progress);
+	
+	// 문자 발송을 위한 고객 정보 조회
+	public CustomerDTO selecCustomer(String customerId);
 	
 }

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boot.sound.transfer.transAuto.TransAutoDAO">
+
+  <!-- 비밀번호 확인 -->
+  <select id="getPasswordByAccount" resultType="string">
+    SELECT ACCOUNT_PWD
+    FROM ACCOUNT_TBL
+    WHERE ACCOUNT_NUMBER = #{account_number}
+  </select>
+
+  <!-- 자동이체 등록 -->
+  <insert id="insertAutoTransfer" parameterType="com.boot.sound.transfer.transAuto.TransAutoDTO">
+    INSERT INTO TRANSFER_TBL 
+    (CUSTOMER_ID, OUT_ACCOUNT_NUMBER, IN_ACCOUNT_NUMBER, IN_NAME, TRANSFER_TYPE, AMOUNT,
+     SCHEDULE_MODE, SCHEDULE_DAY, SCHEDULE_MONTH_DAY,
+     SCHEDULE_TIME, ACTIVE_YN, MEMO, TRANSFER_DATE)
+    VALUES 
+    (#{customer_id}, #{out_account_number}, #{in_account_number}, #{in_name}, '자동', #{amount},
+     #{schedule_mode}, #{schedule_day}, #{schedule_month_day},
+     #{schedule_time}, 'Y', #{memo}, NOW())
+  </insert>
+  
+  <!-- 자동이체 목록 -->
+	<select id="getAutoList" parameterType="string" resultType="com.boot.sound.transfer.transAuto.TransAutoDTO">
+	  SELECT *
+	  FROM TRANSFER_TBL
+	  WHERE CUSTOMER_ID = #{id}
+	    AND TRANSFER_TYPE = '자동'
+	    AND ACTIVE_YN = 'Y'
+	  ORDER BY TRANSFER_DATE DESC
+	</select>
+	
+  <!-- 자동이체 수정 -->
+	<update id="updateAutoTransfer" parameterType="com.boot.sound.transfer.transAuto.TransAutoDTO">
+	  UPDATE TRANSFER_TBL
+	  SET 
+	    AMOUNT = #{amount},
+	    SCHEDULE_MODE = #{schedule_mode},
+	    SCHEDULE_DAY = #{schedule_day},
+	    SCHEDULE_MONTH_DAY = #{schedule_month_day},
+	    SCHEDULE_TIME = #{schedule_time},
+	    MEMO = #{memo}
+	  WHERE TRANSFER_ID = #{transfer_id}
+	</update>
+	
+  <!-- 자동이체 삭제 -->
+   <delete id="deleteAutoTransfer" parameterType="string">
+	  DELETE FROM TRANSFER_TBL
+	  WHERE TRANSFER_ID = #{transfer_id}
+   </delete>	
+
+  <!-- 요일 기준 자동이체 실행 -->
+  <select id="getDayModeTransfers" resultType="com.boot.sound.transfer.transAuto.TransAutoDTO">
+    SELECT *
+    FROM TRANSFER_TBL
+    WHERE TRANSFER_TYPE = '자동'
+      AND SCHEDULE_MODE = 'day'
+      AND SCHEDULE_DAY = #{day}
+      AND SCHEDULE_TIME = #{time}
+      AND ACTIVE_YN = 'Y'
+  </select>
+
+  <!-- 매월 지정일 자동이체 실행 -->
+  <select id="getMonthlyTransfers" resultType="com.boot.sound.transfer.transAuto.TransAutoDTO">
+    SELECT *
+    FROM TRANSFER_TBL
+    WHERE TRANSFER_TYPE = '자동'
+      AND SCHEDULE_MODE = 'monthly'
+      AND SCHEDULE_MONTH_DAY = #{date}
+      AND SCHEDULE_TIME = #{time}
+      AND ACTIVE_YN = 'Y'
+  </select>
+
+  <!-- 잔액 조회 -->
+  <select id="getBalance" resultType="int">
+    SELECT BALANCE
+    FROM ACCOUNT_TBL
+    WHERE ACCOUNT_NUMBER = #{acc}
+  </select>
+
+  <!-- 이체 실행 (출금/입금) -->
+  <update id="updateBalance">
+    UPDATE ACCOUNT_TBL
+    SET BALANCE = BALANCE + #{amount}
+    WHERE ACCOUNT_NUMBER = #{acc}
+  </update>
+
+  <!-- 거래내역 저장 (출금/입금 따로 기록) -->
+	<!-- 출금 저장 -->
+	<insert id="saveTransactionOut">
+	  INSERT INTO TRANSACTION_TBL (
+	    ACCOUNT_NUMBER, TRANSACTION_TYPE, AMOUNT, CURRENCY, COMMENT_OUT, COMMENT_IN, TRANSACTION_DATE
+	  ) 
+	  VALUES (
+	    #{out_account_number}, '출금', #{amount}, 'KRW', #{memo}, #{in_name}, NOW()
+	  );
+	</insert>
+	
+	<!-- 입금 저장 -->
+	<insert id="saveTransactionIn">
+	  INSERT INTO TRANSACTION_TBL (
+	    ACCOUNT_NUMBER, TRANSACTION_TYPE, AMOUNT, CURRENCY, COMMENT_OUT, COMMENT_IN, TRANSACTION_DATE
+	  ) 
+	  VALUES (
+	    #{in_account_number}, '입금', #{amount}, 'KRW', #{out_account_number}, #{memo}, NOW()
+	  );
+	</insert>
+</mapper>

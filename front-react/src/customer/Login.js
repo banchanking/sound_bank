@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Login = () => {
-  const [form, setForm] = useState({ customer_id: "", customer_password: "" });
+  const [form, setForm] = useState({ customerId: "", customer_password: "" });
   const navigate = useNavigate();
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -20,15 +20,15 @@ const Login = () => {
 
     axios
       .post("http://localhost:8081/api/login.do", {
-        customer_id: form.customer_id,
+        customerId: form.customerId,
         customer_password: form.customer_password,
       })
       .then((res) => {
         setAuthToken(res.data.customer_token); // access token 저장
-        setCustomerID(res.data.customer_id); // 고객 ID 저장
+        setCustomerID(res.data.customerId); // 고객 ID 저장
         setRefreshToken(res.data.refresh_token); // refresh token 저장
 
-        alert(res.data.customer_id + "님 환영합니다.");
+        alert(res.data.customerId + "님 환영합니다.");
         navigate("/");
       })
       .catch((error) => {
@@ -46,7 +46,7 @@ const Login = () => {
             <label>아이디</label>
             <input
               type="text"
-              name="customer_id"
+              name="customerId"
               onChange={handleChange}
               required
             />

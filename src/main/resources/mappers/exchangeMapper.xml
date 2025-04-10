@@ -41,12 +41,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<!-- 환전 내역 저장 -->
 	<insert id="chargeWallet" parameterType="com.boot.sound.exchange.ExchangeTransactionDTO">
 	  INSERT INTO exchange_transaction (
-	    customer_id, withdraw_account_number, currency_code,
-	    request_amount, exchanged_amount, exchange_rate, transaction_type ,exchange_transaction_date, base_date
+	    customer_id, withdraw_account_number, currency_code, from_currency, to_currency,
+	    request_amount, exchanged_amount, exchange_rate, transaction_type ,exchange_transaction_date, base_date,  approval_status
 	  )
 	  VALUES (
-	    #{customer_id}, #{withdraw_account_number}, #{currency_code},
-	    #{request_amount}, #{exchanged_amount},#{exchange_rate},#{transaction_type} , NOW(), CURDATE()
+	    #{customer_id}, #{withdraw_account_number}, #{currency_code}, #{from_currency}, #{to_currency},
+	    #{request_amount}, #{exchanged_amount},#{exchange_rate},#{transaction_type} , NOW(), CURDATE(), #{approval_status}
 	  )
 	</insert>
 	
@@ -64,26 +64,36 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	   WHERE customer_id = #{customer_id}
 	     AND currency_code = #{currency_code}
 	</select>
-  
+  	<!-- 고객 계좌 조회     -->
 	<select id="findAccountById" parameterType="String" resultType="com.boot.sound.inquire.account.AccountDTO">
 		SELECT * FROM ACCOUNT_TBL
 		WHERE CUSTOMER_ID = #{customer_id} 
 	</select>
 	
+	<!-- 환전 내역 조회 -->
 	<select id="getListById" parameterType="String" resultType="com.boot.sound.exchange.ExchangeTransactionDTO">
 		SELECT *
         FROM exchange_transaction
         WHERE customer_id = #{customer_id}
+		  AND approval_status = 'APPROVED'
         ORDER BY exchange_transaction_date DESC
 	</select>
 	
-	<!-- 지갑조회 -->
-	<select id="myWallet" parameterType="String" resultType="com.boot.sound.exchange.ExchangeWalletDTO">
-		SELECT *
-		FROM exchange_wallet
-		WHERE CUSTOMER_ID = #{customer_id}
+	<!-- 환전신청내역조회 -->
+	<select id="getExRequestListById" parameterType="String" resultType="com.boot.sound.exchange.ExchangeTransactionDTO">
+		SELECT * FROM exchange_transaction
+		WHERE customer_id = #{customer_id}		  
+		AND approval_status = 'PENDING'
+		ORDER BY exchange_transaction_date DESC
 	</select>
 	
+	<!-- 관리자 승인/거절 처리 -->
+	<update id="updateApprovalStatus" parameterType="com.boot.sound.exchange.ExchangeTransactionDTO">
+		UPDATE exchange_transaction
+		SET approval_status = #{approval_status}
+		WHERE exchange_transaction_id = #{exchange_transaction_id}
+	</update>
+
 	<!-- 날짜별로 DB에 환율 자동저장 -->
 	<insert id="insertExchangeRate" parameterType="map">
 	    INSERT INTO exchange_rate (
@@ -130,7 +140,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	    ON ew.customer_id = avg_rates.customer_id
 	    AND ew.currency_code = avg_rates.currency_code
 	  WHERE ew.customer_id = #{customer_id}
+	    AND ew.balance > 0
+	  ORDER BY ew.wallet_id DESC
 	</select>
 	
+	<!-- DB저장 환율 조회 -->
+	<select id="getRateByDate" parameterType="String" resultType="java.util.Map">
+		SELECT * FROM exchange_rate
+		where base_date = #{base_date}
+	</select>
 	
+	<!-- 환전 내역 거래번호로 조회 -->
+	<select id="findTransByTransactionId" parameterType="Long" resultType="com.boot.sound.exchange.ExchangeTransactionDTO">
+		SELECT * FROM exchange_transaction
+		WHERE exchange_transaction_id = #{exchange_transaction_id}
+	</select>
 </mapper>   

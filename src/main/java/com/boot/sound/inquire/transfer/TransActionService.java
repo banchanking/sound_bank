@@ -52,7 +52,7 @@ public class TransActionService {
             dto.setComment_out(t.getComment_out());
             dto.setComment_in(t.getComment_in());
             dto.setTransaction_date(t.getTransaction_date());
-
+            
             return dto; // 가공된 DTO 반환
         }).collect(Collectors.toList()); // DTO 리스트로 모아서 최종 결과 리턴
     }

@@ -1,6 +1,8 @@
 package com.boot.sound.transfer.instant;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +20,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TransInstantService {
 
+	private final PasswordEncoder passwordEncoder;
     private final TransInstantRepository transRepo;        // 이체 저장용
     private final AccountRepository accountRepo;           // 잔액 변경용
     private final TransActionRepository taRepo;            // 거래내역 저장용
@@ -29,10 +32,11 @@ public class TransInstantService {
         Optional<CustomerDTO> optional = customerRepo.findById(dto.getCustomer_id());
         if (!optional.isPresent()) return "고객 정보 없음";
 
-        if (!dto.getPassword().equals(optional.get().getCustomer_password())) {
-            return "비밀번호 오류";
-        }
-
+        CustomerDTO customer = optional.get();
+		if (!passwordEncoder.matches(dto.getPassword(), customer.getCustomer_password())) {
+			return "비밀번호 오류";
+		}
+		
         BigDecimal amount = BigDecimal.valueOf(dto.getAmount());
         int minus = accountRepo.minusBalance(dto.getOut_account_number(), amount);
         if (minus == 0) return "잔액 부족";
@@ -45,7 +49,7 @@ public class TransInstantService {
         TransActionDTO out = new TransActionDTO();
         out.setAccount_number(dto.getOut_account_number());
         out.setTransaction_type("출금");
-        out.setAmount(dto.getAmount());
+        out.setAmount(BigDecimal.valueOf(dto.getAmount()));
         out.setCurrency("KRW");
         out.setComment_out(dto.getMemo());
         out.setTransaction_date(now);
@@ -54,7 +58,7 @@ public class TransInstantService {
         TransActionDTO in = new TransActionDTO();
         in.setAccount_number(dto.getIn_account_number());
         in.setTransaction_type("입금");
-        in.setAmount(dto.getAmount());
+        in.setAmount(BigDecimal.valueOf(dto.getAmount()));
         in.setCurrency("KRW");
         in.setComment_in(dto.getMemo());
         in.setTransaction_date(now);
@@ -62,7 +66,6 @@ public class TransInstantService {
 
         dto.setTransfer_type("실시간");
         dto.setTransfer_date(now);
-        dto.setTransfer_time(now); // ⭐ 거래 시간 추가
         transRepo.save(dto);
 
         return "이체 완료";

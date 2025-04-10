@@ -9,6 +9,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 @Data
@@ -42,15 +44,18 @@ public class AccountDTO {
     private String account_name;             // 계좌 이름
 
     @Column(name = "OPEN_DATE")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date open_date;                  // 개설일
     
     @Column(name = "STATUS")
     private String status;                // 계좌상태
 
     @Column(name = "CLOSE_DATE")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date close_date;              // 해지일
 
     @Column(name = "UPDATED_AT")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date updated_at;              // 변경일
 
     @Column(name = "ACCOUNT_PWD")

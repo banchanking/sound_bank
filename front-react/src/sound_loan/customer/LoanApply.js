@@ -56,10 +56,9 @@ const LoanApply = (props) => {
       }
     )
       .then((res) => {
-        if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
+        if (res.status === 200) {
+          return res.json();
         }
-        return res.json();
       })
       .then((res) => {
         setLoanCnt(res);

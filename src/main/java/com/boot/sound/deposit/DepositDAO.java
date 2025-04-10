@@ -13,4 +13,7 @@ public interface DepositDAO {
 	public List<DepositDTO> depositList();
 	
 	
+	// 신규 예금계좌 추가
+	public int depositInsert(DepositDTO dto);
+	
 }

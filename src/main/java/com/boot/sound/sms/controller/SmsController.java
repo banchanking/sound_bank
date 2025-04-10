@@ -19,9 +19,8 @@ public class SmsController {
 
     @PostMapping("/request")
     public ResponseEntity<?> sendSms(@RequestBody SmsRequest smsRequest) {
-        String phoneNumber = smsRequest.getPhoneNumber();
-        System.out.println("Requested phone number: " + phoneNumber);
-        boolean result = smsService.sendVerificationSms(phoneNumber);
+       
+        boolean result = smsService.sendVerificationSms(smsRequest);
         if (result) {
             return ResponseEntity.ok("SMS sent successfully using CoolSMS SDK.");
         } else {
@@ -29,4 +28,15 @@ public class SmsController {
                                  .body("Failed to send SMS using CoolSMS SDK.");
         }
     }
+    
+    @PostMapping("/verify")
+    public ResponseEntity<?> requestCode(@RequestBody SmsRequest smsRequest){
+    
+    	boolean result = smsService.verifyCode(smsRequest);
+    	
+    	return ResponseEntity.ok(result);
+    }
+    
+    
+    
 }

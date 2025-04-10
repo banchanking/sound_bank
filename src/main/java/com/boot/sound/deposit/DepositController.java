@@ -5,8 +5,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.boot.sound.fund.FundDTO;
 
 
 
@@ -18,7 +22,8 @@ public class DepositController {
        @Autowired
        private DepositService service;
        
-       
+    
+     // 예금 리스트   
    	@GetMapping("/depositList")
    	public ResponseEntity<?> depositList(){
    		System.out.println("depositList()");
@@ -27,7 +32,12 @@ public class DepositController {
    	};
 		
 		
-    
-	
+    // 신규 예금 추가
+   	@PostMapping("/depositInsert")
+   	public ResponseEntity<?> depositInsert(@RequestBody DepositDTO dto){
+   		System.out.println("depositInsert");
+   		return new ResponseEntity<>(service.depositInsert(dto), HttpStatus.CREATED);
+   	}
+
 
 }

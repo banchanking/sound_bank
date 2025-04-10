@@ -8,12 +8,16 @@ const DepositCalculator = ({ onClose }) => { // onClose prop 추가
     const [total, setTotal] = React.useState(0);
 
     const calculateTotal = (e) => {
-        e.preventDefault();
-        const principalAmount = parseFloat(principal);
-        const interestRate = parseFloat(rate) / 100;
-        const timePeriod = parseFloat(time);
+        e.preventDefault(); // 폼 제출 기본 동작 방지
+
+        // 입력값을 숫자로 변환
+        const principalAmount = parseFloat(principal) || 0; // 원금
+        const interestRate = parseFloat(rate) / 100 || 0; // 이자율 (백분율 변환)
+        const timePeriod = parseFloat(time) || 0; // 기간 (년)
+
+        // 총액 계산
         const totalAmount = principalAmount + (principalAmount * interestRate * timePeriod);
-        setTotal(totalAmount);
+        setTotal(totalAmount); // 총액 상태 업데이트
     };
 
     // 대한민국 원화로 포맷팅

@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @Data
 public class CredentialsDTO {
 
-	private String customer_id;
+	private String customerId;
 	private char[] customer_password;
 }

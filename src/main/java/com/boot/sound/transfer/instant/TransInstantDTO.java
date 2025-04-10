@@ -51,10 +51,6 @@ public class TransInstantDTO {
     @Column(name = "TRANSFER_DATE")
     @Temporal(TemporalType.TIMESTAMP) // 날짜+시간 형태로 저장 (예: 2025-03-30 10:30:00)
     private Date transfer_date; // 이체일
-    
-    @Column(name = "TRANSFER_TIME")
-    @Temporal(TemporalType.TIMESTAMP) // 날짜+시간 형태로 저장 (예: 2025-03-30 10:30:00)
-    private Date transfer_time; // 이체시간
         
     @Transient // DB에는 저장 안됨
     private String password;

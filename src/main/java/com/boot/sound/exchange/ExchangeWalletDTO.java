@@ -48,6 +48,12 @@ public class ExchangeWalletDTO {
     
     @JsonProperty("transaction_type")
     private String transaction_type; // "buy" or "sell"
+
+    // 평균 매입 환율 (exchange_transaction + exchange_rate 기준, DB에는 존재하지 않음)
+    @JsonProperty("average_rate")
+    @Column(name = "average_rate")
+    private BigDecimal average_rate;
+
 }
 // -- soundbank.exchange_wallet definition
 

@@ -48,9 +48,22 @@ const FixedDeposit = () => {
     },
   ];
 
-  const handleRowClick = (name) => {
-    navigate(`/DepositJoin/${name}`); // 선택한 상품의 이름을 URL 파라미터로 전달
-  };
+  const handleRowClick = (product) => {
+
+  const customerId = localStorage.getItem("customerId"); // 로컬 스토리지에서 고객 ID 가져오기
+  const customerAccountNumber = localStorage.getItem("customer_account_number"); // 로컬 스토리지에서 고객 계좌 번호 가져오기 
+
+
+
+        // DepositJoin으로 데이터 전달
+        navigate(`/DepositJoin/${product.name}`, {
+          state: {
+            product,
+            customerId,
+            customerAccountNumber,
+          },
+        });
+      };
 
   return (
     <div className="fixed-deposit-container">
@@ -68,8 +81,8 @@ const FixedDeposit = () => {
         <tbody>
           {depositProducts.map((product) => (
             <tr
-              key={product.name}
-              onClick={() => handleRowClick(product.name)} // 클릭 이벤트 추가
+              key={product.id}
+              onClick={() => handleRowClick(product)} // 클릭 이벤트 추가
               style={{ cursor: "pointer" }}
             >
               <td>{product.name}</td>

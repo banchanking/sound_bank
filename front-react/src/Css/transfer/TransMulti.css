@@ -1,0 +1,118 @@
+/* TransMulti.css */
+.multi-wrap {
+  width: 750px;
+  margin: 40px auto;
+  padding: 30px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  font-family: 'Noto Sans KR', sans-serif;
+  }
+  
+  .multi-wrap h2 {
+    margin-bottom: 20px;
+  }
+  
+  .multi-form {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .multi-form th,
+  .multi-form td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .multi-form th {
+    background-color: #f8f8f8;
+  }
+  
+  .multi-form input,
+  .multi-form select {
+    width: 90%;
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .btn-delete {
+    display: flex;
+    justify-content: center;
+    background-color: #ec7a7a;
+    color: rgb(255, 255, 255);
+    font-weight: 500;
+    width: 80px !important;
+    height: 30px;
+    align-items: center;
+    border-radius: 3px;
+  }
+
+  .btn-delete:hover {
+    background-color: #d94e4e;
+    color: #fff;
+  }
+  
+  .btn-add {
+    display: flex;
+    justify-content: center;
+    background-color: #2daab3;
+    color: rgb(255, 255, 255);
+    font-weight: 500;
+    width: 80px !important;
+    height: 30px;
+    align-items: center;
+    border-radius: 3px;
+  }
+
+  .btn-add:hover {
+    background-color: #3cb9c2;
+    color: #fff;
+  }
+
+  .btn-send {
+    display: flex;
+    justify-content: center;
+    background-color: #2b73ec;
+    color: rgb(255, 255, 255);
+    font-weight: 500;
+    width: 120px !important;
+    height: 35px;
+    align-items: center;
+    border-radius: 10px;
+  }
+  
+  .multi-total {
+    margin-top: 15px;
+    text-align: right;
+    font-weight: bold;
+    font-size: 16px;
+  }
+  
+
+  .selectCSS {
+    width: 400px;
+  }
+
+  .inputCSS-long {
+    width: 400px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    height: 32px;
+  }
+
+  .inputCSS-short {
+    height: 25px !important;
+    width: 150px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    height: 32px;
+  }
+
+  input.inputCSS-short {
+    width: 150px !important;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    height: 32px;
+  }

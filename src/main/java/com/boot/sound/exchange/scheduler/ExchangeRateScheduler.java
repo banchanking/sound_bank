@@ -19,7 +19,11 @@ public class ExchangeRateScheduler {
      * 매일 오전 11시45분에 환율 저장 실행
      */
     
+<<<<<<< HEAD
     @Scheduled(cron = "0 0 11 * * *") // 매일 11시45분에 한 번 (cron = 초 분 시 일 월 요일)
+=======
+    @Scheduled(cron = "0 0 11 * * *") // 매일 11시00분에 한 번 (cron = 초 분 시 일 월 요일)
+>>>>>>> dev
     public void saveExchangeRates() {
         log.info("[스케줄러] 환율 저장 시작");
 

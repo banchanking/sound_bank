@@ -49,7 +49,7 @@ public class UserAuthProvider {
 	}
 	
 	// Auth Token 생성
-	public String createToken(String customer_id) {
+	public String createToken(String customerId) {
 		System.out.println("<<< UserAuthProvider - createToken() >>>");
 		
 		Date now = new Date();  // java.util
@@ -57,7 +57,7 @@ public class UserAuthProvider {
 		
 		// JWT를 사용하려면 pom.xml에 java-jwt 추가
 		return JWT.create()
-				.withIssuer(customer_id)
+				.withIssuer(customerId)
 				.withIssuedAt(now)
 				.withExpiresAt(validity)
 				.sign(Algorithm.HMAC256(secretKey));

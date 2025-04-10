@@ -62,8 +62,42 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<insert id="consentInsert" parameterType="com.boot.sound.loan.LoanConsentDTO">
 		INSERT INTO LOAN_AGREE_STATUS_TBL(loan_id,customer_id,consent_use1,consent_use2,consent_use3,consent_use4,consent_view1,consent_view2,consent_view3,consent_view4)
-		VALUES (#{loan_id},#{customer_id},#{consent_use1},#{consent_use2},#{consent_use3},#{consent_use4},#{consent_view1},#{consent_view2},#{consent_view3},#{consent_view4})
+		VALUES (#{loan_id},#{customerId},#{consent_use1},#{consent_use2},#{consent_use3},#{consent_use4},#{consent_view1},#{consent_view2},#{consent_view3},#{consent_view4})
 	</insert>
+	
+	<select id="loanCustomer" parameterType="map" resultType="com.boot.sound.loan.LoanCustomerDTO">
+	  SELECT 
+	    l.*,
+	    (SELECT GROUP_CONCAT(a.ACCOUNT_NUMBER SEPARATOR ', ')
+	     FROM ACCOUNT_TBL a 
+	     WHERE a.CUSTOMER_ID = #{customerId}) AS accountNumbers,
+	    (SELECT a.CUSTOMER_ID 
+	     FROM ACCOUNT_TBL a 
+	     WHERE a.CUSTOMER_ID = #{customerId} 
+	     LIMIT 1) AS customer_id
+	  FROM LOAN_TBL l
+	  WHERE l.LOAN_ID = #{loan_id}
+	</select>
  
+ 	<insert id="loanApply" parameterType="com.boot.sound.loan.LoanStatusDTO">
+ 		INSERT INTO loan_status_tbl(loan_name,loan_id,interest_rate,customer_id,customer_income,customer_credit_score,loan_amount,balance,account_number,repayment_method,repayment_date,loan_type,loan_progress)
+ 		VALUES(#{loan_name},#{loan_id},#{interest_rate},#{customer_id},#{customer_income},#{customer_credit_score},#{loan_amount},#{loan_amount},#{account_number},#{repayment_method},#{repayment_date},#{loan_type},'신청')
+ 	</insert>
+ 	
+ 	<select id="loanStatus" resultType="com.boot.sound.loan.LoanStatusDTO">
+ 		SELECT * FROM LOAN_STATUS_TBL
+ 		ORDER BY loan_status_no
+ 	</select>
+ 	
+ 	<update id="loanStatusUpdate" parameterType="String">
+ 		UPDATE loan_status_tbl
+ 		set loan_progress  = #{loan_progress};
+ 	</update>
+ 	
+ 	<select id="selecCustomer" parameterType="String" resultType="com.boot.sound.customer.CustomerDTO">
+ 		SELECT 	customer_name,customer_phone_number
+ 		FROM 	CUSTOMER_TBL
+ 		WHERE customer_id = #{customerId}
+ 	</select>
  
  </mapper>

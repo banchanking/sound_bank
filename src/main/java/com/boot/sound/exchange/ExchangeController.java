@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.annotations.common.util.impl.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -47,7 +47,25 @@ public class ExchangeController {
         System.out.println("List = " + rates);
 
         return ResponseEntity.ok(rates); // 상태 코드 200과 함께 반환
-    }  
+    }
+    
+    // 날짜별 환율 조회 API
+    @GetMapping("/dbRates")
+    public ResponseEntity<List<Map<String, Object>>> getDbExchangeRates(@RequestParam(required = false) String date) {
+
+        System.out.println("<<<< Controller DB환율 요청 >>>>>>");
+
+        if (date == null || date.isEmpty()) {
+            date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        }
+
+        System.out.println("paramDate : " + date);
+
+        List<Map<String, Object>> rates = service.getDbExchangeRateList(date);
+        System.out.println("List = " + rates);
+
+        return ResponseEntity.ok(rates); // 상태 코드 200과 함께 반환
+    }
     
     // 출금 계좌 조회
     @GetMapping("/account/{customer_id}")
@@ -75,6 +93,27 @@ public class ExchangeController {
         }
     }
 
+    // 환전요청 목록
+    @GetMapping("/requestList/{customer_id}")
+    public ResponseEntity<List<ExchangeTransactionDTO>> requestList(@PathVariable String customer_id) {
+        System.out.println("controller - requestList");
+        
+            return new ResponseEntity<>(service.getRequestList(customer_id), HttpStatus.OK);
+    }
+
+    // 관리자 승인/거절
+    @PutMapping("/admin/approval")
+    public ResponseEntity<?> handleApproval(@RequestBody ExchangeTransactionDTO dto) {
+
+        System.out.println("controller - handleApproval");
+        
+        try {
+            service.handleApprovalAction(dto);
+            return ResponseEntity.ok("거래 처리 완료");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
     
     // 환전결과 출력
     @GetMapping("/exchangeList/{customer_id}")
@@ -90,7 +129,7 @@ public class ExchangeController {
     @GetMapping("/myWallet/{customer_id}")
     public ResponseEntity<List<ExchangeWalletDTO>> myWallet(@PathVariable String customer_id){
     	System.out.println("controller - myWallet");
-    	List<ExchangeWalletDTO> list = service.myWallet(customer_id);
+    	List<ExchangeWalletDTO> list = service.getWalletsWithAverageRate(customer_id);
     	System.out.println(list);
     	
     	return new ResponseEntity<>(list,HttpStatus.OK);

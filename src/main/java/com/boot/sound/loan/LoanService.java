@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.boot.sound.customer.CustomerDTO;
+import com.boot.sound.jwt.dto.CredentialsDTO;
+
 @Service
 public class LoanService {
 
@@ -93,4 +96,40 @@ public class LoanService {
 		System.out.println("서비스 - consentInsert()");
 		return dao.consentInsert(dto);
 	}
+	
+	// 대출신청 고객정보
+	@Transactional
+	public LoanCustomerDTO loanCustomer(String customerId, String loan_id) {
+		System.out.println("서비스 - loanCustomer()");
+		System.out.println(dao.loanCustomer(customerId, loan_id));
+		return dao.loanCustomer(customerId, loan_id);
+	}
+	
+	// 대출신청 정보 저장
+	@Transactional
+	public int loanApply(LoanStatusDTO dto) {
+		System.out.println("서비스 - loanApply()");
+		return dao.loanApply(dto);
+	}
+	
+	// 대출 현황 리스트
+	@Transactional
+	public List<LoanStatusDTO>loanStatus(){
+		System.out.println("서비스 - loanStatus()");
+		return dao.loanStatus();
+	}
+	
+	// 대출 상태 변경 및 변경정보 문자 송신
+	public boolean loanStatusUpdate(int loan_status_no, String loan_progress) {
+		System.out.println("서비스 - loanStatusUpdate()");
+		return dao.loanStatusUpdate(loan_status_no, loan_progress);
+	}
+	
+	// 문자 발송을 위한 고객정보 조회
+	public CustomerDTO selecCustomer(String customerId) {
+		System.out.println("서비스 - selecCustomer()");
+		return dao.selecCustomer(customerId);
+	}
+	
+	
 }

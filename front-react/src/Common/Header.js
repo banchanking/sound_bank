@@ -57,7 +57,7 @@ const Header = () => {
   // 드롭다운 요소 참조 저장 + 클릭 외부 감지해서 드롭다운 닫기
   useEffect(() => {
     // 컴포넌트가 마운트될 때 localStorage에서 customer_id를 확인하여 로그인 상태 설정
-    const customerId = localStorage.getItem("customer_id");
+    const customerId = localStorage.getItem("customerId");
     setLoginStatus(!!customerId); // customerId가 있으면 true, 없으면 false로 설정
 
     const dropdownElements = document.querySelectorAll(".NavDropdown-menu");
@@ -80,11 +80,11 @@ const Header = () => {
       document.removeEventListener("mousedown", handleDocumentClick);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [localStorage.getItem("customer_id")]);
+  }, [localStorage.getItem("customerId")]);
 
   const logout = () => {
     localStorage.removeItem("auth_token");
-    localStorage.removeItem("customer_id");
+    localStorage.removeItem("customerId");
     localStorage.removeItem("refresh_token");
     alert("로그아웃 되었습니다.");
     navigate("/");
@@ -637,7 +637,9 @@ const Header = () => {
               <div
                 className="dropdown-items-container"
                 onMouseEnter={() => handleDropdownMouseEnter("forex-menu")}
-                onMouseLeave={(event) => handleDropdownMouseLeave(event, "forex-menu")}
+                onMouseLeave={(event) =>
+                  handleDropdownMouseLeave(event, "forex-menu")
+                }
               >
                 {/* customer 시작 */}
                 <div className="deposit-saving-row">
@@ -736,7 +738,6 @@ const Header = () => {
               </div>
             </NavDropdown>
             {/* 외환메뉴 끝 */}
-
 
             {/* 고객센터 메뉴 */}
             <NavDropdown

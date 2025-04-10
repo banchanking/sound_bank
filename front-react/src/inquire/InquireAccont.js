@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../Css/inquire/InquireAccount.css';
+import { getCustomerID } from "../jwt/AxiosToken";
 
 function AccountCheck() {
   const [data, setData] = useState({});
@@ -9,7 +10,8 @@ function AccountCheck() {
   const [customer_id, setCustomerId] = useState('');
 
   useEffect(() => {
-    const id = localStorage.getItem('customer_id');
+    const id = getCustomerID();   // AxiosToken파일내 아이디 함수 활용
+    const token = localStorage.getItem("auth_token"); // JWT 토큰 가져오기
 
     if (!id) {
       alert('로그인이 필요합니다.');
@@ -18,7 +20,11 @@ function AccountCheck() {
 
     setCustomerId(id);
 
-    axios.get(`http://localhost:8081/api/accounts/allAccount/${id}`)
+    axios.get(`http://localhost:8081/api/accounts/allAccount/${id}`,{
+      headers: {
+        Authorization: `Bearer ${token}`
+          }
+        })
       .then(res => setData(res.data)) 
       .catch(err => console.error('계좌 불러오기 실패:', err)); 
   }, []);
@@ -62,7 +68,7 @@ function AccountCheck() {
       <h2 className="account-title">{customer_id}님의 계좌 조회</h2>
       
       <div className="account-type-buttons">
-        {['입출금', '예금', '적금', '외환'].map(t => (
+        {['입출금', '예금', '적금'].map(t => (
           <button
             key={t}
             // 버튼 클릭 시 타입 저장, 선택된 계좌 초기화

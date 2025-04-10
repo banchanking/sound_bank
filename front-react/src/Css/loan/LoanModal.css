@@ -1,0 +1,42 @@
+.buttonContainer {
+  display: flex;
+
+  margin-top: 20px;
+}
+
+.modalBtn {
+  padding: 8px 16px;
+  background-color: black;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.modalBtn:hover {
+  background-color: #333;
+}
+
+.labelContainer {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.labelContainer label {
+  width: 80px;
+  margin-right: 10px;
+  text-align: right;
+}
+
+.labelContainer input,
+.labelContainer select {
+  flex: 1;
+  max-width: 300px;
+  padding: 5px;
+}
+
+.modalArea {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
