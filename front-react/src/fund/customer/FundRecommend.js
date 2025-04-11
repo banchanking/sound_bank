@@ -1,32 +1,48 @@
-import React, { useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import RefreshToken from "../../jwt/RefreshToken"; // 인증 포함된 인스턴스 사용
 
 const FundRecommend = () => {
-//   const location = useLocation();
-//   const navigate = useNavigate();
+    const [funds, setFunds] = useState([]);
+    const customerId = localStorage.getItem("customer_id"); // 로그인된 사용자 ID 가져오기
 
-//   // 로그인 여부 확인
-//   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true"; // 예시로 로컬 스토리지 사용
-//   const result = location.state?.result; // 투자성향 테스트 결과
+    useEffect(() => {
+        const fetchRecommendedFunds = async () => {
+            try {
+                const response = await RefreshToken.get(`http://localhost:8081/api/fundRecommend/${customerId}`);
+                setFunds(response.data); // 추천 펀드 목록 설정
+            } catch (error) {
+                console.error("펀드 추천 목록을 가져오는 중 오류 발생:", error);
+            }
+        };
 
-//   useEffect(() => {
-//     if (!isLoggedIn) {
-//       // 로그인이 되어 있지 않은 경우
-//       alert("로그인을 해주세요.");
-//       navigate("/login"); // 로그인 페이지로 이동
-//     } else if (result === undefined) {
-//       // 투자성향 테스트 결과가 없는 경우
-//       alert("투자성향 테스트를 먼저 진행해주세요.");
-//       navigate("/fundTest"); // 투자성향 테스트 페이지로 이동
-//     }
-//   }, [isLoggedIn, result, navigate]);
+        if (customerId) {
+            fetchRecommendedFunds();
+        }
+    }, [customerId]);
 
-//   return (
-//     <div className="fund-recommend-container">
-//       <h1 className="fund-recommend-title">추천 펀드 목록</h1>
-//       {/* 추천 펀드 목록 표시 로직 추가 */}
-//     </div>
-//   );
- };
+    return (
+        <div>
+            <h1>추천 펀드 목록</h1>
+            {funds.length > 0 ? (
+                <ul>
+                    {funds.map((fund) => (
+                        <li key={fund.fund_id}>
+                            <h3>{fund.fund_name}</h3>
+                            <p>1개월 누적 수익률: {fund.return_1m}%</p>
+                            <p>3개월 누적 수익률: {fund.return_3m}%</p>
+                            <p>6개월 누적 수익률: {fund.return_6m}%</p>
+                            <p>12개월 누적 수익률: {fund.return_12m}%</p>
+                            <p>펀드 등급: {fund.fund_grade}%</p>
+                            <p>선취 수수료(%): {fund.fund_upfront_fee}%</p>
+                            <p>위험 유형: {fund.fund_risk_type}</p>
+                        </li>
+                    ))}
+                </ul>
+            ) : (
+                <p>추천할 펀드가 없습니다.</p>
+            )}
+        </div>
+    );
+};
 
 export default FundRecommend;
