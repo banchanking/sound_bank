@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate} from 'react-router-dom';
 
 const DepositInquire = () => {
   const [deposit, setDeposit] = useState([]);
   const [currentTime, setCurrentTime] = useState('');
+  const navigate = useNavigate(); // useNavigate 훅 사용
+
+  const handleAccountClick = (accountNumber) =>     
+    navigate('/transactionHistory',{ state: { accountNumber } }); // 클릭한 계좌번호로 거래내역 페이지 이동
+
 
   // 잔액 합계 계산
   const sum = Array.isArray(deposit)
@@ -112,7 +118,9 @@ const DepositInquire = () => {
               <tr key={index}>
                 <td style={{ border: '1px solid black', padding: '10px' }}>{deposit.dat_id}</td>
                 <td style={{ border: '1px solid black', padding: '10px' }}>{deposit.dat_account_num}</td>
-                <td style={{ border: '1px solid black', padding: '10px' }}>{deposit.dat_deposit_account}</td>
+                <td style={{ border: '1px solid black', padding: '10px' , color: 'blue', cursor: 'pointer'}}
+                  onClick={() => handleAccountClick(deposit.dat_deposit_account_num)} // 계좌번호 클릭 시 상세 페이지로 이동
+                >{deposit.dat_deposit_account_num}</td>
                 <td style={{ border: '1px solid black', padding: '10px' }}>{deposit.dat_balance.toLocaleString()}원</td>
                 <td style={{ border: '1px solid black', padding: '10px' }}>{deposit.dat_term}</td>
                 <td style={{ border: '1px solid black', padding: '10px' }}>{deposit.dat_start_day}</td>

@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../Css/Deposit/FixedDeposit.css"; // CSS 파일 import
 
 const FixedDeposit = () => {
   const navigate = useNavigate(); // React Router의 navigate 함수 사용
+  const [searchTerm, setSearchTerm] = useState(""); // 검색어 상태
+  const [sortOption, setSortOption] = useState("추천순"); // 정렬 옵션 상태
+  const [viewOption, setViewOption] = useState("5개"); // 조회 옵션 상태
+  const [selectedChannels, setSelectedChannels] = useState([]); // 체크박스 선택 상태
 
   const depositProducts = [
     {
@@ -48,26 +52,143 @@ const FixedDeposit = () => {
     },
   ];
 
+  const handleChannelChange = (channel) => {
+    setSelectedChannels((prev) =>
+      prev.includes(channel)
+        ? prev.filter((c) => c !== channel)
+        : [...prev, channel]
+    );
+  };
+
+  const handleSearch = () => {
+    console.log("검색어:", searchTerm);
+    console.log("선택된 채널:", selectedChannels);
+    console.log("정렬 옵션:", sortOption);
+    console.log("조회 옵션:", viewOption);
+  };
+
   const handleRowClick = (product) => {
+    const customerId = localStorage.getItem("customerId"); // 로컬 스토리지에서 고객 ID 가져오기
+    const customerAccountNumber = localStorage.getItem("customer_account_number"); // 로컬 스토리지에서 고객 계좌 번호 가져오기
 
-  const customerId = localStorage.getItem("customerId"); // 로컬 스토리지에서 고객 ID 가져오기
-  const customerAccountNumber = localStorage.getItem("customer_account_number"); // 로컬 스토리지에서 고객 계좌 번호 가져오기 
-
-
-
-        // DepositJoin으로 데이터 전달
-        navigate(`/DepositJoin/${product.name}`, {
-          state: {
-            product,
-            customerId,
-            customerAccountNumber,
-          },
-        });
-      };
+    // DepositJoin으로 데이터 전달
+    navigate(`/DepositJoin/${product.name}`, {
+      state: {
+        product,
+        customerId,
+        customerAccountNumber,
+      },
+    });
+  };
 
   return (
     <div className="fixed-deposit-container">
       <h1 className="fixed-deposit-title">예금 상품 목록</h1>
+
+      {/* 상단 필터 */}
+      <table className="filter-table">
+        <tbody>
+          <tr>
+            <td>
+              <label>
+                <input
+                  type="checkbox"
+                  value="인터넷"
+                  onChange={() => handleChannelChange("인터넷")}
+                />
+                인터넷
+              </label>
+            </td>
+            <td>
+              <label>
+                <input
+                  type="checkbox"
+                  value="모바일"
+                  onChange={() => handleChannelChange("모바일")}
+                />
+                모바일
+              </label>
+            </td>
+            <td>
+              <label>
+                <input
+                  type="checkbox"
+                  value="영업점"
+                  onChange={() => handleChannelChange("영업점")}
+                />
+                영업점
+              </label>
+            </td>
+            <td>
+              <label>
+                <input
+                  type="checkbox"
+                  value="전화신규"
+                  onChange={() => handleChannelChange("전화신규")}
+                />
+                전화신규
+              </label>
+            </td>
+            <td>
+              <input
+                type="text"
+                placeholder="상품명 입력"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="search-input"
+              />
+            </td>
+            <td>
+              <button onClick={handleSearch} className="search-button">
+                검색
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      {/* 정렬 및 조회 옵션 */}
+      <div className="options-container">
+        <div className="sort-buttons">
+          <button
+            className={sortOption === "추천순" ? "active" : ""}
+            onClick={() => setSortOption("추천순")}
+          >
+            추천순
+          </button>
+          <button
+            className={sortOption === "판매순" ? "active" : ""}
+            onClick={() => setSortOption("판매순")}
+          >
+            판매순
+          </button>
+          <button
+            className={sortOption === "출시순" ? "active" : ""}
+            onClick={() => setSortOption("출시순")}
+          >
+            출시순
+          </button>
+          <button
+            className={sortOption === "상품명순" ? "active" : ""}
+            onClick={() => setSortOption("상품명순")}
+          >
+            상품명순
+          </button>
+        </div>
+        <div className="view-dropdown-container">
+          <select
+            value={viewOption}
+            onChange={(e) => setViewOption(e.target.value)}
+            className="view-dropdown"
+          >
+            <option value="5개">5개</option>
+            <option value="10개">10개</option>
+            <option value="전체">전체</option>
+          </select>
+        </div>
+      </div>
+
+      {/* 상품 목록 */}
       <table className="fixed-deposit-table">
         <thead>
           <tr>

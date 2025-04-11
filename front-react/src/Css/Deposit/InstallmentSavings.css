@@ -1,10 +1,10 @@
 /* 컨테이너 스타일 */
-.fixed-deposit-container {
+.installment-savings-container {
   padding: 20px;
   font-family: Arial, sans-serif;
 }
 
-.fixed-deposit-title {
+.installment-savings-title {
   text-align: center;
   margin-bottom: 20px;
   font-size: 24px;
@@ -61,7 +61,6 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   cursor: pointer;
-  background-color: white;
   width: 100px; /* 버튼 크기 통일 */
   text-align: center;
 }
@@ -88,29 +87,29 @@
 }
 
 /* 상품 목록 테이블 스타일 */
-.fixed-deposit-table {
+.savings-products-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
 }
 
-.fixed-deposit-table th,
-.fixed-deposit-table td {
+.savings-products-table th,
+.savings-products-table td {
   border: 1px solid #ccc;
   padding: 10px;
   text-align: center;
 }
 
-.fixed-deposit-table th {
+.savings-products-table th {
   background-color: #f5f5f5;
   font-weight: bold;
 }
 
-.fixed-deposit-table tr:nth-child(even) {
+.savings-products-table tr:nth-child(even) {
   background-color: #f9f9f9;
 }
 
-.fixed-deposit-table tr:hover {
+.savings-products-table tr:hover {
   background-color: #e9ecef;
   cursor: pointer;
 }

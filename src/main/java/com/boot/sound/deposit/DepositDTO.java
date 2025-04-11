@@ -1,11 +1,16 @@
 package com.boot.sound.deposit;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.CreationTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,7 +33,7 @@ public class DepositDTO {
     private int dat_id;
     
     @Column(name = "dat_account_num")            // 출금계좌번호
-    private String dat_account_Num;
+    private String dat_account_num;
     
     @Column(name = "dat_account_pwd")            // 출금계좌번호 비밀번호
     private String dat_account_pwd;
@@ -40,19 +45,22 @@ public class DepositDTO {
     private String dat_deposit_account_pwd;
 
     @Column(name = "dat_new_amount")             // 신규 금액
-    private Double dat_new_amount;
+    private BigDecimal dat_new_amount;
     
     @Column(name = "dat_balance")                // 현재 잔액
-    private int dat_balance;
+    private BigDecimal dat_balance;
 
     @Column(name = "dat_term")                   // 가입기간 3,6,12개월중 하나
     private String dat_term;
 
-    @Column(name = "dat_start_day")              // 가입일
+    @CreationTimestamp
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd") // 날짜 형식 지정
+    @Column(name = "dat_start_day") // 가입일
     private Date dat_start_day;
-    
-    @Column(name = "dat_end_day")                // 만료일
+
+    @CreationTimestamp
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd") // 날짜 형식 지정
+    @Column(name = "dat_end_day") // 만료일
     private Date dat_end_day;
-	
 	
 }
