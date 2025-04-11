@@ -89,9 +89,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<update id="updateCustomerRiskType">
 	    UPDATE CUSTOMER_TBL c
 	    SET CUSTOMER_RISK_TYPE = (
-	        SELECT fund_risk_type
+	        SELECT f.fund_risk_type
 	        FROM fund_test_tbl f
 	        WHERE f.customer_id = c.customer_id
+	        ORDER BY f.fund_test_date DESC
+	        LIMIT 1
 	    )
 	    WHERE EXISTS (
 	        SELECT 1

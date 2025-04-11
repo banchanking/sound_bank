@@ -41,13 +41,17 @@ async def predict_user(data: InvestmentRequest):
         prediction = user_model.predict(X)
         predicted_class = int(np.argmax(prediction))
         risk_types = ["안정형", "보수형", "위험중립형", "적극형", "공격형"]
+        print(f"User model loaded successfully.:{risk_types}" )
         return {
             "predicted_class": predicted_class,
             "risk_type": risk_types[predicted_class]
+           
         }
+         
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
+      
 
 # ----------- 펀드 성향 예측 (펀드 CSV에 적용) -----------
 # 투자성향에 따른 펀드상품 예측 엔드포인트

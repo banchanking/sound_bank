@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Chart } from 'react-google-charts';
-import '../../Css/fund/Fund.css';
+import styles from "../../Css/fund/FundList.module.css"; // 스타일 파일 추가
 
 const FundList = () => {
   const [data, setData] = useState([]);
@@ -138,9 +138,9 @@ const FundList = () => {
   }, {});
 
   return (
-    <div className="Fund">
+    <div className={styles.Fund}>
       <main>
-        <div className="fund-list">
+        <div className={styles.fundlist}>
           {Object.keys(groupedFunds).map((manager, index) => (
             <div key={index}>
               <button onClick={() => handleManagerClick(manager)}>
@@ -196,11 +196,11 @@ const FundList = () => {
           ))}
         </div>
         {showPopup && (
-          <div className="popup" ref={popupRef}>
-            <div className="popup-content">
-              <div className="popup-header">
+          <div className={styles.popup} ref={popupRef}>
+            <div className={styles.popupcontent}>
+              <div className={styles.popupheader}>
                 <h3>펀드 수익률 비교 차트</h3>
-                <span className="close" onClick={handleClosePopup}>&times;</span>
+                <span className={styles.close} onClick={handleClosePopup}>&times;</span>
               </div>
               <Chart
                 width={'100%'}

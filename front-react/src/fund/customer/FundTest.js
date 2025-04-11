@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import "../../Css/fund/Fund.css"; // 스타일 파일 추가
+import styles from "../../Css/fund/FundList.module.css"; // 스타일 파일 추가
 
 // 투자성향 테스트 질문과 점수 매핑
 const questions = [
@@ -138,7 +138,7 @@ const FundTest = () => {
       console.log("Submitting payload:", payload); // 디버깅용 로그
 
       // 서버로 POST 요청
-      const response = await axios.post("http://127.0.0.1:8000/predict", payload, {
+      const response = await axios.post("http://127.0.0.1:8000/predict-user", payload, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -154,14 +154,14 @@ const FundTest = () => {
   };
 
   return (
-    <div className="fund-test-container">
-      <h2 className="fund-test-title">투자성향 분석</h2>
-      <div className="fund-test-card">
+    <div className={styles.fundtestcontainer}>
+      <h2 className={styles.fundtesttitle}>투자성향 분석</h2>
+      <div className={styles.fundtestcard}>
         {questions.map((question, index) => (
-          <div key={index} id={`question-${index}`} className="fund-test-question">
-            <p className="fund-test-question-title">{question.question}</p>
+          <div key={index} id={`question-${index}`} className={styles.fundtestquestion}>
+            <p className={styles.fundtestquestiontitle}>{question.question}</p>
             {question.options.map((option, optionIndex) => (
-              <div key={optionIndex} className="fund-test-option">
+              <div key={optionIndex} className={styles.fundtestoption}>
                 <input
                   type="radio"
                   name={`question-${index}`}
@@ -175,10 +175,10 @@ const FundTest = () => {
           </div>
         ))}
       </div>
-      <button className="fund-test-submit" onClick={handleSubmit}>
+      <button className={styles.fundtestsubmit} onClick={handleSubmit}>
         결과 확인
       </button>
-      {result !== null && <h3 className="fund-test-result">예측된 투자 성향: {result}</h3>}
+      {result !== null && <h3 className={styles.fundtestresult}>예측된 투자 성향: {result}</h3>}
     </div>
   );
 };

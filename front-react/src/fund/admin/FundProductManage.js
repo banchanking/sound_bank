@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "../../Css/fund/Fund.css"; // 스타일 파일 추가
+import styles from "../../Css/fund/FundList.module.css"; // 스타일 파일 추가
 import RefreshToken from "../../jwt/RefreshToken"; // RefreshToken 모듈 추가
 
 const FundProductManage = () => {
@@ -114,11 +114,11 @@ const FundProductManage = () => {
 };
 
   return (
-    <div className="fund-product-manage-container">
+    <div className={styles.fundproductmanagecontainer}>
       <h2>펀드 상품 관리</h2>
 
       {/* 펀드 수정/삭제 폼 */}
-      <div className="fund-form-container">
+      <div className={styles.fundformcontainer}>
         <h3>펀드 수정/삭제</h3>
         <form
           onSubmit={(e) => {
