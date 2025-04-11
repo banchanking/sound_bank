@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import styles from "../../Css/fund/FundList.module.css"; // 스타일 파일 추가
 import RefreshToken from "../../jwt/RefreshToken"; // 인증 포함된 인스턴스 사용
 
 const FundRecommend = () => {

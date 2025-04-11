@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Papa from "papaparse"; // CSV 파싱 라이브러리
-import "../../Css/fund/Fund.css"; // 스타일 파일 추가
+import styles from "../../Css/fund/FundList.module.css"; // 스타일 파일 추가
 import RefreshToken from "../../jwt/RefreshToken"; // RefreshToken 모듈 추가
 
 const FundProductAdmin = () => {
@@ -153,11 +153,11 @@ const FundProductAdmin = () => {
     };
 
   return (
-    <div className="fund-product-admin-container">
+    <div className={styles.fundproductadmincontainer}>
       <h2>펀드 상품 관리</h2>
 
       {/* 펀드 목록 테이블 */}
-      <table className="fund-table">
+      <table className={styles.fundtable}>
         <thead>
           <tr>
             <th>펀드명</th>
@@ -196,8 +196,8 @@ const FundProductAdmin = () => {
 
       {/* 펀드 등록 팝업 */}
       {isPopupOpen && (
-        <div className="popup-container">
-          <div className="popup-content">
+        <div className={styles.popupcontainer}>
+          <div className={styles.popupcontent}>
             <div className="popup-header">
               <h3>펀드 등록</h3>
               <span className="close" onClick={handleClosePopup}>
@@ -262,6 +262,16 @@ const FundProductAdmin = () => {
                   />
                 </div>
                 <div>
+                  <label>선취수수료:</label>
+                  <input
+                    type="number"
+                    name="fund_upfront_fee"
+                    value={formData.fund_upfront_fee}
+                    onChange={handleChange}
+                    step="0.01"
+                  />
+                </div>
+                <div>
                   <label>1개월 수익률 (%):</label>
                   <input
                     type="number"
@@ -301,7 +311,7 @@ const FundProductAdmin = () => {
                       step="0.01"
                     />
                   </div>
-                  <div className="action-buttons">
+                  <div className={styles.actionbuttons}>
                     <button type="submit">저장</button>
                     <button type="button" onClick={handleClosePopup}>
                       닫기

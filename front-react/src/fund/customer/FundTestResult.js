@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
-import "../../Css/fund/Fund.css"; // 스타일 파일 추가
+import styles from "../../Css/fund/FundList.module.css"; // 스타일 파일 추가
+import RefreshToken from "../../jwt/RefreshToken"; // RefreshToken 모듈 추가
 
 const FundTestResult = () => {
     const location = useLocation();
@@ -12,38 +12,37 @@ const FundTestResult = () => {
     const investmentType = investmentTypes[result] || "알 수 없음";
 
     // 로그인된 회원 ID 가져오기 (예: 로컬 스토리지 또는 상태 관리에서 가져옴)
-    const customerId = localStorage.getItem("customer_id");
+    const customerId = localStorage.getItem("customerId");
 
     // 투자 성향을 서버로 전송하여 업데이트
     useEffect(() => {
         const updateRiskType = async () => {
             try {
-                const payload = {
-                    customer_id: customerId,
-                    fund_risk_type: investmentType,
-                };
-                await axios.post("http://localhost:8081/api/test-result/save", payload, {
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
-                console.log("투자 성향 등록 및 업데이트 성공");
+              const payload = {
+                customer_id: customerId,
+                fund_risk_type: investmentType,
+              };
+        
+              // 토큰 포함된 인스턴스로 요청 보내기
+              await RefreshToken.post("http://localhost:8081/api/test-result/save/{customerId}", payload);
+        
+              console.log("✅ 투자 성향 등록 및 업데이트 성공");
             } catch (error) {
-                console.error("투자 성향 등록 및 업데이트 중 오류 발생:", error);
+              console.error("❌ 투자 성향 등록 및 업데이트 중 오류 발생:", error);
             }
-        };
-
-        // customerId가 존재하면 항상 업데이트 실행
-        if (customerId) {
+          };
+        
+        // 고객 ID와 투자 성향이 모두 존재할 때만 업데이트
+          if (customerId && investmentType) {
             updateRiskType();
-        }
-    }, [customerId, investmentType]);
+          }
+        }, [customerId, investmentType]);
 
 
     return (
-        <div className="fund-test-result-container">
-            <h1 className="fund-test-result-title">투자성향 분석 결과</h1>
-            <table className="fund-test-result-table">
+        <div className={styles.fundtestresultcontainer}>
+            <h1 className={styles.fundtestresulttitle}>투자성향 분석 결과</h1>
+            <table className={styles.fundtestresulttable}>
                 <tbody>
                     <tr>
                         고객님의 투자성향은
@@ -51,9 +50,9 @@ const FundTestResult = () => {
                     </tr>
                 </tbody>
             </table>
-            <div className="fund-test-result-buttons">
+            <div className={styles.fundtestresultbuttons}>
                 <button
-                    className="fund-test-result-button"
+                    className={styles.fundtestresultbutton}
                     onClick={() => navigate("/fundRecommend", { state: { result } })}
                 >
                     나에게 맞는 <br>
