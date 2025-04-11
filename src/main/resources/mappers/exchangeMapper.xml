@@ -123,27 +123,28 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	    ew.customer_id,
 	    ew.currency_code,
 	    ew.balance,
-	    ew.created_at,
-	    ew.updated_at,
-	    ew.status,
-	    IFNULL(avg_rates.average_rate, 0) AS average_rate
-	  FROM exchange_wallet ew
-	  LEFT JOIN (
+	    IFNULL(avg.avg_rate, 0) AS average_rate,
+	    IFNULL(er.BASE_RATE, 0) AS current_rate
+	FROM exchange_wallet ew
+	LEFT JOIN (
 	    SELECT 
-	      et.customer_id,
-	      et.currency_code,
-	      AVG(er.base_rate) AS average_rate
+	        et.customer_id,
+	        et.currency_code,
+	        AVG(er.base_rate) AS avg_rate
 	    FROM exchange_transaction et
 	    JOIN exchange_rate er
-	      ON et.base_date = er.base_date AND et.currency_code = er.currency_code
+	        ON et.base_date = er.base_date
+	       AND et.currency_code = er.currency_code
 	    WHERE et.transaction_type = 'buy'
 	    GROUP BY et.customer_id, et.currency_code
-	  ) avg_rates
-	    ON ew.customer_id = avg_rates.customer_id
-	    AND ew.currency_code = avg_rates.currency_code
-	  WHERE ew.customer_id = #{customer_id}
-	    AND ew.balance > 0
-	  ORDER BY ew.wallet_id DESC
+	) avg
+	  ON ew.customer_id = avg.customer_id
+	 AND ew.currency_code = avg.currency_code
+	LEFT JOIN exchange_rate er
+	  ON er.base_date = CURDATE()
+	 AND ew.currency_code = er.currency_code
+	WHERE ew.customer_id = #{customer_id}
+	  AND ew.balance > 0;
 	</select>
 	
 	<!-- DB저장 환율 조회 -->

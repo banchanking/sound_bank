@@ -95,31 +95,26 @@ const ExchangeWalletStatus = () => {
             height="300px"
             data={(() => {
               const chartRows = wallet.map(wallet => {
-              const rate = rates.find(r => r.currency_code === wallet.currency_code);
+                const rate = rates.find(r => r.currency_code === wallet.currency_code);
                 if (!rate) return null;
 
-                const currentRate = rate.base_rate ?? 0;
-                const avgRate = wallet.average_rate ? parseFloat(wallet.average_rate) : currentRate;
-                const profit = (currentRate - avgRate) / avgRate * 100;
+                const currentRate = parseFloat(rate.base_rate);
+                const averageRate = wallet.average_rate ? parseFloat(wallet.average_rate) : 0;
 
-                if (
-                  isNaN(currentRate) ||
-                  isNaN(avgRate) ||
-                  avgRate === 0 ||
-                  typeof wallet.currency_code !== 'string'
-                ) return null;
+                if (!averageRate || averageRate === 0 || isNaN(currentRate)) return null;
 
-               
+                const profit = ((currentRate - averageRate) / averageRate * 100).toFixed(2);
                 const color = profit >= 0 ? "#4CAF50" : "#f44336";
 
-                return [wallet.currency_code, profit, color];
+                return [wallet.currency_code, parseFloat(profit), color];
               }).filter(Boolean);
+
               return [["통화", "수익률 (%)", { role: "style" }], ...chartRows];
             })()}
             options={{
               legend: "none",
               vAxis: { title: "수익률 (%)", format: "decimal" },
-              hAxis: { title: "통화" }
+              hAxis: { title: "통화" },
             }}
           />
         </div>

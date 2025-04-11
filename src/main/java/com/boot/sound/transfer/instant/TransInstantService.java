@@ -51,7 +51,7 @@ public class TransInstantService {
         out.setTransaction_type("출금");
         out.setAmount(BigDecimal.valueOf(dto.getAmount()));
         out.setCurrency("KRW");
-        out.setComment_out(dto.getMemo());
+//        out.setComment_out(dto.getMemo());
         out.setTransaction_date(now);
         taRepo.save(out);
 
@@ -60,7 +60,7 @@ public class TransInstantService {
         in.setTransaction_type("입금");
         in.setAmount(BigDecimal.valueOf(dto.getAmount()));
         in.setCurrency("KRW");
-        in.setComment_in(dto.getMemo());
+//        in.setComment_in(dto.getMemo());
         in.setTransaction_date(now);
         taRepo.save(in);
 
