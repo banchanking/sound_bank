@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import "../../Css/fund/Fund.css"; // 스타일 파일 추가
+import RefreshToken from "../../jwt/RefreshToken"; // RefreshToken 모듈 추가
 
 const FundProductManage = () => {
+  const [funds, setFunds] = useState([]);
   const [dropdownFunds, setDropdownFunds] = useState([]); // 드롭다운에 표시할 펀드 목록
   const [formData, setFormData] = useState({
     fund_id: "", // 소문자로 변경
@@ -17,22 +19,20 @@ const FundProductManage = () => {
   });
 
   // 펀드 목록 조회
-  const fetchFundsFromAPI = async () => {
-    try {
-      const response = await fetch("http://localhost:8081/api/registeredFunds");
-      if (!response.ok) {
-        throw new Error("Failed to fetch fund list");
-      }
-      const data = await response.json();
-      setDropdownFunds(data); // 드롭다운에 표시할 데이터 저장
-    } catch (error) {
-      console.error("Error fetching fund list:", error);
-    }
-  };
-
-  // useEffect에서 API 호출
   useEffect(() => {
-    fetchFundsFromAPI();
+    const fetchAll = async () => {
+      try {
+        const response1 = await RefreshToken.get("http://localhost:8081/api/fundList");
+        setFunds(response1.data);
+  
+        const response2 = await RefreshToken.get("http://localhost:8081/api/registeredFunds");
+        setDropdownFunds(response2.data);
+      } catch (error) {
+        console.error("펀드 목록 조회 중 오류 발생:", error);
+      }
+    };
+  
+    fetchAll();
   }, []);
 
   // 드롭다운에서 펀드 선택
@@ -63,54 +63,55 @@ const FundProductManage = () => {
   // 펀드 수정
   const handleUpdateFund = async () => {
     try {
-      const response = await fetch(`http://localhost:8081/api/fundUpdate/${formData.fund_id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to update fund");
-      }
-
+      const response = await RefreshToken.put(
+        `http://localhost:8081/api/fundUpdate/${formData.fund_id}`,
+        formData
+      );
+  
       console.log("펀드 수정 성공");
-      fetchFundsFromAPI(); // 목록 갱신
+      alert("펀드가 성공적으로 수정되었습니다.");
     } catch (error) {
       console.error("Error updating fund:", error);
+      alert("펀드 수정 중 오류가 발생했습니다.");
     }
   };
 
   // 펀드 삭제
-  const handleDeleteFund = async () => {
+  const handleDeleteFund = async (fund_id) => {
     try {
-      const response = await fetch(`http://localhost:8081/api/fund/${formData.fund_id}`, {
-        method: "DELETE",
-      });
+      const response = await RefreshToken.delete(
+        `http://localhost:8081/api/fund/${fund_id}`
+      );
+  
+      console.log("삭제 응답:", response.data);
+      alert("펀드가 성공적으로 삭제되었습니다.");
+  
+    // 목록 새로 불러오기
+    const updatedFundList = await RefreshToken.get("http://localhost:8081/api/fundList");
+    setFunds(updatedFundList.data);
 
-      if (!response.ok) {
-        throw new Error("Failed to delete fund");
-      }
+    const updatedDropdown = await RefreshToken.get("http://localhost:8081/api/registeredFunds");
+    setDropdownFunds(updatedDropdown.data);
 
-      console.log("펀드 삭제 성공");
-      fetchFundsFromAPI(); // 목록 갱신
-      setFormData({
-        fund_id: "",
-        fund_name: "",
-        fund_company: "",
-        fund_type: "",
-        fund_grade: "",
-        fund_fee_rate: "",
-        return_1m: 0,
-        return_3m: 0,
-        return_6m: 0,
-        return_12m: 0,
-      }); // 폼 초기화
-    } catch (error) {
-      console.error("Error deleting fund:", error);
-    }
-  };
+    // 폼 상태 초기화
+    setFormData({
+      fund_id: "",
+      fund_name: "",
+      fund_company: "",
+      fund_type: "",
+      fund_grade: "",
+      fund_fee_rate: "",
+      return_1m: 0,
+      return_3m: 0,
+      return_6m: 0,
+      return_12m: 0,
+    });
+
+  } catch (error) {
+    console.error("펀드 삭제 중 오류:", error);
+    alert("펀드 삭제에 실패했습니다.");
+  }
+};
 
   return (
     <div className="fund-product-manage-container">
@@ -235,7 +236,18 @@ const FundProductManage = () => {
             />
           </div>
           <button type="submit">수정</button>
-          <button type="button" onClick={handleDeleteFund}>삭제</button>
+          <button
+            type="button"
+            onClick={() => {
+              if (!formData.fund_id) {
+                alert("삭제할 펀드를 먼저 선택하세요.");
+                return;
+              }
+              handleDeleteFund(formData.fund_id);
+            }}
+          >
+            삭제
+          </button>
         </form>
       </div>
     </div>

@@ -1,13 +1,152 @@
 .Fund {
-  text-align: center;
-  padding-top: 20px;
-}
+    text-align: center;
+    padding-top: 20px;
+  }
+  
+  .Fund-header {
+    background-color: #282c34;
+    padding: 20px;
+    color: white;
+  }
+  
+  main {
+    padding: 20px;
+  }
+  
+  .fund-list-container {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .manager-list {
+    width: 20%;
+    text-align: left;
+  }
+  
+  .category-list {
+    margin-left: 20px;
+  }
+  
+  .category-button {
+    background-color: #282c34;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin: 5px 0;
+  }
+  
+  .category-button:hover {
+    background-color: #282c34;
+  }
+  
+  .fund-list {
+    margin-bottom: 20px;
+    text-align: center; /* 목록을 가운데 정렬 */
+    color: black; /* 폰트 색상을 검정으로 설정 */
+  }
+  
+  .fund-list table {
+    margin: 0 auto; /* 테이블을 가운데 정렬 */
+  }
+  
+  .fund-list button {
+    margin: 5px;
+    padding: 10px 20px;
+    background-color: #61dafb;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .fund-list button.selected {
+    background-color: #21a1f1;
+  }
+  
+  .fund-list button:hover {
+    background-color: #21a1f1;
+  }
+  
+  .fund-list tr:hover {
+    background-color: #f1f1f1;
+    cursor: pointer;
+  }
+  
+  .chart-container {
+    margin: 0 auto;
+    max-width: 300px;
+    max-height: calc(100vh - 200px); /* 화면 높이에서 헤더와 푸터를 제외한 영역 */
+    overflow: auto; /* 차트가 영역을 벗어나지 않도록 스크롤 추가 */
+    padding: 20px;
+    box-sizing: border-box; /* 패딩과 보더를 포함한 크기 계산 */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    position: absolute;
+  }
+  
+  .chart-title {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+    text-align: center;
+  }
 
-.Fund-header {
-  background-color: #282c34;
-  padding: 20px;
-  color: white;
-}
+  .popup-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    text-align: center;
+    position: absolute;
+    transform: translate(-50%, -50%);
+  }
+  
+  .popup {
+    position: fixed;
+    top: 20;
+    right: 20;
+    width: 50%;       /* 전체 너비 */
+    height: 52%;      /* 전체 높이 */
+    background: none;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    }    
+  
+  .popup-content {
+    /* background-color: white;       
+    padding: 0;
+    border-radius: 4px;
+    width: 500px;                  
+    max-width: 90%;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);  */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* overflow: hidden; */
+    }
+  
+  .popup-header {
+    cursor: move;
+    background-color: #f1f1f1;
+    padding: 15px 20px;
+    font-weight: bold;
+    font-size: 1.2em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ccc;
+    user-select: none;
+    }
 
 main {
   padding: 20px;

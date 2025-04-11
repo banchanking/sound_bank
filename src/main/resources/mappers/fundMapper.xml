@@ -11,22 +11,29 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          ORDER BY fund_id ASC
     </select>
     
-    <!-- 펀드상품 등록 -->
+    <!-- 펀드상품 등록 (AI 학습 후 fund_risk_type 컬럼까지 포함) -->
     <insert id="insertFund" parameterType="com.boot.sound.fund.FundDTO">
-	    INSERT INTO fund_tbl(fund_name, fund_company, fund_type, fund_grade, fund_fee_rate, fund_upfront_fee, return_1m, return_3m, return_6m, return_12m)
-	    VALUES (
-	        #{fund_name},
-	        #{fund_company},
-	        #{fund_type},
-	        #{fund_grade},
-	        #{fund_fee_rate},
-	        #{fund_upfront_fee},
-	        #{return_1m},
-	        #{return_3m},
-	        #{return_6m},
-	        #{return_12m}
+	    INSERT INTO fund_tbl (
+	        fund_name, fund_company, fund_type, fund_grade,
+	        fund_fee_rate, fund_upfront_fee,
+	        return_1m, return_3m, return_6m, return_12m, fund_risk_type
+	    ) VALUES (
+	        #{fund_name}, #{fund_company}, #{fund_type}, #{fund_grade},
+	        #{fund_fee_rate}, #{fund_upfront_fee},
+	        #{return_1m}, #{return_3m}, #{return_6m}, #{return_12m}, #{fund_risk_type}
 	    )
-	</insert>
+	    ON DUPLICATE KEY UPDATE
+	        fund_company = VALUES(fund_company),
+	        fund_type = VALUES(fund_type),
+	        fund_grade = VALUES(fund_grade),
+	        fund_fee_rate = VALUES(fund_fee_rate),
+	        fund_upfront_fee = VALUES(fund_upfront_fee),
+	        return_1m = VALUES(return_1m),
+	        return_3m = VALUES(return_3m),
+	        return_6m = VALUES(return_6m),
+	        return_12m = VALUES(return_12m),
+	        fund_risk_type = VALUES(fund_risk_type)
+</insert>
 	
 	<!-- 등록된 펀드 상품 목록 조회 -->
     <select id="getRegisteredFunds" resultType="com.boot.sound.fund.FundDTO">
@@ -60,5 +67,57 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         DELETE FROM fund_tbl
         WHERE fund_id = #{fund_id, jdbcType=BIGINT}
     </delete>
+    
+	<!-- 펀드 개별 투자성향 업데이트 -->
+	<update id="updateRiskType" parameterType="map">
+	    UPDATE fund_tbl
+	    SET fund_risk_type = #{fund_risk_type}
+	    WHERE fund_id = #{fund_id}
+	</update>
+    
+    <!-- 투자 성향 테스트 결과 등록 -->
+    <insert id="insertTestResult" parameterType="com.boot.sound.fund.FundTestDTO">
+	    INSERT INTO fund_test_tbl(customer_id, fund_test_date, fund_risk_type)
+	    VALUES (
+	        #{customer_id},
+	        DEFAULT,
+	        #{fund_risk_type}
+	    )
+	</insert>
+	
+	<!-- 고객의 투자성향을 CUSTOMER_TBL에 업데이트 -->
+	<update id="updateCustomerRiskType">
+	    UPDATE CUSTOMER_TBL c
+	    SET CUSTOMER_RISK_TYPE = (
+	        SELECT fund_risk_type
+	        FROM fund_test_tbl f
+	        WHERE f.customer_id = c.customer_id
+	    )
+	    WHERE EXISTS (
+	        SELECT 1
+	        FROM fund_test_tbl f
+	        WHERE f.customer_id = c.customer_id
+	    )
+	</update>
+
+    <!-- 고객의 투자 성향 조회 -->
+    <select id="getCustomerRiskType" parameterType="String" resultType="String">
+        SELECT CUSTOMER_RISK_TYPE
+        FROM CUSTOMER_TBL
+        WHERE CUSTOMER_ID = #{customer_id}
+    </select>
+
+    <!-- 고객의 투자 성향에 맞는 펀드 목록 조회 -->
+    <select id="recommendedFunds" parameterType="String" resultType="com.boot.sound.fund.FundDTO">
+        SELECT FUND_TBL.*
+		FROM FUND_TBL
+		JOIN FUND_TEST_TBL 
+		  ON CAST(FUND_TEST_TBL.fund_test_id AS CHAR) = FUND_TBL.fund_id
+		JOIN CUSTOMER_TBL 
+		  ON CUSTOMER_TBL.customer_id = FUND_TEST_TBL.customer_id
+		WHERE FUND_TEST_TBL.fund_risk_type = #{fund_risk_type}
+		  AND CUSTOMER_TBL.customer_risk_type = #{fund_risk_type}
+    </select>
+
 
 </mapper>

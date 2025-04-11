@@ -1,8 +1,51 @@
-Fund AI 펀드 테스트
-  
-깃 dev pull 이후 
-npm install
-npm audit fix --force
+Fund Install
+
+1. 파이썬 버전 3.9.xx 받기 (https://www.python.org/downloads/release/python-3913/)
+2. Anaconda prompt에서 가상환경 만들기
+
+	방법 1) 같은 머신내에서 콘다 환경복사하기 (Anaconda Prompt) - 빠른방법 
+		conda create -n sound_bank --clone base
+
+	방법 2) base 하위 새로운 브랜치 생성 - 명령어 입력
+		conda env list	
+			-> base   * D:\DEV\anaconda3 (기본 콘다환경)
+		conda create -n sound_bank python=3.9.21	(원하는 파이썬버전의 콘다환경 생성)
+		conda env list
+			-> base            * D:\DEV\anaconda3
+	   		    sound_bank     D:\DEV\anaconda3\envs\sound_bank (새로 생성한 콘다 가상환경)
+
+			-> conda activate sound_bank (브랜치 이동)
+
+		conda list (첨엔 기본 세팅된 목록들만 뜬다 - numpy, pandas는 이미 깔려있음)
+
+3. 설치 목록 - 순서대로
+<conda 설치>
+conda install fastapi  (pydantic 자동설치)              
+conda install uvicorn
+conda install seaborn
+
+<pip 설치 - 특정 버전 설치>
+pip install imblearn (scikit-learn, scipy 자동설치)
+pip install tensorflow==2.11.0 (keras, scipy 자동 설치)
+pip install numpy==1.23.0 (numpy 다운그레이드 - matplotlib와 호환X)               
+
+
+# All requested packages already installed. => 이미 설치됐다는 메시지 뜨면 그냥 넘어가면 됨.
+
+
+
+<버전확인>
+fastapi=0.112.2 
+keras=2.10.0
+numpy=1.23.0 
+pandas=2.2.3 
+pip=25.0.1 
+pydantic=2.10.3 
+tensorflow=2.10.0 
+
+
+없으면 pip install 해당이름==버전 (install 실패시 : 에러 떠도 'Installed 해당버전'이면 그냥 무시)
+
 
 python 버전 확인 (3.9, 3.10, 3.11)
 python --version 
@@ -10,22 +53,9 @@ python --version
 =>	https://www.python.org/downloads/release/python-3913/
 	(카페 설치자료 참조)
 
-window 검색창에 anaconda prompt 파일켜기
+window 검색창에 Anaconda prompt 파일켜기
 conda list 입력 + Enter
 
-fastapi                   0.115.12       
-imblearn          
-keras                     2.11.0                 
-numpy                     1.22.4   
-pandas                    2.2.3 
-pip                       25.0.1 
-pydantic                  2.10.3
-tensorflow                2.11.0
-uvicorn                   0.34.0 
-
-확인하기
-
-없으면 pip install 해당이름==버전 (install 실패시 : 버전없이 그냥 설치)
 
 Visual Studio에서 
 Ctrl + Shift + p 단축키로 검색창 열어서 Python Select Interpreter 선택
@@ -50,7 +80,7 @@ npm start
 
 (실행 안되면 pip install --upgrade tenserflow==2.11.0)
 
-*** react를 껐다 켜서 AI테스트 진행하려면 항상 python Investment_AI.py 명령어로 http://127.0.0.1:8000 서버를 켜줘야 한다 ***
+
 << 관리자 >>
 AI data training 실행순서 :
 
@@ -72,5 +102,176 @@ python Generate_training_data.py -> python Generate_model.py -> python Investmen
 	=> Test Accuracy: 0.10000000149011612
 		모델이 저장되었습니다.
 		모델이 로드되었습니다.
+		
+--------------------------------------------------------------------------------------------------------
 
+<< 코드 설명 >>
+ 
+펀드 메뉴 특징: 
+머신러닝 모델을 활용하여 투자 성향 분석을 수행하고, React와 FastAPI를 통해 펀드 상품 관리 및 사용자 인터페이스를 제공합니다. 각 파일은 데이터 처리, 모델 학습, API 제공, UI 렌더링 등 특정 역할을 담당하며, 전체적으로 유기적으로 연결되어 있습니다.
+
+ 
+**전체 흐름**
+
+1. 데이터 준비
+   - 'training_data.csv' 파일을 사용하여 머신러닝 모델을 학습시킵니다.
+
+2. 모델 생성 및 저장
+   - Generate_model.py에서 모델을 학습시키고 'investment_model.h5'로 저장합니다.
+
+3. API 제공
+   - 'Investment_AI.py'에서 FastAPI를 사용하여 투자 성향 분석 모델을 REST API로 제공합니다.
+
+4. 펀드 관리
+   - 'FundProductManage.js'에서 관리자가 펀드 상품을 등록, 수정, 삭제합니다.
+
+5. 펀드 목록 표시
+   - 'FundList.js'에서 등록된 펀드 상품을 사용자에게 표시하고, 선택된 펀드의 수익률 비교 차트를 제공합니다.
+   
+public/data, src/fund, src/data 디렉토리에 있는 파일들을 기반으로 구현된 코드의 상세 설명. 각 파일의 역할과 주요 로직 설명
+
+**1. public/data 디렉토리**
+
+1.1 training_data.csv
+
+- 역할 
+  - 머신러닝 모델 학습에 사용되는 데이터셋 파일입니다.
+  - 이 파일에는 입력 데이터(`X`)와 레이블(`y`)이 포함되어 있습니다.
+  - `label` 컬럼은 각 데이터의 클래스(예: 투자 성향)를 나타냅니다.
+
+- 사용 위치
+  - Generate_model.py에서 pd.read_csv를 통해 데이터를 로드합니다.
+  - 데이터는 모델 학습 및 평가에 사용됩니다.
+
+----------------------------------------------------------------------------
+
+**2. src/fund 디렉토리**
+
+2.1 FundList.js
+
+- 역할
+  - React 컴포넌트로, 사용자에게 펀드 상품 목록을 보여줍니다.
+  - 관리자가 등록한 펀드 상품만 표시하며, 사용자가 특정 펀드를 선택하면 수익률 비교 차트를 보여줍니다.
+
+- 주요 로직
+  1. 등록된 펀드 상품 가져오기
+     - http://localhost:8081/api/registeredFunds API를 호출하여 등록된 펀드 상품 데이터를 가져옵니다.
+     - 가져온 데이터를 변수 'funds' 상태에 저장합니다.
+
+  2. 펀드 목록 그룹화
+     - 'funds' 데이터를 fund_company(운용사)와 fund_type(펀드 유형)으로 그룹화하여 테이블로 표시합니다.
+
+  3. 차트 렌더링
+     - 사용자가 특정 펀드를 선택하면, 선택된 펀드의 수익률 데이터를 기반으로 Google Charts를 렌더링합니다.
+
+- 주요 코드
+  javascript
+  useEffect(() => {
+    fetch('http://localhost:8081/api/registeredFunds')
+      .then((response) => response.json())
+      .then((data) => setFunds(data))
+      .catch((error) => console.error('Error fetching registered funds:', error));
+  }, []);
+
+
+----------------------------------------------------------------------------
+
+**2.2 FundProductManage.js**
+- 역할
+  - 관리자가 펀드 상품을 등록, 수정, 삭제할 수 있는 페이지입니다.
+  - 등록된 펀드 상품은 FundList.js에서 사용자에게 표시됩니다.
+
+- 주요 로직
+  1. 펀드 등록
+     - 관리자가 입력한 데이터를 서버로 전송하여 새로운 펀드 상품을 등록합니다.
+
+  2. 펀드 수정
+     - 선택된 펀드의 데이터를 수정하고 서버에 업데이트 요청을 보냅니다.
+
+  3. 펀드 삭제
+     - 특정 펀드를 삭제하고, 등록된 펀드 목록에서 제거합니다.
+
+----------------------------------------------------------------------------
+
+**3. src/data 디렉토리**
+
+3.1 Generate_model.py
+
+- 역할
+  - 투자 성향 분석을 위한 머신러닝 모델을 생성, 학습, 평가, 저장하는 Python 스크립트입니다.
+
+- 주요 로직
+  1. 데이터 로드
+     - training_data.csv 파일에서 데이터를 로드합니다.
+     - 입력 데이터('X')와 레이블('y')로 분리합니다.
+
+  2. 데이터 증강(SMOTE)
+     - SMOTE를 사용하여 클래스 불균형 문제를 해결합니다.
+     - 소수 클래스의 데이터를 증강하여 학습 데이터의 균형을 맞춥니다.
+
+  3. 모델 정의
+     - 'Sequential' API를 사용하여 다층 퍼셉트론(MLP) 모델을 정의합니다. (Sequential API는 TensorFlow/Keras에서 신경망 모델을 정의할 때 사용하는 가장 간단한 방법입니다. 이를 사용하면 레이어를 순차적으로 쌓아 올려 모델을 구성할 수 있습니다. 
+     - 다층 퍼셉트론(MLP, Multi-Layer Perceptron)은 입력층, 은닉층, 출력층으로 구성된 신경망으로, 'Dropout'을 사용하여 과적합을 방지합니다.
+
+  4. 모델 학습
+     - 'fit' 메서드를 사용하여 모델을 학습시킵니다.
+     - 클래스 가중치를 적용하여 불균형 데이터를 처리합니다.
+
+  5. 모델 평가 및 저장
+     - 테스트 데이터로 모델을 평가하고, 정확도와 손실을 출력합니다.
+     - 학습된 모델을 'investment_model.h5' 파일로 저장합니다. (TensorFlow와 Keras에서는 .h5 파일을 주로 모델 저장 및 로드에 사용합니다. 이 파일은 학습된 모델의 구조, 가중치, 그리고 추가적인 학습 설정을 저장할 수 있습니다.)
+
+- 주요 코드
+  python
+  model = Sequential([
+      Dense(128, activation='relu', input_shape=(X_train.shape[1],)),
+      Dropout(0.3),
+      Dense(64, activation='relu'),
+      Dropout(0.3),
+      Dense(32, activation='relu'),
+      Dense(5, activation='softmax')  # 5개의 클래스
+  ])
+
+  model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+  history = model.fit(X_train_balanced, y_train_balanced, validation_data=(X_test, y_test), epochs=50, batch_size=32)
+  model.save("../../../public/data/investment_model.h5")
   
+
+----------------------------------------------------------------------------
+
+**3.2 Investment_AI.py**
+
+- 역할
+  - FastAPI를 사용하여 투자 성향 분석 모델을 제공하는 REST API를 구현합니다.
+  - 클라이언트로부터 데이터를 받아 모델을 통해 예측 결과를 반환합니다.
+
+- 주요 로직
+  1. CORS 설정
+     - 'CORSMiddleware'를 사용하여 모든 도메인에서 API 요청을 허용합니다.
+
+  2. 모델 로드
+     - 'investment_model.h5' 파일에서 학습된 모델을 로드합니다.
+
+  3. 예측 API
+     - '/predict' 엔드포인트를 통해 클라이언트로부터 데이터를 받아 모델 예측 결과를 반환합니다.
+
+- 주요 코드
+  python
+  @app.post("/predict")
+  async def predict(data: InvestmentRequest):
+      try:
+          input_data = np.array(data.answers).reshape(1, -1)
+          prediction = model.predict(input_data).argmax(axis=1)[0]
+          return {"prediction": int(prediction)}
+      except Exception as e:
+          raise HTTPException(status_code=500, detail=str(e))
+  
+
+----------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------
+
+### **결론**
+이 프로젝트는 		
+

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Papa from "papaparse"; // CSV 파싱 라이브러리
 import "../../Css/fund/Fund.css"; // 스타일 파일 추가
+import RefreshToken from "../../jwt/RefreshToken"; // RefreshToken 모듈 추가
 
 const FundProductAdmin = () => {
   const [funds, setFunds] = useState([]); // CSV 파일에서 가져온 펀드 목록
@@ -10,6 +11,7 @@ const FundProductAdmin = () => {
     fund_type: "",
     fund_grade: "",
     fund_fee_rate: "",
+    fund_upfront_fee: "",
     return_1m: 0,
     return_3m: 0,
     return_6m: 0,
@@ -25,8 +27,8 @@ const FundProductAdmin = () => {
       const csvText = await response.text(); // CSV 파일의 텍스트 데이터 가져오기
       
       // 2. 등록된 펀드 상품 목록 가져오기
-      const registeredFundsResponse = await fetch("http://localhost:8081/api/registeredFunds");
-      const registeredFunds = await registeredFundsResponse.json();
+      const registeredFundsResponse = await RefreshToken.get("http://localhost:8081/api/registeredFunds");
+      const registeredFunds = registeredFundsResponse.data;
       const registeredFundNames = registeredFunds.map((fund) => fund.fund_name);
 
       // 3. CSV 데이터를 파싱하여 JSON 형식으로 변환
@@ -37,11 +39,19 @@ const FundProductAdmin = () => {
           console.log("CSV Data:", results.data); // 파싱된 데이터 확인
           
           // 4. 등록된 상품을 제외한 목록 필터링
-          const filteredFunds = results.data.filter(
-            (fund) => !registeredFundNames.includes(fund["상품명"])
+          const filteredFunds = results.data
+            .filter((fund) => !registeredFundNames.includes(fund["상품명"])
           );
 
-          setFunds(filteredFunds); // 테이블에 표시할 데이터 저장 - 필터링된 데이터로 상태 업데이트
+          // 4-1. fund_risk_type 컬럼 제거
+          const cleanedFunds = filteredFunds.map((fund) => {
+            const copy = { ...fund };
+            delete copy["fund_risk_type"];
+            return copy;
+          });
+
+          // 5. 등록된 펀드 목록 저장
+          setFunds(cleanedFunds); // 테이블에 표시할 데이터 저장 - 필터링된 데이터로 상태 업데이트
         },
       });
       
@@ -52,22 +62,24 @@ const FundProductAdmin = () => {
 
   // 컴포넌트가 처음 렌더링될 때 CSV 파일에서 펀드 목록을 가져옴
   useEffect(() => {
-    fetchFundsFromCSV();
+    fetchFundsFromCSV()
   }, []);
 
   // 팝업창 열기
   const handleOpenPopup = (fund) => {
     console.log("Selected Fund:", fund); // 선택된 펀드 확인
     setFormData({
-      fund_name: fund["상품명"] || "",
-      fund_company: fund["운용사명"] || "",
-      fund_type: fund["펀드유형"] || "",
-      fund_grade: fund["펀드등급"] || "",
-      fund_fee_rate: fund["총보수(퍼센트)"] || "",
-      return_1m: fund["1개월누적수익률(퍼센트)"] || 0,
-      return_3m: fund["3개월누적수익률(퍼센트)"] || 0,
-      return_6m: fund["6개월누적수익률(퍼센트)"] || 0,
-      return_12m: fund["12개월누적수익률(퍼센트)"] || 0,
+      fund_name: fund["fund_name"] || "",
+      fund_company: fund["fund_company"] || "",
+      fund_type: fund["fund_type"] || "",
+      fund_grade: fund["fund_grade"] || "",
+      fund_fee_rate: fund["fund_fee_rate"] || "",
+      fund_upfront_fee: fund["fund_upfront_fee"] || "",
+      return_1m: fund["return_1m"] || 0,
+      return_3m: fund["return_3m"] || 0,
+      return_6m: fund["return_6m"] || 0,
+      return_12m: fund["return_12m"] || 0,
+      fund_risk_type: fund["fund_risk_type"] || "",
     });
     setIsPopupOpen(true); // 팝업창 열기
   };
@@ -81,6 +93,7 @@ const FundProductAdmin = () => {
       fund_type: "",
       fund_grade: "",
       fund_fee_rate: "",
+      fund_upfront_fee: "",
       return_1m: 0,
       return_3m: 0,
       return_6m: 0,
@@ -94,35 +107,50 @@ const FundProductAdmin = () => {
     setFormData({ ...formData, [name]: value });
   };
 
+  // 등록된 펀드 목록 저장
+  const saveRegisteredFunds = async (funds) => {
+    try {
+      await RefreshToken.post(
+        "http://localhost:8081/api/saveRegisteredFunds",
+        funds // ✅ Axios는 두 번째 인자가 전송할 데이터입니다
+      );
+      console.log("Registered funds saved successfully");
+    } catch (error) {
+      console.error("Error saving registered funds:", error);
+    }
+  };
+
   // 펀드 등록
   const handleSaveFund = async () => {
     try {
-      const response = await fetch("http://localhost:8081/api/fundSave", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        throw new Error("펀드 등록 실패");
-      }
+      const customerId = localStorage.getItem("customer_id");
+      if (!customerId) {
+        alert("로그인이 필요합니다.");
+      return;
+    }
+      // 1. 등록된 펀드 상품 목록 가져오기     
+      // Axios 인스턴스 RefreshToken 사용
+      await RefreshToken.post(
+        "http://localhost:8081/api/fundSave",
+        formData
+      );
 
       console.log("펀드 등록 성공");
       alert("펀드상품 등록 성공!");
 
       // 등록된 펀드를 목록에서 제거
-      setFunds((prevFunds) =>
-        prevFunds.filter((fund) => fund["상품명"] !== formData.fund_name)
+      const updatedFunds = funds.filter(
+        (fund) => fund.fund_name !== formData.fund_name
       );
+      setFunds(updatedFunds);
 
       handleClosePopup(); // 팝업창 닫기
+
     } catch (error) {
       console.error("Error saving fund:", error);
       alert("펀드 등록 중 오류가 발생했습니다.");
-    }
-  };
+      }
+    };
 
   return (
     <div className="fund-product-admin-container">
@@ -137,6 +165,7 @@ const FundProductAdmin = () => {
             <th>펀드유형</th>
             <th>펀드등급</th>
             <th>총보수 (%)</th>
+            <th>선취수수료 (%)</th>
             <th>1개월 수익률 (%)</th>
             <th>3개월 수익률 (%)</th>
             <th>6개월 수익률 (%)</th>
@@ -147,15 +176,16 @@ const FundProductAdmin = () => {
         <tbody>
           {funds.map((fund, index) => (
             <tr key={`${fund["상품명"]}-${index}`}>
-              <td>{fund["상품명"]}</td>
-              <td>{fund["운용사명"]}</td>
-              <td>{fund["펀드유형"]}</td>
-              <td>{fund["펀드등급"]}</td>
-              <td>{fund["총보수(퍼센트)"]}</td>
-              <td>{fund["1개월누적수익률(퍼센트)"]}</td>
-              <td>{fund["3개월누적수익률(퍼센트)"]}</td>
-              <td>{fund["6개월누적수익률(퍼센트)"]}</td>
-              <td>{fund["12개월누적수익률(퍼센트)"]}</td>
+              <td>{fund["fund_name"]}</td>
+              <td>{fund["fund_company"]}</td>
+              <td>{fund["fund_type"]}</td>
+              <td>{fund["fund_grade"]}</td>
+              <td>{fund["fund_fee_rate"]}</td>
+              <td>{fund["fund_upfront_fee"]}</td>
+              <td>{fund["return_1m"]}</td>
+              <td>{fund["return_3m"]}</td>
+              <td>{fund["return_6m"]}</td>
+              <td>{fund["return_12m"]}</td>
               <td>
                 <button onClick={() => handleOpenPopup(fund)}>등록</button>
               </td>
