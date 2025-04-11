@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../../Css/transfer/TransInstant.css';
 import { getCustomerID } from "../../jwt/AxiosToken";
-import Sidebar from './Sidebar'; 
+import Sidebar from './Sidebar';
 
 function TransInstant() {
   const [form, setForm] = useState({
@@ -12,7 +12,8 @@ function TransInstant() {
     in_name: '',
     transfer_type: '실시간',
     amount: '',
-    memo: '',
+    memo_out: '',  // 출금메모
+    memo_in: '',   // 입금메모
     password: ''
   });
 
@@ -70,7 +71,8 @@ function TransInstant() {
             in_name: '',
             transfer_type: '실시간',
             amount: '',
-            memo: '',
+            memo_out: '',
+            memo_in: '',
             password: ''
           });
         } else {
@@ -94,7 +96,7 @@ function TransInstant() {
         <h2>실시간 이체</h2>
         <form onSubmit={(e) => { e.preventDefault(); setShowModal(true); }}>
           <label>출금 계좌</label>
-          <select style={{marginBottom : '15px'}}name="out_account_number" value={form.out_account_number} onChange={handleChange} required>
+          <select style={{ marginBottom: '15px' }} name="out_account_number" value={form.out_account_number} onChange={handleChange} required>
             <option value="">출금 계좌 선택</option>
             {accounts.map(acc => (
               <option key={acc.account_number || acc.dat_account_num} value={acc.account_number || acc.dat_account_num}>
@@ -106,7 +108,13 @@ function TransInstant() {
           <input type="text" name="in_account_number" placeholder="입금 계좌" value={form.in_account_number} onChange={handleChange} required />
           <input type="text" name="in_name" placeholder="받는 사람" value={form.in_name} onChange={handleChange} required />
           <input type="number" name="amount" placeholder="금액" value={form.amount} onChange={handleChange} required />
-          <input type="text" name="memo" placeholder="메모" value={form.memo} onChange={handleChange} />
+          
+          {/* 출금 메모 */}
+          <input type="text" name="memo_out" placeholder="출금메모" value={form.memo_out} onChange={handleChange} />
+          
+          {/* 입금 메모 */}
+          <input type="text" name="memo_in" placeholder="입금메모" value={form.memo_in} onChange={handleChange} />
+
           <input type="password" name="password" placeholder="비밀번호" value={form.password} onChange={handleChange} required />
 
           <button type="submit">이체하기</button>
@@ -122,7 +130,8 @@ function TransInstant() {
                 <p><b>출금계좌:</b> {form.out_account_number}</p>
                 <p><b>입금계좌:</b> {form.in_account_number}</p>
                 <p><b>받는사람:</b> {form.in_name}</p>
-                <p><b>메모:</b> {form.memo || '-'}</p>
+                <p><b>출금메모:</b> {form.memo_out || '-'}</p>
+                <p><b>입금메모:</b> {form.memo_in || '-'}</p>
               </div>
               <div style={{ marginTop: '20px', marginBottom: '10px', fontWeight: 'bold' }}>
                 정말 이체하시겠습니까?
