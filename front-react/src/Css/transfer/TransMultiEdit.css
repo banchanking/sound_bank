@@ -1,7 +1,7 @@
 .edit-wrap {
   flex-grow: 1;
   padding: 30px;
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -48,6 +48,7 @@
 /* 버튼 스타일 */
 .btn-blue {
   background-color: #2b73ec;
+  width: 55px;
   color: white;
   border: none;
   padding: 6px 12px;
@@ -57,7 +58,8 @@
 }
 
 .btn-red {
-  background-color: #ec7a7a;
+  background-color: #b13434;
+  width: 55px;
   color: white;
   border: none;
   padding: 6px 12px;
@@ -66,7 +68,7 @@
 }
 
 .btn-red:hover {
-  background-color: #dd4444;
+  background-color: #d23636;
 }
 
 /* 모달창 오버레이 */

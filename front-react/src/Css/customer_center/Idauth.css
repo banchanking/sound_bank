@@ -1,0 +1,15 @@
+.dropzone{
+    border: 2px dashed #ffffff;
+    border-radius: 6px;
+    padding: 25px;
+    text-align: left;
+    color: #ffffff;
+    font-size: 16px;
+    background-color: #000000;
+    
+}
+.dropzone.dragover{
+    background-color: #e0f7fa;
+    border-color: #3182f6;
+    color: #007c91;
+}

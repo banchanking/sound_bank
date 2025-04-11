@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boot.sound.transfer.multiAdmin.MultiAdminDAO">
+
+      <!-- 요청 목록 -->
+   <select id="getApproveList" resultType="map">
+      SELECT
+        MIN(t.transfer_id) as transfer_id,  -- 대표 이체번호 하나
+        t.customer_id,
+        t.out_account_number,
+        t.memo,
+        t.request_date,
+        SUM(t.amount) as total_amount,
+        COUNT(*) as count,
+        a.status
+      FROM transfer_tbl t
+      JOIN approval_tbl a ON t.transfer_id = a.transfer_id
+      WHERE a.status = '대기'
+      GROUP BY t.customer_id, t.out_account_number, t.memo, t.request_date
+      ORDER BY t.request_date DESC
+   </select>
+
+   <!-- 목록상세 -->
+	<select id="getApproveDetail" resultType="map" parameterType="int">
+	  SELECT 
+	    t.*, 
+	    a.status, 
+	    a.approval_date, 
+	    a.reject_reason
+	  FROM transfer_tbl t
+	  JOIN approval_tbl a ON t.transfer_id = a.transfer_id
+	  WHERE t.transfer_id = #{transfer_id}
+	</select>
+
+   <!-- 승인 처리 -->
+   <update id="updateApprovalDate" parameterType="int">
+      UPDATE approval_tbl
+      SET status = '승인',
+          approval_date = NOW()
+      WHERE transfer_id = #{transfer_id}
+   </update>
+
+   <!-- 이체 실행을 위한 데이터 가져오기 -->
+   <select id="getTransForApprove" parameterType="int" resultType="map">
+      SELECT *
+      FROM transfer_tbl
+      WHERE out_account_number = (
+        SELECT out_account_number
+        FROM transfer_tbl
+        WHERE transfer_id = #{transfer_id}
+      )
+      AND request_date = (
+        SELECT request_date
+        FROM transfer_tbl
+        WHERE transfer_id = #{transfer_id}
+      )
+      AND transfer_type = '다건'
+   </select>
+
+   <!-- 이체 실행 (+ 거래내역 기록) -->
+   <update id="tranMultiAction" parameterType="map">
+      INSERT INTO transaction_tbl (account_number, type, amount, memo, target_account, currency, transaction_date)
+      VALUES (#{out_account_number}, '출금', #{amount}, #{memo}, #{in_account_number}, 'KRW', NOW());
+
+      INSERT INTO transaction_tbl (account_number, type, amount, memo, target_account, currency, transaction_date)
+      VALUES (#{in_account_number}, '입금', #{amount}, #{memo}, #{out_account_number}, 'KRW', NOW());
+  
+      UPDATE account_tbl
+      SET balance = balance - #{amount}
+      WHERE account_number = #{out_account_number};
+
+      UPDATE account_tbl
+      SET balance = balance + #{amount}
+      WHERE account_number = #{in_account_number};
+   </update>
+
+   <!-- 요청반려 -->
+   <update id="updateRejectMulti" parameterType="map">
+      UPDATE approval_tbl
+      SET status = '거절',
+          reject_reason = #{reason},
+          approval_date = NOW()
+      WHERE transfer_id = #{transfer_id}
+   </update>
+
+  
+</mapper>

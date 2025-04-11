@@ -31,13 +31,19 @@ public class TransActionDTO {
  @Column(name = "CURRENCY")
  private String currency; // 통화 (예: KRW)
 
- @Column(name = "COMMENT_OUT")
- private String comment_out; // 출금자 메모
-
- @Column(name = "COMMENT_IN")
- private String comment_in; // 입금자 메모
+ @Column(name = "COMMENT")
+ private String comment; // 출금자 메모
 
  @Column(name = "TRANSACTION_DATE")
  @Temporal(TemporalType.TIMESTAMP)// 날짜 + 시간
  private Date transaction_date; // 거래일
+ 
+ @Column(name = "CUSTOMER_NAME")
+ private String customer_name; // 고객이름
+ 
+ @Column(name = "ACCOUNT_TYPE")
+ private String account_type; // 계좌종류
+ 
 }
+
+

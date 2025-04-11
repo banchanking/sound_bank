@@ -9,7 +9,7 @@ target/
 .classpath
 .factorypath
 .project
-.settings
+.settings/
 .springBeans
 .sts4-cache
 application.properties
@@ -33,6 +33,9 @@ build/
 
 ### VS Code ###
 .vscode/
+.env
+.env.*
+
 
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,react,java
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,react,java

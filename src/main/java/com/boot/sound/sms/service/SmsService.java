@@ -116,7 +116,7 @@ public class SmsService {
     	String customer_name = smsRequest.getCustomer_name();
     	String customer_id = smsRequest.getCustomerId();
     	String result = smsRequest.getLoan_progress();
-    	System.out.println(smsRequest);
+    	
     	 Optional<CustomerDTO> customerOpt = customerRepository.findByCustomerPhoneNumberAndCustomerNameAndCustomerId(formatPhoneNumber(customer_phone_number),customer_name,customer_id);
           if (!customerOpt.isPresent()) {
               System.out.println("No customer found with phone number: " + formatPhoneNumber(customer_phone_number));
@@ -127,7 +127,7 @@ public class SmsService {
         verificationCodes.put(customer_phone_number, verificationCode);
 
         Message message = new Message();
-        message.setFrom(customer_phone_number);
+        message.setFrom(senderPhoneNumber);
         message.setTo(customer_phone_number);
         message.setText("[SoundBank] 대출 신청이 " + "["+result+"] 되었습니다." );
 

@@ -1,0 +1,65 @@
+/* CSS */
+.customer-service-container {
+  padding: 100%;
+  background-color: #000000;
+  color: #fff;
+  min-height: 100vh;
+  text-align: center;
+}
+
+.customer-service-header {
+  margin-bottom: 50px;
+}
+
+.customer-service-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+.customer-service-subtitle {
+  font-size: 1.2rem;
+  color: #ddd;
+}
+
+.customer-service-row {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.customer-service-col {
+  flex: 1;
+  min-width: 180px;
+  max-width: 220px;
+  text-align: left;
+}
+
+.customer-service-col h5 {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #fff;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 8px;
+}
+
+.customer-service-col ul {
+  list-style: none;
+  padding: 0;
+}
+
+.customer-service-col li {
+  margin-bottom: 12px;
+}
+
+.customer-service-col a {
+  color: #ccc;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: color 0.3s ease-in-out;
+}
+
+.customer-service-col a:hover {
+  color: #00bcd4;
+  text-decoration: underline;
+}

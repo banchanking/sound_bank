@@ -345,7 +345,7 @@ const Header = () => {
                       <NavDropdown.Item
                         className="sub-item"
                         as={Link}
-                        to="/limitAdmin"
+                        to="/multiAdmin"
                       >
                         다건이체 승인
                       </NavDropdown.Item>
@@ -354,7 +354,7 @@ const Header = () => {
                       <NavDropdown.Item
                         className="sub-item"
                         as={Link}
-                        to="/multiAdmin"
+                        to="/limitAdmin"
                       >
                         이체한도 심사
                       </NavDropdown.Item>
@@ -722,16 +722,7 @@ const Header = () => {
                       >
                         지갑상태변경
                       </NavDropdown.Item>
-                    </li>
-                    <li>
-                      <NavDropdown.Item
-                        className="sub-item"
-                        as={Link}
-                        to="/admin_ex_limit"
-                      >
-                        환전한도 설정
-                      </NavDropdown.Item>
-                    </li>
+                    </li>                    
                   </ul>
                   {/* admin 끝 */}
                 </div>
@@ -755,69 +746,89 @@ const Header = () => {
                   handleDropdownMouseLeave(event, "support-menu")
                 }
               >
-                <div className="deposit-saving-row">
+                <div className="deposit-saving-row" style={{ display: "flex", alignItems: "flex-start" }}>
+                  {/* 고객센터 설명 문구 */}
+                  <div className="customer-service-header" style={{ marginRight: "20px", padding: "10px", maxWidth: "200px" }}>
+                    <h2 style={{ color: "#fff", marginBottom: "15px" }}>고객센터</h2>
+                    <p style={{ color: "#ccc", fontSize: "14px", lineHeight: "1.5" }}>
+                      SoundBank<br/> 고객센터에서 365일 ! <br/>24시간 상담이 가능합니다.
+                    </p>
+                  </div>
+
+                  {/* 이용안내 */}
                   <ul>
-                    <NavDropdown.Item as={Link} to="/customerservice">
-                      상담
-                    </NavDropdown.Item>
+                    <NavDropdown.Item as={Link} to="#">이용안내</NavDropdown.Item>
                     <li>
-                      <NavDropdown.Item
-                        className="sub-item"
-                        as={Link}
-                        to="/faq"
-                      >
-                        자주하는질문
+                      <NavDropdown.Item className="sub-item" as={Link} to="/notice">
+                        공지사항
                       </NavDropdown.Item>
                     </li>
                     <li>
-                      <NavDropdown.Item
-                        className="sub-item"
-                        as={Link}
-                        to="/chatbot"
-                      >
-                        누르는 AI상담
+                      <NavDropdown.Item className="sub-item" as={Link} to="/businesshour">
+                        이용안내 시간
                       </NavDropdown.Item>
                     </li>
                     <li>
-                      <NavDropdown.Item
-                        className="sub-item"
-                        as={Link}
-                        to="/voicebot"
-                      >
-                        말하는 AI상담
+                      <NavDropdown.Item className="sub-item" as={Link} to="charge">
+                        금리 안내
+                      </NavDropdown.Item>
+                    </li>                    
+                  </ul>
+
+                  {/* 온라인 상담 */}
+                  <ul>
+                  <NavDropdown.Item as={Link} to="#">온라인 상담</NavDropdown.Item>
+                    <li>
+                      <NavDropdown.Item className="sub-item" as={Link} to="/faq">
+                        자주 묻는 질문
                       </NavDropdown.Item>
                     </li>
                     <li>
-                      <NavDropdown.Item
-                        className="sub-item"
-                        as={Link}
-                        to="#"
-                      ></NavDropdown.Item>
+                      <NavDropdown.Item className="sub-item" as={Link} to="/chatbot">
+                        누르는 상담
+                      </NavDropdown.Item>
+                    </li>
+                    <li>
+                      <NavDropdown.Item className="sub-item" as={Link} to="/voicebot">
+                        말하는 상담
+                      </NavDropdown.Item>
                     </li>
                   </ul>
+
+                  {/* 인증도우미 */}
                   <ul>
-                    <NavDropdown.Item as={Link} to="/authcenter">
-                      인증
-                    </NavDropdown.Item>
+                    <NavDropdown.Item as={Link} to="#">인증도우미</NavDropdown.Item>
                     <li>
-                      <NavDropdown.Item
-                        className="sub-item"
-                        as={Link}
-                        to="/bankauth"
-                      >
+                      <NavDropdown.Item className="sub-item" as={Link} to="/bankauth">
+                        증명서 진위 확인
+                      </NavDropdown.Item>
+                    </li>
+                    <li>
+                      <NavDropdown.Item className="sub-item" as={Link} to="/idauth">
+                        주민등록증 인증
+                      </NavDropdown.Item>
+                    </li>
+                    <li>
+                      <NavDropdown.Item className="sub-item" as={Link} to="/bankauth">
                         통장 인증
                       </NavDropdown.Item>
                     </li>
+                  </ul>
+
+                  {/* 문의 */}
+                  <ul>
+                    <NavDropdown.Item as={Link} to="#">문의</NavDropdown.Item>
                     <li>
-                      <NavDropdown.Item
-                        className="sub-item"
-                        as={Link}
-                        to="/idauth"
-                      >
-                        주민등록인증 인증
+                      <NavDropdown.Item className="sub-item" as={Link} to="#">
+                        사업 제휴
                       </NavDropdown.Item>
                     </li>
-                  </ul>
+                    <li>
+                      <NavDropdown.Item className="sub-item" as={Link} to="#">
+                        불법도박 계좌 신고
+                      </NavDropdown.Item>
+                    </li>
+                 </ul>                              
                 </div>
               </div>
             </NavDropdown>

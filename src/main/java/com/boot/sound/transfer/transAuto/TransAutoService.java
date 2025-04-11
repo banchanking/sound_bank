@@ -50,7 +50,6 @@ public class TransAutoService {
 
         // 요일 방식 자동이체 가져오기
         List<TransAutoDTO> dayList = dao.getDayModeTransfers(weekDay, nowTime);
-
         // 매월 지정일 자동이체 가져오기
         List<TransAutoDTO> monthList = dao.getMonthlyTransfers(todayDay, nowTime);
 

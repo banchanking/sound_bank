@@ -3,19 +3,22 @@ import "../../Css/loan/Loan.css";
 import RefreshToken from "../../jwt/RefreshToken";
 
 const LoanCustomerList = () => {
-  const [loanStatus, setLoanStatus] = useState([{}]);
+  const [loanStatus, setLoanStatus] = useState([
+    {
+      loanAmount: 0,
+      balance: 0,
+    },
+  ]);
   const [loan_progress, setLoan_progress] = useState("");
 
   const loanSubmit = (loan) => {
-    const customerId = localStorage.getItem("customerId");
-    RefreshToken.post("/loanStatusUpdate/" + loan.loan_status_no, {
+    RefreshToken.post("/loanStatusUpdate/" + loan.loanStatusNo, {
       loan_progress: loan_progress,
-      customerId: customerId,
+      customerId: loan.customer_id,
     })
       .then((res) => {
-        if (res.status === 201) {
+        if (res.status === 200) {
           alert("대출 심사 결과가 성공적으로 반영되었습니다.");
-          window.location.reload(); // 새로고침 or 목록 재요청
         }
       })
       .catch((error) => {
@@ -39,7 +42,7 @@ const LoanCustomerList = () => {
       <table className="insertTable">
         <thead>
           <tr>
-            <th colSpan={14}>
+            <th colSpan={18}>
               <h2>대출 가입 고객 목록</h2>
             </th>
           </tr>
@@ -47,10 +50,14 @@ const LoanCustomerList = () => {
             <th>no</th>
             <th>고객 아이디</th>
             <th>대출 상품명</th>
+            <th>적용 금리</th>
             <th>대출 금액</th>
             <th>잔여 대출금</th>
+            <th>총 상환횟수</th>
+            <th>잔여 상환횟수</th>
             <th>상환 계좌번호</th>
             <th>고객 신용점수</th>
+            <th>고객 연 소득</th>
             <th>대출 상환방식</th>
             <th>대출금 상환일</th>
             <th>대출 유형</th>
@@ -62,19 +69,23 @@ const LoanCustomerList = () => {
         </thead>
         <tbody>
           {loanStatus.map((loan) => (
-            <tr key={loan.loan_status_no}>
-              <td>{loan.loan_status_no}</td>
-              <td>{loan.customer_id}</td>
-              <td>{loan.loan_name}</td>
-              <td>{loan.loan_amount}</td>
-              <td>{loan.balance}</td>
-              <td>{loan.account_number}</td>
-              <td>{loan.customer_credit_score}</td>
-              <td>{loan.repayment_method}</td>
-              <td>매달 {loan.repayment_date}일</td>
-              <td>{loan.loan_type}</td>
-              <td>{new Date(loan.loan_date).toLocaleDateString("ko-KR")}</td>
-              <td>{loan.loan_progress}</td>
+            <tr key={loan.loanStatusNo}>
+              <td>{loan.loanStatusNo}</td>
+              <td>{loan.customerId}</td>
+              <td>{loan.loanName}</td>
+              <td>연 {loan.interestRate}%</td>
+              <td>{loan.loanAmount.toLocaleString("ko-KR")}</td>
+              <td>{loan.balance.toLocaleString("ko-KR")}</td>
+              <td>{loan.loanTerm}</td>
+              <td>{loan.remainingTerm}</td>
+              <td>{loan.accountNumber}</td>
+              <td>{loan.customerCreditScore}</td>
+              <td>{loan.customerIncome}</td>
+              <td>{loan.repaymentMethod}</td>
+              <td>매달 {loan.repaymentDate}일</td>
+              <td>{loan.loanType}</td>
+              <td>{new Date(loan.loanDate).toLocaleDateString("ko-KR")}</td>
+              <td>{loan.loanProgress}</td>
               <td>
                 <select
                   onChange={(e) => {

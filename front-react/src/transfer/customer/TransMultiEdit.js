@@ -82,7 +82,7 @@ function TransMultiEdit() {
               <th>금액</th>
               <th>메모</th>
               <th>승인상태</th>
-              <th>승인날짜</th>
+              <th>승인(이체) 일</th>
               <th>거절사유</th>
               <th>승인전 관리</th>
             </tr>

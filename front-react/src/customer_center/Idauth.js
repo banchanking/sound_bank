@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import "../Css/customer_center/Idauth.css"
 
 function IdAuth() {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -21,8 +21,8 @@ const handleUpload = async () => {
   }
   const formData = new FormData();
   formData.append("file", selectedFile);
-  try {                                   // ngrok 8시간주기로 무료 종료됨 
-      const response = await fetch("https://6219-180-71-139-27.ngrok-free.app/ocr", {  
+  try {                           // ngrok 8시간주기로 or 로컬서버(노트북을 off) 서버 꺼짐
+      const response = await fetch("https://ba5e-180-71-139-27.ngrok-free.app/ocr", {  
           method: "POST",
           body: formData,
       });
@@ -39,19 +39,19 @@ const handleUpload = async () => {
 };
 
   return (
-    <div className="p-10 max-w-xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">주민등록증 인증</h1>
+    <div className="">
+      <h1 className="dropzone.dragover">주민등록증 인증</h1>
 
       <div
-        className="border-4 border-dashed border-gray-400 rounded-xl h-64 flex items-center justify-center mb-4 bg-gray-50 hover:bg-gray-100"
+        className=""
         onDrop={handleDrop}
         onDragOver={(e) => e.preventDefault()}
         onClick={() => document.getElementById("fileInput").click()}
       >
         {selectedFile ? (
-          <p className="text-gray-600">{selectedFile.name}</p>
+          <p className="">{selectedFile.name}</p>
         ) : (
-          <p className="text-gray-400">여기로 이미지를 드래그하거나 클릭해서 선택하세요</p>
+          <p className="dropzone">여기로 이미지를 드래그하거나 클릭해서 선택하세요</p>
         )}
         <input
           id="fileInput"
@@ -62,6 +62,16 @@ const handleUpload = async () => {
         />
       </div>
 
+       {selectedFile &&(
+        <img
+        src={URL.createObjectURL(selectedFile)}
+        alt="thumbnail"
+        className="w-40 h-28 object-contain border rounded shadow"
+      />
+      
+        
+        
+       )} 
       <button
         className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition"
         onClick={handleUpload}

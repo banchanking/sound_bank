@@ -1,11 +1,16 @@
-package com.boot.sound.loan;
+package com.boot.sound.loan.dao;
 
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import com.boot.sound.customer.CustomerDTO;
+import com.boot.sound.loan.dto.LoanConsentDTO;
+import com.boot.sound.loan.dto.LoanCustomerDTO;
+import com.boot.sound.loan.dto.LoanDTO;
+import com.boot.sound.loan.dto.LoanStatusDTO;
 
 @Mapper
 @Repository
@@ -55,7 +60,8 @@ public interface LoanDAO  {
 	public List<LoanStatusDTO>loanStatus();
 	
 	// 대출 상태 변경
-	public boolean loanStatusUpdate(int loan_status_no, String loan_progress);
+	public boolean loanStatusUpdate(@Param("loan_status_no") int loan_status_no, 
+            @Param("loan_progress") String loan_progress);
 	
 	// 문자 발송을 위한 고객 정보 조회
 	public CustomerDTO selecCustomer(String customerId);

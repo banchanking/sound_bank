@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boot.sound.transfer.transMulti.TransMultiDAO">
+
+  <!-- 다건이체 요청 (추가 > 단건씩 반복) -->
+	<insert id="addMultiTransfer" parameterType="map">
+	    INSERT INTO TRANSFER_TBL (
+	        CUSTOMER_ID, OUT_ACCOUNT_NUMBER, IN_ACCOUNT_NUMBER, AMOUNT, IN_NAME, MEMO, TRANSFER_TYPE, TRANSFER_DATE, REQUEST_DATE
+	    )
+	    VALUES (
+	        #{customer_id}, #{out_account_number}, #{in_account_number}, #{amount}, #{in_name}, #{memo}, '다건', NULL, now()
+	    )
+	</insert>
+
+  <!-- 다건이체 내역 조회 -->
+	<select id="getMultiListByCustomer" resultType="map">
+	  SELECT 
+	    t.transfer_id,
+	    t.customer_id,
+	    t.out_account_number,
+	    t.in_account_number,
+	    t.in_name,
+	    t.amount,
+	    t.memo,
+	    t.transfer_type,
+	    t.request_date,
+	    a.status,
+	    a.reject_reason,
+	    a.approval_type,
+	    a.approval_date
+	  FROM transfer_tbl t
+	  JOIN approval_tbl a ON t.transfer_id = a.transfer_id
+	  WHERE t.customer_id = #{customer_id}
+	    AND t.transfer_type = '다건'
+	  ORDER BY a.approval_date DESC
+	</select>
+
+	<!-- 마지막 transfer_id 가져오기 -->
+	<select id="getLastTransferId" resultType="int">
+	  SELECT MAX(transfer_id)
+	  FROM transfer_tbl
+	  WHERE customer_id = #{customer_id}
+	</select>
+	
+	<!-- approval_tbl insert -->
+	<insert id="insertApproval" parameterType="map">
+	  INSERT INTO approval_tbl (
+	    transfer_id, approval_type, status, reject_reason, approval_date
+	  ) VALUES (
+	    #{transfer_id}, #{approval_type}, #{status}, #{reject_reason}, #{approval_date}
+	  )
+	</insert>
+
+  <!-- 다건이체 수정 -->
+  <update id="updateMultiTransfer">
+    UPDATE transfer_tbl
+    SET in_account_number = #{in_account_number},
+      amount = #{amount},
+      in_name = #{in_name},
+      memo = #{memo}
+    WHERE transfer_id = #{transfer_id}
+  </update>
+
+  <!-- 다건이체 삭제 -->
+  <delete id="deleteMultiTransfer">
+    DELETE FROM transfer_tbl
+    WHERE transfer_id = #{transfer_id}
+  </delete>
+  
+</mapper>

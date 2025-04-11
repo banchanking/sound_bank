@@ -31,27 +31,29 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</insert>
 	
 	<!-- 지갑 잔액 업데이트 -->
-	<update id="updateWalletBalance" parameterType="com.boot.sound.exchange.ExchangeWalletDTO">
+	<update id="updateWalletBalance" parameterType="com.boot.sound.exchange.dto.ExchangeWalletDTO">
 	  UPDATE exchange_wallet
-	  SET balance = #{balance}, updated_at = CURRENT_TIMESTAMP
+	  SET balance = #{balance}, 
+	  	  updated_at = CURRENT_TIMESTAMP,
+	  	  status = #{status}
 	  WHERE customer_id = #{customer_id}
 	    AND currency_code = #{currency_code}
 	</update>
 	
 	<!-- 환전 내역 저장 -->
-	<insert id="chargeWallet" parameterType="com.boot.sound.exchange.ExchangeTransactionDTO">
+	<insert id="chargeWallet" parameterType="com.boot.sound.exchange.dto.ExchangeTransactionDTO">
 	  INSERT INTO exchange_transaction (
 	    customer_id, withdraw_account_number, currency_code, from_currency, to_currency,
-	    request_amount, exchanged_amount, exchange_rate, transaction_type ,exchange_transaction_date, base_date
+	    request_amount, exchanged_amount, exchange_rate, transaction_type ,exchange_transaction_date, base_date,  approval_status
 	  )
 	  VALUES (
 	    #{customer_id}, #{withdraw_account_number}, #{currency_code}, #{from_currency}, #{to_currency},
-	    #{request_amount}, #{exchanged_amount},#{exchange_rate},#{transaction_type} , NOW(), CURDATE()
+	    #{request_amount}, #{exchanged_amount},#{exchange_rate},#{transaction_type} , NOW(), CURDATE(), #{approval_status}
 	  )
 	</insert>
 	
 	<!-- 방금 거래한 환전 내역 조회 -->
-	<select id="findTransById" resultType="com.boot.sound.exchange.ExchangeTransactionDTO">
+	<select id="findTransById" resultType="com.boot.sound.exchange.dto.ExchangeTransactionDTO">
 	  SELECT * FROM exchange_transaction
 	  WHERE customer_id = #{customer_id}
 	  ORDER BY exchange_transaction_date DESC
@@ -59,32 +61,41 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 	
 	<!-- 지갑 여부조회 -->
-	<select id="findWalletByCustomerAndCurrency" resultType="com.boot.sound.exchange.ExchangeWalletDTO">
+	<select id="findWalletByCustomerAndCurrency" resultType="com.boot.sound.exchange.dto.ExchangeWalletDTO">
 	   SELECT * FROM exchange_wallet
 	   WHERE customer_id = #{customer_id}
 	     AND currency_code = #{currency_code}
 	</select>
-  
+  	<!-- 고객 계좌 조회     -->
 	<select id="findAccountById" parameterType="String" resultType="com.boot.sound.inquire.account.AccountDTO">
 		SELECT * FROM ACCOUNT_TBL
 		WHERE CUSTOMER_ID = #{customer_id} 
 	</select>
 	
-	<select id="getListById" parameterType="String" resultType="com.boot.sound.exchange.ExchangeTransactionDTO">
+	<!-- 환전 내역 조회 -->
+	<select id="getListById" parameterType="String" resultType="com.boot.sound.exchange.dto.ExchangeTransactionDTO">
 		SELECT *
         FROM exchange_transaction
         WHERE customer_id = #{customer_id}
+		  AND approval_status = 'APPROVED'
         ORDER BY exchange_transaction_date DESC
 	</select>
 	
-	<!-- 지갑조회 -->
-	<select id="myWallet" parameterType="String" resultType="com.boot.sound.exchange.ExchangeWalletDTO">
-		SELECT *
-		FROM exchange_wallet
-		WHERE CUSTOMER_ID = #{customer_id}
-		AND BALANCE > 0
+	<!-- 환전신청내역조회 -->
+	<select id="getExRequestListById" parameterType="String" resultType="com.boot.sound.exchange.dto.ExchangeTransactionDTO">
+		SELECT * FROM exchange_transaction
+		WHERE customer_id = #{customer_id}		  
+		AND approval_status = 'PENDING'
+		ORDER BY exchange_transaction_date DESC
 	</select>
 	
+	<!-- 관리자 승인/거절 처리 -->
+	<update id="updateApprovalStatus" parameterType="com.boot.sound.exchange.dto.ExchangeTransactionDTO">
+		UPDATE exchange_transaction
+		SET approval_status = #{approval_status}
+		WHERE exchange_transaction_id = #{exchange_transaction_id}
+	</update>
+
 	<!-- 날짜별로 DB에 환율 자동저장 -->
 	<insert id="insertExchangeRate" parameterType="map">
 	    INSERT INTO exchange_rate (
@@ -106,7 +117,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</insert>
 	
 	<!-- 고객 지갑 목록 + 평균 매입 환율 조회 -->
-	<select id="findWalletsWithAvgRate" resultType="com.boot.sound.exchange.ExchangeWalletDTO" parameterType="String">
+	<select id="findWalletsWithAvgRate" resultType="com.boot.sound.exchange.dto.ExchangeWalletDTO" parameterType="String">
 	  SELECT 
 	    ew.wallet_id,
 	    ew.customer_id,
@@ -141,4 +152,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		where base_date = #{base_date}
 	</select>
 	
+	<!-- 환전 내역 거래번호로 조회 -->
+	<select id="findTransByTransactionId" parameterType="Long" resultType="com.boot.sound.exchange.dto.ExchangeTransactionDTO">
+		SELECT * FROM exchange_transaction
+		WHERE exchange_transaction_id = #{exchange_transaction_id}
+	</select>
+	
+	<select id="findWalletList" parameterType="String" resultType="com.boot.sound.exchange.dto.ExchangeWalletDTO">
+		SELECT * FROM exchange_wallet
+		WHERE customer_id = #{customer_id}
+		  AND status = 'ACTIVE'
+	</select>
+	
+	<update id="deactivateWallet" parameterType="Long">
+		UPDATE exchange_wallet
+		SET status = 'DEACTIVATE'
+		WHERE wallet_id = #{wallet_id} 
+	</update>
 </mapper>   

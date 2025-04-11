@@ -1,5 +1,6 @@
 package com.boot.sound.loan;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +19,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.boot.sound.customer.CustomerDTO;
 import com.boot.sound.customer.CustomerRepository;
+import com.boot.sound.inquire.account.AccountService;
 import com.boot.sound.jwt.dto.CredentialsDTO;
+import com.boot.sound.loan.dto.LoanConsentDTO;
+import com.boot.sound.loan.dto.LoanDTO;
+import com.boot.sound.loan.dto.LoanStatusDTO;
+import com.boot.sound.loan.dto.LoanStatusRequestDTO;
+import com.boot.sound.loan.service.LoanService;
 import com.boot.sound.sms.dto.SmsRequest;
 import com.boot.sound.sms.service.SmsService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
@@ -34,6 +43,7 @@ public class LoanController {
 	private LoanService service;
 	
 	private final SmsService smsService;
+	private final AccountService accountService;
 	
 	// http://localhost:8081/api
 	
@@ -127,40 +137,55 @@ public class LoanController {
 	
 	// 대출신청 정보 저장
 	@PostMapping("/loanApply")
-	public ResponseEntity<?>loanApply(@RequestBody LoanStatusDTO dto){
-		System.out.println("컨트롤 - loanApply()");
-		return new ResponseEntity<>(service.loanApply(dto),HttpStatus.CREATED);
+	public ResponseEntity<?> loanApply(@RequestBody LoanStatusRequestDTO dto) {
+	    System.out.println("컨트롤 - loanApply()");
+
+	    LoanStatusDTO entity = LoanStatusMapper.toEntity(dto);
+	    return new ResponseEntity<>(service.loanApply(entity), HttpStatus.CREATED);
 	}
 	
 	// 대출 현황 리스트
 	@GetMapping("/loanStatus")
 	public ResponseEntity<?>loanStatus(){
 		System.out.println("컨트롤 - loanStatus()");
+		System.out.println(service.loanStatus());
 		return new ResponseEntity<>(service.loanStatus(),HttpStatus.OK);
 	}
 	
 	// 대출 승인or거절 처리
-	@PostMapping("/loanStatusUpdate/{loan_status_no}")
+	@PostMapping("/loanStatusUpdate/{loanStatusNo}")
 	public ResponseEntity<?> loanStatusUpdate(
-		    @PathVariable int loan_status_no,
-		    @RequestBody Map<String, String> data
-		) {
-		    String loan_progress = data.get("loan_progress");
-		    String customerId = data.get("customerId");
-		
-		    
-		
-		boolean updated = service.loanStatusUpdate(loan_status_no, loan_progress);
+	        @PathVariable int loanStatusNo,
+	        @RequestBody Map<String, String> data
+	) {
+	    String loan_progress = data.get("loan_progress");
+	    String customerId = data.get("customerId");
+
+	    boolean updated = service.loanStatusUpdate(loanStatusNo, loan_progress);
+	    System.out.println(updated);
 
 	    if (updated) {
-	        // 고객 정보 조회
-	        CustomerDTO customer = service.selecCustomer(customerId); // 가정: 서비스에 해당 메서드 존재
+	        // ✅ 승인된 경우에만 계좌에 대출금 입금
+	        if ("승인".equals(loan_progress)) {
+	        	System.out.println("승인처리");
+	            LoanStatusDTO loan = service.selectLoanByNo(loanStatusNo); // 대출 상세 조회
+	            System.out.println("loan >>"+loan);
+	            if (loan != null && loan.getBalance().compareTo(new BigDecimal(loan.getLoanAmount())) == 0) {
+	            	System.out.println("조건문통과");
+	                BigDecimal amount = new BigDecimal(loan.getLoanAmount());
+	                String acc = loan.getAccountNumber();
+	                accountService.deposit(acc, amount); // 입금
+	                loan.setBalance(amount); // 잔액 업데이트
+	                service.saveLoan(loan);  // 저장
+	                log.info("✅ 대출 승인과 동시에 입금 처리 완료 - 계좌: {}, 금액: {}", acc, amount);
+	            }
+	        }
 
+	        // 문자 발송 로직
+	        CustomerDTO customer = service.selecCustomer(customerId);
 	        if (customer != null) {
-	            // 문자 발송용 DTO 생성
 	            SmsRequest smsRequest = new SmsRequest();
 	            smsRequest.setCustomer_phone_number(customer.getCustomerPhoneNumber());
-	            System.out.println(customer.getCustomerPhoneNumber());
 	            smsRequest.setCustomer_name(customer.getCustomer_name());
 	            smsRequest.setCustomerId(customerId);
 	            smsRequest.setLoan_progress(loan_progress);
@@ -175,9 +200,11 @@ public class LoanController {
 	        } else {
 	            return new ResponseEntity<>("대출 상태는 변경되었지만 고객 정보 없음", HttpStatus.OK);
 	        }
+
 	    } else {
 	        return new ResponseEntity<>("대출 상태 변경 실패", HttpStatus.BAD_REQUEST);
-	    }}
+	    }
+	}
 	
 	
 }

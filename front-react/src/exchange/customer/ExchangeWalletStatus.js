@@ -4,18 +4,23 @@ import RefreshToken from "../../jwt/RefreshToken";
 import { useEffect, useState } from "react";
 import styles from "../../Css/exchange/MyWallet.module.css";
 import { Chart } from "react-google-charts";
+import useExchangeRates from "./useExchangeRates";
 
 const ExchangeWalletStatus = () => {
   const [wallet, setWallet] = useState([]);            // 보유 외화 리스트
   const [isLoading, setIsLoading] = useState(true);    // 로딩 상태
   const [error, setError] = useState(null);            // 에러 처리
-  const [rates, setRates] = useState([]);              // 환율 리스트
+  const [date, setDate] = useState("");            // 날짜 상태
+  const {rates} = useExchangeRates(date); // 현재 날짜의 환율 정보
   const customer_id = getCustomerID();
 
-  useEffect(() => {
-    RefreshToken.get("/exchange/rates")
-      .then(res => setRates(res.data));
-  }, []);
+    // 초기 날짜 설정
+    useEffect(() => {
+      const today = new Date();
+      const offset = today.getTimezoneOffset();
+      const localDate = new Date(today.getTime() - offset * 60 * 1000);
+      setDate(localDate.toISOString().split("T")[0]);
+    }, []);
 
   useEffect(() => {
     const fetchWallet = async () => {
@@ -33,7 +38,7 @@ const ExchangeWalletStatus = () => {
     };
 
     fetchWallet();
-  }, [customer_id]);
+  }, [rates, customer_id]);
 
   if (isLoading) return <div className={styles.loading}>지갑 정보를 불러오는 중입니다...</div>;
   if (error) return <div className={styles.error}>지갑 정보 조회 실패: {error}</div>;
@@ -90,10 +95,10 @@ const ExchangeWalletStatus = () => {
             height="300px"
             data={(() => {
               const chartRows = wallet.map(wallet => {
-              const rate = rates.find(r => r.cur_unit === wallet.currency_code);
+              const rate = rates.find(r => r.currency_code === wallet.currency_code);
                 if (!rate) return null;
 
-                const currentRate = parseFloat((rate.deal_bas_r || "0").replace(/,/g, ""));
+                const currentRate = rate.base_rate ?? 0;
                 const avgRate = wallet.average_rate ? parseFloat(wallet.average_rate) : currentRate;
                 const profit = (currentRate - avgRate) / avgRate * 100;
 

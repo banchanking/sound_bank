@@ -1,0 +1,34 @@
+.approve-wrap {
+  padding: 20px;
+  max-width: 1100px;
+  margin: auto;
+}
+
+.approve-table, .detail-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.approve-table th, .approve-table td,
+.detail-table th, .detail-table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+}
+
+.btn-detail, .btn-approve, .btn-reject {
+  margin: 2px;
+  padding: 5px 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.btn-detail { background: #999; color: white; }
+.btn-approve { background: #2a8; color: white; }
+.btn-reject { background: #d55; color: white; }
+
+.detail-section {
+  margin-top: 40px;
+}

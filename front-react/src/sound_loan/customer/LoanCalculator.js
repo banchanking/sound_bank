@@ -20,7 +20,7 @@ const LoanCalculator = () => {
   };
 
   const InterestCalculator = () => {
-    const p = parseFloat(principal.replace(/,/g, "")); // 대출 원금
+    const p = parseFloat(principal.replace(/,/g, ""));
     const r = parseFloat(rate) / 100 / 12; // 월 이자율
     const n = parseFloat(year) * 12; // 납입 횟수
 
@@ -34,15 +34,14 @@ const LoanCalculator = () => {
     let totalInterestPaid = 0;
 
     if (repaymentMethod === "원리금 균등상환") {
-      const monthlyPayment =
-        r === 0
-          ? Math.floor(p / n)
-          : Math.floor((p * r) / (1 - Math.pow(1 + r, -n)));
+      const factor = Math.pow(1 + r, n);
+      const monthlyPayment = Math.round((p * r * factor) / (factor - 1));
+
       let remainingPrincipal = p;
 
       for (let i = 0; i < n; i++) {
-        let interestPayment = Math.floor(remainingPrincipal * r); // 매달 이자
-        let principalPayment = Math.floor(monthlyPayment - interestPayment); // 매달 원금
+        const interestPayment = Math.round(remainingPrincipal * r);
+        const principalPayment = Math.round(monthlyPayment - interestPayment);
 
         monthlyPaymentsArray.push({
           month: i + 1,
@@ -56,12 +55,12 @@ const LoanCalculator = () => {
         totalInterestPaid += interestPayment;
       }
     } else if (repaymentMethod === "원금 균등상환") {
-      let remainingPrincipal = Math.floor(p);
-      let principalPayment = Math.floor(p / n);
+      let remainingPrincipal = p;
+      const principalPayment = Math.round(p / n);
 
       for (let i = 0; i < n; i++) {
-        let interestPayment = Math.floor(remainingPrincipal * r);
-        let monthlyPayment = principalPayment + interestPayment;
+        const interestPayment = Math.round(remainingPrincipal * r);
+        const monthlyPayment = principalPayment + interestPayment;
 
         monthlyPaymentsArray.push({
           month: i + 1,
@@ -75,33 +74,35 @@ const LoanCalculator = () => {
         totalInterestPaid += interestPayment;
       }
     } else if (repaymentMethod === "만기 일시상환") {
-      const monthlyInterest = Math.floor(p * r);
+      const monthlyInterest = Math.round(p * r);
 
       for (let i = 0; i < n - 1; i++) {
         monthlyPaymentsArray.push({
           month: i + 1,
-          total: Math.floor(monthlyInterest),
+          total: monthlyInterest,
           principal: 0,
-          interest: Math.floor(monthlyInterest),
+          interest: monthlyInterest,
         });
+
         totalPaid += monthlyInterest;
         totalInterestPaid += monthlyInterest;
       }
 
-      // 마지막 달에 원금 + 이자
+      // 마지막 달 (원금 + 이자)
       monthlyPaymentsArray.push({
         month: n,
-        total: Math.floor(p + monthlyInterest),
+        total: p + monthlyInterest,
         principal: p,
-        interest: Math.floor(monthlyInterest),
+        interest: monthlyInterest,
       });
 
       totalPaid += p + monthlyInterest;
+      totalInterestPaid += monthlyInterest;
     }
 
     setInterest(monthlyPaymentsArray);
-    setTotalPayment(Math.floor(totalPaid));
-    setTotalInterest(Math.floor(totalInterestPaid));
+    setTotalPayment(totalPaid);
+    setTotalInterest(totalInterestPaid);
   };
 
   return (

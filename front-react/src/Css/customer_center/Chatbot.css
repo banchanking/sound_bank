@@ -1,0 +1,72 @@
+/* 챗봇 전체 컨테이너 */
+.chat-container {
+    max-width: 600px;
+    width: 100%;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+  }
+  
+  /* 챗봇 헤더 */
+  h2 {
+    text-align: center;
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  /* 입력창 스타일 */
+  input[type="text"] {
+    width: calc(100% - 20px);
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    margin-bottom: 20px;
+    outline: none;
+    box-sizing: border-box;
+  }
+  
+  /* 버튼 스타일 */
+  button {
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-sizing: border-box;
+  }
+  
+  button:hover {
+    background-color: #45a049;
+  }
+  
+  /* 답변 영역 스타일 */
+  h3 {
+    color: #333;
+    font-size: 20px;
+    margin-top: 20px;
+  }
+  
+  p {
+    font-size: 16px;
+    color: #555;
+    line-height: 1.5;
+  }
+  
+  /* FAQ 답변 박스 */
+  div > h3:first-of-type {
+    color: #007BFF;
+  }
+  
+  /* AI 생성 답변 박스 */
+  div > h3:nth-of-type(2) {
+    color: #FF5722;
+  }
+  

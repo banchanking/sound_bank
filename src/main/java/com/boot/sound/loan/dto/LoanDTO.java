@@ -1,4 +1,4 @@
-package com.boot.sound.loan;
+package com.boot.sound.loan.dto;
 
 import java.math.BigDecimal;
 

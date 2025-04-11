@@ -3,8 +3,8 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
  
- <mapper namespace="com.boot.sound.loan.LoanDAO">
- 	<select id="loanList" resultType="com.boot.sound.loan.LoanDTO">
+ <mapper namespace="com.boot.sound.loan.dao.LoanDAO">
+ 	<select id="loanList" resultType="com.boot.sound.loan.dto.LoanDTO">
  		SELECT * FROM LOAN_TBL
  		ORDER BY LOAN_ID
  	</select>
@@ -24,7 +24,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		WHERE loan_id = #{loan_id}
 	</delete>
 	
-	<update id="loanUpdate" parameterType="com.boot.sound.loan.LoanDTO">
+	<update id="loanUpdate" parameterType="com.boot.sound.loan.dto.LoanDTO">
 		UPDATE LOAN_TBL
 		SET loan_name = #{loan_name}
 		,	loan_min_amount = #{loan_min_amount}
@@ -40,7 +40,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		SELECT COUNT(*) FROM LOAN_TBL
 	</select>
 	
-	<select id="loanTypeSearch" parameterType="String" resultType="com.boot.sound.loan.LoanDTO">
+	<select id="loanTypeSearch" parameterType="String" resultType="com.boot.sound.loan.dto.LoanDTO">
 		SELECT * FROM LOAN_TBL
  		WHERE loan_type = #{loan_type}
 	</select>
@@ -50,7 +50,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		WHERE loan_type = #{loan_type}
 	</select>
 	
-	<select id="loanNameSearch" parameterType="String" resultType="com.boot.sound.loan.LoanDTO">
+	<select id="loanNameSearch" parameterType="String" resultType="com.boot.sound.loan.dto.LoanDTO">
 	SELECT * FROM LOAN_TBL
 	WHERE loan_name LIKE '%${loan_name}%'
 	</select>
@@ -60,12 +60,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	WHERE loan_name LIKE '%${loan_name}%'
 	</select>
 	
-	<insert id="consentInsert" parameterType="com.boot.sound.loan.LoanConsentDTO">
+	<insert id="consentInsert" parameterType="com.boot.sound.loan.dto.LoanConsentDTO">
 		INSERT INTO LOAN_AGREE_STATUS_TBL(loan_id,customer_id,consent_use1,consent_use2,consent_use3,consent_use4,consent_view1,consent_view2,consent_view3,consent_view4)
 		VALUES (#{loan_id},#{customerId},#{consent_use1},#{consent_use2},#{consent_use3},#{consent_use4},#{consent_view1},#{consent_view2},#{consent_view3},#{consent_view4})
 	</insert>
 	
-	<select id="loanCustomer" parameterType="map" resultType="com.boot.sound.loan.LoanCustomerDTO">
+	<select id="loanCustomer" parameterType="map" resultType="com.boot.sound.loan.dto.LoanCustomerDTO">
 	  SELECT 
 	    l.*,
 	    (SELECT GROUP_CONCAT(a.ACCOUNT_NUMBER SEPARATOR ', ')
@@ -79,19 +79,39 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	  WHERE l.LOAN_ID = #{loan_id}
 	</select>
  
- 	<insert id="loanApply" parameterType="com.boot.sound.loan.LoanStatusDTO">
- 		INSERT INTO loan_status_tbl(loan_name,loan_id,interest_rate,customer_id,customer_income,customer_credit_score,loan_amount,balance,account_number,repayment_method,repayment_date,loan_type,loan_progress)
- 		VALUES(#{loan_name},#{loan_id},#{interest_rate},#{customer_id},#{customer_income},#{customer_credit_score},#{loan_amount},#{loan_amount},#{account_number},#{repayment_method},#{repayment_date},#{loan_type},'신청')
+ 	<insert id="loanApply" parameterType="com.boot.sound.loan.dto.LoanStatusDTO">
+ 		INSERT INTO loan_status_tbl(loan_name,loan_id,interest_rate,customer_id,customer_income,customer_credit_score,loan_amount,balance,account_number,repayment_method,repayment_date,loan_type,loan_progress,loan_term,remaining_term)
+ 		VALUES(#{loanName}, #{loanId}, #{interestRate}, #{customerId}, #{customerIncome}, #{customerCreditScore}, #{loanAmount}, #{loanAmount}, #{accountNumber}, #{repaymentMethod}, #{repaymentDate}, #{loanType}, '신청', #{loanTerm},#{remainingTerm})
+
  	</insert>
  	
- 	<select id="loanStatus" resultType="com.boot.sound.loan.LoanStatusDTO">
- 		SELECT * FROM LOAN_STATUS_TBL
- 		ORDER BY loan_status_no
- 	</select>
+ 	<select id="loanStatus" resultType="com.boot.sound.loan.dto.LoanStatusDTO">
+	    SELECT
+	        loan_status_no AS loanStatusNo,
+	        customer_id AS customerId,
+	        loan_id AS loanId,
+	        loan_name AS loanName,
+	        interest_rate AS interestRate,
+	        customer_income AS customerIncome,
+	        customer_credit_score AS customerCreditScore,
+	        loan_amount AS loanAmount,
+	        balance,
+	        account_number AS accountNumber,
+	        repayment_method AS repaymentMethod,
+	        repayment_date AS repaymentDate,
+	        loan_type AS loanType,
+	        loan_progress AS loanProgress,
+	        loan_date AS loanDate,
+	        loan_term AS loanTerm,
+	        remaining_term AS remainingTerm
+	    FROM loan_status_tbl
+	    ORDER BY loan_status_no
+	</select>
  	
- 	<update id="loanStatusUpdate" parameterType="String">
+ 	<update id="loanStatusUpdate" >
  		UPDATE loan_status_tbl
- 		set loan_progress  = #{loan_progress};
+ 		set loan_progress  = #{loan_progress}
+ 		WHERE loan_status_no = #{loan_status_no}
  	</update>
  	
  	<select id="selecCustomer" parameterType="String" resultType="com.boot.sound.customer.CustomerDTO">

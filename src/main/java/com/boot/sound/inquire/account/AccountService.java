@@ -2,13 +2,19 @@ package com.boot.sound.inquire.account;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
+
+import java.math.BigDecimal;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class AccountService {
 
     @Autowired
     private AccountDAO accountDAO;
+    private final AccountRepository accountRepository;
 
     public Map<String, List<AccountDTO>> getAccountsGroupedByType(String customer_id) {
         List<AccountDTO> allAccounts = accountDAO.findAllByCustomerId(customer_id);
@@ -33,4 +39,33 @@ public class AccountService {
 
         return grouped;
     }
+    
+    // 대출금 이자 자동이체
+    public void withdraw(String accountNumber, BigDecimal amount) {
+        // 계좌 조회
+        AccountDTO account = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new RuntimeException("계좌를 찾을 수 없습니다"));
+
+        BigDecimal currentBalance = account.getBalance();
+
+        // 잔액 부족 확인
+        if (currentBalance.compareTo(amount) < 0) {
+            throw new RuntimeException("계좌 잔액 부족");
+        }
+
+        // 잔액 차감
+        account.setBalance(currentBalance.subtract(amount));
+        accountRepository.save(account);
+    }
+    
+    // 입금 처리
+    public void deposit(String accountNumber, BigDecimal amount) {
+        int updated = accountRepository.plusBalance(accountNumber, amount);
+        if (updated == 0) {
+            throw new IllegalStateException("💥 입금 실패 - 존재하지 않거나 비정상 계좌입니다.");
+        }
+    }
+    
+    
+    
 }

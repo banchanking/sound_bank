@@ -1,4 +1,4 @@
-package com.boot.sound.exchange;
+package com.boot.sound.exchange.dto;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;

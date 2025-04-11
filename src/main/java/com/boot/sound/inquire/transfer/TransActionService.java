@@ -49,8 +49,7 @@ public class TransActionService {
             dto.setTransaction_type(t.getTransaction_type());
             dto.setAmount(t.getAmount());
             dto.setCurrency(t.getCurrency());
-            dto.setComment_out(t.getComment_out());
-            dto.setComment_in(t.getComment_in());
+            dto.setComment(t.getComment()); // 수정된 부분: comment_out과 comment_in 대신 comment 사용
             dto.setTransaction_date(t.getTransaction_date());
             
             return dto; // 가공된 DTO 반환

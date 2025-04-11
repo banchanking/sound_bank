@@ -14,11 +14,11 @@ const normalizeRateData = (item) => {
   } else {
     // DB에서 가져온 데이터 형식에 맞게 변환
     return {
-      currency_code: item.currency_code,
-      currency_name: item.currency_name,
-      base_rate: parseFloat(item.base_rate),
-      buy_rate: parseFloat(item.buy_rate),
-      sell_rate: parseFloat(item.sell_rate),
+      currency_code: item.CURRENCY_CODE,
+      currency_name: item.CURRENCY_NAME,
+      base_rate: parseFloat(item.BASE_RATE),
+      buy_rate: parseFloat(item.BUY_RATE),
+      sell_rate: parseFloat(item.SELL_RATE),
     };
   }
 };
@@ -41,6 +41,7 @@ const useExchangeRates = (date) => {
           const fallback = await RefreshToken.get("http://localhost:8081/api/exchange/dbRates", {
             params: { date: formattedDate },
           });
+          alert("실시간환율 정보가 없습니다. 가장 최근의 환율을 가져옵니다.");
           setRates(fallback.data.map(normalizeRateData));
         }
       } catch (err) {

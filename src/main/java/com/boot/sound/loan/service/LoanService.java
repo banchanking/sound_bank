@@ -1,4 +1,4 @@
-package com.boot.sound.loan;
+package com.boot.sound.loan.service;
 
 import java.util.List;
 
@@ -10,12 +10,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.boot.sound.customer.CustomerDTO;
 import com.boot.sound.jwt.dto.CredentialsDTO;
+import com.boot.sound.loan.dao.LoanDAO;
+import com.boot.sound.loan.dto.LoanConsentDTO;
+import com.boot.sound.loan.dto.LoanCustomerDTO;
+import com.boot.sound.loan.dto.LoanDTO;
+import com.boot.sound.loan.dto.LoanStatusDTO;
+import com.boot.sound.loan.repo.LoanStatusRepository;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 @Service
 public class LoanService {
 
 	@Autowired
 	private LoanDAO dao;
+	private final LoanStatusRepository repo;
 	
 	// 대출 상품 리스트
 	@Transactional(readOnly=true)
@@ -130,6 +140,14 @@ public class LoanService {
 		System.out.println("서비스 - selecCustomer()");
 		return dao.selecCustomer(customerId);
 	}
-	
+	public LoanStatusDTO selectLoanByNo(int loan_status_no) {
+		System.out.println("서비스 - selectLoanByNo()");
+	    return repo.findById(loan_status_no).orElse(null);
+	}
+
+	public void saveLoan(LoanStatusDTO loan) {
+		System.out.println("서비스 - saveLoan()");
+		repo.save(loan);
+	}
 	
 }

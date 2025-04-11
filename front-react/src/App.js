@@ -60,17 +60,12 @@ import Chatbot from "./customer_center/Chatbot";
 import Voicebot from "./customer_center/Voicebot";
 
 import Bankauth from "./customer_center/Bankauth";
-import Idauth from "./customer_center/Idauth";
 import ExRate from "./exchange/customer/ExRate";
 import ExRequest from "./exchange/customer/ExRequest";
-import ExCreateAccount from "./exchange/customer/ExCreateAccount";
-import ExRequestSetLimit from "./exchange/customer/ExRequestSetLimit";
 import ExList from "./exchange/customer/ExList";
 import ExAccountManagement from "./exchange/customer/ExAccountManagement";
 import AdminExAccountRequestList from "./exchange/admin/AdminExAccountRequestList";
 import AdminExAccountStatement from "./exchange/admin/AdminExAccountStatement";
-import AdminExLimit from "./exchange/admin/AdminExLimit";
-import AdminExSetCharge from "./exchange/admin/AdminExSetCharge";
 import LoanInsertForm from "./sound_loan/admin/LoanInsertForm";
 import LoanCalculator from "./sound_loan/customer/LoanCalculator";
 import LoanChart from "./sound_loan/customer/LoanChart";
@@ -78,6 +73,12 @@ import LoanCreditScore from "./sound_loan/customer/LoanCreditScore";
 import Join from "./customer/Join";
 import Login from "./customer/Login";
 import Authcenter from "./customer_center/Authcenter";
+import SecurityBlocker from "./Common/SecurityBlocker";
+import Charge from "./customer_center/Charge";
+import Businesshour from "./customer_center/Businesshour";
+import AdminNotice from "./customer_center/AdminNotice";
+import Notice from "./customer_center/Notice";
+import IdAuth from "./customer_center/Idauth";
 import DepositJoin from "./productSubscription/DepositJoin";
 import LoanAgreement from "./sound_loan/customer/LoanAgreement";
 import LoanInfoApply from "./sound_loan/customer/LoanInfoApply";
@@ -86,6 +87,7 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
+        {/* F12 방지 블록방지 */}
         {" "}
         {/* Header.js의 Link연동을 위해서 BrowserRouter추가해야됨 */}
         <Header />
@@ -181,17 +183,21 @@ function App() {
           <Route path="/ex_account_management" element={<ExAccountManagement />} /> {/* 외환 지갑 해지 */}
           <Route path="/exchange_wallet_status" element={<ExchangeWalletStatus />} /> {/* 내 지갑 */}
           <Route path="/admin_ex_request_list" element={<AdminExAccountRequestList />} /> {/* 환전 신청 현황 (customer로 이동됨) */}
-          <Route path="/admin_ex_management" element={<AdminExAccountStatement />} /> {/* 지갑상태변경 */}
-          <Route path="/admin_ex_limit" element={<AdminExLimit />} /> {/* 환전한도 설정 */}
+          <Route path="/admin_ex_management" element={<AdminExAccountStatement />} /> {/* (관리자)지갑상태변경 */}        
           {/* 외환 Route 끝 */}
           {/* 고객센터 Route 시작 */}
-          <Route path="/customerservice" element={<Customerservice />} />
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/chatbot" element={<Chatbot />} />
-          <Route path="/voicebot" element={<Voicebot />} />
-          <Route path="/authcenter" element={<Authcenter />} />
-          <Route path="/bankauth" element={<Bankauth />} />
-          <Route path="/idauth" element={<Idauth />} />
+          <Route path="/customerservice" element={<Customerservice />} /> {/* 고객센터 헤더 */}
+          <Route path="/faq" element={<FAQ />} />                         {/* 자주하는 질문  */}
+          <Route path="/chatbot" element={<Chatbot />} />                 {/* 누르는 상담 (챗봇) */}
+          <Route path="/voicebot" element={<Voicebot />} />               {/* 말하는 상담 (음성봇) */}
+          <Route path="/authcenter" element={<Authcenter />} />           {/* 인증 센터  */}
+          <Route path="/bankauth" element={<Bankauth />} />               {/* 통장 인증 */}
+          <Route path="/idauth" element={<IdAuth />} />                   {/* 주민등록증인증 (OCR) */}
+          <Route path="/notice" element={<Notice />} />                   {/* 공지사항(고객용) */}
+          <Route path="/admin/notice" element={<AdminNotice />} />        {/* 공지사항(관리자용) */}
+          <Route path="/business_hour" elemen={<Businesshour/>} />        {/* 이용 시간 */}
+          <Route path="/charge" element={<Charge />} />                   {/* 금리 안내 */}
+          
           {/* 고객센터 Route 끝 */}
           {/* 계좌개설 / 로그인 Route 시작 */}
           <Route path="/join" element={<Join />} />
