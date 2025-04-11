@@ -73,7 +73,14 @@ public class FundController {
         service.deleteFund(fund_id);
         return ResponseEntity.ok("펀드 삭제 성공");
     }
-
+    
+    // 투자성향 분석 AI 학습 완료된 펀드상품 목록 업데이트
+    @PostMapping("/updateRiskTypes")
+    public ResponseEntity<String> updateRiskTypes(@RequestBody List<FundDTO> funds) {
+        service.updateRiskTypes(funds);
+        return ResponseEntity.ok("펀드 상품에 투자성향 업데이트 성공");
+    }
+    
     // 투자 성향 테스트 등록 및 고객 정보 업데이트
     @PostMapping("test-result/save")
     public ResponseEntity<?> saveFundTestResult(@RequestBody FundTestDTO test) {

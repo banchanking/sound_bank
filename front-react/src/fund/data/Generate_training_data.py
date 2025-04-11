@@ -127,6 +127,6 @@ if __name__ == "__main__":
     # 정리된 데이터 저장
     data.to_csv(output_file, index=False)
     print(f"정리된 데이터가 저장되었습니다: {output_file}")
-
+    
     
     

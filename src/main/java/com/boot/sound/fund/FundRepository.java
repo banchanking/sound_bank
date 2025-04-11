@@ -30,7 +30,7 @@ public interface FundRepository {
 	public int insertTestResult(FundTestDTO test);
 	
 	// 고객 정보에 투자성향 업데이트
-	int updateRiskType(@Param("customer_id") String customer_id, @Param("fund_risk_type") String fund_risk_type);
+	int updateCustomerRiskType(@Param("customer_id") String customer_id, @Param("fund_risk_type") String fund_risk_type);
 	
 	// 고객의 투자 성향 조회
     String getCustomerRiskType(@Param("customer_id") String customer_id);
@@ -38,6 +38,7 @@ public interface FundRepository {
     // 고객의 투자 성향에 맞는 펀드 목록 조회
     List<FundDTO> recommendedFunds(@Param("fund_risk_type") String fund_risk_type);
 
-
-	
+    // 투자성향 분석 AI 학습 완료된 펀드상품 목록 업데이트
+    void updateRiskType(@Param("fund_id") Long fund_id, 
+    					@Param("fund_risk_type") String fund_risk_type);
 }

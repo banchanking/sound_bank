@@ -128,7 +128,7 @@ public class ExchangeService {
     // 지갑 충전,기록저장 / 지갑이 존재하지 않을 시 자동으로 지갑 생성,기록저장 (2)
     @Transactional
     public ExchangeTransactionDTO chargeWallet(ExchangeTransactionDTO dto) {
-        String customerId = dto.getCustomer_id();3
+        String customerId = dto.getCustomer_id();
         String currencyCode = dto.getCurrency_code();
         String to_currency = dto.getTo_currency();
         String from_currency = dto.getFrom_currency();

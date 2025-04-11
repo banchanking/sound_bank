@@ -62,6 +62,14 @@ public class FundServiceImpl {
         }
     }
 	
+	// 투자성향 분석 AI 학습 완료된 펀드상품 목록 업데이트
+	@Transactional
+	public void updateRiskTypes(List<FundDTO> funds) {
+	    for (FundDTO fund : funds) {
+	        fundRepository.updateRiskType(fund.getFund_id(), fund.getFund_risk_type());
+	    }
+	}
+	
 	// 투자 성향 테스트 등록과 업데이트
 	@Transactional
 	public void saveAndUpdateTest(FundTestDTO test) {
@@ -71,7 +79,7 @@ public class FundServiceImpl {
 		fundRepository.insertTestResult(test);
 		
 		// 2. 고객 정보 업데이트
-		fundRepository.updateRiskType(test.getCustomer_id(),
+		fundRepository.updateCustomerRiskType(test.getCustomer_id(),
 				test.getFund_risk_type());
 	}
 
