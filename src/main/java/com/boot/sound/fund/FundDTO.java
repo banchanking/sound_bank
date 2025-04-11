@@ -55,11 +55,14 @@ public class FundDTO {
 	
 	@Column(name = "return_12m", precision = 6, scale = 3)
     private Double return_12m;     // 12개월 누적 수익률 (%)
+	
+	@Column(name = "fund_risk_type", nullable = false)
+    private String fund_risk_type;      // 펀드명
 
 }
 
 
-//<< FUND_TBL (펀드상품 테이블) >>
+//<< FUND_TBL (펀드상품 테이블) >>fund_risk_type
 //CREATE TABLE FUND_TBL (
 //    FUND_ID NUMBER(10) GENERATED ALWAYS AS IDENTITY PRIMARY KEY, -- 펀드 ID
 //    FUND_NAME VARCHAR2(255) NOT NULL, -- 펀드명

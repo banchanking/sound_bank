@@ -1,6 +1,7 @@
 package com.boot.sound.jwt.config;
 
 import java.util.Arrays;
+import java.time.Duration;
 
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +12,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource; // 주의 (.reactive(x))
 import org.springframework.web.filter.CorsFilter;  // 주의
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+
 
 @Configuration
 @EnableWebMvc
@@ -44,7 +46,7 @@ public class JwtWebConfig {
 					HttpMethod.DELETE.name()
 				));
 		
-		config.setMaxAge(3600L);  // 옵션 요청이 수락되는 시간 30분
+		config.setMaxAge(Duration.ofSeconds(3600));  // 옵션 요청이 수락되는 시간 30분
 		source.registerCorsConfiguration("/**", config);
 		
 		System.out.println("<<< WebConfig-3 >>>");
