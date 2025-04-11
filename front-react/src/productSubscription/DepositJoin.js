@@ -66,7 +66,13 @@ const DepositJoin = () => {
   }
 
   startDate.setMonth(startDate.getMonth() + monthsToAdd);
-  return startDate.toISOString().split("T")[0]; // YYYY-MM-DD 형식으로 반환
+  
+    // 날짜를 YYYY/MM/DD 형식으로 변환
+    const year = startDate.getFullYear();
+    const month = String(startDate.getMonth() + 1).padStart(2, "0"); // 월은 0부터 시작하므로 +1
+    const day = String(startDate.getDate()).padStart(2, "0");
+  
+    return `${year}/${month}/${day}`;
 };
 
   const handleSubmit = async(e) => {
@@ -90,6 +96,7 @@ const DepositJoin = () => {
       return;
     }
 
+
   // 서버로 전송할 데이터 (테이블 구조에 맞춤)
   const depositData = {
     dat_account_num: accountNumber, // 출금계좌번호
@@ -98,23 +105,27 @@ const DepositJoin = () => {
     dat_new_amount: parseFloat(newAmount), // 신규금액
     dat_balance: parseFloat(newAmount), // 현재잔액 (신규금액과 동일)
     dat_term: selectedTerm, // 가입기간
-    dat_start_day: new Date().toISOString().split("T")[0], // 개설일자 (오늘 날짜)
-    dat_end_day: null, // 만기일은 서버에서 처리
+    dat_start_day: calculateEndDate("0개월"), // 개설일자 (오늘 날짜)
+    dat_end_day: calculateEndDate(selectedTerm), // 만기일자
   };
+
+  console.log("Deposit Data:", depositData); // 데이터 확인
 
   try {
     const response = await axios.post("http://localhost:8081/api/depositInsert", depositData);
-    if (response.status === 200) {
+    console.log("서버 응답 상태 코드:", response.status);
+    console.log("서버 응답 데이터:", response.data);
+  
+    if (response.status === 200 || response.status === 201) { // 200 또는 201을 성공으로 간주
       alert("예금 가입이 완료되었습니다!");
+      navigator("/DepositInquire"); // 가입 완료 후 예금 조회 페이지로 이동
     } else {
       alert("예금 가입에 실패했습니다.");
     }
   } catch (error) {
     console.error("Error inserting deposit:", error);
     alert("예금 가입 중 오류가 발생했습니다.");
-  
-
-  };
+  }
 
   };
 
