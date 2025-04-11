@@ -104,7 +104,16 @@ public class ExchangeService {
         return dao.findAccountById(customer_id);
     }
 
-    // 지갑 존재여부 확인 (1)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    // 지갑 존재여부 확인 (2)
     private void handleWalletTransaction(String customerId, String currencyCode, BigDecimal exchangedAmount, BigDecimal exchangeRate) {
         int exists = dao.findByCustomerAndCurrency(customerId, currencyCode);
         System.out.println("지갑 존재 여부: " + exists);
@@ -116,7 +125,7 @@ public class ExchangeService {
 
             wallet.setBalance(wallet.getBalance().add(exchangedAmount));
             wallet.setStatus("ACTIVE");
-            dao.updateWalletBalance(wallet);
+            dao.updateWalletBalance(wallet); //지갑잔액 UPDATE
        
         } else { // 외환지갑 없을시에는 새로 등록
         	System.out.println("지갑이 없다. 새지갑으로 간다.");
@@ -129,7 +138,7 @@ public class ExchangeService {
         }
     }
     
-    // 지갑 충전,기록저장 / 지갑이 존재하지 않을 시 자동으로 지갑 생성,기록저장 (2)
+    // 지갑 충전,기록저장 / 지갑이 존재하지 않을 시 자동으로 지갑 생성,기록저장 (1)
     @Transactional
     public ExchangeTransactionDTO chargeWallet(ExchangeTransactionDTO dto) {
         String customerId = dto.getCustomer_id();
@@ -150,7 +159,7 @@ public class ExchangeService {
         System.out.println(customerId +" "+ currencyCode+" "+ requestAmount+" "+ exchangedAmount 
         + " "+ to_currency + " "+ from_currency + dto.getApproval_status());
 
-        AccountDTO account = validateAndFetchAccount(dto.getWithdraw_account_number(), requestAmount);
+        AccountDTO account = validateAndFetchAccount(dto.getWithdraw_account_number(), requestAmount); // 지갑 잔액 
         
         // 승인 상태가 APPROVED일 때만 출금과 지갑 충전 처리
         if ("APPROVED".equals(dto.getApproval_status())) {
@@ -191,7 +200,7 @@ public class ExchangeService {
         String approval_status = dto.getApproval_status(); // "APPROVED" or "REJECTED"
         System.out.println(exchange_transaction_id + " " + approval_status);
 
-        ExchangeTransactionDTO request = dao.findTransByTransactionId(exchange_transaction_id);
+        ExchangeTransactionDTO request = dao.findTransByTransactionId(exchange_transaction_id); // 거래번호로 환전내역 조회
 
         if (!"PENDING".equalsIgnoreCase(request.getApproval_status())) {
             throw new RuntimeException("이미 처리된 거래입니다.");
@@ -253,6 +262,20 @@ public class ExchangeService {
 
         return dao.findTransById(customerId);
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     // 전체 환전 내역 조회
     public List<ExchangeTransactionDTO> exchangeList(String customer_id){
