@@ -4,7 +4,7 @@ import '../Css/inquire/InquireTransfer.css';
 import { getCustomerID } from "../jwt/AxiosToken";
 
 function CheckTx() {
-  const [accountList, setAccountList] = useState([]);
+  const [accountList, setAccountList] = useState([]); // 전체 요청 목록
   const [selectedAccount, setSelectedAccount] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -143,8 +143,12 @@ function CheckTx() {
                   <td>{tx.transaction_type}</td>
                   <td>{tx.amount.toLocaleString()}원</td>
                   <td>{tx.currency}</td>
-                  <td>{tx.comment_in}</td>
-                  <td>{tx.comment_out}</td>
+                  <td>
+                    {tx.transaction_type === '입금' ? tx.comment : '-'}
+                  </td>
+                  <td>
+                    {tx.transaction_type === '출금' ? tx.comment : '-'}
+                  </td>
                 </tr>
               ))
             )}
