@@ -79,8 +79,9 @@ public class FundServiceImpl {
 		fundRepository.insertTestResult(test);
 		
 		// 2. 고객 정보 업데이트
-		fundRepository.updateCustomerRiskType(test.getCustomer_id(),
+		fundRepository.updateCustomerRiskType(test.getCustomerId(),
 				test.getFund_risk_type());
+		System.out.println("테스트 결과 투자성향" + test.getFund_risk_type());
 	}
 
 	// 고객의 투자 성향에 따른 펀드상품 추천
