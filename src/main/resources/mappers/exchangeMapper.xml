@@ -68,7 +68,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
   	<!-- 고객 계좌 조회     -->
 	<select id="findAccountById" parameterType="String" resultType="com.boot.sound.inquire.account.AccountDTO">
-		SELECT * FROM ACCOUNT_TBL
+		SELECT * FROM account_tbl
 		WHERE CUSTOMER_ID = #{customer_id} 
 	</select>
 	
