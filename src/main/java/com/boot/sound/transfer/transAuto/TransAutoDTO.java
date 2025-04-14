@@ -18,4 +18,7 @@ package com.boot.sound.transfer.transAuto;
 	    private String transfer_type;       // 이체 유형 ("자동")
 	    private String schedule_mode;       // 이체 방식 (매월지정일, 매주요일, 특정일)
 	    private String active_yn;           // 자동이체 사용 여부 (Y/N)
+	    private String customer_name;
+	    private String out_account_type;    // 출금 계좌 타입
+	    private String in_account_type;     // 입금 계좌 타입
 }

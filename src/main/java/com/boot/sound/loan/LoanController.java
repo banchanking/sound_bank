@@ -25,6 +25,7 @@ import com.boot.sound.loan.dto.LoanConsentDTO;
 import com.boot.sound.loan.dto.LoanDTO;
 import com.boot.sound.loan.dto.LoanStatusDTO;
 import com.boot.sound.loan.dto.LoanStatusRequestDTO;
+import com.boot.sound.loan.service.LoanAccountService;
 import com.boot.sound.loan.service.LoanService;
 import com.boot.sound.sms.dto.SmsRequest;
 import com.boot.sound.sms.service.SmsService;
@@ -44,6 +45,7 @@ public class LoanController {
 	
 	private final SmsService smsService;
 	private final AccountService accountService;
+	private final LoanAccountService loanAccountSerive;
 	
 	// http://localhost:8081/api
 	
@@ -177,6 +179,10 @@ public class LoanController {
 	                accountService.deposit(acc, amount); // 입금
 	                loan.setBalance(amount); // 잔액 업데이트
 	                service.saveLoan(loan);  // 저장
+	                String customerName = service.selectCustomerName(customerId);
+	                // 계좌 거래 내역 저장
+	                loanAccountSerive.saveLoanTransaction(
+	                		acc, "입금", amount, "KRW", "대출금 입금", customerName, "입출금");
 	                log.info("✅ 대출 승인과 동시에 입금 처리 완료 - 계좌: {}, 금액: {}", acc, amount);
 	            }
 	        }

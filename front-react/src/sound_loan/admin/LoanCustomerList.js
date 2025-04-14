@@ -14,15 +14,23 @@ const LoanCustomerList = () => {
   const loanSubmit = (loan) => {
     RefreshToken.post("/loanStatusUpdate/" + loan.loanStatusNo, {
       loan_progress: loan_progress,
-      customerId: loan.customer_id,
+      customerId: loan.customerId,
     })
+
       .then((res) => {
         if (res.status === 200) {
           alert("대출 심사 결과가 성공적으로 반영되었습니다.");
+          // 🔄 최신 데이터 다시 불러오기
+          RefreshToken.get("/loanStatus")
+            .then((res) => {
+              setLoanStatus(res.data);
+            })
+            .catch((error) => {
+              console.error("데이터 다시 불러오기 오류:", error);
+            });
         }
       })
       .catch((error) => {
-        console.error("심사결과 처리 오류:", error);
         alert("심사 결과 처리 중 오류 발생");
       });
   };
@@ -88,9 +96,11 @@ const LoanCustomerList = () => {
               <td>{loan.loanProgress}</td>
               <td>
                 <select
+                  value={loan_progress}
                   onChange={(e) => {
                     setLoan_progress(e.target.value);
                   }}
+                  disabled={loan.loanProgress !== "신청"}
                 >
                   <option value={""}>심사결과</option>
                   <option value={"승인"}>승인</option>
@@ -102,7 +112,8 @@ const LoanCustomerList = () => {
                   type="button"
                   value={"결과 처리"}
                   onClick={() => loanSubmit(loan)}
-                ></input>
+                  disabled={loan.loanProgress !== "신청"}
+                />
               </td>
             </tr>
           ))}

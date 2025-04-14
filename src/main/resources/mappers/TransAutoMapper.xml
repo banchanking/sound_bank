@@ -8,13 +8,13 @@
   <!-- 비밀번호 확인 -->
   <select id="getPasswordByAccount" resultType="string">
     SELECT ACCOUNT_PWD
-    FROM ACCOUNT_TBL
+    FROM account_tbl
     WHERE ACCOUNT_NUMBER = #{account_number}
   </select>
 
   <!-- 자동이체 등록 -->
   <insert id="insertAutoTransfer" parameterType="com.boot.sound.transfer.transAuto.TransAutoDTO">
-    INSERT INTO TRANSFER_TBL 
+    INSERT INTO transfer_tbl 
     (CUSTOMER_ID, OUT_ACCOUNT_NUMBER, IN_ACCOUNT_NUMBER, IN_NAME, TRANSFER_TYPE, AMOUNT,
      SCHEDULE_MODE, SCHEDULE_DAY, SCHEDULE_MONTH_DAY,
      SCHEDULE_TIME, ACTIVE_YN, MEMO, TRANSFER_DATE)
@@ -27,7 +27,7 @@
   <!-- 자동이체 목록 -->
 	<select id="getAutoList" parameterType="string" resultType="com.boot.sound.transfer.transAuto.TransAutoDTO">
 	  SELECT *
-	  FROM TRANSFER_TBL
+	  FROM transfer_tbl
 	  WHERE CUSTOMER_ID = #{id}
 	    AND TRANSFER_TYPE = '자동'
 	    AND ACTIVE_YN = 'Y'
@@ -36,7 +36,7 @@
 	
   <!-- 자동이체 수정 -->
 	<update id="updateAutoTransfer" parameterType="com.boot.sound.transfer.transAuto.TransAutoDTO">
-	  UPDATE TRANSFER_TBL
+	  UPDATE transfer_tbl
 	  SET 
 	    AMOUNT = #{amount},
 	    SCHEDULE_MODE = #{schedule_mode},
@@ -49,14 +49,14 @@
 	
   <!-- 자동이체 삭제 -->
    <delete id="deleteAutoTransfer" parameterType="string">
-	  DELETE FROM TRANSFER_TBL
+	  DELETE FROM transfer_tbl
 	  WHERE TRANSFER_ID = #{transfer_id}
    </delete>	
 
   <!-- 요일 기준 자동이체 실행 -->
   <select id="getDayModeTransfers" resultType="com.boot.sound.transfer.transAuto.TransAutoDTO">
     SELECT *
-    FROM TRANSFER_TBL
+    FROM transfer_tbl
     WHERE TRANSFER_TYPE = '자동'
       AND SCHEDULE_MODE = 'day'
       AND SCHEDULE_DAY = #{day}
@@ -67,7 +67,7 @@
   <!-- 매월 지정일 자동이체 실행 -->
   <select id="getMonthlyTransfers" resultType="com.boot.sound.transfer.transAuto.TransAutoDTO">
     SELECT *
-    FROM TRANSFER_TBL
+    FROM transfer_tbl
     WHERE TRANSFER_TYPE = '자동'
       AND SCHEDULE_MODE = 'monthly'
       AND SCHEDULE_MONTH_DAY = #{date}
@@ -78,13 +78,29 @@
   <!-- 잔액 조회 -->
   <select id="getBalance" resultType="int">
     SELECT BALANCE
-    FROM ACCOUNT_TBL
+    FROM account_tbl
     WHERE ACCOUNT_NUMBER = #{acc}
   </select>
+  
+	<!-- 계좌타입 -->
+	  <select id="getAccountOutType" resultType="string">
+	    SELECT account_type FROM account_tbl
+	    WHERE account_number = #{out_account_number}
+	  </select>
+
+	  <select id="getAccountInType" resultType="string">
+	    SELECT account_type FROM account_tbl
+	    WHERE account_number = #{in_account_number}
+	  </select>
+	
+	<!-- 고개이름 조회 -->
+	<select id="getCustomerName" resultType="string">
+	  SELECT customer_name FROM customer_tbl WHERE customer_id = #{customer_id}
+	</select>
 
   <!-- 이체 실행 (출금/입금) -->
   <update id="updateBalance">
-    UPDATE ACCOUNT_TBL
+    UPDATE account_tbl
     SET BALANCE = BALANCE + #{amount}
     WHERE ACCOUNT_NUMBER = #{acc}
   </update>
@@ -92,21 +108,21 @@
   <!-- 거래내역 저장 (출금/입금 따로 기록) -->
 	<!-- 출금 저장 -->
 	<insert id="saveTransactionOut">
-	  INSERT INTO TRANSACTION_TBL (
-	    ACCOUNT_NUMBER, TRANSACTION_TYPE, AMOUNT, CURRENCY, COMMENT_OUT, COMMENT_IN, TRANSACTION_DATE
+	  INSERT INTO transaction_tbl (
+	    ACCOUNT_NUMBER, CUSTOMER_NAME, ACCOUNT_TYPE, TRANSACTION_TYPE, AMOUNT, CURRENCY, COMMENT, TRANSACTION_DATE
 	  ) 
 	  VALUES (
-	    #{out_account_number}, '출금', #{amount}, 'KRW', #{memo}, #{in_name}, NOW()
+	    #{out_account_number}, #{customer_name}, #{out_account_type}, '출금', #{amount}, 'KRW', #{memo}, NOW()
 	  );
 	</insert>
 	
 	<!-- 입금 저장 -->
 	<insert id="saveTransactionIn">
-	  INSERT INTO TRANSACTION_TBL (
-	    ACCOUNT_NUMBER, TRANSACTION_TYPE, AMOUNT, CURRENCY, COMMENT_OUT, COMMENT_IN, TRANSACTION_DATE
+	  INSERT INTO transaction_tbl (
+	    ACCOUNT_NUMBER, CUSTOMER_NAME, ACCOUNT_TYPE, TRANSACTION_TYPE, AMOUNT, CURRENCY, COMMENT, TRANSACTION_DATE
 	  ) 
 	  VALUES (
-	    #{in_account_number}, '입금', #{amount}, 'KRW', #{out_account_number}, #{memo}, NOW()
+	    #{in_account_number}, #{customer_name}, #{in_account_type}, '입금', #{amount}, 'KRW', #{memo}, NOW()
 	  );
-	</insert>
+	</insert>	
 </mapper>
