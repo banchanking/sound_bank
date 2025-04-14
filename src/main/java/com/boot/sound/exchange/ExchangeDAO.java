@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import com.boot.sound.exchange.dto.ExchangeTransactionDTO;
 import com.boot.sound.exchange.dto.ExchangeWalletDTO;
 import com.boot.sound.inquire.account.AccountDTO;
+import com.boot.sound.inquire.transfer.TransActionDTO;
 
 @Mapper
 @Repository
@@ -72,5 +73,11 @@ public interface ExchangeDAO {
     
     // 지갑 비활성화
     public int deactivateWallet(Long wallet_id);
+    
+    // 출금기록 저장
+    public int saveTransactionOut(TransActionDTO dto);
+    
+    //고객 이름 찾기
+    public String getNameById(String customer_id);
 }
 

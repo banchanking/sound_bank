@@ -170,4 +170,20 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		SET status = 'DEACTIVATE'
 		WHERE wallet_id = #{wallet_id} 
 	</update>
+	
+	<!-- 입출금통장 입출금내역 저장 -->
+	<insert id="saveTransactionOut" parameterType="com.boot.sound.inquire.transfer.TransActionDTO">
+	  INSERT INTO transaction_tbl (
+	    ACCOUNT_NUMBER, TRANSACTION_TYPE, AMOUNT, CURRENCY, TRANSACTION_DATE,ACCOUNT_TYPE,customer_name, comment
+	  ) 
+	  VALUES (
+	    #{account_number}, #{transaction_type}, #{amount},#{currency}, NOW(), #{account_type},#{customer_name},#{comment}
+	  )
+	</insert>	
+	
+	<select id="getNameById" parameterType="String" resultType="String">
+		SELECT customer_name
+	  	FROM customer_tbl
+	  	WHERE customer_id = #{customer_id}
+	</select>
 </mapper>   

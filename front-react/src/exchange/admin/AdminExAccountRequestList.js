@@ -21,25 +21,21 @@ const AdminExAccountRequestList = () => {
   }, [customer_id]);
 
   // 승인 혹은 거절 핸들러
-  const handleApproval = async (exchange_transaction_id, approval_status) => {
-    console.log("승인/거절 처리:", exchange_transaction_id, approval_status);
+  const handleApproval = async (approvalData) => {
+    console.log("승인 처리 요청:", approvalData);
+  
     try {
-      // 상태 업데이트 요청 (PUT 방식)
-      await RefreshToken.put(`/exchange/admin/approval`, {
-        exchange_transaction_id: exchange_transaction_id,
-        approval_status: approval_status,      
-      });
+      await RefreshToken.put(`/exchange/admin/approval`, approvalData);
+      alert(`요청이 ${approvalData.approval_status === "APPROVED" ? "승인" : "거절"}되었습니다.`);
   
-      alert(`요청이 ${approval_status === "APPROVED" ? "승인" : "거절"}되었습니다.`);
-  
-      // 목록 새로고침
-      const res = await RefreshToken.get(`/exchange/requestList/${customer_id}`);
+      const res = await RefreshToken.get(`/exchange/requestList/${approvalData.customer_id}`);
       setRequests(res.data);
     } catch (error) {
       console.error("승인/거절 처리 실패:", error);
       alert("처리 중 오류가 발생했습니다.");
     }
   };
+  
   
 
   return (
@@ -70,8 +66,24 @@ const AdminExAccountRequestList = () => {
               <td>{req.exchange_transaction_date?.slice(0, 10)}</td>
               <td>{req.approval_status}</td>
               <td className={styles.actions}>
-                <button onClick={() => handleApproval(req.exchange_transaction_id, "APPROVED")}>승인</button>{" "}
-                <button onClick={() => handleApproval(req.exchange_transaction_id, "REJECTED")}>거절</button>
+              <button onClick={() => handleApproval({
+                  exchange_transaction_id: req.exchange_transaction_id,
+                  approval_status: "APPROVED",
+                  customer_id: req.customer_id,
+                  withdraw_account_number: req.withdraw_account_number,
+                  request_amount: req.request_amount,
+                  currency_code: req.currency_code
+                })}>
+                  승인
+              </button>
+
+                <button onClick={() => handleApproval({
+                  exchange_transaction_id: req.exchange_transaction_id,
+                  approval_status: "REJECTED",
+                  customer_id: req.customer_id
+                })}>
+                  거절
+              </button>
               </td>
             </tr>
           ))}
