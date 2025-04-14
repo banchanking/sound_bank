@@ -1,5 +1,7 @@
 package com.boot.sound.loan.dao;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
@@ -10,6 +12,8 @@ import com.boot.sound.customer.CustomerDTO;
 import com.boot.sound.loan.dto.LoanConsentDTO;
 import com.boot.sound.loan.dto.LoanCustomerDTO;
 import com.boot.sound.loan.dto.LoanDTO;
+import com.boot.sound.loan.dto.LoanInterestPaymentDTO;
+import com.boot.sound.loan.dto.LoanLatePaymentDTO;
 import com.boot.sound.loan.dto.LoanStatusDTO;
 
 @Mapper
@@ -65,5 +69,58 @@ public interface LoanDAO  {
 	
 	// 문자 발송을 위한 고객 정보 조회
 	public CustomerDTO selecCustomer(String customerId);
+	
+	// 거래내역 저장을 위한 고객 이름 조회
+	public String selectCustomerName(String customerId);
+	
+	// 거래내역 저장
+	public int insertTransaction(
+	    @Param("accountNumber") String accountNumber,
+	    @Param("transactionType") String transactionType,
+	    @Param("amount") BigDecimal amount,
+	    @Param("currency") String currency,
+	    @Param("comment") String comment,
+	    @Param("customerName") String customerName,
+	    @Param("accountType") String accountType
+	);
+	
+	// 이자 납부 내역 저장
+	public int insertInterestPayment(LoanInterestPaymentDTO dto);
+	
+	 // 연체 대상 이자 납부 내역 조회
+	public List<LoanInterestPaymentDTO> findOverduePayments();
+
+    // 납부상태변경
+	public int updateRepaymentStatus(@Param("interestPaymentNo") int interestPaymentNo,
+            @Param("repaymentStatus") String repaymentStatus);
+
+	// 연체 정보 등록
+	public void insertLatePayment(LoanLatePaymentDTO dto);
+	
+	 // 연체된 납부 내역 조회
+	public List<LoanLatePaymentDTO> getLatePayments();
+
+    // 대출번호로 계좌번호 조회
+	public String getAccountNumber(@Param("loanId") int loanId,
+            @Param("customerId") String customerId);
+
+    // 고객 이름 조회
+	public String getCustomerName(@Param("customerId") String customerId);
+
+    // 연체 내역 상태를 납부완료로 업데이트
+	public int updateLatePaymentStatusToPaid(@Param("loanId") int loanId,
+                                       @Param("customerId") String customerId,
+                                       @Param("repaymentStatus") String repaymentStatus);
+
+    // 이자 납부 테이블 상태를 납부완료로 업데이트
+	public int updateInterestPaymentStatus(@Param("loanId") int loanId,
+                                     @Param("customerId") String customerId,
+                                     @Param("repaymentStatus") String repaymentStatus);
+
+    // loan_status_tbl의 remaining_term 감소
+	public int reduceLoanRemainingTerm(@Param("loanId") int loanId);
+	
+	// 납부내역중 미납 내역 목록 조회
+	public List<LoanInterestPaymentDTO> getMissedPayments();
 	
 }

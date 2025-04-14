@@ -14,11 +14,16 @@ import com.boot.sound.loan.dao.LoanDAO;
 import com.boot.sound.loan.dto.LoanConsentDTO;
 import com.boot.sound.loan.dto.LoanCustomerDTO;
 import com.boot.sound.loan.dto.LoanDTO;
+import com.boot.sound.loan.dto.LoanInterestPaymentDTO;
+import com.boot.sound.loan.dto.LoanLatePaymentDTO;
 import com.boot.sound.loan.dto.LoanStatusDTO;
 import com.boot.sound.loan.repo.LoanStatusRepository;
+import com.boot.sound.loan.scheduler.LoanOverdueScheduler;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class LoanService {
@@ -149,5 +154,88 @@ public class LoanService {
 		System.out.println("서비스 - saveLoan()");
 		repo.save(loan);
 	}
+	
+	public String selectCustomerName(String customerId) {
+		System.out.println("서비스 - selectCustomerName()");
+		return dao.selectCustomerName(customerId);
+		
+	}
+	
+	public int insertInterestPayment(LoanInterestPaymentDTO dto) {
+		System.out.println("서비스 - insertInterestPayment()");
+		return dao.insertInterestPayment(dto);
+	}
+	
+	 public void processOverduePayments() {
+	        List<LoanInterestPaymentDTO> overdueList = dao.findOverduePayments();
+	        System.out.println("서비스 - processOverduePayments()");
+	        if (overdueList.isEmpty()) {
+	            System.out.println("🔍 연체 대상 이자 납부 내역이 없습니다.");
+	            return;
+	        }
+
+	        for (LoanInterestPaymentDTO payment : overdueList) {
+	            int unpaidAmount = payment.getRepaymentAmount();
+	            int overdueInterest = (int) (unpaidAmount * 0.02); // 2% 연체이자 예시
+	            
+	            LoanLatePaymentDTO lateDTO = new LoanLatePaymentDTO();
+	            lateDTO.setLoanId(payment.getLoanId());
+	            lateDTO.setCustomerId(payment.getCustomerId());
+	            lateDTO.setUnpaidAmount(unpaidAmount);
+	            lateDTO.setRepaymentStatus("연체");
+	            lateDTO.setOverdueInterest(overdueInterest);
+	            String loanProgress = "연체";
+	            dao.updateRepaymentStatus(payment.getInterestPaymentNo(), loanProgress);
+	            dao.insertLatePayment(lateDTO);
+	            log.info("🚨 연체 등록 - 고객: {}, 대출ID: {}, 금액: {}, 연체이자: {}",
+	                    payment.getCustomerId(), payment.getLoanId(), unpaidAmount, overdueInterest);
+	        }
+	    }
+	
+	 public List<LoanLatePaymentDTO> getLatePayments() {
+		    return dao.getLatePayments();
+		}
+
+		public String getAccountNumberByLoanId(int loanId, String customerId) {
+		    return dao.getAccountNumber(loanId, customerId);
+		}
+
+		public String getCustomerName(String customerId) {
+		    return dao.selectCustomerName(customerId);
+		}
+		
+		@Transactional
+		public void markInterestPaymentAsPaid(int interestPaymentNo) {
+		    dao.updateRepaymentStatus(interestPaymentNo, "납부완료");
+		}
+
+		@Transactional
+		public void markLatePaymentAsPaid(LoanLatePaymentDTO latePayment) {
+		    // 연체 상태를 '납부완료'로 업데이트 
+		    dao.updateLatePaymentStatusToPaid(
+		        latePayment.getLoanId(),
+		        latePayment.getCustomerId(),
+		        "납부완료"
+		    );
+		}
+
+		@Transactional
+		public void updateInterestPaymentStatusToPaid(LoanLatePaymentDTO latePayment) {
+			dao.updateInterestPaymentStatus(
+		        latePayment.getLoanId(),
+		        latePayment.getCustomerId(),
+		        "납부완료"
+		    );
+		}
+
+		@Transactional
+		public void reduceLoanRemainingTerm(int loanId) {
+			dao.reduceLoanRemainingTerm(loanId);
+		}
+		
+		public List<LoanInterestPaymentDTO> getMissedPaymentsToRetry() {
+		    return dao.getMissedPayments();
+		}
+
 	
 }
