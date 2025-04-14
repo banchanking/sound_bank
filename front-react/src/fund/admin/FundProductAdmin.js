@@ -201,11 +201,11 @@ const FundProductAdmin = () => {
 
       {/* 펀드 등록 팝업 */}
       {isPopupOpen && (
-        <div className={styles.popupcontainer}>
-          <div className={styles.popupcontent}>
+        <div className={styles.popupOverlay}>
+          <div className={styles.popupModal}>
             <div className="popup-header">
               <h3>펀드 등록</h3>
-              <span className="close" onClick={handleClosePopup}>
+              <span className={styles.closeButton} onClick={handleClosePopup}>
                 &times;
               </span>
             </div>
