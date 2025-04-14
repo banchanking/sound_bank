@@ -22,6 +22,15 @@ public class TransMultiController {
 	@Autowired
 	private TransMultiService service;
 	
+	// 비번확인
+	@PostMapping("/checkPwd")
+    public boolean checkPassword(@RequestBody Map<String, String> payload) {
+        String accountNumber = payload.get("account_number");
+        String password = payload.get("password");
+
+        return service.isPasswordMatch(accountNumber, password);
+    }
+	
 	// 다건이체 요청저장
 	@PostMapping("/add")
 	public String sendMulti(@RequestBody TransMultiDTO dto) {

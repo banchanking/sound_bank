@@ -16,60 +16,65 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Optional;
 
+//생략된 import 및 어노테이션 동일
+
 @Service
 @RequiredArgsConstructor
 public class TransInstantService {
 
 	private final PasswordEncoder passwordEncoder;
-    private final TransInstantRepository transRepo;        // 이체 저장용
-    private final AccountRepository accountRepo;           // 잔액 변경용
-    private final TransActionRepository taRepo;            // 거래내역 저장용
-    private final CustomerRepository customerRepo;         // 고객 정보 조회용
+ private final TransInstantRepository transRepo;
+ private final AccountRepository accountRepo;
+ private final TransActionRepository taRepo;
+ private final CustomerRepository customerRepo;
 
-    // 실시간 이체 처리 - 모든 작업은 하나의 트랜잭션 안에서 처리됨
-    @Transactional
-    public String send(TransInstantDTO dto) {
-        Optional<CustomerDTO> optional = customerRepo.findById(dto.getCustomer_id());
-        if (!optional.isPresent()) return "고객 정보 없음";
+ @Transactional
+ public String send(TransInstantDTO dto) {
+     Optional<CustomerDTO> optional = customerRepo.findById(dto.getCustomer_id());
+     if (!optional.isPresent()) return "고객 정보 없음";
 
-        CustomerDTO customer = optional.get();
+     CustomerDTO customer = optional.get();
 		if (!passwordEncoder.matches(dto.getPassword(), customer.getCustomer_password())) {
 			return "비밀번호 오류";
 		}
 		
-        BigDecimal amount = BigDecimal.valueOf(dto.getAmount());
-        int minus = accountRepo.minusBalance(dto.getOut_account_number(), amount);
-        if (minus == 0) return "잔액 부족";
+     BigDecimal amount = BigDecimal.valueOf(dto.getAmount());
+     int minus = accountRepo.minusBalance(dto.getOut_account_number(), amount);
+     if (minus == 0) return "잔액 부족";
 
-        int plus = accountRepo.plusBalance(dto.getIn_account_number(), amount);
-        if (plus == 0) return "입금 실패";
+     int plus = accountRepo.plusBalance(dto.getIn_account_number(), amount);
+     if (plus == 0) return "입금 실패";
 
-        Date now = new Date(); // 현재 시간
+     Date now = new Date();
 
-        TransActionDTO out = new TransActionDTO();
-        out.setAccount_number(dto.getOut_account_number());
-        out.setTransaction_type("출금");
-        out.setAmount(BigDecimal.valueOf(dto.getAmount()));
-        out.setCurrency("KRW");
-        out.setComment(dto.getMemo());
-        out.setAccount_type("출금계좌");
-        out.setTransaction_date(now);
-        taRepo.save(out);
+     // 출금 거래내역 저장
+     TransActionDTO out = new TransActionDTO();
+     out.setAccount_number(dto.getOut_account_number());
+     out.setTransaction_type("출금");
+     out.setAmount(amount);
+     out.setCurrency("KRW");
+     out.setComment(dto.getMemo()); // memo 하나만 사용
+     out.setAccount_type("출금계좌");
+     out.setTransaction_date(now);
+     out.setCustomer_name(customer.getCustomer_name());
+     taRepo.save(out);
 
-        TransActionDTO in = new TransActionDTO();
-        in.setAccount_number(dto.getIn_account_number());
-        in.setTransaction_type("입금");
-        in.setAmount(BigDecimal.valueOf(dto.getAmount()));
-        in.setCurrency("KRW");
-        in.setComment(dto.getMemo());
-        out.setAccount_type("입금계좌");
-        in.setTransaction_date(now);
-        taRepo.save(in);
+     // 입금 거래내역 저장
+     TransActionDTO in = new TransActionDTO();
+     in.setAccount_number(dto.getIn_account_number());
+     in.setTransaction_type("입금");
+     in.setAmount(amount);
+     in.setCurrency("KRW");
+     in.setComment(dto.getMemo()); // memo 하나만 사용
+     in.setAccount_type("입금계좌");
+     in.setTransaction_date(now);
+     in.setCustomer_name(dto.getIn_name());
+     taRepo.save(in);
 
-        dto.setTransfer_type("실시간");
-        dto.setTransfer_date(now);
-        transRepo.save(dto);
+     dto.setTransfer_type("실시간");
+     dto.setTransfer_date(now);
+     transRepo.save(dto);
 
-        return "이체 완료";
-    }
+     return "이체 완료";
+ }
 }

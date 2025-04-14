@@ -8,14 +8,17 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface TransMultiDAO {
 	
+	// 비번확인
+	public String findPasswordByAccount(String accountNumber);
+	
 	// 다건이체 요청 저장
-	public void addMultiTransfer(Map<String, Object> map);
+	public void addTransferMulti(Map<String, Object> map);
 	
 	// 마지막 transfer_id 가져오기 
-    public Integer getLastTransferId(String customer_id);
+    public Integer getLastTransferIdMulti(String customer_id);
     
 	// 다건이체 요청내용 관리자테이블 저장
-	void insertApproval(Map<String, Object> map);
+	void insertApprovalMulti(Map<String, Object> map);
     
 	// 다건이체 목록
     public List<Map<String, Object>> getMultiListByCustomer(String customer_id);

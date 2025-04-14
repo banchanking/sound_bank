@@ -67,6 +67,17 @@ public class TransAutoService {
                 // 입금
                 dao.updateBalance(dto.getIn_account_number(), dto.getAmount());
                 
+                // 계좌타입
+                String outType = dao.getAccountOutType(dto.getOut_account_number());
+                dto.setOut_account_type(outType);  
+
+                String inType = dao.getAccountInType(dto.getIn_account_number());
+                dto.setIn_account_type(inType);    
+                
+                // 고객이름 조회
+                String name = dao.getCustomerName(dto.getCustomer_id());
+                dto.setCustomer_name(name);
+                
                 // 거래내역 저장
                 dao.saveTransactionOut(dto);  // 출금
                 dao.saveTransactionIn(dto);   // 입금
