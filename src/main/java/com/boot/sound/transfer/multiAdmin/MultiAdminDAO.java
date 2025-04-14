@@ -1,28 +1,33 @@
 package com.boot.sound.transfer.multiAdmin;
 
-import java.util.List;
-import java.util.Map;
-
 import org.apache.ibatis.annotations.Mapper;
+import org.springframework.data.repository.query.Param;
+
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.List;
 
 @Mapper
 public interface MultiAdminDAO {
+    List<MultiAdminDTO> getApproveList();
+    List<MultiAdminDTO> getTransferDetails(int transfer_id);
+    void updateApprovalStatusByGroup(@Param("status") String status,
+                                     @Param("reason") String reason,
+                                     @Param("customer_id") String customer_id,
+                                     @Param("request_date") Timestamp request_date);
+    void updateTransferDateNow(@Param("customer_id") String customer_id,
+                               @Param("request_date") Timestamp request_date);
+    List<MultiAdminDTO> findTransfersByGroup(@Param("customer_id") String customer_id,
+                                             @Param("request_date") Timestamp request_date);
+    void decreaseBalance(@Param("acc") String acc, @Param("amt") BigDecimal amt);
+    void increaseBalance(@Param("acc") String acc, @Param("amt") BigDecimal amt);
 
-	// 요청목록
-	public List<Map<String, Object>> getApproveList();
-	
-	// 목록상세(request_date, out_account_number, memo 기준으로 상세 내역 조회)
-	public List<Map<String, Object>> getApproveDetail(int transfer_id);
-
-	// 요청승인
-	public void updateApprovalDate(int transfer_id);
-	
-	// 승인한 이체건 가져오기
-	public List<Map<String, Object>> getTransForApprove(int transfer_id);
-	
-	// 이체실행
-	public void tranMultiAction(Map<String,Object> map);
-	
-	// 요청거절
-	public void updateRejectMulti(Map<String, Object> data);// data: transfer_id, reject_reason
+    void insertTransaction(
+    	    @Param("account_number") String account_number,
+    	    @Param("transaction_type") String transaction_type,
+    	    @Param("amount") BigDecimal amount,
+    	    @Param("comment") String comment,
+    	    @Param("customer_name") String customer_name,
+    	    @Param("account_type") String account_type
+    	);
 }

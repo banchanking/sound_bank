@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import RefreshToken from '../../jwt/RefreshToken'; 
 import '../../Css/transfer/TransInstant.css';
 import { getCustomerID } from "../../jwt/AxiosToken";
 import Sidebar from './Sidebar'; 
@@ -22,17 +22,13 @@ function TransInstant() {
   // 고객 ID 및 계좌 목록 불러오기
   useEffect(() => {
     const id = getCustomerID();
-    const token = localStorage.getItem("auth_token");
-
     if (!id) {
       alert('로그인이 필요합니다.');
       return;
     }
     setForm(prev => ({ ...prev, customer_id: id }));
 
-    axios.get(`http://localhost:8081/api/accounts/allAccount/${id}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
+    RefreshToken.get(`http://localhost:8081/api/accounts/allAccount/${id}`)
       .then(res => {
         const raw = res.data;
         let list = Array.isArray(raw) ? raw : Object.values(raw).flat();
@@ -49,15 +45,7 @@ function TransInstant() {
 
   // 이체 최종 확인
   const confirmTransfer = () => {
-    const token = localStorage.getItem("auth_token");
-    if (!token) {
-      alert("로그인이 필요합니다.");
-      return;
-    }
-
-    axios.post("http://localhost:8081/api/transInstant/send", form, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
+    RefreshToken.post("http://localhost:8081/api/transInstant/send", form)
       .then(res => {
         if (res.data === "비밀번호 오류") {
           alert("비밀번호가 일치하지 않습니다.");
@@ -94,7 +82,7 @@ function TransInstant() {
         <h2>실시간 이체</h2>
         <form onSubmit={(e) => { e.preventDefault(); setShowModal(true); }}>
           <label>출금 계좌</label>
-          <select style={{marginBottom : '15px'}}name="out_account_number" value={form.out_account_number} onChange={handleChange} required>
+          <select style={{marginBottom : '15px'}} name="out_account_number" value={form.out_account_number} onChange={handleChange} required>
             <option value="">출금 계좌 선택</option>
             {accounts.map(acc => (
               <option key={acc.account_number || acc.dat_account_num} value={acc.account_number || acc.dat_account_num}>

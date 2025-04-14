@@ -16,6 +16,13 @@ public class TransMultiService {
 
     @Autowired
     private TransMultiDAO dao;
+    
+    // 비밀번호 확인
+    public boolean isPasswordMatch(String accountNumber, String inputPassword) {
+        String realPassword = dao.findPasswordByAccount(accountNumber);
+        return realPassword != null && realPassword.equals(inputPassword);
+    }
+    
 
     // Thread -> 여러이체 동시 실행 
     // ThreadPool -> 미리 정해진 수의 Thread를 풀에 만들어놓고, 필요시 쓰고 다시 넣는 구조, 과부하 방지
@@ -50,10 +57,10 @@ public class TransMultiService {
                 map.put("reject_reason", null); // 거절사유 생략
                 map.put("approval_date", null); // 승인일 생략
 
-                dao.addMultiTransfer(map); // DAO는 map으로 받도록 수정
+                dao.addTransferMulti(map); // DAO는 map으로 받도록 수정
                 
                 // transfer_id 가져오기
-                Integer transfer_id = dao.getLastTransferId(dto.getCustomer_id());  // Mapper에서 max(id)로 가져오게
+                Integer transfer_id = dao.getLastTransferIdMulti(dto.getCustomer_id());  // Mapper에서 max(id)로 가져오게
 
                 // approval_tbl 저장
                 Map<String, Object> approvalMap = new HashMap<>();
@@ -63,7 +70,7 @@ public class TransMultiService {
                 approvalMap.put("reject_reason", null);
                 approvalMap.put("approval_date", null);
 
-                dao.insertApproval(approvalMap);
+                dao.insertApprovalMulti(approvalMap);
             	 }
             });
         }

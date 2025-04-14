@@ -125,7 +125,7 @@ public class SmsService {
     	
     	String verificationCode = generateVerificationCode();
         verificationCodes.put(customer_phone_number, verificationCode);
-
+        System.out.println("문자 발송 요청");
         Message message = new Message();
         message.setFrom(senderPhoneNumber);
         message.setTo(customer_phone_number);

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import RefreshToken from '../../jwt/RefreshToken'; // ✅ axios 대신 RefreshToken 사용
 import '../../Css/transfer/TransInstant.css';
 import { getCustomerID } from "../../jwt/AxiosToken";
 import Sidebar from './Sidebar'; 
@@ -30,7 +30,7 @@ function TransInstant() {
     }
     setForm(prev => ({ ...prev, customer_id: id }));
 
-    axios.get(`http://localhost:8081/api/accounts/allAccount/${id}`, {
+    RefreshToken.get(`http://localhost:8081/api/accounts/allAccount/${id}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => {
@@ -55,7 +55,7 @@ function TransInstant() {
       return;
     }
 
-    axios.post("http://localhost:8081/api/transInstant/send", form, {
+    RefreshToken.post("http://localhost:8081/api/transInstant/send", form, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => {
@@ -94,7 +94,7 @@ function TransInstant() {
         <h2>실시간 이체</h2>
         <form onSubmit={(e) => { e.preventDefault(); setShowModal(true); }}>
           <label>출금 계좌</label>
-          <select style={{marginBottom : '15px'}}name="out_account_number" value={form.out_account_number} onChange={handleChange} required>
+          <select style={{marginBottom : '15px'}} name="out_account_number" value={form.out_account_number} onChange={handleChange} required>
             <option value="">출금 계좌 선택</option>
             {accounts.map(acc => (
               <option key={acc.account_number || acc.dat_account_num} value={acc.account_number || acc.dat_account_num}>

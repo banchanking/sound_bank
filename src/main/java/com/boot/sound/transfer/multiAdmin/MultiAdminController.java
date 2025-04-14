@@ -1,41 +1,35 @@
 package com.boot.sound.transfer.multiAdmin;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.sql.Timestamp;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/multiAdmin")
+@RequiredArgsConstructor
 public class MultiAdminController {
 
-    @Autowired
-    private MultiAdminService service;
+    private final MultiAdminService service;
 
-    // 요청목록
     @GetMapping("/approveList")
-    public List<Map<String, Object>> getApproveList() {
-        return service.approveList();
+    public List<MultiAdminDTO> getApproveList() {
+        return service.getApproveList();
     }
 
-    // 요청상세 (request_date, out_account_number, memo)
     @GetMapping("/approveDetail/{transfer_id}")
-    public Map<String, Object> getApproveDetail(@PathVariable int transfer_id) {
-        // 서비스에서 transfer_id로 상세 조회
-        return service.approveDetail(transfer_id);
+    public List<MultiAdminDTO> getTransferDetails(@PathVariable int transfer_id) {
+        return service.getTransferDetails(transfer_id);
     }
 
-    // 요청승인
-    @PostMapping("/approveMulti/{transfer_id}")
-    public void approve(@PathVariable int transfer_id) {
-        service.approveMulti(transfer_id);
+    @PostMapping("/approveMultiGroup")
+    public void approveGroup(@RequestBody MultiAdminGroupRequest request) {
+        service.approveMultiGroup(request.getCustomer_id(), request.getRequest_date());
     }
 
-    // 요청반려
-    @PostMapping("/rejectMulti")
-    public void reject(@RequestBody Map<String, Object> data) {
-        service.rejectMulti(data);
+    @PostMapping("/rejectMultiGroup")
+    public void rejectGroup(@RequestBody MultiAdminRejectRequest request) {
+        service.rejectGroup(request.getCustomer_id(), request.getRequest_date(), request.getReason());
     }
 }
