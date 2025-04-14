@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import RefreshToken from '../../jwt/RefreshToken';
 import Sidebar from './Sidebar';
 import '../../Css/transfer/TransMultiEdit.css';
 import { getCustomerID } from '../../jwt/AxiosToken';
@@ -10,28 +10,30 @@ function TransMultiEdit() {
   const customer_id = getCustomerID();
   const token = localStorage.getItem('auth_token');
 
+  // 내역 조회
   useEffect(() => {
     if (!customer_id || !token) {
       alert('로그인이 필요합니다');
       return;
     }
 
-    axios.get(`http://localhost:8081/api/transMulti/list/${customer_id}`, {
+    RefreshToken.get(`http://localhost:8081/api/transMulti/list/${customer_id}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then(res => {
-      console.log(res.data);
-      setList(res.data)})
+      setList(res.data);
+    })
     .catch(err => {
       console.error('목록 조회 실패:', err);
       alert('다건이체 내역 조회 실패');
     });
   }, []);
 
+  // 삭제
   const deleteRow = (id) => {
     if (!window.confirm('정말 삭제하시겠습니까?')) return;
 
-    axios.delete(`http://localhost:8081/api/transMulti/delete/${id}`, {
+    RefreshToken.delete(`http://localhost:8081/api/transMulti/delete/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then(() => {
@@ -45,13 +47,14 @@ function TransMultiEdit() {
     });
   };
 
+  // 수정
   const change = (e) => {
     const { name, value } = e.target;
     setEditItem(prev => ({ ...prev, [name]: value }));
   };
 
   const update = () => {
-    axios.put('http://localhost:8081/api/transMulti/update', editItem, {
+    RefreshToken.put('http://localhost:8081/api/transMulti/update', editItem, {
       headers: { Authorization: `Bearer ${token}` }
     })
     .then(() => {
@@ -82,7 +85,7 @@ function TransMultiEdit() {
               <th>금액</th>
               <th>메모</th>
               <th>승인상태</th>
-              <th>승인(이체) 일</th>
+              <th>이체일</th>
               <th>거절사유</th>
               <th>승인전 관리</th>
             </tr>
@@ -90,24 +93,36 @@ function TransMultiEdit() {
           <tbody>
             {list.map(item => (
               <tr key={item.transfer_id}>
-              <td>{item.request_date ? new Date(item.request_date).toLocaleString() : '-'}</td>
-              <td>{item.out_account_number}</td>
-              <td>{item.in_account_number}</td>
-              <td>{item.in_name}</td>
-              <td>{item.amount?.toLocaleString()}원</td>
-              <td>{item.memo}</td>
-              <td>{item.status}</td>
-              <td>{item.approval_date ? item.approval_date.substring(0, 10) : '-'}</td>
-              <td>{item.status === '거절' ? (item.reject_reason || '-') : '-'}</td>
-              <td>
-                <button onClick={() => setEditItem(item)} className="btn-blue">수정</button>
-                <button onClick={() => deleteRow(item.transfer_id)} className="btn-red">삭제</button>
-              </td>
-            </tr>
+                <td>{item.request_date ? new Date(item.request_date).toLocaleString() : '-'}</td>
+                <td>{item.out_account_number || '-'}</td>
+                <td>{item.in_account_number || '-'}</td>
+                <td>{item.in_name || '-'}</td>
+                <td>{item.amount?.toLocaleString()}원</td>
+                <td>{item.memo || '-'}</td>
+                <td>{item.status || '대기'}</td>
+                <td>
+                  {item.status === '승인' && item.transfer_date
+                    ? new Date(item.transfer_date).toLocaleString()
+                    : '-'}
+                </td>
+
+                <td>
+                  {item.status === '거절' ? (item.reject_reason || '-') : '-'}
+                </td>
+                <td>
+                  {item.status === '대기' && (
+                    <>
+                      <button onClick={() => setEditItem(item)} className="btn-blue">수정</button>
+                      <button onClick={() => deleteRow(item.transfer_id)} className="btn-red">삭제</button>
+                    </>
+                  )}
+                </td>
+              </tr>
             ))}
           </tbody>
         </table>
 
+        {/* 수정 모달창 */}
         {editItem && (
           <div className="edit-modal-overlay">
             <div className="edit-modal-box">

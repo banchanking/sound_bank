@@ -1,59 +1,67 @@
 package com.boot.sound.transfer.multiAdmin;
 
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
-public class MultiAdminService {
-    
-    @Autowired
-    private MultiAdminDAO dao;
-    
-    // 스레드풀 생성 (동시 실행할 스레드 수 설정)
-    private final ExecutorService pool = Executors.newFixedThreadPool(5);
+import java.sql.Timestamp;
+import java.util.List;
 
-    // 요청목록
-    public List<Map<String, Object>> approveList(){
+@Service
+@RequiredArgsConstructor
+public class MultiAdminService {
+
+    private final MultiAdminDAO dao;
+
+    public List<MultiAdminDTO> getApproveList() {
         return dao.getApproveList();
     }
 
-    // 목록상세 (request_date, out_account_number, memo로 상세 조회)
-    public Map<String, Object> approveDetail(int transfer_id) {
-        List<Map<String, Object>> resultList = dao.getApproveDetail(transfer_id);
-        
-        // 결과가 비어 있지 않다면 첫 번째 값 리턴
-        return resultList.isEmpty() ? null : resultList.get(0);
+    public List<MultiAdminDTO> getTransferDetails(int transfer_id) {
+        return dao.getTransferDetails(transfer_id);
     }
 
-    // 요청승인 (이체실행)
     @Transactional
-    public void approveMulti(int transfer_id) {
-        // 승인날짜 업데이트
-        dao.updateApprovalDate(transfer_id); // 승인 처리 (status = '승인', approval_date = NOW())
+    public void approveMultiGroup(String customer_id, Timestamp request_date) {
+        dao.updateApprovalStatusByGroup("승인", null, customer_id, request_date);
+        dao.updateTransferDateNow(customer_id, request_date);
+        List<MultiAdminDTO> list = dao.findTransfersByGroup(customer_id, request_date);
 
-        // 승인된 이체건들 가져옴 (여러 건)
-        List<Map<String, Object>> transferList = dao.getTransForApprove(transfer_id);
-
-        // 각 이체 건에 대해 스레드로 이체 실행
-        for (Map<String, Object> transfer : transferList) {
-            pool.submit(() -> {
+        for (MultiAdminDTO dto : list) {
+            new Thread(() -> {
                 try {
-                    dao.tranMultiAction(transfer);  // 실제 이체 실행
+                    dao.decreaseBalance(dto.getOut_account_number(), dto.getAmount());
+                    dao.increaseBalance(dto.getIn_account_number(), dto.getAmount());
+
+                    // 출금기록 저장
+                    dao.insertTransaction(
+                        dto.getOut_account_number(),
+                        "출금",
+                        dto.getAmount(),
+                        dto.getMemo(),
+                        dto.getCustomer_id(),
+                        "입출금"
+                    );
+
+                    // 입금기록 저장
+                    dao.insertTransaction(
+                        dto.getIn_account_number(),
+                        "입금",
+                        dto.getAmount(),
+                        dto.getMemo(),
+                        dto.getIn_name(),      
+                        "입출금"
+                    );
+
                 } catch (Exception e) {
-                    e.printStackTrace();  // 오류가 발생한 경우 로깅
+                    System.out.println("이체 스레드 오류: " + e.getMessage());
                 }
-            });
+            }).start();
         }
     }
 
-    // 요청거절
-    public void rejectMulti(Map<String, Object> data) {
-        dao.updateRejectMulti(data);  // 거절 처리 (status = '거절', reject_reason = 'reason')
+    @Transactional
+    public void rejectGroup(String customer_id, Timestamp request_date, String reason) {
+        dao.updateApprovalStatusByGroup("거절", reason, customer_id, request_date);
     }
 }
