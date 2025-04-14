@@ -100,7 +100,6 @@ const FundTest = () => {
 
   // 서버로 데이터 전송 후 결과를 받아오는 함수
   const handleSubmit = async () => {
-    try {
       // 체크되지 않은 문항 찾기
       const unansweredIndex = answers.findIndex(answer => answer === null);
   
@@ -134,24 +133,24 @@ const FundTest = () => {
 
       // 모든 문항이 체크된 경우 서버로 데이터 전송
       // 서버로 전송할 데이터 준비
-      const payload = { answers, investmentType};  // answers와 investmentType을 포함한 객체 생성
+      const payload = {
+        customer_id: localStorage.getItem("customerId"),
+        answers,
+      };  
       console.log("Submitting payload:", payload); // 디버깅용 로그
 
       // 서버로 POST 요청
-      const response = await axios.post("http://127.0.0.1:8000/predict-user", payload, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await axios.post("http://127.0.0.1:8000/predict-user/", payload);
       console.log("Server response:", response.data); // 디버깅용 로그
 
       // 결과를 결과 페이지로 이동
-      navigate("/test-result", { state: { result: response.data.investment_type } });
-    } catch (error) {
-      console.error("Error submitting test:", error);
-      alert("서버 요청 중 오류가 발생했습니다. 다시 시도해주세요.");
-    }
-  };
+      navigate("/test-result", {
+        state: {
+          result: response.data.predicted_class, // 숫자형 인덱스
+          risk_type: response.data.risk_type     // 직접 표시용 문자열도 넘김
+        }
+      });
+    };
 
   return (
     <div className={styles.fundtestcontainer}>

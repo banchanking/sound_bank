@@ -31,7 +31,7 @@ public class FundTestDTO {
     private Long fund_test_id;       // 투자 성향 ID
 	
 	@Column(name = "customer_id", length = 20, nullable = false)
-    private String customerId;      // 고객 ID
+    private String customer_id;      // 고객 ID
 	
 	@Column(name = "fund_test_date", nullable = false)
     private Date fund_test_date;     // 테스트 응시 날짜
