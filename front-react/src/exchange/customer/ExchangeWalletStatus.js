@@ -50,9 +50,10 @@ const ExchangeWalletStatus = () => {
     const avgRate = item.average_rate ? parseFloat(item.average_rate) : 0;
 
     if (!avgRate || isNaN(currentRate) || avgRate === 0) return null;
+    const profit = ((currentRate - avgRate) / avgRate * 100).toFixed(2); // (현재환율 - 평균환율) / 평균환율 * 100
+    console.log(`[${item.currency_code}] 현재 환율: ${currentRate}, 평균 매입: ${avgRate}, 수익률: ${profit}%`);
 
-    const profit = ((currentRate - avgRate) / avgRate * 100).toFixed(2);
-    const color = profit >= 0 ? "#4CAF50" : "#f44336";
+    const color = profit >= 0 ? "#4CAF50" : "#f44336"; // 상승시 초록 하락시 빨강
 
     return [item.currency_code, parseFloat(profit), color];
   }).filter(Boolean);
