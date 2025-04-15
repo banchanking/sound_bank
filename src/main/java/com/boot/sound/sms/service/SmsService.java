@@ -153,8 +153,16 @@ public class SmsService {
 
     // 필요에 따라 인증 코드 검증 메소드 추가 가능
     public boolean verifyCode(SmsRequest smsRequest) {
-        String storedCode = verificationCodes.get(smsRequest.getCustomer_phone_number());
-        
-        return smsRequest.getCode() != null && smsRequest.getCode().equals(storedCode);
+        String phone = smsRequest.getCustomer_phone_number();
+        String storedCode = verificationCodes.get(phone);
+
+        boolean result = smsRequest.getCode() != null && smsRequest.getCode().equals(storedCode);
+
+        if (result) {
+            verificationCodes.remove(phone); // 인증을 완료한후 인증코드는 삭제 
+            
+        }
+
+        return result;
     }
 }

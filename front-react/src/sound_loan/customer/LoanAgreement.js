@@ -626,10 +626,12 @@ const LoanAgreement = () => {
             않습니다.
           </span>
         </div>
-        <div className="FinalBtn">
+        <div className="FinalBtnArea">
           <span>본인은 본 동의서의 내용을 이해하였으며 확인하였습니다.</span>
-          <button onClick={nextStep}>확인</button>
-          <button>취소</button>
+          <button onClick={nextStep} className="FinalBtn">
+            확인
+          </button>
+          <button className="FinalBtn">취소</button>
         </div>
       </div>
 
