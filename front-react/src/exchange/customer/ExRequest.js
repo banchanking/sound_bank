@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getCustomerID, getAuthToken } from "../../jwt/AxiosToken";
+import { getCustomerID } from "../../jwt/AxiosToken";
 import RefreshToken from "../../jwt/RefreshToken";
 import useExchangeRates from "./useExchangeRates";
 
@@ -13,7 +13,8 @@ const ExRequest = () => {
   const [result, setResult] = useState(null);
   const [accounts, setAccounts] = useState([]);
   const [selectedAccount, setSelectedAccount] = useState(null);
-  const [walletBalance, setWalletBalance] = useState(null);
+  const [walletBalance, setWalletBalance] = useState(null); 
+  const [wallets, setWallets] = useState([]); // 지갑 목록 상태 
 
   const today = new Date().toISOString().split("T")[0];
   const { rates } = useExchangeRates(today);
@@ -26,17 +27,14 @@ const ExRequest = () => {
   }, [customer_id]);
 
   useEffect(() => {
-    if (transactionType === "sell") {
-      RefreshToken
-        .get(`http://localhost:8081/api/exchange/myWallet/${customer_id}`)
-        .then((res) => {
-          const wallet = res.data.find(w => w.currency_code === selectedCurrency);
-          setWalletBalance(wallet ? parseFloat(wallet.balance) : 0);
-        })
-        .catch((err) => console.error("지갑 정보 불러오기 실패", err));
-    } else {
-      setWalletBalance(null);
-    }
+    RefreshToken
+      .get(`http://localhost:8081/api/exchange/myWallet/${customer_id}`)
+      .then((res) => {
+        setWallets(res.data); // 전체 지갑 목록 저장
+        const wallet = res.data.find(w => w.currency_code === selectedCurrency);
+        setWalletBalance(wallet ? parseFloat(wallet.balance) : 0);
+      })
+      .catch((err) => console.error("지갑 정보 불러오기 실패", err));
   }, [transactionType, selectedCurrency, customer_id]);
 
   useEffect(() => {
@@ -72,20 +70,19 @@ const ExRequest = () => {
     const dto = {
       customer_id,
       withdraw_account_number: selectedAccount.account_number,
-      transaction_type : transactionType,
+      transaction_type: transactionType,
       exchange_rate: transactionType === "buy" ? selectedRate.buy_rate : selectedRate.sell_rate,
-      currency_code: selectedCurrency, 
+      currency_code: selectedCurrency,
       from_currency: transactionType === "buy" ? "KRW" : selectedCurrency,
       to_currency: transactionType === "buy" ? selectedCurrency : "KRW",
     };
-    
 
     if (transactionType === "buy") {
-      dto.request_amount = parseInt(inputAmount); // 원화
-      dto.exchanged_amount = parseFloat(exchangedAmount); // 외화
+      dto.request_amount = parseInt(inputAmount);
+      dto.exchanged_amount = parseFloat(exchangedAmount);
     } else {
-      dto.request_amount = parseFloat(inputAmount); // 외화
-      dto.exchanged_amount = parseInt(exchangedAmount); // 원화
+      dto.request_amount = parseFloat(inputAmount);
+      dto.exchanged_amount = parseInt(exchangedAmount);
     }
 
     RefreshToken
@@ -103,6 +100,9 @@ const ExRequest = () => {
   return (
     <div style={{ maxWidth: "650px", margin: "40px auto", fontFamily: "sans-serif", minHeight: "570px" }}>
       <h2>💱 외환 거래</h2>
+      <ul>
+        <li>100만원 이상의 구매거래는 관리자의 승인이 필요합니다.</li>
+      </ul>
 
       <label>거래 유형</label>
       <select
@@ -114,7 +114,7 @@ const ExRequest = () => {
         <option value="sell">외화 판매 (외화 → KRW)</option>
       </select>
 
-      <label>출금 계좌</label>
+      <label>입출금 계좌</label>
       <select
         onChange={(e) => {
           const acc = accounts.find((a) => a.account_number === e.target.value);
@@ -143,7 +143,9 @@ const ExRequest = () => {
         style={{ display: "block", marginBottom: "1rem", padding: "0.5rem", width: "100%" }}
       >
         <option value="">-- 통화 선택 --</option>
-        {rates.map((r) => (
+        {(transactionType === "buy" ? rates : rates.filter((r) =>
+          wallets.some((w) => w.currency_code === r.currency_code)
+        )).map((r) => (
           <option key={r.currency_code} value={r.currency_code}>
             {r.currency_code} ({r.currency_name})
           </option>
@@ -191,7 +193,7 @@ const ExRequest = () => {
 
       {result && (
         <div style={{ marginTop: "2rem", backgroundColor: "#f9f9f9", padding: "1rem", borderRadius: "8px" }}>
-          <h3>거래 완료</h3>
+          <h3>거래 요청 완료</h3>
           <p>
             {result.request_amount.toLocaleString()} {transactionType === "buy" ? "KRW" : selectedCurrency}
             {" → "}

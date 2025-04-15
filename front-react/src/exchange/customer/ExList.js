@@ -30,7 +30,7 @@ const ExList = () => {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>환전 내역</h2>
+      <h2 className={styles.title}>환전 내역 조회</h2>
       <table className={styles.table}>
         <thead className={styles.thead}>
           <tr>

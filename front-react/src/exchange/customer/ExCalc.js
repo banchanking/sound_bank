@@ -7,14 +7,14 @@ const ExCalc = ({ isOpen, onClose, exchange }) => {
   const [toCurrency, setToCurrency] = useState("");
   const [convertedAmount, setConvertedAmount] = useState(null);
 
-  const getRate = (currencyCode) => {
-    const item = exchange.find((item) => item.currency_code === currencyCode);
+  const getRate = (currencyCode) => { // 나라코드
+    const item = exchange.find((item) => item.currency_code === currencyCode); // 선택한 통화의 코드를 환율에서 찾는다.
     return item ? item.base_rate : null;
   };
 
   const calculateExchange = () => {
     if (!fromCurrency || !toCurrency || !amount) {
-      setConvertedAmount(null);
+      setConvertedAmount(null);   // 환전된 통화
       return;
     }
 
@@ -22,8 +22,8 @@ const ExCalc = ({ isOpen, onClose, exchange }) => {
     const toRate = getRate(toCurrency);
 
     if (fromRate && toRate) {
-      const result = amount * (fromRate / toRate);
-      setConvertedAmount(result.toFixed(2));
+      const result = amount * (fromRate / toRate); // 계산결과 = 요청금액 * (from환율 / to환율)
+      setConvertedAmount(result.toFixed(2)); // 소수점2자리로 끊는다.
     } else {
       setConvertedAmount(null);
     }

@@ -20,6 +20,8 @@ import com.boot.sound.exchange.dto.ExchangeRateDTO;
 import com.boot.sound.exchange.dto.ExchangeTransactionDTO;
 import com.boot.sound.exchange.dto.ExchangeWalletDTO;
 import com.boot.sound.inquire.account.AccountDTO;
+import com.boot.sound.inquire.transfer.TransActionDTO;
+import com.boot.sound.transfer.transAuto.TransAutoDAO;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -42,7 +44,7 @@ public class ExchangeService {
     public ExchangeService(ExchangeDAO dao, ExchangeRateApiClient apiClient) {
     	
     	this.dao = dao;
-    	this.apiClient = apiClient;
+    	this.apiClient = apiClient;    
     	HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
     	factory.setHttpClient(HttpClients.custom().disableRedirectHandling().build());
         this.restTemplate = new RestTemplate(factory);		
@@ -76,7 +78,7 @@ public class ExchangeService {
     
     // 재요청 메서드
     private String fetchWithRetry(String url, int maxRetries, long delayMs) {
-        for (int attempt = 1; attempt <= maxRetries; attempt++) { // 
+        for (int attempt = 1; attempt <= maxRetries; attempt++) { // 재시도 반복문
             try {
                 String response = restTemplate.getForObject(url, String.class);
                 if (response != null && !response.isEmpty()) {
@@ -93,7 +95,7 @@ public class ExchangeService {
             }
         }
         throw new RuntimeException("환율 정보 요청 재시도 실패");
-    }    
+    }
     
     // 고객 계좌 조회
     @Transactional(readOnly = true)
@@ -104,6 +106,15 @@ public class ExchangeService {
         return dao.findAccountById(customer_id);
     }
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
     // 지갑 존재여부 확인 (1)
     private void handleWalletTransaction(String customerId, String currencyCode, BigDecimal exchangedAmount, BigDecimal exchangeRate) {
         int exists = dao.findByCustomerAndCurrency(customerId, currencyCode);
@@ -116,7 +127,7 @@ public class ExchangeService {
 
             wallet.setBalance(wallet.getBalance().add(exchangedAmount));
             wallet.setStatus("ACTIVE");
-            dao.updateWalletBalance(wallet);
+            dao.updateWalletBalance(wallet); //지갑잔액 UPDATE
        
         } else { // 외환지갑 없을시에는 새로 등록
         	System.out.println("지갑이 없다. 새지갑으로 간다.");
@@ -132,36 +143,54 @@ public class ExchangeService {
     // 지갑 충전,기록저장 / 지갑이 존재하지 않을 시 자동으로 지갑 생성,기록저장 (2)
     @Transactional
     public ExchangeTransactionDTO chargeWallet(ExchangeTransactionDTO dto) {
-        String customerId = dto.getCustomer_id();
+        
+    	String customerId = dto.getCustomer_id();
         String currencyCode = dto.getCurrency_code();
         String to_currency = dto.getTo_currency();
         String from_currency = dto.getFrom_currency();
         BigDecimal requestAmount = dto.getRequest_amount();
         BigDecimal exchangedAmount = dto.getExchanged_amount();
         BigDecimal exchangeRate = dto.getExchange_rate();
-        
+        String account_num = dto.getWithdraw_account_number();
+        String customer_name = dao.getNameById(customerId);
+        Date baseDate = dao.findLatestRateDate(currencyCode); // 가장 최근 환율 날짜
+        dto.setBase_date(baseDate);
+
         // 승인 조건 체크
-        if ("buy".equals(dto.getTransaction_type()) && requestAmount.compareTo(new BigDecimal("1000000")) >= 0) {
+        if ("buy".equals(dto.getTransaction_type()) && requestAmount.compareTo(new BigDecimal("1000000")) >= 0) { // 100만원 넘을시 Pending
             dto.setApproval_status("PENDING");
         } else {
             dto.setApproval_status("APPROVED");
         }
 
         System.out.println(customerId +" "+ currencyCode+" "+ requestAmount+" "+ exchangedAmount 
-        + " "+ to_currency + " "+ from_currency + dto.getApproval_status());
+        + " "+ to_currency + " "+ from_currency + dto.getApproval_status() + account_num);
 
-        AccountDTO account = validateAndFetchAccount(dto.getWithdraw_account_number(), requestAmount);
+        AccountDTO account = validateAndFetchAccount(dto.getWithdraw_account_number(), requestAmount); // 지갑 잔액update 
         
         // 승인 상태가 APPROVED일 때만 출금과 지갑 충전 처리
         if ("APPROVED".equals(dto.getApproval_status())) {
             dao.updateAccountBalance(account);
             handleWalletTransaction(customerId, currencyCode, exchangedAmount, exchangeRate);
+            
+            TransActionDTO trasnaction = new TransActionDTO();
+
+            // 출금내역 저장
+            trasnaction.setAccount_number(dto.getWithdraw_account_number());
+            trasnaction.setAmount(dto.getRequest_amount());
+            trasnaction.setCurrency("KRW");
+            trasnaction.setComment(currencyCode+"외환구매");
+            trasnaction.setAccount_type("입출금");
+            trasnaction.setTransaction_type("출금");
+            trasnaction.setCustomer_name(customer_name);
+        	System.out.println("입출금 거래내역 저장" + trasnaction);
+        	int result = dao.saveTransactionOut(trasnaction);
+        	System.out.println("내역 저장 결과 = " + result);
         }
 
         if (dao.chargeWallet(dto) <= 0) {
             throw new RuntimeException("환전 거래 등록 실패");
         }
-
         return dao.findTransById(customerId);
     }
     
@@ -189,9 +218,11 @@ public class ExchangeService {
 
         Long exchange_transaction_id = dto.getExchange_transaction_id(); // 거래 ID
         String approval_status = dto.getApproval_status(); // "APPROVED" or "REJECTED"
-        System.out.println(exchange_transaction_id + " " + approval_status);
+        System.out.println("고객ID : " + dto.getCustomer_id());
+        String customer_name = dao.getNameById(dto.getCustomer_id());
+        System.out.println(exchange_transaction_id + " " + approval_status + " " + customer_name);
 
-        ExchangeTransactionDTO request = dao.findTransByTransactionId(exchange_transaction_id);
+        ExchangeTransactionDTO request = dao.findTransByTransactionId(exchange_transaction_id); // 거래번호로 환전내역 조회
 
         if (!"PENDING".equalsIgnoreCase(request.getApproval_status())) {
             throw new RuntimeException("이미 처리된 거래입니다.");
@@ -210,7 +241,22 @@ public class ExchangeService {
 
             // 승인 상태 변경
             dao.updateApprovalStatus(exchange_transaction_id, approval_status);
+            
+            TransActionDTO trasnaction = new TransActionDTO();
 
+            // 출금내역 저장
+            trasnaction.setAccount_number(dto.getWithdraw_account_number());
+            trasnaction.setAmount(dto.getRequest_amount());
+            trasnaction.setCurrency("KRW");
+            trasnaction.setComment(dto.getCurrency_code()+"외환구매");
+            trasnaction.setAccount_type("입출금");
+            trasnaction.setTransaction_type("출금");
+            trasnaction.setCustomer_name(customer_name);
+            
+        	System.out.println("입출금 거래내역 저장" + trasnaction);
+        	int result = dao.saveTransactionOut(trasnaction);
+        	System.out.println("내역 저장 결과 = " + result);
+            
         } else if ("REJECTED".equalsIgnoreCase(approval_status)) {
             dao.updateApprovalStatus(exchange_transaction_id, approval_status);
         } else {
@@ -222,11 +268,12 @@ public class ExchangeService {
     // 보유외환 판매
     @Transactional
     public ExchangeTransactionDTO sellForeignCurrency(ExchangeTransactionDTO dto) {
-        String customerId = dto.getCustomer_id();
+        
+    	String customerId = dto.getCustomer_id();
         String currencyCode = dto.getCurrency_code();		
         BigDecimal sellAmount = dto.getRequest_amount();      // 외화 금액
         BigDecimal exchangedKrw = dto.getExchanged_amount();  // 환전 후 받을 KRW
-        // BigDecimal exchangeRate = dto.getExchange_rate();		// 외환 환율
+        String customer_name = dao.getNameById(customerId);
 
         // 1. 외화 지갑 확인
         ExchangeWalletDTO wallet = dao.findWalletByCustomerAndCurrency(customerId, currencyCode);
@@ -245,7 +292,22 @@ public class ExchangeService {
         }
         account.setBalance(account.getBalance().add(exchangedKrw));
         dao.updateAccountBalance(account);
+        
+        TransActionDTO trasnaction = new TransActionDTO();
 
+        // 출금내역 저장
+        trasnaction.setAccount_number(dto.getWithdraw_account_number());
+        trasnaction.setAmount(dto.getExchanged_amount());
+        trasnaction.setCurrency("KRW");
+        trasnaction.setComment(currencyCode+"외환판매");
+        trasnaction.setAccount_type("입출금");
+        trasnaction.setTransaction_type("입금");
+        trasnaction.setCustomer_name(customer_name);
+        
+    	System.out.println("입출금 거래내역 저장" + trasnaction);
+    	int result = dao.saveTransactionOut(trasnaction);
+    	System.out.println("내역 저장 결과 = " + result);
+        
         // 4. 거래 기록 저장
         if (dao.chargeWallet(dto) <= 0) {
             throw new RuntimeException("환전 거래 등록 실패");
@@ -253,6 +315,32 @@ public class ExchangeService {
 
         return dao.findTransById(customerId);
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    // 출금기록 저장
+    public void saveTransaction(ExchangeTransactionDTO exchange) {
+//    	TransActionDTO dto = new TransActionDTO();
+//    	
+//    	dto.setAccount_number(exchange.getWithdraw_account_number());
+//    	dto.setAccount_type("출금");
+//    	dto.setAmount(exchange.getRequest_amount());
+//    	dto.setCurrency("KRW");
+//    	dto.setComment("외환구매");
+//    	dto.setAccount_type("입출금");
+    	
+//    	dao.saveTransactionOut(dto);
+    }
+    
     
     // 전체 환전 내역 조회
     public List<ExchangeTransactionDTO> exchangeList(String customer_id){

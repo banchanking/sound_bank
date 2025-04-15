@@ -48,7 +48,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	  )
 	  VALUES (
 	    #{customer_id}, #{withdraw_account_number}, #{currency_code}, #{from_currency}, #{to_currency},
-	    #{request_amount}, #{exchanged_amount},#{exchange_rate},#{transaction_type} , NOW(), CURDATE(), #{approval_status}
+	    #{request_amount}, #{exchanged_amount},#{exchange_rate},#{transaction_type} , NOW(), #{base_date}, #{approval_status}
 	  )
 	</insert>
 	
@@ -68,7 +68,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
   	<!-- 고객 계좌 조회     -->
 	<select id="findAccountById" parameterType="String" resultType="com.boot.sound.inquire.account.AccountDTO">
-		SELECT * FROM ACCOUNT_TBL
+		SELECT * FROM account_tbl
 		WHERE CUSTOMER_ID = #{customer_id} 
 	</select>
 	
@@ -123,27 +123,28 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	    ew.customer_id,
 	    ew.currency_code,
 	    ew.balance,
-	    ew.created_at,
-	    ew.updated_at,
-	    ew.status,
-	    IFNULL(avg_rates.average_rate, 0) AS average_rate
-	  FROM exchange_wallet ew
-	  LEFT JOIN (
+	    IFNULL(avg.avg_rate, 0) AS average_rate,
+	    IFNULL(er.BASE_RATE, 0) AS current_rate
+	FROM exchange_wallet ew
+	LEFT JOIN (
 	    SELECT 
-	      et.customer_id,
-	      et.currency_code,
-	      AVG(er.base_rate) AS average_rate
+	        et.customer_id,
+	        et.currency_code,
+	        AVG(er.base_rate) AS avg_rate
 	    FROM exchange_transaction et
 	    JOIN exchange_rate er
-	      ON et.base_date = er.base_date AND et.currency_code = er.currency_code
+	        ON et.base_date = er.base_date
+	       AND et.currency_code = er.currency_code
 	    WHERE et.transaction_type = 'buy'
 	    GROUP BY et.customer_id, et.currency_code
-	  ) avg_rates
-	    ON ew.customer_id = avg_rates.customer_id
-	    AND ew.currency_code = avg_rates.currency_code
-	  WHERE ew.customer_id = #{customer_id}
-	    AND ew.balance > 0
-	  ORDER BY ew.wallet_id DESC
+	) avg
+	  ON ew.customer_id = avg.customer_id
+	 AND ew.currency_code = avg.currency_code
+	LEFT JOIN exchange_rate er
+	  ON er.base_date = CURDATE()
+	 AND ew.currency_code = er.currency_code
+	WHERE ew.customer_id = #{customer_id}
+	  AND ew.balance > 0;
 	</select>
 	
 	<!-- DB저장 환율 조회 -->
@@ -169,4 +170,29 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		SET status = 'DEACTIVATE'
 		WHERE wallet_id = #{wallet_id} 
 	</update>
+	
+	<!-- 입출금통장 입출금내역 저장 -->
+	<insert id="saveTransactionOut" parameterType="com.boot.sound.inquire.transfer.TransActionDTO">
+	  INSERT INTO transaction_tbl (
+	    ACCOUNT_NUMBER, TRANSACTION_TYPE, AMOUNT, CURRENCY, TRANSACTION_DATE,ACCOUNT_TYPE,customer_name, comment
+	  ) 
+	  VALUES (
+	    #{account_number}, #{transaction_type}, #{amount},#{currency}, NOW(), #{account_type},#{customer_name},#{comment}
+	  )
+	</insert>	
+	
+	<select id="getNameById" parameterType="String" resultType="String">
+		SELECT customer_name
+	  	FROM customer_tbl
+	  	WHERE customer_id = #{customer_id}
+	</select>
+	
+	<!-- 가장최근의환율이 있는 날짜 찾기 -->
+	<select id="findLatestRateDate" resultType="java.sql.Date">
+	  SELECT base_date
+	  FROM exchange_rate
+	  WHERE currency_code = #{currency_code}
+	  ORDER BY base_date DESC
+	  LIMIT 1
+	</select>
 </mapper>   
