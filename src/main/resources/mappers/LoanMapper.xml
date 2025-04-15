@@ -1,317 +1,284 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper 
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
- "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
- 
- <mapper namespace="com.boot.sound.loan.dao.LoanDAO">
-	 <!-- 전체 대출 상품 리스트  -->
- 	<select id="loanList" resultType="com.boot.sound.loan.dto.LoanDTO">
- 		SELECT * FROM LOAN_TBL
- 		ORDER BY LOAN_ID
- 	</select>
- 	
- 	<!-- 대출 상품 등록  -->
- 	<insert id="loanInsert">
- 		INSERT INTO LOAN_TBL(LOAN_NAME,LOAN_MAX_AMOUNT,LOAN_MIN_AMOUNT,INTEREST_RATE,LOAN_TERM,LOAN_INFO,LOAN_TYPE)
-		VALUES( #{loan_name},#{loan_max_amount},#{loan_min_amount},#{interest_rate},#{loan_term},#{loan_info},#{loan_type})
- 	</insert>
- 	
-	<!-- 대출 상품 상세  -->
-	<select id="loanDetail" parameterType="int">
-		SELECT * FROM LOAN_TBL
-		WHERE loan_id = #{loan_id}
-	</select>
-	
-	<!-- 대출 상품 삭제 -->
-	<delete id="loanDelete" parameterType="int">
-		DELETE FROM LOAN_TBL
-		WHERE loan_id = #{loan_id}
-	</delete>
-	
-	<!-- 대출 상품 수정 -->
-	<update id="loanUpdate" parameterType="com.boot.sound.loan.dto.LoanDTO">
-		UPDATE LOAN_TBL
-		SET loan_name = #{loan_name}
-		,	loan_min_amount = #{loan_min_amount}
-		,	loan_max_amount	= #{loan_max_amount}
-		,	interest_rate = #{interest_rate}
-		,	loan_term = #{loan_term}
-		,	loan_info = #{loan_info}
-		,	loan_type = #{loan_type}
-		WHERE loan_id = #{loan_id}
-	</update>
-	
-	<!-- 전체 상품 갯수 -->
-	<select id="loanCnt" resultType="int">
-		SELECT COUNT(*) FROM LOAN_TBL
-	</select>
-	
-	<!-- 대출유형 검색 -->
-	<select id="loanTypeSearch" parameterType="String" resultType="com.boot.sound.loan.dto.LoanDTO">
-		SELECT * FROM LOAN_TBL
- 		WHERE loan_type = #{loan_type}
-	</select>
-	
-	<!-- 대출 유형 검색 갯수 -->
-	<select id="loanTypeCnt" parameterType="String" resultType="int">
-		SELECT COUNT(*) FROM LOAN_TBL
-		WHERE loan_type = #{loan_type}
-	</select>
-	
-	<!-- 상품 이름 검색 -->
-	<select id="loanNameSearch" parameterType="String" resultType="com.boot.sound.loan.dto.LoanDTO">
-	SELECT * FROM LOAN_TBL
-	WHERE loan_name LIKE '%${loan_name}%'
-	</select>
-	
-	<!-- 상품 이름 검색 갯수 -->
-	<select id="loanNameCnt" parameterType="String" resultType="int">
-	SELECT COUNT(*) FROM LOAN_TBL
-	WHERE loan_name LIKE '%${loan_name}%'
-	</select>
-	
-	<!-- 개인정보 이용 및 제공 동의 내역 저장  -->
-	<insert id="consentInsert" parameterType="com.boot.sound.loan.dto.LoanConsentDTO">
-		INSERT INTO LOAN_AGREE_STATUS_TBL(loan_id,customer_id,consent_use1,consent_use2,consent_use3,consent_use4,consent_view1,consent_view2,consent_view3,consent_view4)
-		VALUES (#{loan_id},#{customerId},#{consent_use1},#{consent_use2},#{consent_use3},#{consent_use4},#{consent_view1},#{consent_view2},#{consent_view3},#{consent_view4})
-	</insert>
-	
-	<!-- 가입된 대출 목록 조회  -->
-	<select id="loanCustomer" parameterType="map" resultType="com.boot.sound.loan.dto.LoanCustomerDTO">
-	  SELECT 
-	    l.*,
-	    (SELECT GROUP_CONCAT(a.ACCOUNT_NUMBER SEPARATOR ', ')
-	     FROM ACCOUNT_TBL a 
-	     WHERE a.CUSTOMER_ID = #{customerId}) AS accountNumbers,
-	    (SELECT a.CUSTOMER_ID 
-	     FROM ACCOUNT_TBL a 
-	     WHERE a.CUSTOMER_ID = #{customerId} 
-	     LIMIT 1) AS customer_id
-	  FROM LOAN_TBL l
-	  WHERE l.LOAN_ID = #{loan_id}
-	</select>
- 
- 	<!-- 대출 신청  -->
- 	<insert id="loanApply" parameterType="com.boot.sound.loan.dto.LoanStatusDTO">
- 		INSERT INTO loan_status_tbl(loan_name,loan_id,interest_rate,customer_id,customer_income,customer_credit_score,loan_amount,balance,account_number,repayment_method,repayment_date,loan_type,loan_progress,loan_term,remaining_term)
- 		VALUES(#{loanName}, #{loanId}, #{interestRate}, #{customerId}, #{customerIncome}, #{customerCreditScore}, #{loanAmount}, #{loanAmount}, #{accountNumber}, #{repaymentMethod}, #{repaymentDate}, #{loanType}, '신청', #{loanTerm},#{remainingTerm})
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.sound.loan.dao.LoanDAO">
 
- 	</insert>
+    <select id="loanList" resultType="com.boot.sound.loan.dto.LoanDTO">
+        select * from loan_tbl
+        order by loan_id
+    </select>
 
- 	<!-- 대출 현황 리스트  -->
- 	<select id="loanStatus" resultType="com.boot.sound.loan.dto.LoanStatusDTO">
-	    SELECT
-	        loan_status_no AS loanStatusNo,
-	        customer_id AS customerId,
-	        loan_id AS loanId,
-	        loan_name AS loanName,
-	        interest_rate AS interestRate,
-	        customer_income AS customerIncome,
-	        customer_credit_score AS customerCreditScore,
-	        loan_amount AS loanAmount,
-	        balance,
-	        account_number AS accountNumber,
-	        repayment_method AS repaymentMethod,
-	        repayment_date AS repaymentDate,
-	        loan_type AS loanType,
-	        loan_progress AS loanProgress,
-	        loan_date AS loanDate,
-	        loan_term AS loanTerm,
-	        remaining_term AS remainingTerm
-	    FROM loan_status_tbl
-	    ORDER BY loan_status_no
-	</select>
- 	
- 	<!-- 대출 상태 변경 (승인,거절,만기,중도상환) -->
- 	<update id="loanStatusUpdate" >
- 		UPDATE loan_status_tbl
- 		set loan_progress  = #{loan_progress}
- 		WHERE loan_status_no = #{loan_status_no}
- 	</update>
- 	
- 	<!-- 문자 인증을 위한 고객 정보(name,phone_number) 조회 -->
- 	<select id="selecCustomer" parameterType="String" resultType="com.boot.sound.customer.CustomerDTO">
- 		SELECT 	customer_name,customer_phone_number
- 		FROM 	CUSTOMER_TBL
- 		WHERE customer_id = #{customerId}
- 	</select>
- 	
- 	<!-- 거래내역 저장을 위한 고객정보 (name) 조회 -->
- 	<select id="selectCustomerName" parameterType="String" resultType="String">
- 		SELECT customer_name
- 		FROM CUSTOMER_TBL
- 		WHERE customer_id =#{customerId}
- 	</select>
- 	
- 	<!-- 계좌거래 내역 저장 -->
- 	<insert id="insertTransaction" parameterType="map">
-    INSERT INTO TRANSACTION_TBL (
-        ACCOUNT_NUMBER,
-        TRANSACTION_TYPE,
-        AMOUNT,
-        CURRENCY,
-        COMMENT,
-        CUSTOMER_NAME,
-        ACCOUNT_TYPE
-    )
-    VALUES (
-        #{accountNumber},
-        #{transactionType},
-        #{amount},
-        #{currency},
-        #{comment},
-        #{customerName},
-        #{accountType}
-    )
-	</insert>
-	
-	<!-- 대출이자 납부 내역 저장 -->
-	<insert id="insertInterestPayment" parameterType="com.boot.sound.loan.dto.LoanInterestPaymentDTO">
-    INSERT INTO loan_interest_payment_tbl (
-        LOAN_ID,
-        CUSTOMER_ID,
-        REPAYMENT_AMOUNT,
-        INTEREST_AMOUNT,
-        PRINCIPAL_AMOUNT,
-        REPAYMENT_TERM,
-        REPAYMENT_DATE,
-        ACTUAL_REPAYMENT_DATE,
-        REPAYMENT_STATUS
-    )
-    VALUES (
-        #{loanId},
-        #{customerId},
-        #{repaymentAmount},
-        #{interestAmount},
-        #{principalAmount},
-        #{repaymentTerm},
-        #{repaymentDate},
-        #{actualRepaymentDate},
-        #{repaymentStatus}
-    )
-	</insert>
-	
-	<!-- 미납 등록된 내역이 5일 경과된 내역을 조회  -->
-	<select id="findOverduePayments" resultType="com.boot.sound.loan.dto.LoanInterestPaymentDTO">
-    SELECT 
-        INTEREST_PAYMENT_NO AS interestPaymentNo,
-        LOAN_ID AS loanId,
-        CUSTOMER_ID AS customerId,
-        REPAYMENT_AMOUNT AS repaymentAmount,
-        INTEREST_AMOUNT AS interestAmount,
-        PRINCIPAL_AMOUNT AS principalAmount,
-        REPAYMENT_TERM AS repaymentTerm,
-        REPAYMENT_DATE AS repaymentDate,
-        ACTUAL_REPAYMENT_DATE AS actualRepaymentDate,
-        REPAYMENT_STATUS AS repaymentStatus,
-        CREATED_AT AS createdAt,
-        UPDATED_AT AS updatedAt
-    FROM loan_interest_payment_tbl
-    WHERE REPAYMENT_STATUS = '미납'
-      AND TIMESTAMPDIFF(DAY, created_at, NOW()) > 5
-</select>
-	
-	<!-- 조회된 내역 납부상태 변경  -->
-	<update id="updateRepaymentStatus">
-	    UPDATE loan_interest_payment_tbl
-	    SET REPAYMENT_STATUS = #{repaymentStatus}
-	    WHERE INTEREST_PAYMENT_NO = #{interestPaymentNo}
-	</update>
-	
-	
-	
-	<!-- 연체 정보 등록  -->
-	<insert id="insertLatePayment" parameterType="com.boot.sound.loan.dto.LoanLatePaymentDTO">
-    INSERT INTO loan_late_payment_tbl (
-        LOAN_ID, CUSTOMER_ID, UNPAID_AMOUNT, REPAYMENT_STATUS, OVERDUE_INTEREST
-    ) VALUES (
-        #{loanId}, #{customerId}, #{unpaidAmount}, #{repaymentStatus}, #{overdueInterest}
-    )
-	</insert>
-	
-	<!-- 컬럼명 / 변수명 매핑 -->
-	<resultMap id="LatePaymentResultMap" type="com.boot.sound.loan.dto.LoanLatePaymentDTO">
-	    <result property="loanId" column="LOAN_ID" />
-	    <result property="customerId" column="CUSTOMER_ID" />
-	    <result property="unpaidAmount" column="UNPAID_AMOUNT" />
-	    <result property="repaymentStatus" column="REPAYMENT_STATUS" />
-	    <result property="overdueInterest" column="OVERDUE_INTEREST" />
-	</resultMap>
+    <insert id="loanInsert">
+        insert into loan_tbl(loan_name, loan_max_amount, loan_min_amount, interest_rate, loan_term, loan_info, loan_type)
+        values(#{loan_name}, #{loan_max_amount}, #{loan_min_amount}, #{interest_rate}, #{loan_term}, #{loan_info}, #{loan_type})
+    </insert>
 
-	<!-- 연체로 등록된 납부내역 조회 -->
-	<select id="getLatePayments" resultMap="LatePaymentResultMap">
-	    SELECT * FROM loan_late_payment_tbl
-	    WHERE REPAYMENT_STATUS = '연체'
-	</select>
-	
-	<!-- 대출정보에 저장된 상환계좌 조회 -->
-	<select id="getAccountNumber" resultType="String">
-	   SELECT account_number
-		  FROM loan_status_tbl
-		  WHERE loan_id = #{loanId}
-		    AND customer_id = #{customerId}
-	</select>
-	
-	<!-- 거래내역 저장을 위한 고객 이름 조회 -->
-	<select id="getCustomerName" resultType="String">
-	    SELECT customer_name FROM customer_tbl
-	    WHERE customer_id = #{customerId}
-	</select>
-	
-	<!-- 연체 이력 상태 수정 -->
-	<update id="updateLatePaymentStatusToPaid">
-	    UPDATE loan_late_payment_tbl
-	    SET REPAYMENT_STATUS = #{repaymentStatus}
-	    WHERE loan_id = #{loanId}
-	      AND customer_id = #{customerId}
-	</update>
+    <select id="loanDetail" parameterType="int">
+        select * from loan_tbl
+        where loan_id = #{loan_id}
+    </select>
 
-	<!-- 대출 이자 납부 내역 상태 수정 -->
-	<update id="updateInterestPaymentStatus">
-	    UPDATE loan_interest_payment_tbl
-	    SET REPAYMENT_STATUS = #{repaymentStatus}
-	    WHERE loan_id = #{loanId}
-	      AND customer_id = #{customerId}
-	</update>
-	
-	<!-- 대출금 정기상환시 잔여 회차 차감 -->
-	<update id="reduceLoanRemainingTerm">
-	    UPDATE loan_status_tbl
-	    SET remaining_term = remaining_term - 1
-	    WHERE loan_id = #{loanId}
-	</update>
-	
-	<resultMap id="LoanInterestPaymentMap" type="com.boot.sound.loan.dto.LoanInterestPaymentDTO">
-	    <id property="interestPaymentNo" column="INTEREST_PAYMENT_NO"/>
-	    <result property="loanId" column="LOAN_ID"/>
-	    <result property="customerId" column="CUSTOMER_ID"/>
-	    <result property="repaymentAmount" column="REPAYMENT_AMOUNT"/>
-	    <result property="interestAmount" column="INTEREST_AMOUNT"/>
-	    <result property="principalAmount" column="PRINCIPAL_AMOUNT"/>
-	    <result property="repaymentTerm" column="REPAYMENT_TERM"/>
-	    <result property="repaymentDate" column="REPAYMENT_DATE"/>
-	    <result property="actualRepaymentDate" column="ACTUAL_REPAYMENT_DATE"/>
-	    <result property="repaymentStatus" column="REPAYMENT_STATUS"/>
-	    <result property="createdAt" column="CREATED_AT"/>
-	    <result property="updatedAt" column="UPDATED_AT"/>
-	</resultMap>
-	
-	<!-- 미납 자동이체 시도를 위한 내역 조회 -->
-	<select id="getMissedPayments" resultMap="LoanInterestPaymentMap">
-	 	 SELECT 
-		  INTEREST_PAYMENT_NO,
-		  LOAN_ID,
-		  CUSTOMER_ID,
-		  REPAYMENT_AMOUNT,
-		  INTEREST_AMOUNT,
-		  PRINCIPAL_AMOUNT,
-		  REPAYMENT_TERM,
-		  REPAYMENT_DATE,
-		  REPAYMENT_STATUS,
-		  CREATED_AT,
-		  UPDATED_AT
-		FROM loan_interest_payment_tbl
-		WHERE REPAYMENT_STATUS = '미납'
-	</select>
- 
- </mapper>
+    <delete id="loanDelete" parameterType="int">
+        delete from loan_tbl
+        where loan_id = #{loan_id}
+    </delete>
+
+    <update id="loanUpdate" parameterType="com.boot.sound.loan.dto.LoanDTO">
+        update loan_tbl
+        set loan_name = #{loan_name},
+            loan_min_amount = #{loan_min_amount},
+            loan_max_amount = #{loan_max_amount},
+            interest_rate = #{interest_rate},
+            loan_term = #{loan_term},
+            loan_info = #{loan_info},
+            loan_type = #{loan_type}
+        where loan_id = #{loan_id}
+    </update>
+
+    <select id="loanCnt" resultType="int">
+        select count(*) from loan_tbl
+    </select>
+
+    <select id="loanTypeSearch" parameterType="String" resultType="com.boot.sound.loan.dto.LoanDTO">
+        select * from loan_tbl
+        where loan_type = #{loan_type}
+    </select>
+
+    <select id="loanTypeCnt" parameterType="String" resultType="int">
+        select count(*) from loan_tbl
+        where loan_type = #{loan_type}
+    </select>
+
+    <select id="loanNameSearch" parameterType="String" resultType="com.boot.sound.loan.dto.LoanDTO">
+        select * from loan_tbl
+        where loan_name like '%${loan_name}%'
+    </select>
+
+    <select id="loanNameCnt" parameterType="String" resultType="int">
+        select count(*) from loan_tbl
+        where loan_name like '%${loan_name}%'
+    </select>
+
+    <insert id="consentInsert" parameterType="com.boot.sound.loan.dto.LoanConsentDTO">
+        insert into loan_agree_status_tbl(loan_id, customer_id, consent_use1, consent_use2, consent_use3, consent_use4, consent_view1, consent_view2, consent_view3, consent_view4)
+        values (#{loan_id}, #{customerId}, #{consent_use1}, #{consent_use2}, #{consent_use3}, #{consent_use4}, #{consent_view1}, #{consent_view2}, #{consent_view3}, #{consent_view4})
+    </insert>
+
+    <select id="loanCustomer" parameterType="map" resultType="com.boot.sound.loan.dto.LoanCustomerDTO">
+        select 
+            l.*,
+            (select group_concat(a.account_number separator ', ')
+             from account_tbl a 
+             where a.customer_id = #{customerId}) as accountNumbers,
+            (select a.customer_id 
+             from account_tbl a 
+             where a.customer_id = #{customerId} 
+             limit 1) as customer_id
+        from loan_tbl l
+        where l.loan_id = #{loan_id}
+    </select>
+
+    <insert id="loanApply" parameterType="com.boot.sound.loan.dto.LoanStatusDTO">
+        insert into loan_status_tbl(loan_name, loan_id, interest_rate, customer_id, customer_income, customer_credit_score, loan_amount, balance, account_number, repayment_method, repayment_date, loan_type, loan_progress, loan_term, remaining_term)
+        values(#{loanName}, #{loanId}, #{interestRate}, #{customerId}, #{customerIncome}, #{customerCreditScore}, #{loanAmount}, #{loanAmount}, #{accountNumber}, #{repaymentMethod}, #{repaymentDate}, #{loanType}, '신청', #{loanTerm}, #{remainingTerm})
+    </insert>
+
+    <select id="loanStatus" resultType="com.boot.sound.loan.dto.LoanStatusDTO">
+        select
+            loan_status_no as loanStatusNo,
+            customer_id as customerId,
+            loan_id as loanId,
+            loan_name as loanName,
+            interest_rate as interestRate,
+            customer_income as customerIncome,
+            customer_credit_score as customerCreditScore,
+            loan_amount as loanAmount,
+            balance,
+            account_number as accountNumber,
+            repayment_method as repaymentMethod,
+            repayment_date as repaymentDate,
+            loan_type as loanType,
+            loan_progress as loanProgress,
+            loan_date as loanDate,
+            loan_term as loanTerm,
+            remaining_term as remainingTerm
+        from loan_status_tbl
+        order by loan_status_no
+    </select>
+
+    <update id="loanStatusUpdate">
+        update loan_status_tbl
+        set loan_progress = #{loan_progress}
+        where loan_status_no = #{loan_status_no}
+    </update>
+
+    <select id="selecCustomer" parameterType="String" resultType="com.boot.sound.customer.CustomerDTO">
+        select customer_name, customer_phone_number
+        from customer_tbl
+        where customer_id = #{customerId}
+    </select>
+
+    <select id="selectCustomerName" parameterType="String" resultType="String">
+        select customer_name
+        from customer_tbl
+        where customer_id = #{customerId}
+    </select>
+
+    <insert id="insertTransaction" parameterType="map">
+        insert into transaction_tbl (
+            account_number,
+            transaction_type,
+            amount,
+            currency,
+            comment,
+            customer_name,
+            account_type
+        )
+        values (
+            #{accountNumber},
+            #{transactionType},
+            #{amount},
+            #{currency},
+            #{comment},
+            #{customerName},
+            #{accountType}
+        )
+    </insert>
+
+    <insert id="insertInterestPayment" parameterType="com.boot.sound.loan.dto.LoanInterestPaymentDTO">
+        insert into loan_interest_payment_tbl (
+            loan_id,
+            customer_id,
+            repayment_amount,
+            interest_amount,
+            principal_amount,
+            repayment_term,
+            repayment_date,
+            actual_repayment_date,
+            repayment_status
+        )
+        values (
+            #{loanId},
+            #{customerId},
+            #{repaymentAmount},
+            #{interestAmount},
+            #{principalAmount},
+            #{repaymentTerm},
+            #{repaymentDate},
+            #{actualRepaymentDate},
+            #{repaymentStatus}
+        )
+    </insert>
+
+    <select id="findOverduePayments" resultType="com.boot.sound.loan.dto.LoanInterestPaymentDTO">
+        select 
+            interest_payment_no as interestPaymentNo,
+            loan_id as loanId,
+            customer_id as customerId,
+            repayment_amount as repaymentAmount,
+            interest_amount as interestAmount,
+            principal_amount as principalAmount,
+            repayment_term as repaymentTerm,
+            repayment_date as repaymentDate,
+            actual_repayment_date as actualRepaymentDate,
+            repayment_status as repaymentStatus,
+            created_at as createdAt,
+            updated_at as updatedAt
+        from loan_interest_payment_tbl
+        where repayment_status = '미납'
+          and timestampdiff(day, created_at, now()) > 5
+    </select>
+
+    <update id="updateRepaymentStatus">
+        update loan_interest_payment_tbl
+        set repayment_status = #{repaymentStatus}
+        where interest_payment_no = #{interestPaymentNo}
+    </update>
+
+    <insert id="insertLatePayment" parameterType="com.boot.sound.loan.dto.LoanLatePaymentDTO">
+        insert into loan_late_payment_tbl (
+            loan_id, customer_id, unpaid_amount, repayment_status, overdue_interest
+        ) values (
+            #{loanId}, #{customerId}, #{unpaidAmount}, #{repaymentStatus}, #{overdueInterest}
+        )
+    </insert>
+
+    <resultMap id="LatePaymentResultMap" type="com.boot.sound.loan.dto.LoanLatePaymentDTO">
+        <result property="loanId" column="loan_id"/>
+        <result property="customerId" column="customer_id"/>
+        <result property="unpaidAmount" column="unpaid_amount"/>
+        <result property="repaymentStatus" column="repayment_status"/>
+        <result property="overdueInterest" column="overdue_interest"/>
+    </resultMap>
+
+    <select id="getLatePayments" resultMap="LatePaymentResultMap">
+        select * from loan_late_payment_tbl
+        where repayment_status = '연체'
+    </select>
+
+    <select id="getAccountNumber" resultType="String">
+        select account_number
+        from loan_status_tbl
+        where loan_id = #{loanId}
+          and customer_id = #{customerId}
+    </select>
+
+    <select id="getCustomerName" resultType="String">
+        select customer_name from customer_tbl
+        where customer_id = #{customerId}
+    </select>
+
+    <update id="updateLatePaymentStatusToPaid">
+        update loan_late_payment_tbl
+        set repayment_status = #{repaymentStatus}
+        where loan_id = #{loanId}
+          and customer_id = #{customerId}
+    </update>
+
+    <update id="updateInterestPaymentStatus">
+        update loan_interest_payment_tbl
+        set repayment_status = #{repaymentStatus}
+        where loan_id = #{loanId}
+          and customer_id = #{customerId}
+    </update>
+
+    <update id="reduceLoanRemainingTerm">
+        update loan_status_tbl
+        set remaining_term = remaining_term - 1
+        where loan_id = #{loanId}
+    </update>
+
+    <resultMap id="LoanInterestPaymentMap" type="com.boot.sound.loan.dto.LoanInterestPaymentDTO">
+        <id property="interestPaymentNo" column="interest_payment_no"/>
+        <result property="loanId" column="loan_id"/>
+        <result property="customerId" column="customer_id"/>
+        <result property="repaymentAmount" column="repayment_amount"/>
+        <result property="interestAmount" column="interest_amount"/>
+        <result property="principalAmount" column="principal_amount"/>
+        <result property="repaymentTerm" column="repayment_term"/>
+        <result property="repaymentDate" column="repayment_date"/>
+        <result property="actualRepaymentDate" column="actual_repayment_date"/>
+        <result property="repaymentStatus" column="repayment_status"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="getMissedPayments" resultMap="LoanInterestPaymentMap">
+        select 
+            interest_payment_no,
+            loan_id,
+            customer_id,
+            repayment_amount,
+            interest_amount,
+            principal_amount,
+            repayment_term,
+            repayment_date,
+            repayment_status,
+            created_at,
+            updated_at
+        from loan_interest_payment_tbl
+        where repayment_status = '미납'
+    </select>
+
+</mapper>

@@ -121,6 +121,7 @@ const LoanInsertForm = (props) => {
                   <option vlaue={"담보 대출"}>담보 대출</option>
                   <option vlaue={"전세 대출"}>전세 대출</option>
                   <option vlaue={"자동차 대출"}>자동차 대출</option>
+                  <option vlaue={"정책자금 대출"}>정책자금 대출</option>
                 </select>
               </td>
             </tr>
