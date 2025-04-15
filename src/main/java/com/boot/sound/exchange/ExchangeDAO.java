@@ -79,5 +79,9 @@ public interface ExchangeDAO {
     
     //고객 이름 찾기
     public String getNameById(String customer_id);
+    
+    // 가장최근의환율이 있는 날짜 찾기
+    public Date findLatestRateDate(@Param("currency_code") String currencyCode);
+
 }
 

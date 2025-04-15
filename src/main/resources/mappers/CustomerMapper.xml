@@ -6,7 +6,7 @@
     </select>
     
     <update id="saveRefreshToken" parameterType="String">
-		UPDATE CUSTOMER_TBL
+		UPDATE customer_tbl
     	SET refresh_token = #{refresh_token}
     	WHERE customer_id = #{customerId}
     </update>

@@ -78,7 +78,7 @@ public class ExchangeService {
     
     // 재요청 메서드
     private String fetchWithRetry(String url, int maxRetries, long delayMs) {
-        for (int attempt = 1; attempt <= maxRetries; attempt++) { // 
+        for (int attempt = 1; attempt <= maxRetries; attempt++) { // 재시도 반복문
             try {
                 String response = restTemplate.getForObject(url, String.class);
                 if (response != null && !response.isEmpty()) {
@@ -95,7 +95,7 @@ public class ExchangeService {
             }
         }
         throw new RuntimeException("환율 정보 요청 재시도 실패");
-    }    
+    }
     
     // 고객 계좌 조회
     @Transactional(readOnly = true)
@@ -153,6 +153,9 @@ public class ExchangeService {
         BigDecimal exchangeRate = dto.getExchange_rate();
         String account_num = dto.getWithdraw_account_number();
         String customer_name = dao.getNameById(customerId);
+        Date baseDate = dao.findLatestRateDate(currencyCode); // 가장 최근 환율 날짜
+        dto.setBase_date(baseDate);
+
         // 승인 조건 체크
         if ("buy".equals(dto.getTransaction_type()) && requestAmount.compareTo(new BigDecimal("1000000")) >= 0) { // 100만원 넘을시 Pending
             dto.setApproval_status("PENDING");
@@ -163,7 +166,7 @@ public class ExchangeService {
         System.out.println(customerId +" "+ currencyCode+" "+ requestAmount+" "+ exchangedAmount 
         + " "+ to_currency + " "+ from_currency + dto.getApproval_status() + account_num);
 
-        AccountDTO account = validateAndFetchAccount(dto.getWithdraw_account_number(), requestAmount); // 지갑 잔액 
+        AccountDTO account = validateAndFetchAccount(dto.getWithdraw_account_number(), requestAmount); // 지갑 잔액update 
         
         // 승인 상태가 APPROVED일 때만 출금과 지갑 충전 처리
         if ("APPROVED".equals(dto.getApproval_status())) {
@@ -180,7 +183,6 @@ public class ExchangeService {
             trasnaction.setAccount_type("입출금");
             trasnaction.setTransaction_type("출금");
             trasnaction.setCustomer_name(customer_name);
-            
         	System.out.println("입출금 거래내역 저장" + trasnaction);
         	int result = dao.saveTransactionOut(trasnaction);
         	System.out.println("내역 저장 결과 = " + result);
