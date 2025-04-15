@@ -82,17 +82,21 @@ public class FundController {
     }
     
     // 투자 성향 테스트 등록 및 고객 정보 업데이트
-    @PostMapping("test-result/save")
+    @PostMapping("/test-result/save")
     public ResponseEntity<?> saveFundTestResult(@RequestBody FundTestDTO test) {
         logger.info("<<< controller - saveFundTestResult >>>");
 
-        // 1. 투자 성향 테스트 결과 저장
-        service.saveAndUpdateTest(test);
+        try {
+        	// 1. 투자 성향 테스트 결과 저장
+        	service.saveAndUpdateTest(test);
 
-        // 2. 응답 반환
-        return ResponseEntity.ok("투자 성향 결과가 저장되고 고객 정보가 업데이트되었습니다.");
+        	// 2. 응답 반환
+        	return ResponseEntity.ok("투자성향 저장 및 고객 정보 업데이트 완료");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("오류 발생: " + e.getMessage());
+        }
     }
-
+    
     @GetMapping("/fundRecommend/{customer_id}")
     public ResponseEntity<List<FundDTO>> recommendFunds(@PathVariable String customer_id) {
         logger.info("<<< controller - recommendFunds >>>");

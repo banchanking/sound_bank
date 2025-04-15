@@ -4,26 +4,31 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
  
  <mapper namespace="com.boot.sound.loan.dao.LoanDAO">
+	 <!-- 전체 대출 상품 리스트  -->
  	<select id="loanList" resultType="com.boot.sound.loan.dto.LoanDTO">
  		SELECT * FROM LOAN_TBL
  		ORDER BY LOAN_ID
  	</select>
- 
+ 	
+ 	<!-- 대출 상품 등록  -->
  	<insert id="loanInsert">
  		INSERT INTO LOAN_TBL(LOAN_NAME,LOAN_MAX_AMOUNT,LOAN_MIN_AMOUNT,INTEREST_RATE,LOAN_TERM,LOAN_INFO,LOAN_TYPE)
 		VALUES( #{loan_name},#{loan_max_amount},#{loan_min_amount},#{interest_rate},#{loan_term},#{loan_info},#{loan_type})
  	</insert>
-
+ 	
+	<!-- 대출 상품 상세  -->
 	<select id="loanDetail" parameterType="int">
 		SELECT * FROM LOAN_TBL
 		WHERE loan_id = #{loan_id}
 	</select>
 	
+	<!-- 대출 상품 삭제 -->
 	<delete id="loanDelete" parameterType="int">
 		DELETE FROM LOAN_TBL
 		WHERE loan_id = #{loan_id}
 	</delete>
 	
+	<!-- 대출 상품 수정 -->
 	<update id="loanUpdate" parameterType="com.boot.sound.loan.dto.LoanDTO">
 		UPDATE LOAN_TBL
 		SET loan_name = #{loan_name}
@@ -36,35 +41,42 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		WHERE loan_id = #{loan_id}
 	</update>
 	
+	<!-- 전체 상품 갯수 -->
 	<select id="loanCnt" resultType="int">
 		SELECT COUNT(*) FROM LOAN_TBL
 	</select>
 	
+	<!-- 대출유형 검색 -->
 	<select id="loanTypeSearch" parameterType="String" resultType="com.boot.sound.loan.dto.LoanDTO">
 		SELECT * FROM LOAN_TBL
  		WHERE loan_type = #{loan_type}
 	</select>
 	
+	<!-- 대출 유형 검색 갯수 -->
 	<select id="loanTypeCnt" parameterType="String" resultType="int">
 		SELECT COUNT(*) FROM LOAN_TBL
 		WHERE loan_type = #{loan_type}
 	</select>
 	
+	<!-- 상품 이름 검색 -->
 	<select id="loanNameSearch" parameterType="String" resultType="com.boot.sound.loan.dto.LoanDTO">
 	SELECT * FROM LOAN_TBL
 	WHERE loan_name LIKE '%${loan_name}%'
 	</select>
 	
+	<!-- 상품 이름 검색 갯수 -->
 	<select id="loanNameCnt" parameterType="String" resultType="int">
 	SELECT COUNT(*) FROM LOAN_TBL
 	WHERE loan_name LIKE '%${loan_name}%'
 	</select>
 	
+	<!-- 개인정보 이용 및 제공 동의 내역 저장  -->
 	<insert id="consentInsert" parameterType="com.boot.sound.loan.dto.LoanConsentDTO">
 		INSERT INTO LOAN_AGREE_STATUS_TBL(loan_id,customer_id,consent_use1,consent_use2,consent_use3,consent_use4,consent_view1,consent_view2,consent_view3,consent_view4)
 		VALUES (#{loan_id},#{customerId},#{consent_use1},#{consent_use2},#{consent_use3},#{consent_use4},#{consent_view1},#{consent_view2},#{consent_view3},#{consent_view4})
 	</insert>
 	
+	<!-- 가입된 대출 목록 조회  -->
 	<select id="loanCustomer" parameterType="map" resultType="com.boot.sound.loan.dto.LoanCustomerDTO">
 	  SELECT 
 	    l.*,
@@ -85,7 +97,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  		VALUES(#{loanName}, #{loanId}, #{interestRate}, #{customerId}, #{customerIncome}, #{customerCreditScore}, #{loanAmount}, #{loanAmount}, #{accountNumber}, #{repaymentMethod}, #{repaymentDate}, #{loanType}, '신청', #{loanTerm},#{remainingTerm})
 
  	</insert>
- 	
+
+ 	<!-- 대출 현황 리스트  -->
  	<select id="loanStatus" resultType="com.boot.sound.loan.dto.LoanStatusDTO">
 	    SELECT
 	        loan_status_no AS loanStatusNo,
@@ -109,24 +122,28 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	    ORDER BY loan_status_no
 	</select>
  	
+ 	<!-- 대출 상태 변경 (승인,거절,만기,중도상환) -->
  	<update id="loanStatusUpdate" >
  		UPDATE loan_status_tbl
  		set loan_progress  = #{loan_progress}
  		WHERE loan_status_no = #{loan_status_no}
  	</update>
  	
+ 	<!-- 문자 인증을 위한 고객 정보(name,phone_number) 조회 -->
  	<select id="selecCustomer" parameterType="String" resultType="com.boot.sound.customer.CustomerDTO">
  		SELECT 	customer_name,customer_phone_number
  		FROM 	CUSTOMER_TBL
  		WHERE customer_id = #{customerId}
  	</select>
  	
+ 	<!-- 거래내역 저장을 위한 고객정보 (name) 조회 -->
  	<select id="selectCustomerName" parameterType="String" resultType="String">
  		SELECT customer_name
  		FROM CUSTOMER_TBL
  		WHERE customer_id =#{customerId}
  	</select>
  	
+ 	<!-- 계좌거래 내역 저장 -->
  	<insert id="insertTransaction" parameterType="map">
     INSERT INTO TRANSACTION_TBL (
         ACCOUNT_NUMBER,
@@ -148,6 +165,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     )
 	</insert>
 	
+	<!-- 대출이자 납부 내역 저장 -->
 	<insert id="insertInterestPayment" parameterType="com.boot.sound.loan.dto.LoanInterestPaymentDTO">
     INSERT INTO loan_interest_payment_tbl (
         LOAN_ID,
@@ -211,6 +229,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     )
 	</insert>
 	
+	<!-- 컬럼명 / 변수명 매핑 -->
 	<resultMap id="LatePaymentResultMap" type="com.boot.sound.loan.dto.LoanLatePaymentDTO">
 	    <result property="loanId" column="LOAN_ID" />
 	    <result property="customerId" column="CUSTOMER_ID" />
@@ -219,11 +238,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	    <result property="overdueInterest" column="OVERDUE_INTEREST" />
 	</resultMap>
 
+	<!-- 연체로 등록된 납부내역 조회 -->
 	<select id="getLatePayments" resultMap="LatePaymentResultMap">
 	    SELECT * FROM loan_late_payment_tbl
 	    WHERE REPAYMENT_STATUS = '연체'
 	</select>
 	
+	<!-- 대출정보에 저장된 상환계좌 조회 -->
 	<select id="getAccountNumber" resultType="String">
 	   SELECT account_number
 		  FROM loan_status_tbl
@@ -231,11 +252,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		    AND customer_id = #{customerId}
 	</select>
 	
+	<!-- 거래내역 저장을 위한 고객 이름 조회 -->
 	<select id="getCustomerName" resultType="String">
 	    SELECT customer_name FROM customer_tbl
 	    WHERE customer_id = #{customerId}
 	</select>
 	
+	<!-- 연체 이력 상태 수정 -->
 	<update id="updateLatePaymentStatusToPaid">
 	    UPDATE loan_late_payment_tbl
 	    SET REPAYMENT_STATUS = #{repaymentStatus}
@@ -243,6 +266,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	      AND customer_id = #{customerId}
 	</update>
 
+	<!-- 대출 이자 납부 내역 상태 수정 -->
 	<update id="updateInterestPaymentStatus">
 	    UPDATE loan_interest_payment_tbl
 	    SET REPAYMENT_STATUS = #{repaymentStatus}
@@ -250,20 +274,44 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	      AND customer_id = #{customerId}
 	</update>
 	
+	<!-- 대출금 정기상환시 잔여 회차 차감 -->
 	<update id="reduceLoanRemainingTerm">
 	    UPDATE loan_status_tbl
 	    SET remaining_term = remaining_term - 1
 	    WHERE loan_id = #{loanId}
 	</update>
 	
-	<select id="getMissedPayments" resultType="com.boot.sound.loan.dto.LoanInterestPaymentDTO">
-	 	 SELECT * FROM loan_interest_payment_tbl
-		WHERE repayment_status = '미납'
+	<resultMap id="LoanInterestPaymentMap" type="com.boot.sound.loan.dto.LoanInterestPaymentDTO">
+	    <id property="interestPaymentNo" column="INTEREST_PAYMENT_NO"/>
+	    <result property="loanId" column="LOAN_ID"/>
+	    <result property="customerId" column="CUSTOMER_ID"/>
+	    <result property="repaymentAmount" column="REPAYMENT_AMOUNT"/>
+	    <result property="interestAmount" column="INTEREST_AMOUNT"/>
+	    <result property="principalAmount" column="PRINCIPAL_AMOUNT"/>
+	    <result property="repaymentTerm" column="REPAYMENT_TERM"/>
+	    <result property="repaymentDate" column="REPAYMENT_DATE"/>
+	    <result property="actualRepaymentDate" column="ACTUAL_REPAYMENT_DATE"/>
+	    <result property="repaymentStatus" column="REPAYMENT_STATUS"/>
+	    <result property="createdAt" column="CREATED_AT"/>
+	    <result property="updatedAt" column="UPDATED_AT"/>
+	</resultMap>
+	
+	<!-- 미납 자동이체 시도를 위한 내역 조회 -->
+	<select id="getMissedPayments" resultMap="LoanInterestPaymentMap">
+	 	 SELECT 
+		  INTEREST_PAYMENT_NO,
+		  LOAN_ID,
+		  CUSTOMER_ID,
+		  REPAYMENT_AMOUNT,
+		  INTEREST_AMOUNT,
+		  PRINCIPAL_AMOUNT,
+		  REPAYMENT_TERM,
+		  REPAYMENT_DATE,
+		  REPAYMENT_STATUS,
+		  CREATED_AT,
+		  UPDATED_AT
+		FROM loan_interest_payment_tbl
+		WHERE REPAYMENT_STATUS = '미납'
 	</select>
-	
-	
-	
-	
-	
  
  </mapper>
