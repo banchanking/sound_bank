@@ -25,6 +25,8 @@ import com.boot.sound.exchange.dto.ExchangeWalletDTO;
 import com.boot.sound.inquire.account.AccountDTO;
 
 
+
+
 @RestController
 @RequestMapping("/api/exchange")
 @CrossOrigin // React 프론트엔드 주소
@@ -81,16 +83,26 @@ public class ExchangeController {
             String previousDateStr = previousDate.format(formatter); // 하루 전 날짜를 문자열로 변환
             rates = service.getDbExchangeRateList(previousDateStr); // 하루 전 날짜의 환율 조회
             System.out.println("하루전날짜조회 =" + rates);
-        } else if(rates == null || rates.isEmpty()){
-           
-            System.out.println("기준일" + date + "의 환율이 없습니다.");
-
-            // 이틀 전 날짜 계산
-            LocalDate previousDate = requestDate.minusDays(2);
-            String previousDateStr = previousDate.format(formatter); // 이틀 전 날짜를 문자열로 변환
-            rates = service.getDbExchangeRateList(previousDateStr); // 이틀 전 날짜의 환율 조회
-            System.out.println("이틀전날짜조회 =" + rates);
-        }               
+          
+            if(rates == null || rates.isEmpty()){
+                System.out.println("기준일" + date + "의 환율이 없습니다.");
+                
+                // 이틀 전 날짜 계산
+                LocalDate twoDays = requestDate.minusDays(2);
+                String twoDaysStr = twoDays.format(formatter); // 이틀 전 날짜를 문자열로 변환
+                rates = service.getDbExchangeRateList(twoDaysStr); // 이틀 전 날짜의 환율 조회
+                System.out.println("이틀전날짜조회 =" + rates);
+                
+                if(rates == null || rates.isEmpty()){
+                    System.out.println("기준일" + date + "의 환율이 없습니다.");
+                    // 3일 전 날짜 계산
+                    LocalDate threeDays = requestDate.minusDays(3);
+                    String threeDaysStr = threeDays.format(formatter); // 이틀 전 날짜를 문자열로 변환
+                    rates = service.getDbExchangeRateList(threeDaysStr); // 이틀 전 날짜의 환율 조회
+                    System.out.println("3일전날짜조회 =" + rates);
+                }
+            }
+        } 
        
         return ResponseEntity.ok(rates); // 상태 코드 200과 함께 반환
     }
@@ -136,6 +148,7 @@ public class ExchangeController {
         System.out.println("controller - handleApproval");
         
         try {
+        	System.out.println("dto = " + dto.getCustomer_id());
             service.handleApprovalAction(dto);
             return ResponseEntity.ok("거래 처리 완료");
         } catch (Exception e) {

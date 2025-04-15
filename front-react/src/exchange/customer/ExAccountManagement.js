@@ -24,29 +24,33 @@ const ExAccountManagement = () => {
   }, [customer_id]);
 
   const handleDeactivate = async (wallet) => {
-    if (wallet.balance > 0) {
-      alert("지갑에 잔액이 있습니다. 해지할 수 없습니다.");
-      return;
+    if(window.confirm("정말로 지갑을 해지하시겠습니까?")){
+      if (wallet.balance > 0) {
+        alert("지갑에 잔액이 있습니다. 해지할 수 없습니다.");
+        return;
+      }
+  
+      try {
+        const response = await RefreshToken.put(
+          `http://localhost:8081/api/exchange/deactivateWallet/${wallet.wallet_id}`
+        );
+        
+        alert("지갑 해지 신청이 완료되었습니다.");
+        
+        // 해지 후 목록 다시 조회
+        setWallets((prev) =>
+          prev.map((w) =>
+            w.wallet_id === wallet.wallet_id
+              ? { ...w, status: "DEACTIVATE" }
+              : w
+          )
+        );
+      } catch (error) {
+        console.error("지갑 해지 실패", error);
+        alert("지갑 해지 중 오류가 발생했습니다.");
+      }
     }
-
-    try {
-      const response = await RefreshToken.put(
-        `http://localhost:8081/api/exchange/deactivateWallet/${wallet.wallet_id}`
-      );
-      alert("지갑 해지 신청이 완료되었습니다.");
-      
-      // 해지 후 목록 다시 조회
-      setWallets((prev) =>
-        prev.map((w) =>
-          w.wallet_id === wallet.wallet_id
-            ? { ...w, status: "DEACTIVATE" }
-            : w
-        )
-      );
-    } catch (error) {
-      console.error("지갑 해지 실패", error);
-      alert("지갑 해지 중 오류가 발생했습니다.");
-    }
+    
   };
 
   return (
