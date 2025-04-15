@@ -42,8 +42,8 @@ const FundTestResult = () => {
 
         return (
           <div className={styles.fundtestresultcontainer}>
-            <h1 className={styles.fundtestresulttitle}>투자성향 분석 결과</h1>
-            <table className={styles.fundtestresulttable}>
+            <h1 className={styles.fundtesttitle}>투자성향 분석 결과</h1>
+            <table className={styles.fundTable}>
               <tbody>
                 <tr>
                   <td>
@@ -53,9 +53,9 @@ const FundTestResult = () => {
               </tbody>
             </table>
       
-            <div className={styles.fundtestresultbuttons}>
+            <div style={{ textAlign: "center", marginTop: "2rem" }}>
               <button
-                className={styles.fundtestresultbutton}
+                className={styles.fundtestsubmit}
                 onClick={() =>
                   navigate("/fundRecommend", {
                     state: {

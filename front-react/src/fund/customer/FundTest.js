@@ -153,12 +153,12 @@ const FundTest = () => {
     };
 
   return (
-    <div className={styles.fundtestcontainer}>
+    <div className={styles.fundContainer}>
       <h2 className={styles.fundtesttitle}>투자성향 분석</h2>
       <div className={styles.fundtestcard}>
         {questions.map((question, index) => (
-          <div key={index} id={`question-${index}`} className={styles.fundtestquestion}>
-            <p className={styles.fundtestquestiontitle}>{question.question}</p>
+          <div key={index} id={`question-${index}`} className={styles.testquestion}>
+            <p className={styles.testquestiontitle}><span className={styles.questionNumber}>{index + 1}.</span>{question.question}</p>
             {question.options.map((option, optionIndex) => (
               <div key={optionIndex} className={styles.fundtestoption}>
                 <input
@@ -174,10 +174,12 @@ const FundTest = () => {
           </div>
         ))}
       </div>
+      <div className={styles.actionbuttons}>
       <button className={styles.fundtestsubmit} onClick={handleSubmit}>
         결과 확인
       </button>
       {result !== null && <h3 className={styles.fundtestresult}>예측된 투자 성향: {result}</h3>}
+    </div>
     </div>
   );
 };
