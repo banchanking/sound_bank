@@ -16,7 +16,9 @@ const FundProductAdmin = () => {
     return_3m: 0,
     return_6m: 0,
     return_12m: 0,
+    fund_risk_type: "",
   }); // 팝업창에서 입력할 폼 데이터
+  
   const [isPopupOpen, setIsPopupOpen] = useState(false); // 팝업창 상태
 
   // CSV 파일에서 펀드 목록 가져오기
@@ -44,11 +46,18 @@ const FundProductAdmin = () => {
           );
 
           // 4-1. fund_risk_type 컬럼 제거
-          const cleanedFunds = filteredFunds.map((fund) => {
-            const copy = { ...fund };
-            delete copy["fund_risk_type"];
-            return copy;
-          });
+          const cleanedFunds = filteredFunds.map((fund) => ({
+            fund_name: fund["상품명"],
+            fund_company: fund["운용사명"],
+            fund_type: fund["펀드유형"],
+            fund_grade: fund["펀드등급"],
+            fund_fee_rate: fund["총보수(퍼센트)"],
+            fund_upfront_fee: fund["선취수수료(퍼센트)"],
+            return_1m: fund["1개월누적수익률(퍼센트)"],
+            return_3m: fund["3개월누적수익률(퍼센트)"],
+            return_6m: fund["6개월누적수익률(퍼센트)"],
+            return_12m: fund["12개월누적수익률(퍼센트)"]
+          }));
 
           // 5. 등록된 펀드 목록 저장
           setFunds(cleanedFunds); // 테이블에 표시할 데이터 저장 - 필터링된 데이터로 상태 업데이트
@@ -80,6 +89,7 @@ const FundProductAdmin = () => {
       return_6m: fund["return_6m"] || 0,
       return_12m: fund["return_12m"] || 0,
       fund_risk_type: fund["fund_risk_type"] || "",
+      
     });
     setIsPopupOpen(true); // 팝업창 열기
   };
@@ -123,11 +133,6 @@ const FundProductAdmin = () => {
   // 펀드 등록
   const handleSaveFund = async () => {
     try {
-      const customerId = localStorage.getItem("customer_id");
-      if (!customerId) {
-        alert("로그인이 필요합니다.");
-      return;
-    }
       // 1. 등록된 펀드 상품 목록 가져오기     
       // Axios 인스턴스 RefreshToken 사용
       await RefreshToken.post(
@@ -153,11 +158,11 @@ const FundProductAdmin = () => {
     };
 
   return (
-    <div className={styles.fundproductadmincontainer}>
+    <div className={styles.fundContainer}>
       <h2>펀드 상품 관리</h2>
 
       {/* 펀드 목록 테이블 */}
-      <table className={styles.fundtable}>
+      <table className={styles.fundTable}>
         <thead>
           <tr>
             <th>펀드명</th>
@@ -196,11 +201,11 @@ const FundProductAdmin = () => {
 
       {/* 펀드 등록 팝업 */}
       {isPopupOpen && (
-        <div className={styles.popupcontainer}>
-          <div className={styles.popupcontent}>
-            <div className="popup-header">
+        <div className={styles.popupOverlay}>
+          <div className={styles.popupModal}>
+            <div className={styles.popupHeader}>
               <h3>펀드 등록</h3>
-              <span className="close" onClick={handleClosePopup}>
+              <span className={styles.closeButton} onClick={handleClosePopup}>
                 &times;
               </span>
             </div>

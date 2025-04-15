@@ -51,4 +51,21 @@ public class LoanInterestPaymentDTO {
     @Column(name = "UPDATED_AT", insertable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
+    
+    @Override
+    public String toString() {
+        return "LoanInterestPaymentDTO{" +
+                "loanId=" + loanId +
+                ", customerId='" + customerId + '\'' +
+                ", repaymentAmount=" + repaymentAmount +
+                ", interestAmount=" + interestAmount +
+                ", principalAmount=" + principalAmount +
+                ", repaymentTerm=" + repaymentTerm +
+                ", repaymentDate=" + repaymentDate +
+                ", actualRepaymentDate=" + (actualRepaymentDate != null ? actualRepaymentDate : "미납 상태") +
+                ", repaymentStatus='" + repaymentStatus + '\'' +
+                '}';
+    }
+    
+    
 	}

@@ -66,7 +66,8 @@ public class FundServiceImpl {
 	@Transactional
 	public void updateRiskTypes(List<FundDTO> funds) {
 	    for (FundDTO fund : funds) {
-	        fundRepository.updateRiskType(fund.getFund_id(), fund.getFund_risk_type());
+	    	System.out.println("🔁 업데이트: " + fund.getFund_name() + " → " + fund.getFund_risk_type());
+	        fundRepository.updateRiskType(fund.getFund_name(), fund.getFund_risk_type());
 	    }
 	}
 	
@@ -79,7 +80,7 @@ public class FundServiceImpl {
 		fundRepository.insertTestResult(test);
 		
 		// 2. 고객 정보 업데이트
-		fundRepository.updateCustomerRiskType(test.getCustomerId(),
+		fundRepository.updateCustomerRiskType(test.getCustomer_id(),
 				test.getFund_risk_type());
 		System.out.println("테스트 결과 투자성향" + test.getFund_risk_type());
 	}
