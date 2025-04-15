@@ -274,6 +274,9 @@ public class ExchangeService {
         BigDecimal sellAmount = dto.getRequest_amount();      // 외화 금액
         BigDecimal exchangedKrw = dto.getExchanged_amount();  // 환전 후 받을 KRW
         String customer_name = dao.getNameById(customerId);
+        Date baseDate = dao.findLatestRateDate(currencyCode); // 가장 최근 환율 날짜
+        dto.setApproval_status("APPROVED");
+        dto.setBase_date(baseDate);
 
         // 1. 외화 지갑 확인
         ExchangeWalletDTO wallet = dao.findWalletByCustomerAndCurrency(customerId, currencyCode);
