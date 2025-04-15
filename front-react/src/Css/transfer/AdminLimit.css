@@ -1,0 +1,29 @@
+.admin-limit-container {
+  min-height: 560px;
+  padding: 30px;
+}
+
+.admin-limit-content {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.admin-limit-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-limit-table th, .admin-limit-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+}
+
+.admin-limit-table th {
+  background-color: #f4f4f4;
+}
+
+.admin-limit-table button {
+  padding: 5px 10px;
+  margin: 2px;
+}

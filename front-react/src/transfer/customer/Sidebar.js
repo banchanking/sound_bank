@@ -31,7 +31,13 @@ function Sidebar() {
         </li>
 
         {/* 이체한도 변경 */}
-        <li style={{ fontWeight: 'bold'}} onClick={() => navigate('/TransLimit')}>이체한도 변경</li>
+        <li>
+          <div className="submenu-title">이체한도</div>
+          <ul className="submenu">
+            <li onClick={() => navigate('/TransLimit')}>이체한도 변경신청</li>
+            <li onClick={() => navigate('/TransLimitEdit')}>신청내역 관리</li>
+          </ul>
+        </li>
       </ul>
     </div>
   );

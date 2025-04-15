@@ -35,7 +35,7 @@ public interface AccountRepository extends CrudRepository<AccountDTO, String> {
     @Query("UPDATE AccountDTO a SET a.balance = a.balance + :money WHERE a.accountNumber = :acc")
     int plusBalance(@Param("acc") String acc, @Param("money") BigDecimal money);
 
-    // 계좌번호(account_number)로 계좌를 찾는 메서드
+    // 계좌번호 조회
     Optional<AccountDTO> findByAccountNumber(String account_number);
     
 }
