@@ -11,7 +11,7 @@
     </select>
 
 	 <insert id="insertAccount">
-    INSERT INTO ACCOUNT_TBL (
+    INSERT INTO account_tbl (
       ACCOUNT_NUMBER, CUSTOMER_ID, ACCOUNT_TYPE,
       BALANCE, INTEREST_RATE, YIELD_RATE,
       CURRENCY_TYPE, ACCOUNT_NAME, OPEN_DATE
