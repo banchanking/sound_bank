@@ -114,7 +114,7 @@ const FundProductManage = () => {
 };
 
   return (
-    <div className={styles.fundproductmanagecontainer}>
+    <div className={styles.fundContainer}>
       <h2>펀드 상품 관리</h2>
 
       {/* 펀드 수정/삭제 폼 */}
@@ -235,6 +235,7 @@ const FundProductManage = () => {
               readOnly
             />
           </div>
+          <div className={styles.actionbuttons}>
           <button type="submit">수정</button>
           <button
             type="button"
@@ -248,6 +249,7 @@ const FundProductManage = () => {
           >
             삭제
           </button>
+          </div>
         </form>
       </div>
     </div>
