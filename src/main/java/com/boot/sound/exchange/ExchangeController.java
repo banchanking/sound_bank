@@ -42,12 +42,12 @@ public class ExchangeController {
         System.out.println("<<<< Controller API 요청 환율 조회 >>>>>>");
 
         if (date == null || date.isEmpty()) {
-            date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")); // 날짜 포맷터
         }
 
         System.out.println("paramDate : " + date);
 
-        List<Map<String, Object>> rates = service.getExchangeRates(date);
+        List<Map<String, Object>> rates = service.getExchangeRates(date); 
         System.out.println("List = " + rates);
 
         return ResponseEntity.ok(rates); // 상태 코드 200과 함께 반환
@@ -59,7 +59,7 @@ public class ExchangeController {
 
         System.out.println("<<<< Controller DB환율 요청 >>>>>>");
 
-        // 날짜 포맷터 정의
+        // 날짜 포맷터
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate requestDate;
 

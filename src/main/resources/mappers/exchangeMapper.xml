@@ -48,7 +48,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	  )
 	  VALUES (
 	    #{customer_id}, #{withdraw_account_number}, #{currency_code}, #{from_currency}, #{to_currency},
-	    #{request_amount}, #{exchanged_amount},#{exchange_rate},#{transaction_type} , NOW(), CURDATE(), #{approval_status}
+	    #{request_amount}, #{exchanged_amount},#{exchange_rate},#{transaction_type} , NOW(), #{base_date}, #{approval_status}
 	  )
 	</insert>
 	
@@ -185,5 +185,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		SELECT customer_name
 	  	FROM customer_tbl
 	  	WHERE customer_id = #{customer_id}
+	</select>
+	
+	<!-- 가장최근의환율이 있는 날짜 찾기 -->
+	<select id="findLatestRateDate" resultType="java.sql.Date">
+	  SELECT base_date
+	  FROM exchange_rate
+	  WHERE currency_code = #{currency_code}
+	  ORDER BY base_date DESC
+	  LIMIT 1
 	</select>
 </mapper>   
