@@ -232,7 +232,7 @@ public class LoanService {
 		public void reduceLoanRemainingTerm(int loanId) {
 			dao.reduceLoanRemainingTerm(loanId);
 		}
-		
+		@Transactional
 		public List<LoanInterestPaymentDTO> getMissedPaymentsToRetry() {
 		    return dao.getMissedPayments();
 		}
