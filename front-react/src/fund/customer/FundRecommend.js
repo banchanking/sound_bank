@@ -26,10 +26,11 @@ const FundRecommend = () => {
     }, []);
 
     return (
-        <div className={styles.fundrecommendcontainer}>
+        <div className={styles.fundContainer}>
+        <div className={styles.fundtesttitle}>
             <h1> 투자성향 기반 추천 펀드</h1>
             {recommendedFunds.length> 0 ? (
-                <table className={styles.fundtable}>
+                <table className={styles.fundTable}>
                     <thead>
                         <tr>
                             <th>펀드명</th>
@@ -60,6 +61,7 @@ const FundRecommend = () => {
             ) : (
                 <p>추천할 펀드가 없습니다.</p>
             )}
+        </div>
         </div>
     );
 };

@@ -158,11 +158,11 @@ const FundProductAdmin = () => {
     };
 
   return (
-    <div className={styles.fundproductadmincontainer}>
+    <div className={styles.fundContainer}>
       <h2>펀드 상품 관리</h2>
 
       {/* 펀드 목록 테이블 */}
-      <table className={styles.fundtable}>
+      <table className={styles.fundTable}>
         <thead>
           <tr>
             <th>펀드명</th>
@@ -203,7 +203,7 @@ const FundProductAdmin = () => {
       {isPopupOpen && (
         <div className={styles.popupOverlay}>
           <div className={styles.popupModal}>
-            <div className="popup-header">
+            <div className={styles.popupHeader}>
               <h3>펀드 등록</h3>
               <span className={styles.closeButton} onClick={handleClosePopup}>
                 &times;
