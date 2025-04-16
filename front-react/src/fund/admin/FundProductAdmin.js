@@ -42,21 +42,21 @@ const FundProductAdmin = () => {
           
           // 4. 등록된 상품을 제외한 목록 필터링
           const filteredFunds = results.data
-            .filter((fund) => !registeredFundNames.includes(fund["상품명"])
+            .filter((fund) => !registeredFundNames.includes(fund["fund_name"])
           );
 
           // 4-1. fund_risk_type 컬럼 제거
           const cleanedFunds = filteredFunds.map((fund) => ({
-            fund_name: fund["상품명"],
-            fund_company: fund["운용사명"],
-            fund_type: fund["펀드유형"],
-            fund_grade: fund["펀드등급"],
-            fund_fee_rate: fund["총보수(퍼센트)"],
-            fund_upfront_fee: fund["선취수수료(퍼센트)"],
-            return_1m: fund["1개월누적수익률(퍼센트)"],
-            return_3m: fund["3개월누적수익률(퍼센트)"],
-            return_6m: fund["6개월누적수익률(퍼센트)"],
-            return_12m: fund["12개월누적수익률(퍼센트)"]
+            fund_name: fund["fund_name"],
+            fund_company: fund["fund_company"],
+            fund_type: fund["fund_type"],
+            fund_grade: fund["fund_grade"],
+            fund_fee_rate: fund["fund_fee_rate"],
+            fund_upfront_fee: fund["fund_upfront_fee"],
+            return_1m: fund["return_1m"],
+            return_3m: fund["return_3m"],
+            return_6m: fund["return_6m"], 
+            return_12m: fund["return_12m"],
           }));
 
           // 5. 등록된 펀드 목록 저장

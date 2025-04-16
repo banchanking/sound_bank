@@ -1,10 +1,14 @@
-package com.boot.sound.fund;
+package com.boot.sound.fund.service;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.boot.sound.fund.dto.FundDTO;
+import com.boot.sound.fund.dto.FundTestDTO;
+import com.boot.sound.fund.repo.FundRepository;
 
 @Service
 public class FundServiceImpl {
@@ -23,7 +27,9 @@ public class FundServiceImpl {
 	@Transactional
 	public int saveFund(FundDTO dto) {
 		System.out.println("서비스 - saveFund");
-		return fundRepository.insertFund(dto);
+		int result = fundRepository.insertFund(dto);
+	    System.out.println("insert 결과: " + result);
+	    return result;
 	}
 
 	@Transactional

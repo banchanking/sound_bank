@@ -1,9 +1,12 @@
-package com.boot.sound.fund;
+package com.boot.sound.fund.repo;
 
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
+import com.boot.sound.fund.dto.FundDTO;
+import com.boot.sound.fund.dto.FundTestDTO;
 
 @Mapper
 public interface FundRepository {

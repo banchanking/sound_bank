@@ -1,4 +1,4 @@
-package com.boot.sound.fund;
+package com.boot.sound.fund.dto;
 
 import java.util.Date;
 
@@ -22,7 +22,7 @@ import lombok.ToString;
 @Entity				// ORM(table의 컬럼과 object의 멤버변수를 매핑)
 @Builder			// 매개변수 생성자에 순서없이 값을 입력해서 세팅해도 마지막에 build()를 통해 빌더를 작동시킨다. 같은 타입의 다른변수의 값을 서로 바꿔넣는 것을 방지한다. 
 @ToString
-@Table(name = "FUND_TEST_TBL")
+@Table(name = "fund_test_tbl")
 public class FundTestDTO {
     
 	@Id
