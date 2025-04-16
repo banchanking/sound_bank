@@ -3,6 +3,7 @@ package com.boot.sound.exchange;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -154,7 +155,8 @@ public class ExchangeService {
         String account_num = dto.getWithdraw_account_number();
         String customer_name = dao.getNameById(customerId);
         Date baseDate = dao.findLatestRateDate(currencyCode); // 가장 최근 환율 날짜
-        dto.setBase_date(baseDate);
+        dto.setBase_date(baseDate);    
+        System.out.println(LocalDate.now());
 
         // 승인 조건 체크
         if ("buy".equals(dto.getTransaction_type()) && requestAmount.compareTo(new BigDecimal("1000000")) >= 0) { // 100만원 넘을시 Pending
@@ -182,7 +184,7 @@ public class ExchangeService {
             trasnaction.setComment(currencyCode+"외환구매");
             trasnaction.setAccount_type("입출금");
             trasnaction.setTransaction_type("출금");
-            trasnaction.setCustomer_name(customer_name);
+            trasnaction.setCustomer_name(customer_name);            
         	System.out.println("입출금 거래내역 저장" + trasnaction);
         	int result = dao.saveTransactionOut(trasnaction);
         	System.out.println("내역 저장 결과 = " + result);

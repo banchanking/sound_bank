@@ -11,19 +11,30 @@ const ExCalc = ({ isOpen, onClose, exchange }) => {
     const item = exchange.find((item) => item.currency_code === currencyCode); // 선택한 통화의 코드를 환율에서 찾는다.
     return item ? item.base_rate : null;
   };
+  
+  // 금액 입력 처리 함수 (콤마 포함된 상태로 입력 → 숫자로 변환 후 상태 저장)
+  const handleAmountChange = (e) => {
+    const rawValue = e.target.value.replace(/,/g, "");
+    if (!isNaN(rawValue)) {
+      const numberValue = Number(rawValue);
+      setAmount(numberValue.toLocaleString());
+    }
+  };
 
+  // 환율 계산 시 숫자만 추출해서 계산
   const calculateExchange = () => {
     if (!fromCurrency || !toCurrency || !amount) {
-      setConvertedAmount(null);   // 환전된 통화
+      setConvertedAmount(null);
       return;
     }
 
     const fromRate = getRate(fromCurrency);
     const toRate = getRate(toCurrency);
+    const numericAmount = Number(amount.toString().replace(/,/g, ""));
 
-    if (fromRate && toRate) {
-      const result = amount * (fromRate / toRate); // 계산결과 = 요청금액 * (from환율 / to환율)
-      setConvertedAmount(result.toFixed(2)); // 소수점2자리로 끊는다.
+    if (fromRate && toRate && numericAmount > 0) {
+      const result = numericAmount * (fromRate / toRate);
+      setConvertedAmount(result.toFixed(2));
     } else {
       setConvertedAmount(null);
     }
@@ -43,9 +54,9 @@ const ExCalc = ({ isOpen, onClose, exchange }) => {
         <div>
           <label>금액:</label>
           <input
-            type="number"
+            type="text" // 중요! type="number" → "text"로 바꿔야 콤마 표시 가능
             value={amount}
-            onChange={(e) => setAmount(e.target.value)}
+            onChange={handleAmountChange}
           />
         </div>
 
@@ -77,7 +88,8 @@ const ExCalc = ({ isOpen, onClose, exchange }) => {
           <div>
             <h4>결과:</h4>
             <p>
-              {amount} {fromCurrency} = {convertedAmount} {toCurrency}
+              {Number(amount.replace(/,/g, "")).toLocaleString()} {fromCurrency} ={" "}
+              {Number(convertedAmount).toLocaleString()} {toCurrency}
             </p>
           </div>
         )}

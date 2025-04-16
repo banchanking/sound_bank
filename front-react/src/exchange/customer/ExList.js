@@ -49,10 +49,16 @@ const ExList = () => {
             transactions.map((tx, index) => (
               <tr key={index}>
                 <td className={styles.td}>
-                  {new Date(tx.exchange_transaction_date.replace(' ', 'T')).toLocaleString('ko-KR')}
+                  {tx.exchange_transaction_date
+                    ? new Date(tx.exchange_transaction_date.replace(" ", "T")).toLocaleString()
+                    : "거래 시간 없음"}
                 </td>
-                <td className={styles.td}>{tx.request_amount.toLocaleString()}{tx.from_currency}</td>
-                <td className={styles.td}>{tx.exchanged_amount.toLocaleString()}{tx.to_currency}</td>
+                <td className={styles.td}>
+                  {tx.request_amount?.toLocaleString()} {tx.from_currency}
+                </td>
+                <td className={styles.td}>
+                  {tx.exchanged_amount?.toLocaleString()} {tx.to_currency}
+                </td>
                 <td className={styles.td}>{tx.transaction_type}</td>
               </tr>
             ))
