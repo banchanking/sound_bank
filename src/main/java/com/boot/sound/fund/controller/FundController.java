@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.boot.sound.fund.dto.FundAccountDTO;
 import com.boot.sound.fund.dto.FundDTO;
 import com.boot.sound.fund.dto.FundTestDTO;
 import com.boot.sound.fund.service.FundServiceImpl;
@@ -101,6 +102,7 @@ public class FundController {
         }
     }
     
+    // 펀드 추천
     @GetMapping("/fundRecommend/{customer_id}")
     public ResponseEntity<List<FundDTO>> recommendFunds(@PathVariable String customer_id) {
         logger.info("<<< controller - recommendFunds >>>");
@@ -115,5 +117,19 @@ public class FundController {
         
         return ResponseEntity.ok(recommendedFunds);
     }
+    
+    // 펀드 계좌 개설
+    @PostMapping("/fund/open")
+    public ResponseEntity<?> openFundAccount(@RequestBody FundAccountDTO dto) {
+    	service.openFundAccount(dto);
+        return ResponseEntity.ok("펀드 계좌 개설 신청 완료");
+    }
+    
+    // 펀드 계좌 조회
+    @GetMapping("/accounts/allAccount/fund/{customer_id}")
+    public ResponseEntity<List<FundAccountDTO>> getAccounts(@PathVariable String customerId) {
+        return ResponseEntity.ok(service.getFundAccounts(customerId));
+    }
+    
 }
     

@@ -111,4 +111,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         FROM fund_tbl
         WHERE FUND_RISK_TYPE = #{fund_risk_type}
     </select>
+    
+    <!-- 고객 보유계좌 조회 -->
+    <select id="findByCustomerId" resultType="com.boot.sound.inquire.account.AccountDTO">
+	    SELECT account_number, customer_id, account_type, balance
+	    FROM account_tbl
+	    WHERE CUSTOMER_ID = #{customerId}
+	</select>
+
+
 </mapper>

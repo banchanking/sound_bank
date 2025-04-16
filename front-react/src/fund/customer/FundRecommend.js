@@ -4,8 +4,6 @@ import RefreshToken from "../../jwt/RefreshToken"; // 인증 포함된 인스턴
 
 const FundRecommend = () => {
     const [recommendedFunds, setRecommendedFunds] = useState([]);
-    const customerId = localStorage.getItem("customerId"); // 로그인된 사용자 ID 가져오기
-
     useEffect(() => {
         const fetchRecommendedFunds = async () => {
             const customerId = localStorage.getItem("customerId");

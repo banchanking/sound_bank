@@ -16,33 +16,31 @@ public class FundAccountDTO {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "FUND_ACCOUNT_ID", nullable = false, updatable = false)
-    private Integer fund_account_id;
+    private Integer fundAccountId;
 
     @Column(name = "CUSTOMER_ID", nullable = false)
-    private String customer_id;
+    private String customerId;
 
     @Column(name = "FUND_ACCOUNT_PASSWORD", nullable = false)
-    private String fund_account_password;
+    private String fundAccountPassword;
 
     @Column(name = "FUND_ACCOUNT_NUMBER", nullable = false, unique = true)
-    private String fund_account_number;
+    private String fundAccountNumber;
 
     @Column(name = "FUND_BALANCE", precision = 15, scale = 2)
-    private BigDecimal fund_balance = BigDecimal.ZERO;
+    private BigDecimal fundBalance = BigDecimal.ZERO;
 
     @Column(name = "FUND_OPEN_DATE")
-    private LocalDate fund_open_date;
+    private LocalDate fundOpenDate;
 
     @Column(name = "LINKED_ACCOUNT_NUMBER")
-    private String linked_account_number;
+    private String linkedAccount_number;
 
     @Column(name = "STATUS", length = 20)
     private String status = "PENDING";
 
     @Column(name = "CLOSE_DATE")
-    private LocalDate close_date;
+    private LocalDate closeDate;
 
-    @Column(name = "FUND_ACCOUNT_NAME", length = 50)
-    private String fund_account_name;
 }
 
