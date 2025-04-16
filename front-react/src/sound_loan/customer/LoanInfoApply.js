@@ -181,7 +181,10 @@ const LoanInfoApply = () => {
                   onChange={change_value}
                   style={{ textAlign: "right" }}
                 >
-                  {Array.from({ length: 10 }, (_, i) => i + 1).map((term) => (
+                  {Array.from(
+                    { length: loan_info.loan_term },
+                    (_, i) => i + 1
+                  ).map((term) => (
                     <option key={term} value={term}>
                       {term}년
                     </option>
