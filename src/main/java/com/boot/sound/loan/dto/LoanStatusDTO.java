@@ -69,4 +69,7 @@ public class LoanStatusDTO {
 
     @Column(name = "remaining_term")
     private int remainingTerm;
+    
+    @Transient
+    private int no;
 } 

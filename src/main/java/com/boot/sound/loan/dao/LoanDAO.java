@@ -9,12 +9,15 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import com.boot.sound.customer.CustomerDTO;
+import com.boot.sound.loan.dto.LoanApplyWithTermsDTO;
 import com.boot.sound.loan.dto.LoanConsentDTO;
 import com.boot.sound.loan.dto.LoanCustomerDTO;
 import com.boot.sound.loan.dto.LoanDTO;
 import com.boot.sound.loan.dto.LoanInterestPaymentDTO;
 import com.boot.sound.loan.dto.LoanLatePaymentDTO;
 import com.boot.sound.loan.dto.LoanStatusDTO;
+import com.boot.sound.loan.dto.LoanTermDTO;
+import com.boot.sound.loan.dto.LoanTermsAgreeDTO;
 
 @Mapper
 @Repository
@@ -25,6 +28,9 @@ public interface LoanDAO  {
 	
 	// 대출 상품 등록
 	public int loanInsert(LoanDTO dto);
+	
+	// 상품 약관 등록
+	public int loanTermInsert(LoanTermDTO dto);
 	
 	// 대출 상품 수정
 	public int loanUpdate(LoanDTO dto);
@@ -58,7 +64,7 @@ public interface LoanDAO  {
 	public LoanCustomerDTO loanCustomer(String customerId, String loan_id);
 	
 	// 대출 신청정보 저장
-	public int loanApply(LoanStatusDTO dto);
+	public int loanApply(LoanApplyWithTermsDTO dto);
 	
 	// 대출 현황 리스트
 	public List<LoanStatusDTO>loanStatus();
@@ -122,5 +128,14 @@ public interface LoanDAO  {
 	
 	// 납부내역중 미납 내역 목록 조회
 	public List<LoanInterestPaymentDTO> getMissedPayments();
+	
+	// 고객 대출 가입 현황
+	public List<LoanStatusDTO>myLoanStatus(String customerId);
+	
+	// 대출약관 조회
+	public LoanTermDTO selectLoanTerm(int loan_id);
+	
+	// 상품약관 동의내역 저장
+	public int insertTermsAgree(LoanApplyWithTermsDTO dto);
 	
 }
