@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.boot.sound.fund.dto.FundDTO;
 import com.boot.sound.fund.dto.FundTestDTO;
+import com.boot.sound.fund.dto.FundTransactionDTO;
 import com.boot.sound.inquire.account.AccountDTO;
 
 @Mapper
@@ -46,5 +47,7 @@ public interface FundRepository {
     public void updateRiskType(@Param("fund_name") String fund_name, 
     					@Param("fund_risk_type") String fund_risk_type);
 
-
+    // 펀드 거래 등록
+    int insertFundTransaction(FundTransactionDTO dto);
+    
 }

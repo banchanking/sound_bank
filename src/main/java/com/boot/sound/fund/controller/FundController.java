@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import com.boot.sound.fund.dto.FundAccountDTO;
 import com.boot.sound.fund.dto.FundDTO;
 import com.boot.sound.fund.dto.FundTestDTO;
+import com.boot.sound.fund.dto.FundTransactionDTO;
 import com.boot.sound.fund.service.FundServiceImpl;
 
 @RestController
@@ -129,6 +130,13 @@ public class FundController {
     @GetMapping("/accounts/allAccount/fund/{customer_id}")
     public ResponseEntity<List<FundAccountDTO>> getAccounts(@PathVariable String customerId) {
         return ResponseEntity.ok(service.getFundAccounts(customerId));
+    }
+    
+    // 펀드 거래
+    @PostMapping("/trade")
+    public ResponseEntity<String> tradeFund(@RequestBody FundTransactionDTO dto) {
+        service.processTransaction(dto);
+        return ResponseEntity.ok("거래 완료");
     }
     
 }

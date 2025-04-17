@@ -1,6 +1,7 @@
 package com.boot.sound.fund.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -11,17 +12,19 @@ import org.springframework.transaction.annotation.Transactional;
 import com.boot.sound.fund.dto.FundAccountDTO;
 import com.boot.sound.fund.dto.FundDTO;
 import com.boot.sound.fund.dto.FundTestDTO;
+import com.boot.sound.fund.dto.FundTransactionDTO;
 import com.boot.sound.fund.repo.FundAccountRepository;
 import com.boot.sound.fund.repo.FundRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor	//  final 필드들을 대상으로 자동으로 생성자(Constructor)를 만들어줌
 public class FundServiceImpl {
 	
-	@Autowired
-	private FundRepository fundRepository;	// MyBatis Mapper
+	private final FundRepository fundRepository;	// MyBatis Mapper
 	
-	@Autowired
-    private FundAccountRepository JpaRepository; // JPA Repository
+    private final FundAccountRepository JpaRepository; // JPA Repository
 	
 	// 펀드상품 목록
 	@Transactional(readOnly=true)
@@ -124,6 +127,23 @@ public class FundServiceImpl {
     public List<FundAccountDTO> getFundAccounts(String customerId) {
     	System.out.println("조회 요청 받은 customerId: " + customerId);
         return JpaRepository.findByCustomerId(customerId);
+    }
+    
+    // 펀드 매수
+    @Transactional
+    public void processTransaction(FundTransactionDTO dto) {
+        // 단가 계산: 예시로 1원 = 1단위 (나중에 시세 API 연동 가능)
+        BigDecimal unitPrice = BigDecimal.ONE;
+        BigDecimal units = dto.getFundInvestAmount() != null
+        		? dto.getFundInvestAmount().divide(unitPrice, 6, RoundingMode.DOWN)
+        		: dto.getFundUnitsPurchased();        		
+
+        dto.setFundUnitsPurchased(units);
+        dto.setFundPricePerUnit(unitPrice);
+        dto.setFundTransactionDate(LocalDate.now());
+        dto.setStatus("APPROVED");
+
+        fundRepository.insertFundTransaction(dto);
     }
     
 

@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../Css/fund/FundList.module.css"; // 스타일 파일 추가
 import RefreshToken from "../../jwt/RefreshToken"; // 인증 포함된 인스턴스 사용
+import BuyFund from "./OpenAccount";
 
 const FundRecommend = () => {
     const [recommendedFunds, setRecommendedFunds] = useState([]);
+    const [selectedFund, setSelectedFund] = useState(null);
     useEffect(() => {
         const fetchRecommendedFunds = async () => {
             const customerId = localStorage.getItem("customerId");
@@ -52,6 +54,17 @@ const FundRecommend = () => {
                                 <td>{fund.fund_grade}</td>
                                 <td>{fund.fund_upfront_fee}%</td>
                                 <td>{fund.fund_risk_type}</td>
+                                <td>
+                                <button
+                                    className={styles.fundbuyButton}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setSelectedFund(fund);
+                                    }}
+                                    >
+                                    매수하기
+                                </button>
+                                </td>
                             </tr>
                         ))}
                     </tbody>
@@ -59,6 +72,13 @@ const FundRecommend = () => {
             ) : (
                 <p>추천할 펀드가 없습니다.</p>
             )}
+            {selectedFund && (
+            <BuyFund
+                fund={selectedFund}
+                onClose={() => setSelectedFund(null)}
+                onBuySuccess={() => setSelectedFund(null)}
+            />
+        )}
         </div>
         </div>
     );

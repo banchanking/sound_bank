@@ -2,11 +2,13 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Chart } from "react-google-charts";
 import styles from "../../Css/fund/FundList.module.css";
 import RefreshToken from "../../jwt/RefreshToken";
+import BuyFund from "./OpenAccount";
 
 const FundList = () => {
   const [data, setData] = useState([]);
   const [funds, setFunds] = useState([]);
   const [selectedFunds, setSelectedFunds] = useState([]);
+  const [selectedFund, setSelectedFund] = useState(null);
   const [expandedManagers, setExpandedManagers] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [showPopup, setShowPopup] = useState(false);
@@ -97,6 +99,7 @@ const FundList = () => {
                           <th>등급</th>
                           <th>선취수수료</th>
                           <th>총보수</th>
+                          <th>매수</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -110,6 +113,17 @@ const FundList = () => {
                             <td>{fund.fund_grade}</td>
                             <td>{fund.fund_upfront_fee}</td>
                             <td>{fund.fund_fee_rate}</td>
+                            <td>
+                            <button
+                                className={styles.fundbuyButton}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedFund(fund);
+                                }}
+                              >
+                                매수하기
+                              </button>
+                          </td>
                           </tr>
                         ))}
                       </tbody>
@@ -153,6 +167,14 @@ const FundList = () => {
               />
             </div>
           </div>
+        )}
+
+        {selectedFund && (
+          <BuyFund
+            fund={selectedFund}
+            onClose={() => setSelectedFund(null)}
+            onBuySuccess={() => setSelectedFund(null)}
+          />
         )}
       </main>
     </div>
