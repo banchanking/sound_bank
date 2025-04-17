@@ -7,8 +7,17 @@
   <!-- 승인 목록 조회 -->
   <select id="getApproveList" resultType="com.boot.sound.transfer.multiAdmin.MultiAdminDTO">
     SELECT 
-      T.transfer_id, T.customer_id, T.out_account_number, T.in_account_number, T.in_name, 
-      T.amount, T.memo, T.request_date, A.status, A.reject_reason, A.approval_date
+      T.transfer_id,
+      T.customer_id,
+      T.out_account_number,
+      T.in_account_number,
+      T.in_name,
+      T.amount,
+      T.memo,
+      T.request_date,
+      A.status,
+      A.reject_reason,
+      A.approval_date
     FROM transfer_tbl T
     LEFT JOIN approval_tbl A ON T.transfer_id = A.transfer_id
     WHERE T.transfer_type = '다건'
@@ -17,19 +26,39 @@
 
   <!-- 다건 상세 조회 -->
   <select id="getTransferDetails" parameterType="int" resultType="com.boot.sound.transfer.multiAdmin.MultiAdminDTO">
-    SELECT in_account_number, in_name, amount, memo
+    SELECT 
+      in_account_number,
+      in_name,
+      amount,
+      memo
     FROM transfer_tbl
     WHERE transfer_id = #{transfer_id}
   </select>
 
-  <!-- 승인/반려 상태 업데이트 -->
-  <update id="updateApprovalStatusByGroup">
+  <!-- 승인 상태 업데이트 -->
+  <update id="updateApprovalStatus">
     UPDATE approval_tbl
-    SET status = #{status},
+    SET status = '승인',
         reject_reason = #{reason},
         approval_date = NOW()
     WHERE transfer_id IN (
-      SELECT transfer_id FROM transfer_tbl
+      SELECT transfer_id
+      FROM transfer_tbl
+      WHERE customer_id = #{customer_id}
+        AND request_date = #{request_date}
+        AND transfer_type = '다건'
+    )
+  </update>
+
+  <!-- 반려 상태 업데이트 -->
+  <update id="updateRejectStatus">
+    UPDATE approval_tbl
+    SET status = '거절',
+        reject_reason = #{reason},
+        approval_date = NOW()
+    WHERE transfer_id IN (
+      SELECT transfer_id
+      FROM transfer_tbl
       WHERE customer_id = #{customer_id}
         AND request_date = #{request_date}
         AND transfer_type = '다건'
@@ -45,7 +74,7 @@
       AND transfer_type = '다건'
   </update>
 
-  <!-- 승인된 이체 건 목록 조회 -->
+  <!-- 승인된 이체건 목록 조회 -->
   <select id="findTransfersByGroup" resultType="com.boot.sound.transfer.multiAdmin.MultiAdminDTO">
     SELECT *
     FROM transfer_tbl
@@ -54,41 +83,41 @@
       AND transfer_type = '다건'
   </select>
 
-  <!-- 출금 -->
+  <!-- 출금 처리 -->
   <update id="decreaseBalance">
     UPDATE account_tbl
-    SET balance = balance - #{amt}
-    WHERE account_number = #{acc}
+    SET balance = balance - #{amount}
+    WHERE account_number = #{out_account_number}
   </update>
 
-  <!-- 입금 -->
+  <!-- 입금 처리 -->
   <update id="increaseBalance">
     UPDATE account_tbl
-    SET balance = balance + #{amt}
-    WHERE account_number = #{acc}
+    SET balance = balance + #{amount}
+    WHERE account_number = #{in_account_number}
   </update>
 
   <!-- 거래내역 저장 -->
-<insert id="insertTransaction">
-  INSERT INTO transaction_tbl (
-    account_number,
-    transaction_type,
-    amount,
-    currency,
-    comment,
-    transaction_date,
-    customer_name,
-    account_type
-  ) VALUES (
-    #{account_number},
-    #{transaction_type},
-    #{amount},
-    'KRW',
-    #{comment},
-    NOW(),
-    #{customer_name},
-    #{account_type}
-  )
-</insert>
+  <insert id="insertTransaction">
+    INSERT INTO transaction_tbl (
+      account_number,
+      transaction_type,
+      amount,
+      currency,
+      comment,
+      transaction_date,
+      customer_name,
+      account_type
+    ) VALUES (
+      #{account_number},
+      #{transaction_type},
+      #{amount},
+      'KRW',
+      #{comment},
+      NOW(),
+      #{customer_name},
+      #{account_type}
+    )
+  </insert>
 
 </mapper>

@@ -1,0 +1,36 @@
+.limit-container {
+  display: flex;
+  padding: 20px;
+}
+.limit-form-box {
+  width: 100%;
+  max-width: 600px;
+  margin: auto;
+  padding: 30px;
+  background: #f9f9f9;
+  border-radius: 10px;
+}
+.limit-form-box h2 {
+  margin-bottom: 20px;
+}
+.limit-form-box label {
+  display: block;
+  margin-top: 10px;
+}
+.limit-form-box input,
+.limit-form-box select,
+.limit-form-box textarea {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  box-sizing: border-box;
+}
+.limit-form-box button {
+  margin-top: 20px;
+  padding: 10px;
+  width: 100%;
+  background-color: #1e90ff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
