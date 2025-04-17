@@ -196,8 +196,8 @@
 
 .NavDropdown-menu .dropdown-item:hover {
   color: #eceff3 !important;
-  text-shadow: 0 0 5px #ffffff, 0 0 12px #9c9a9a;
-  transition: all 0.2s ease-in-out;
+  text-shadow: 0 0 6px #ffffff;
+  transition: all 0.1s ease-in-out;
 
 }
 

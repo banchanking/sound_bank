@@ -144,6 +144,28 @@ public class SmsService {
         }
     }
 
+    // DB조회없이 메시지 전송 (회원가입용)
+    public boolean sendSignupVerificationCode(String phoneNumber) {
+    	// 하이픈 제거
+    	String normalizedPhone = phoneNumber.replaceAll("-", ""); 
+        String verificationCode = generateVerificationCode();
+       
+        // 하이픈 제거된 번호로 저장
+        verificationCodes.put(normalizedPhone, verificationCode); 
+
+        Message message = new Message();
+        message.setFrom(senderPhoneNumber);
+        message.setTo(phoneNumber); 
+        message.setText("[SoundBank] 인증번호 [" + verificationCode + "]를 입력해주세요.");
+
+        try {
+            messageService.sendOne(new SingleMessageSendingRequest(message));
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     // 6자리 난수 생성 
     private String generateVerificationCode() {
@@ -154,13 +176,24 @@ public class SmsService {
     // 필요에 따라 인증 코드 검증 메소드 추가 가능
     public boolean verifyCode(SmsRequest smsRequest) {
         String phone = smsRequest.getCustomer_phone_number();
+
         String storedCode = verificationCodes.get(phone);
+
+        // 하이픈 제거한 번호로도 한번더 확인 (기존 저장된 값이 없을 경우에만)
+        if (storedCode == null && phone.contains("-")) {
+            String normalizedPhone = phone.replaceAll("-", "");
+            storedCode = verificationCodes.get(normalizedPhone);
+
+            if (storedCode != null) {
+                // 인증번호가 하이픈 제거된 번호로 저장되어 있었다면, phone 값을 해당 형식으로 교체
+                phone = normalizedPhone;
+            }
+        }
 
         boolean result = smsRequest.getCode() != null && smsRequest.getCode().equals(storedCode);
 
         if (result) {
-            verificationCodes.remove(phone); // 인증을 완료한후 인증코드는 삭제 
-            
+            verificationCodes.remove(phone); // 인증 성공 시 해당 번호의 코드 삭제
         }
 
         return result;

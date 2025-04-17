@@ -76,7 +76,7 @@ public class CustomerService {
         account.setAccount_number(accountNumber);
         account.setCustomer_id(dto.getCustomerId());
         account.setAccount_type("입출금");
-        account.setAccount_pwd(dto.getAccount_pwd());
+        //account.setAccount_pwd(dto.getAccount_pwd());
         account.setBalance(BigDecimal.ZERO);
         account.setInterest_rate(BigDecimal.ZERO);
         account.setYield_rate(BigDecimal.ZERO);

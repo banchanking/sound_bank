@@ -2,9 +2,12 @@ import React, { useEffect, useState } from 'react';
 import RefreshToken from '../../jwt/RefreshToken';
 import Sidebar from './Sidebar';
 import { getCustomerID } from '../../jwt/AxiosToken';
+import { useNavigate } from 'react-router-dom';
 import '../../Css/transfer/TransLimit.css';
 
 function TransLimit() {
+  const navigate = useNavigate();
+
   const [accounts, setAccounts] = useState([]);
   const [accountNumber, setAccountNumber] = useState('');
   const [requestedLimit, setRequestedLimit] = useState('');
@@ -17,6 +20,7 @@ function TransLimit() {
     const id = getCustomerID();
     if (!id) {
       alert('로그인이 필요합니다.');
+      navigate('/login');
       return;
     }
 
@@ -62,6 +66,7 @@ function TransLimit() {
       setAccountNumber('');
       setRequestedLimit('');
       setReason('');
+      navigate('/transLimitEdit');
     })
     .catch(err => {
       if (err.response?.data === "이미 대기 중인 요청이 존재합니다.") {

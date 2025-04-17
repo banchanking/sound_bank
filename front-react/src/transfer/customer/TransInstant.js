@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import RefreshToken from '../../jwt/RefreshToken'; // ✅ axios 대신 RefreshToken 사용
+import RefreshToken from '../../jwt/RefreshToken';
 import '../../Css/transfer/TransInstant.css';
 import { getCustomerID } from "../../jwt/AxiosToken";
 import Sidebar from './Sidebar'; 
+import { useNavigate } from 'react-router-dom';
 
 function TransInstant() {
+  const navigate = useNavigate();
+  
   const [form, setForm] = useState({
     customer_id: '',
     out_account_number: '',
@@ -26,6 +29,7 @@ function TransInstant() {
 
     if (!id) {
       alert('로그인이 필요합니다.');
+      navigate('/login');
       return;
     }
     setForm(prev => ({ ...prev, customer_id: id }));

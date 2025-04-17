@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from '../Css/customer/Join.module.css';
+import SignupSMSModal from "../smsmodal/SignupSMSModal";
 
 const Join = () => {
   const [step, setStep] = useState(0);
@@ -30,6 +31,8 @@ const Join = () => {
   });
 
   const [pwdMsg, setPwdMsg] = useState('');
+  const [isSMSModalOpen, setIsSMSModalOpen] = useState(false);
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
 
   useEffect(() => {
     if (form.customer_password && form.re_password) {
@@ -75,6 +78,7 @@ const Join = () => {
       customer_risk_type: '',
       hiddenUserid: '0'
     });
+    setIsPhoneVerified(false);
   };
 
   const confirmId = async () => {
@@ -82,7 +86,6 @@ const Join = () => {
       alert('아이디를 입력하세요');
       return;
     }
-
     try {
       const res = await axios.get(`http://localhost:8081/api/idConfirmAction.do?customer_id=${form.customer_id}`);
       const { available, message } = res.data;
@@ -102,8 +105,12 @@ const Join = () => {
       return;
     }
 
-    const fullAddress = `${form.sample6_address} ${form.sample6_extraAddress} ${form.sample6_detailAddress}`.trim();
+    if (!isPhoneVerified) {
+      alert('휴대폰 인증을 완료해주세요!');
+      return;
+    }
 
+    const fullAddress = `${form.sample6_address} ${form.sample6_extraAddress} ${form.sample6_detailAddress}`.trim();
     const requestData = {
       customer_id: form.customer_id,
       customer_password: form.customer_password,
@@ -125,6 +132,29 @@ const Join = () => {
     } catch (error) {
       alert('회원가입 중 오류가 발생했습니다.');
     }
+  };
+
+  const handleSendSMS = async () => {
+    const phoneNumber = `${form.customer_hp1}${form.customer_hp2}${form.customer_hp3}`;
+    try {
+      const res = await axios.post('http://localhost:8081/api/sms/signup/request', {
+        customer_phone_number: phoneNumber
+      });
+  
+      if (res.status === 200) {
+        setIsSMSModalOpen(true);
+      } else {
+        alert('인증번호 전송 실패 (서버 응답 이상)');
+      }
+    } catch (err) {
+      console.error("인증번호 요청 실패:", err);
+      alert('서버 오류: 인증번호 요청에 실패했습니다.');
+    }
+  };
+  const handleSMSVerified = () => {
+    setIsPhoneVerified(true);
+    setIsSMSModalOpen(false);
+    alert("휴대폰 인증이 완료되었습니다.");
   };
 
   const execDaumPostcode = () => {
@@ -158,7 +188,7 @@ const Join = () => {
               ※입출금계좌 일일 이체한도는 <b>1억원</b> 입니다.
             </p>
             <h4>계좌 비밀번호는 직접 설정해야 합니다.</h4>
-            <button onClick={() => setStep(1)}>확인</button>
+            <button onClick={() => setStep(1)}>다음</button>
           </div>
         </div>
       )}
@@ -234,15 +264,29 @@ const Join = () => {
               </div>
             </div>
             <div>
-              <label>전화번호</label>
-              <div className={styles.rowGroup}>
-                <input type="text" name="customer_hp1" className={styles.shortInput} value={form.customer_hp1} onChange={handleChange} />
-                -
-                <input type="text" name="customer_hp2" className={styles.shortInput} value={form.customer_hp2} onChange={handleChange} />
-                -
-                <input type="text" name="customer_hp3" className={styles.shortInput} value={form.customer_hp3} onChange={handleChange} />
-              </div>
+            <label>전화번호</label>
+            <div className={styles.rowGroup}>
+              <input type="text" name="customer_hp1" className={styles.shortInput} value={form.customer_hp1} onChange={handleChange} />
+              -
+              <input type="text" name="customer_hp2" className={styles.shortInput} value={form.customer_hp2} onChange={handleChange} />
+              -
+              <input type="text" name="customer_hp3" className={styles.shortInput} value={form.customer_hp3} onChange={handleChange} />
+              <button type="button" onClick={handleSendSMS}>휴대폰 인증</button>
             </div>
+            {isPhoneVerified && (
+              <span style={{ color: "green", fontSize: "14px", marginLeft: "10px" }}>
+                휴대폰 인증 완료
+              </span>
+            )}
+          </div>
+
+          <SignupSMSModal
+            isOpen={isSMSModalOpen}
+            onRequestClose={() => setIsSMSModalOpen(false)}
+            onVerified={handleSMSVerified}
+            phoneNumber={`${form.customer_hp1}${form.customer_hp2}${form.customer_hp3}`}
+          />
+   
             <div>
               <label>이메일</label>
               <div className={styles.rowGroup}>

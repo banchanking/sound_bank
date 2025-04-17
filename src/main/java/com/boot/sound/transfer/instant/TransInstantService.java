@@ -45,7 +45,13 @@ public class TransInstantService {
     // 한도 검사
     public void checkTransferLimit(String customerId, int requestedAmount) {
         BigDecimal todayTotal = getTodayTransferTotal(customerId);
-        int approvedLimit = dao.selectLatestApprovedLimit(customerId);
+
+        Integer approvedLimit = dao.selectLatestApprovedLimit(customerId);
+
+        // 한도설정 없는 계좌 기본한도 1억 원 적용
+        if (approvedLimit == null) {
+            approvedLimit = 100_000_000;
+        }
 
         BigDecimal totalAfter = todayTotal.add(BigDecimal.valueOf(requestedAmount));
         if (totalAfter.compareTo(BigDecimal.valueOf(approvedLimit)) > 0) {
