@@ -66,7 +66,7 @@ public class CustomerService {
         dto.setCustomer_risk_type(signUp.getCustomer_risk_type());
         dto.setCustomer_token(signUp.getCustomer_token());
         dto.setCustomer_password(encoder.encode(CharBuffer.wrap(signUp.getCustomer_password())));
-        dto.setAccount_pwd(Integer.parseInt(signUp.getAccount_pwd()));
+        dto.setAccount_pwd(signUp.getAccount_pwd());
 
         CustomerDTO saveCustomer = customerRepository.save(dto);
 
@@ -76,7 +76,7 @@ public class CustomerService {
         account.setAccount_number(accountNumber);
         account.setCustomer_id(dto.getCustomerId());
         account.setAccount_type("입출금");
-        //account.setAccount_pwd(dto.getAccount_pwd());
+        account.setAccount_pwd(dto.getAccount_pwd());
         account.setBalance(BigDecimal.ZERO);
         account.setInterest_rate(BigDecimal.ZERO);
         account.setYield_rate(BigDecimal.ZERO);
