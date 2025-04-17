@@ -110,11 +110,15 @@ function TransMultiEdit() {
                   {item.status === '거절' ? (item.reject_reason || '-') : '-'}
                 </td>
                 <td>
-                  {item.status === '대기' && (
+                  {item.status === '대기' ? (
                     <>
                       <button onClick={() => setEditItem(item)} className="btn-blue">수정</button>
                       <button onClick={() => deleteRow(item.transfer_id)} className="btn-red">삭제</button>
                     </>
+                  ) : (
+                    item.approval_date
+                      ? new Date(item.approval_date).toLocaleString()
+                      : '-'
                   )}
                 </td>
               </tr>

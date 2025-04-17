@@ -37,6 +37,19 @@ public class SmsController {
     	return ResponseEntity.ok(result);
     }
     
-    
+    // 회원가입용 (DB에 정보 없기때문에 핸드폰번호만 인증)
+    @PostMapping("/signup/request")
+    public ResponseEntity<?> signupSendCode(@RequestBody SmsRequest smsRequest) {
+        boolean result = smsService.sendSignupVerificationCode(smsRequest.getCustomer_phone_number());
+        if (result) return ResponseEntity.ok("Signup SMS sent");
+        else return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Signup SMS failed");
+    }
+
+    // 회원가입용 (디비에 정보 없기때문에 핸드폰번호만 인증)
+    @PostMapping("/signup/verify")
+    public ResponseEntity<?> signupVerifyCode(@RequestBody SmsRequest smsRequest) {
+        boolean result = smsService.verifyCode(smsRequest);
+        return ResponseEntity.ok(result);
+    }
     
 }

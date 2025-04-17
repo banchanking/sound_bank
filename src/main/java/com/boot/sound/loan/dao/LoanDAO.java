@@ -18,6 +18,7 @@ import com.boot.sound.loan.dto.LoanLatePaymentDTO;
 import com.boot.sound.loan.dto.LoanStatusDTO;
 import com.boot.sound.loan.dto.LoanTermDTO;
 import com.boot.sound.loan.dto.LoanTermsAgreeDTO;
+import com.boot.sound.loan.dto.PrepaymentEntity;
 
 @Mapper
 @Repository
@@ -137,5 +138,18 @@ public interface LoanDAO  {
 	
 	// 상품약관 동의내역 저장
 	public int insertTermsAgree(LoanApplyWithTermsDTO dto);
+	
+	// 중도상환수수료 계산을 위한 대출 실행일 조회
+	public java.sql.Date selectLoanDate(int loanStatusNo);
+	
+	//  중도상환 처리 결과를 위한 대출 상세정보 조회
+	public LoanStatusDTO selectLoanStatusDetail(int loanStatusNo);
+	
+	// 중도 상환 내역 저장
+	public void insertPrepayment(PrepaymentEntity entity);
+	
+	// 대출상태 변경
+	public void updateLoanStatus(LoanStatusDTO dto);
+	
 	
 }

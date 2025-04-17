@@ -1,0 +1,62 @@
+.limit-edit-content {
+  flex: 1;
+  padding: 30px;
+}
+
+.limit-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.limit-table th, .limit-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+}
+
+.limit-table th {
+  background-color: #f9f9f9;
+}
+
+.edit-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-modal-box {
+  background: #fff;
+  padding: 20px;
+  width: 400px;
+  border-radius: 10px;
+}
+
+.edit-modal-box input, .edit-modal-box textarea {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.modal-buttons {
+  text-align: right;
+}
+
+.btn-blue {
+  background-color: #007BFF;
+  color: white;
+  padding: 6px 12px;
+  margin-right: 5px;
+}
+
+.btn-red {
+  background-color: #DC3545;
+  color: white;
+  padding: 6px 12px;
+}

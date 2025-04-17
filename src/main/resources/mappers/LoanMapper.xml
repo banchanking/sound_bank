@@ -148,6 +148,16 @@
         from customer_tbl
         where customer_id = #{customerId}
     </select>
+    
+    <update id="updateLoanStatus" parameterType="com.boot.sound.loan.dto.LoanStatusDTO">
+	    update loan_status_tbl
+	    set 
+	        balance = #{balance},
+	        remaining_term = #{remainingTerm},
+	        loan_progress = #{loanProgress}
+	    where 
+	        loan_status_no = #{loanStatusNo}
+	</update>
 
     <insert id="insertTransaction" parameterType="map">
         insert into transaction_tbl (
@@ -344,7 +354,8 @@
 	        loan_progress,
 	        loan_date,
 	        loan_term,
-	        remaining_term
+	        remaining_term,
+	        prepayment_penalty
 	    FROM 
 	        loan_status_tbl
 	    WHERE 
@@ -359,6 +370,40 @@
 	<insert id="insertTermsAgree" parameterType="com.boot.sound.loan.dto.LoanApplyWithTermsDTO">
 		insert into loan_terms_agree_tbl(term_id,customer_id,loan_id)
 		values (#{loanTermsAgree.term_id},#{loanTermsAgree.customer_id},#{loanTermsAgree.loan_id})
+	</insert>
+	
+	<select id="selectLoanDate" parameterType="int" resultType="java.sql.Date">
+		select loan_date
+		from loan_status_tbl
+		where loan_status_no = #{loanStatusNo}
+	</select>
+	
+	<select id="selectLoanStatusDetail" resultMap="LoanStatusMap" parameterType="int">
+		select * from loan_status_tbl
+		where loan_status_no = #{loanStatusNo}
+	</select>
+	
+	<insert id="insertPrepayment" parameterType="com.boot.sound.loan.dto.PrepaymentEntity">
+		insert into prepayment_tbl(
+			loan_status_no,
+			customer_id,
+			repayment_amount,
+			penalty_amount,
+			total_deducted_amount,
+			repayment_date,
+			account_number,
+			status
+		)
+		values(
+			#{loanStatusNo},
+			#{customerId},
+			#{repaymentAmount},
+			#{penaltyAmount},
+			#{totalDeductedAmount},
+			#{repaymentDate},
+			#{accountNumber},
+			#{status}
+		)
 	</insert>
 
 

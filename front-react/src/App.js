@@ -22,6 +22,7 @@ import TransAutoEdit from "./transfer/customer/TransAutoEdit";
 import TransMulti from "./transfer/customer/TransMulti";
 import TransMultiEdit from "./transfer/customer/TransMultiEdit";
 import TransLimit from "./transfer/customer/TransLimit";
+import TransLimitEdit from "./transfer/customer/TransLimitEdit";
 import TransferAdmin from "./transfer/admin/TransferAdmin";
 import LimitAdmin from "./transfer/admin/LimitAdmin";
 import MultiAdmin from "./transfer/admin/MultiAdmin";
@@ -134,6 +135,7 @@ function App() {
           <Route path="/transMulti" element={<TransMulti />} />
           <Route path="/transMultiEdit" element={<TransMultiEdit />} />
           <Route path="/transLimit" element={<TransLimit />} />
+          <Route path="/transLimitEdit" element={<TransLimitEdit />} />
           {/* 이체(고객) Route 끝 */}
           {/* 이체(관리자) Route 시작 */}
           <Route path="/transferAdmin" element={<TransferAdmin />} />

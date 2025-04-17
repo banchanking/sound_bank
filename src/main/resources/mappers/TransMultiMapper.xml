@@ -26,14 +26,14 @@
     )
   </insert>
 
-  <!-- 마지막 이체 ID 가져오기 -->
+  <!-- 마지막 이체id 가져오기 -->
   <select id="getLastTransferIdMulti" parameterType="string" resultType="int">
     SELECT MAX(transfer_id)
     FROM transfer_tbl
     WHERE customer_id = #{customer_id}
   </select>
 
-  <!-- 승인 테이블 insert -->
+  <!-- 관리자 테이블 저장 -->
   <insert id="insertApprovalMulti">
     INSERT INTO approval_tbl (
       transfer_id, approval_type, status
@@ -43,7 +43,7 @@
     )
   </insert>
 
-  <!-- 다건이체 조회 (승인 상태 포함) -->
+  <!-- 다건이체 조회 -->
   <select id="getMultiListByCustomer" parameterType="string" resultType="map">
     SELECT 
       T.transfer_id,

@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -31,4 +32,12 @@ public interface TransActionRepository extends JpaRepository<TransActionDTO, Int
         @Param("end_date") Date end_date,
         @Param("transaction_type") String transaction_type
     );
-}
+    
+    // 하루 이체 총합 계산 (계좌 여러 개 대상)
+    @Query("SELECT COALESCE(SUM(t.amount), 0) " +
+            "FROM TransActionDTO t " +
+            "WHERE t.account_number IN :accountList " +
+            "AND FUNCTION('DATE', t.transaction_date) = CURRENT_DATE")
+     BigDecimal getTotalTransferredToday(@Param("accountList") List<String> accountList);
+ }
+

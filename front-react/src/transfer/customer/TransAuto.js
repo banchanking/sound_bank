@@ -3,8 +3,11 @@ import RefreshToken from '../../jwt/RefreshToken';
 import '../../Css/transfer/TransAuto.css';
 import Sidebar from './Sidebar';
 import { getCustomerID } from "../../jwt/AxiosToken";
+import { useNavigate } from 'react-router-dom';
 
 function TransAuto() {
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({
     customer_id: '',
     out_account_number: '',
@@ -27,6 +30,7 @@ function TransAuto() {
     const id = getCustomerID();
     if (!id) {
       alert('로그인이 필요합니다');
+      navigate('/login');
       return;
     }
     setForm(prev => ({ ...prev, customer_id: id }));
@@ -59,8 +63,10 @@ function TransAuto() {
 
       if (res.data === '비밀번호 오류') {
         alert('비밀번호가 틀렸습니다.');
+        
       } else {
         alert('자동이체 등록이 완료되었습니다.');
+        navigate('/transAutoEdit');
       }
     } catch (err) {
       console.error('등록 오류:', err);
