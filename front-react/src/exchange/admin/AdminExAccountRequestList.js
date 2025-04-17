@@ -1,7 +1,7 @@
 import React,{useEffect, useState} from "react";
 import RefreshToken from "../../jwt/RefreshToken";
 import { getCustomerID, getAuthToken } from "../../jwt/AxiosToken";
-
+import styles from "../../Css/exchange/ExRequestList.module.css"
 const AdminExAccountRequestList = () => {
   
   const [requests, setRequests] = useState([]); // 환전 신청 목록
@@ -21,19 +21,14 @@ const AdminExAccountRequestList = () => {
   }, [customer_id]);
 
   // 승인 혹은 거절 핸들러
-  const handleApproval = async (exchange_transaction_id, approval_status) => {
-    console.log("승인/거절 처리:", exchange_transaction_id, approval_status);
+  const handleApproval = async (approvalData) => {
+    console.log("승인 처리 요청:", approvalData);
+  
     try {
-      // 상태 업데이트 요청 (PUT 방식)
-      await RefreshToken.put(`/exchange/admin/approval`, {
-        exchange_transaction_id: exchange_transaction_id,
-        approval_status: approval_status,      
-      });
+      await RefreshToken.put(`/exchange/admin/approval`, approvalData);
+      alert(`요청이 ${approvalData.approval_status === "APPROVED" ? "승인" : "거절"}되었습니다.`);
   
-      alert(`요청이 ${approval_status === "APPROVED" ? "승인" : "거절"}되었습니다.`);
-  
-      // 목록 새로고침
-      const res = await RefreshToken.get(`/exchange/requestList/${customer_id}`);
+      const res = await RefreshToken.get(`/exchange/requestList/${approvalData.customer_id}`);
       setRequests(res.data);
     } catch (error) {
       console.error("승인/거절 처리 실패:", error);
@@ -41,12 +36,14 @@ const AdminExAccountRequestList = () => {
     }
   };
   
+  
 
   return (
-    <div style={{ padding: "2rem" , minHeight: 650}}>
-      <h2>환전 신청 현황</h2>
-      <table style={{ width: "100%", borderCollapse: "collapse" }}>
-        <thead style={{ backgroundColor: "#f2f2f2" }}>
+
+      <div className={styles.container}>
+      <h2 className={styles.title}>환전 신청 현황</h2>
+      <table className={styles.table}>
+        <thead>
           <tr>
             <th>신청 번호</th>
             <th>신청자 ID</th>
@@ -60,7 +57,7 @@ const AdminExAccountRequestList = () => {
         </thead>
         <tbody>
           {requests.map((req, idx) => (
-            <tr key={idx} style={{ borderBottom: "1px solid #ddd", textAlign: "center" }}>
+            <tr key={idx}>
               <td>{req.exchange_transaction_id}</td>
               <td>{req.customer_id}</td>
               <td>{req.withdraw_account_number}</td>           
@@ -68,9 +65,25 @@ const AdminExAccountRequestList = () => {
               <td>{req.exchanged_amount} {req.to_currency}</td>
               <td>{req.exchange_transaction_date?.slice(0, 10)}</td>
               <td>{req.approval_status}</td>
-              <td>
-                <button onClick={() => handleApproval(req.exchange_transaction_id, "APPROVED")}>승인</button>{" "}
-                <button onClick={() => handleApproval(req.exchange_transaction_id, "REJECTED")}>거절</button>
+              <td className={styles.actions}>
+              <button onClick={() => handleApproval({
+                  exchange_transaction_id: req.exchange_transaction_id,
+                  approval_status: "APPROVED",
+                  customer_id: req.customer_id,
+                  withdraw_account_number: req.withdraw_account_number,
+                  request_amount: req.request_amount,
+                  currency_code: req.currency_code
+                })}>
+                  승인
+              </button>
+
+                <button onClick={() => handleApproval({
+                  exchange_transaction_id: req.exchange_transaction_id,
+                  approval_status: "REJECTED",
+                  customer_id: req.customer_id
+                })}>
+                  거절
+              </button>
               </td>
             </tr>
           ))}

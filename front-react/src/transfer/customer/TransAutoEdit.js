@@ -1,6 +1,5 @@
-// TransAutoEdit.js
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import RefreshToken from '../../jwt/RefreshToken';
 import Sidebar from './Sidebar';
 import '../../Css/transfer/TransAutoEdit.css';
 import { getCustomerID } from '../../jwt/AxiosToken';
@@ -8,25 +7,20 @@ import { getCustomerID } from '../../jwt/AxiosToken';
 function TransAutoEdit() {
   const [list, setList] = useState([]);
   const [editItem, setEditItem] = useState(null);
-  const [token, setToken] = useState('');
 
   useEffect(() => {
     const id = getCustomerID();
-    const t = localStorage.getItem('auth_token');
-    if (!id || !t) {
+    if (!id) {
       alert('로그인이 필요합니다.');
       return;
     }
-    setToken(t);
 
-    axios.get(`http://localhost:8081/api/transAuto/list/${id}`, {
-      headers: { Authorization: `Bearer ${t}` }
-    })
-    .then(res => setList(res.data))
-    .catch(err => {
-      console.error('조회 실패:', err);
-      alert('자동이체 목록 조회 실패');
-    });
+    RefreshToken.get(`http://localhost:8081/api/transAuto/list/${id}`)
+      .then(res => setList(res.data))
+      .catch(err => {
+        console.error('조회 실패:', err);
+        alert('자동이체 목록 조회 실패');
+      });
   }, []);
 
   const change = (e) => {
@@ -35,50 +29,44 @@ function TransAutoEdit() {
   };
 
   const update = () => {
-    axios.put('http://localhost:8081/api/transAuto/update', editItem, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    .then(() => {
-      alert('수정 완료');
-      setEditItem(null);
-      window.location.reload();
-    })
-    .catch(err => {
-      console.error('수정 실패:', err);
-      alert('수정 실패');
-    });
+    RefreshToken.put('http://localhost:8081/api/transAuto/update', editItem)
+      .then(() => {
+        alert('수정 완료');
+        setEditItem(null);
+        window.location.reload();
+      })
+      .catch(err => {
+        console.error('수정 실패:', err);
+        alert('수정 실패');
+      });
   };
 
   const handleDelete = (id) => {
     if (window.confirm('정말 삭제하시겠습니까?')) {
-      axios.delete(`http://localhost:8081/api/transAuto/delete/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      .then(() => {
-        alert('삭제되었습니다');
-        setList(prev => prev.filter(item => item.transfer_id !== id));
-      })
-      .catch(err => {
-        console.error('삭제 실패:', err);
-        alert('삭제 실패');
-      });
+      RefreshToken.delete(`http://localhost:8081/api/transAuto/delete/${id}`)
+        .then(() => {
+          alert('삭제되었습니다');
+          setList(prev => prev.filter(item => item.transfer_id !== id));
+        })
+        .catch(err => {
+          console.error('삭제 실패:', err);
+          alert('삭제 실패');
+        });
     }
   };
 
   const remove = () => {
     if (!window.confirm('정말 삭제하시겠습니까?')) return;
-    axios.delete(`http://localhost:8081/api/transAuto/delete/${editItem.transfer_id}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    .then(() => {
-      alert('삭제 완료');
-      setEditItem(null);
-      window.location.reload();
-    })
-    .catch(err => {
-      console.error('삭제 실패:', err);
-      alert('삭제 실패');
-    });
+    RefreshToken.delete(`http://localhost:8081/api/transAuto/delete/${editItem.transfer_id}`)
+      .then(() => {
+        alert('삭제 완료');
+        setEditItem(null);
+        window.location.reload();
+      })
+      .catch(err => {
+        console.error('삭제 실패:', err);
+        alert('삭제 실패');
+      });
   };
 
   return (
@@ -113,8 +101,8 @@ function TransAutoEdit() {
                 </td>
                 <td>{item.memo}</td>
                 <td>
-                    <button className="edit-btn" onClick={() => setEditItem(item)}>수정</button>
-                    <button className="delete-btn" onClick={() => handleDelete(item.transfer_id)}>삭제</button>
+                  <button className="edit-btn" onClick={() => setEditItem(item)}>수정</button>
+                  <button className="delete-btn" onClick={() => handleDelete(item.transfer_id)}>삭제</button>
                 </td>
               </tr>
             ))}
@@ -152,7 +140,7 @@ function TransAutoEdit() {
 
               {editItem.schedule_mode === 'monthly' && (
                 <>
-                 매월 <input className="short-input" type="number" name="schedule_month_day" value={editItem.schedule_month_day || ''} onChange={change} /> 일
+                  매월 <input className="short-input" type="number" name="schedule_month_day" value={editItem.schedule_month_day || ''} onChange={change} /> 일
                 </>
               )}
 

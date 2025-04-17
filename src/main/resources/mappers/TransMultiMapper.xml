@@ -5,60 +5,71 @@
 
 <mapper namespace="com.boot.sound.transfer.transMulti.TransMultiDAO">
 
-  <!-- 다건이체 요청 (추가 > 단건씩 반복) -->
-	<insert id="addMultiTransfer" parameterType="map">
-	    INSERT INTO TRANSFER_TBL (
-	        CUSTOMER_ID, OUT_ACCOUNT_NUMBER, IN_ACCOUNT_NUMBER, AMOUNT, IN_NAME, MEMO, TRANSFER_TYPE, TRANSFER_DATE, REQUEST_DATE
-	    )
-	    VALUES (
-	        #{customer_id}, #{out_account_number}, #{in_account_number}, #{amount}, #{in_name}, #{memo}, '다건', NULL, now()
-	    )
-	</insert>
+  <!-- 비밀번호 조회 -->
+  <select id="findPasswordByAccount" parameterType="String" resultType="String">
+    SELECT account_pwd
+    FROM account_tbl
+    WHERE account_number = #{accountNumber}
+  </select>
 
-  <!-- 다건이체 내역 조회 -->
-	<select id="getMultiListByCustomer" resultType="map">
-	  SELECT 
-	    t.transfer_id,
-	    t.customer_id,
-	    t.out_account_number,
-	    t.in_account_number,
-	    t.in_name,
-	    t.amount,
-	    t.memo,
-	    t.transfer_type,
-	    t.request_date,
-	    a.status,
-	    a.reject_reason,
-	    a.approval_type,
-	    a.approval_date
-	  FROM transfer_tbl t
-	  JOIN approval_tbl a ON t.transfer_id = a.transfer_id
-	  WHERE t.customer_id = #{customer_id}
-	    AND t.transfer_type = '다건'
-	  ORDER BY a.approval_date DESC
-	</select>
+  <!-- 다건이체 저장 -->
+  <insert id="addTransferMulti">
+    INSERT INTO transfer_tbl (
+      customer_id, out_account_number, memo,
+      in_account_number, amount, in_name, request_date,
+      transfer_type, active_yn
+    )
+    VALUES (
+      #{customer_id}, #{out_account_number}, #{memo},
+      #{in_account_number}, #{amount}, #{in_name}, now(),
+      #{transfer_type}, 'Y'
+    )
+  </insert>
 
-	
-	<!-- 마지막 transfer_id 가져오기 -->
-	<select id="getLastTransferId" resultType="int">
-	  SELECT MAX(transfer_id)
-	  FROM transfer_tbl
-	  WHERE customer_id = #{customer_id}
-	</select>
-	
-	<!-- approval_tbl insert -->
-	<insert id="insertApproval" parameterType="map">
-	  INSERT INTO approval_tbl (
-	    transfer_id, approval_type, status, reject_reason, approval_date
-	  ) VALUES (
-	    #{transfer_id}, #{approval_type}, #{status}, #{reject_reason}, #{approval_date}
-	  )
-	</insert>
+  <!-- 마지막 이체 ID 가져오기 -->
+  <select id="getLastTransferIdMulti" parameterType="string" resultType="int">
+    SELECT MAX(transfer_id)
+    FROM transfer_tbl
+    WHERE customer_id = #{customer_id}
+  </select>
+
+  <!-- 승인 테이블 insert -->
+  <insert id="insertApprovalMulti">
+    INSERT INTO approval_tbl (
+      transfer_id, approval_type, status
+    )
+    VALUES (
+      #{transfer_id}, #{approval_type}, #{status}
+    )
+  </insert>
+
+  <!-- 다건이체 조회 (승인 상태 포함) -->
+  <select id="getMultiListByCustomer" parameterType="string" resultType="map">
+    SELECT 
+      T.transfer_id,
+      T.customer_id,
+      T.out_account_number,
+      T.in_account_number,
+      T.in_name,
+      T.amount,
+      T.request_date,
+      T.transfer_date,
+      T.memo,
+      A.status,
+      A.approval_date,
+      A.reject_reason
+    FROM transfer_tbl T
+    LEFT JOIN approval_tbl A ON T.transfer_id = A.transfer_id
+    WHERE T.customer_id = #{customer_id}
+      AND T.transfer_type = '다건'
+    ORDER BY T.request_date DESC
+  </select>
 
   <!-- 다건이체 수정 -->
   <update id="updateMultiTransfer">
     UPDATE transfer_tbl
-    SET in_account_number = #{in_account_number},
+    SET
+      in_account_number = #{in_account_number},
       amount = #{amount},
       in_name = #{in_name},
       memo = #{memo}
@@ -70,5 +81,5 @@
     DELETE FROM transfer_tbl
     WHERE transfer_id = #{transfer_id}
   </delete>
-  
+
 </mapper>

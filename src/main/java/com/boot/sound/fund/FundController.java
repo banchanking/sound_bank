@@ -35,10 +35,18 @@ public class FundController {
     	return new ResponseEntity<>(service.saveFund(funds), HttpStatus.CREATED);	// 201 상태값 리턴
     }
     
+    // 관리자가 등록한 펀드 저장 PostMapping => http://localhost:8081/api/saveRegisteredFunds
+    @PostMapping("/saveRegisteredFunds")
+    public ResponseEntity<String> saveRegisteredFunds(@RequestBody List<FundDTO> funds) {
+        service.saveRegisteredFunds(funds);
+        return ResponseEntity.ok("Registered funds saved successfully");
+    }
+
     // 등록된 펀드 상품 목록 조회 GetMapping => http://localhost:8081/api/registeredFunds
     @GetMapping("/registeredFunds")
-    public List<FundDTO> getRegisteredFunds() {
-        return service.getRegisteredFunds();
+    public ResponseEntity<List<FundDTO>> getRegisteredFunds() {
+        List<FundDTO> funds = service.getRegisteredFunds();
+        return ResponseEntity.ok(funds);
     }
     
     // 펀드상품 상세보기 => http://localhost:8081/api/fundDetail/{fund_id} (펀드상품번호)
@@ -60,8 +68,48 @@ public class FundController {
  	// 펀드상품 삭제 DeleteMapping => http://localhost:8081/api/fund/{fund_id} (펀드상품번호)
     @DeleteMapping("/fund/{fund_id}")
     public ResponseEntity<String> deleteFund(@PathVariable Long fund_id) {
+        logger.info("<<< controller - deleteFund >>>");
+
         service.deleteFund(fund_id);
         return ResponseEntity.ok("펀드 삭제 성공");
     }
     
+    // 투자성향 분석 AI 학습 완료된 펀드상품 목록 업데이트
+    @PostMapping("/updateRiskTypes")
+    public ResponseEntity<String> updateRiskTypes(@RequestBody List<FundDTO> funds) {
+        service.updateRiskTypes(funds);
+        return ResponseEntity.ok("펀드 상품에 투자성향 업데이트 성공");
+    }
+    
+    // 투자 성향 테스트 등록 및 고객 정보 업데이트
+    @PostMapping("/test-result/save")
+    public ResponseEntity<?> saveFundTestResult(@RequestBody FundTestDTO test) {
+        logger.info("<<< controller - saveFundTestResult >>>");
+
+        try {
+        	// 1. 투자 성향 테스트 결과 저장
+        	service.saveAndUpdateTest(test);
+
+        	// 2. 응답 반환
+        	return ResponseEntity.ok("투자성향 저장 및 고객 정보 업데이트 완료");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("오류 발생: " + e.getMessage());
+        }
+    }
+    
+    @GetMapping("/fundRecommend/{customer_id}")
+    public ResponseEntity<List<FundDTO>> recommendFunds(@PathVariable String customer_id) {
+        logger.info("<<< controller - recommendFunds >>>");
+    
+        // 1. 고객의 투자 성향 가져오기
+        String riskType = service.getCustomerRiskType(customer_id);
+        logger.info("Customer Risk Type: {}", riskType);
+
+        // 2. 투자 성향에 맞는 펀드 목록 가져오기
+        List<FundDTO> recommendedFunds = service.getFundsByRiskType(riskType);
+        logger.info("Recommended Funds: {}", recommendedFunds);
+        
+        return ResponseEntity.ok(recommendedFunds);
+    }
 }
+    

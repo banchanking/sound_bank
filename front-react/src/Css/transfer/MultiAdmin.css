@@ -1,0 +1,90 @@
+/* 전체 컨테이너 */
+.approve-wrap {
+  flex: 1;
+  min-height: 580px;
+  padding: 30px;
+  background-color: #f9f9f9;
+}
+
+/* 제목 */
+.approve-wrap h2 {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* 테이블 공통 */
+.approve-table, .detail-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 30px;
+  background-color: #fff;
+  box-shadow: 0 0 5px rgba(0,0,0,0.05);
+}
+
+.approve-table th,
+.approve-table td,
+.detail-table th,
+.detail-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* 테이블 헤더 */
+.approve-table th,
+.detail-table th {
+  background-color: #f0f0f0;
+  font-weight: bold;
+}
+
+/* 버튼 공통 */
+.btn-detail,
+.btn-approve,
+.btn-reject {
+  padding: 6px 12px;
+  margin: 2px;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: pointer;
+  color: white;
+}
+
+/* 상세 버튼 */
+.btn-detail {
+  background-color: #4b89dc;
+}
+
+/* 승인 버튼 */
+.btn-approve {
+  background-color: #28a745;
+}
+
+/* 반려 버튼 */
+.btn-reject {
+  background-color: #dc3545;
+}
+
+/* 처리 중 메시지 */
+.loading {
+  text-align: center;
+  font-size: 16px;
+  color: #666;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+/* 상세 내역 섹션 */
+.detail-section {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+.detail-section h4 {
+  font-size: 18px;
+  margin-bottom: 15px;
+}

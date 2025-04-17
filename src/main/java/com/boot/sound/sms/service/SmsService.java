@@ -116,7 +116,7 @@ public class SmsService {
     	String customer_name = smsRequest.getCustomer_name();
     	String customer_id = smsRequest.getCustomerId();
     	String result = smsRequest.getLoan_progress();
-    	System.out.println(smsRequest);
+    	
     	 Optional<CustomerDTO> customerOpt = customerRepository.findByCustomerPhoneNumberAndCustomerNameAndCustomerId(formatPhoneNumber(customer_phone_number),customer_name,customer_id);
           if (!customerOpt.isPresent()) {
               System.out.println("No customer found with phone number: " + formatPhoneNumber(customer_phone_number));
@@ -125,9 +125,9 @@ public class SmsService {
     	
     	String verificationCode = generateVerificationCode();
         verificationCodes.put(customer_phone_number, verificationCode);
-
+        System.out.println("문자 발송 요청");
         Message message = new Message();
-        message.setFrom(customer_phone_number);
+        message.setFrom(senderPhoneNumber);
         message.setTo(customer_phone_number);
         message.setText("[SoundBank] 대출 신청이 " + "["+result+"] 되었습니다." );
 
@@ -153,8 +153,16 @@ public class SmsService {
 
     // 필요에 따라 인증 코드 검증 메소드 추가 가능
     public boolean verifyCode(SmsRequest smsRequest) {
-        String storedCode = verificationCodes.get(smsRequest.getCustomer_phone_number());
-        
-        return smsRequest.getCode() != null && smsRequest.getCode().equals(storedCode);
+        String phone = smsRequest.getCustomer_phone_number();
+        String storedCode = verificationCodes.get(phone);
+
+        boolean result = smsRequest.getCode() != null && smsRequest.getCode().equals(storedCode);
+
+        if (result) {
+            verificationCodes.remove(phone); // 인증을 완료한후 인증코드는 삭제 
+            
+        }
+
+        return result;
     }
 }

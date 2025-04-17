@@ -20,7 +20,7 @@ public class AccountDTO {
 
     @Id
     @Column(name = "ACCOUNT_NUMBER")
-    private String account_number;           // 계좌번호
+    private String accountNumber;           // 계좌번호
 
     @Column(name = "CUSTOMER_ID")
     private String customer_id;              // 고객 ID
@@ -63,4 +63,18 @@ public class AccountDTO {
 
     @Transient
     private String account_number_column;    // 타입별 실제 컬럼명 (DB 저장 안 됨)
+    
+    public String getAccount_number() {
+        return this.accountNumber;
+    }
+
+    public void setAccount_number(String account_number) {
+        this.accountNumber = account_number;
+    }
+    
+    
+    
+    
+    
+    
 }

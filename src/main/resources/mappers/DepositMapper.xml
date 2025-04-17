@@ -17,23 +17,27 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             dat_start_day,
             dat_end_day
         FROM 
-            DEPOSIT_ACCOUNT_TBL
+            deposit_account_tbl
     </select>
     
     <!--  신규 예금 계좌 생성 -->
     <insert id="depositInsert">
-        INSERT INTO DEPOSIT_ACCOUNT_TBL(
-           dat_account_num,
-           dat_deposit_account_num,
-           dat_new_amount,
-           dat_balance,
-           dat_term,
-           dat_start_day,
-           dat_end_day
-        )
+        insert into deposit_account_tbl(
+        dat_account_num,
+        dat_account_pwd,
+        dat_deposit_account_num,
+        dat_deposit_account_pwd,
+        dat_new_amount,
+        dat_balance,
+        dat_derm,
+        dat_start_day,
+        dat_end_day         
+        )        
         VALUES(
            #{dat_account_num},
-           #{dat_deposit_account_num},
+           #{dat_account_pwd},        
+           #{dat_deposit_account_num},   
+           #{dat_deposit_account_pwd},
            #{dat_new_amount},
            #{dat_balance},
            #{dat_term},

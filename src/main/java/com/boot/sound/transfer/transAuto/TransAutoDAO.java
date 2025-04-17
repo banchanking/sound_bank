@@ -37,6 +37,13 @@ public interface TransAutoDAO {
 
     // 출금계좌 잔액 조회
     public int getBalance(@Param("acc") String account_number);
+    
+    // 계좌타입 조회
+    public String getAccountOutType(String out_account_number);
+    public String getAccountInType(String in_account_number);
+    
+    // 고객이름 조회
+    public String getCustomerName(String customer_id);
 
     // 이체실행 > 잔액 업데이트 (입금/출금)
     public void updateBalance(
@@ -44,8 +51,8 @@ public interface TransAutoDAO {
     );
 
     // 출금내역 저장
-    void saveTransactionOut(TransAutoDTO dto);
+    public void saveTransactionOut(TransAutoDTO dto);
 
     // 입금내역 저장
-    void saveTransactionIn(TransAutoDTO dto);
+    public void saveTransactionIn(TransAutoDTO dto);
 }

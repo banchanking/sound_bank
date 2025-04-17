@@ -1,0 +1,226 @@
+/* 공통 스타일 */
+.fundContainer {
+  background-color: #ffffff;
+  padding: 2rem;
+  color: #000000;
+  font-family: 'Pretendard', sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.fundListSection {
+  margin-bottom: 2rem;
+}
+
+/* 버튼 공통 */
+button,
+.fundtestsubmit {
+  background-color: #000000;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.8rem 2rem;
+  margin-top: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: block;
+  margin: 2rem auto 0 auto;
+  font-size: 1rem;
+}
+
+button:hover,
+.fundtestsubmit:hover {
+  background-color: #333;
+}
+
+/* 운용사 버튼 */
+.managerButton {
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.6rem 1.2rem;
+  margin: 0.5rem 0;
+  background-color: black;
+  color: white;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.managerButton:hover {
+  background-color: #333;
+}
+
+/* 테스트 질문 */
+.testcard {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.testquestiontitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 0.5rem;
+}
+
+.testquestion {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.fundtestoption {
+  margin: 0.4rem 0;
+}
+
+/* 셀렉트박스 */
+.categorySelect {
+  margin: 0.7rem 0 1rem 0;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+}
+
+/* 테이블 */
+.fundtestresultcontainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  background-color: #fff;
+  font-family: 'Pretendard', sans-serif;
+}
+
+.fundtesttitle {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+
+.fundTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 auto;
+  border-collapse: collapse;
+  background-color: #ffffff;
+  color: #111;
+  font-size: 0.95rem;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.fundTable th,
+.fundTable td {
+  border: 1px solid #e0e0e0;
+  padding: 0.8rem;
+  text-align: center;
+}
+
+.fundTable th {
+  background-color: #f2f2f2;
+  color: #222;
+  font-weight: 500;
+}
+
+.fundTable tr:hover {
+  background-color: #fafafa;
+}
+
+.selected {
+  background-color: #eaeaea;
+}
+
+/* 차트 팝업 */
+.popupOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.popupChart {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  width: 80%;
+  max-width: 900px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+.popupHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.closeButton {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #888;
+  font-weight: bold;
+}
+
+.closeButton:hover {
+  color: #000;
+}
+
+.popupModal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* 액션 버튼 영역 */
+.actionbuttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.testquestiontitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+.questionNumber {
+  margin-right: 0.4rem;
+  font-weight: 800;
+  font-size: 1.3rem;
+  color: #111;
+}

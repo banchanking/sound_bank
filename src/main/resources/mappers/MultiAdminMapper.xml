@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boot.sound.transfer.multiAdmin.MultiAdminDAO">
+
+  <!-- 승인 목록 조회 -->
+  <select id="getApproveList" resultType="com.boot.sound.transfer.multiAdmin.MultiAdminDTO">
+    SELECT 
+      T.transfer_id, T.customer_id, T.out_account_number, T.in_account_number, T.in_name, 
+      T.amount, T.memo, T.request_date, A.status, A.reject_reason, A.approval_date
+    FROM transfer_tbl T
+    LEFT JOIN approval_tbl A ON T.transfer_id = A.transfer_id
+    WHERE T.transfer_type = '다건'
+    ORDER BY T.request_date DESC
+  </select>
+
+  <!-- 다건 상세 조회 -->
+  <select id="getTransferDetails" parameterType="int" resultType="com.boot.sound.transfer.multiAdmin.MultiAdminDTO">
+    SELECT in_account_number, in_name, amount, memo
+    FROM transfer_tbl
+    WHERE transfer_id = #{transfer_id}
+  </select>
+
+  <!-- 승인/반려 상태 업데이트 -->
+  <update id="updateApprovalStatusByGroup">
+    UPDATE approval_tbl
+    SET status = #{status},
+        reject_reason = #{reason},
+        approval_date = NOW()
+    WHERE transfer_id IN (
+      SELECT transfer_id FROM transfer_tbl
+      WHERE customer_id = #{customer_id}
+        AND request_date = #{request_date}
+        AND transfer_type = '다건'
+    )
+  </update>
+
+  <!-- 이체 시간 업데이트 -->
+  <update id="updateTransferDateNow">
+    UPDATE transfer_tbl
+    SET transfer_date = NOW()
+    WHERE customer_id = #{customer_id}
+      AND request_date = #{request_date}
+      AND transfer_type = '다건'
+  </update>
+
+  <!-- 승인된 이체 건 목록 조회 -->
+  <select id="findTransfersByGroup" resultType="com.boot.sound.transfer.multiAdmin.MultiAdminDTO">
+    SELECT *
+    FROM transfer_tbl
+    WHERE customer_id = #{customer_id}
+      AND request_date = #{request_date}
+      AND transfer_type = '다건'
+  </select>
+
+  <!-- 출금 -->
+  <update id="decreaseBalance">
+    UPDATE account_tbl
+    SET balance = balance - #{amt}
+    WHERE account_number = #{acc}
+  </update>
+
+  <!-- 입금 -->
+  <update id="increaseBalance">
+    UPDATE account_tbl
+    SET balance = balance + #{amt}
+    WHERE account_number = #{acc}
+  </update>
+
+  <!-- 거래내역 저장 -->
+<insert id="insertTransaction">
+  INSERT INTO transaction_tbl (
+    account_number,
+    transaction_type,
+    amount,
+    currency,
+    comment,
+    transaction_date,
+    customer_name,
+    account_type
+  ) VALUES (
+    #{account_number},
+    #{transaction_type},
+    #{amount},
+    'KRW',
+    #{comment},
+    NOW(),
+    #{customer_name},
+    #{account_type}
+  )
+</insert>
+
+</mapper>

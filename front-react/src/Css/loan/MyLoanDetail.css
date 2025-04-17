@@ -1,0 +1,15 @@
+.totalArea {
+  min-height: 600px;
+}
+.selectBtnArea {
+  height: 200px;
+  display: flex;
+}
+.selectBtnArea button {
+  font-size: 30px;
+  background-color: black;
+  margin-left: 3%;
+  margin-right: 3%;
+  width: 30%;
+  height: 100px;
+}

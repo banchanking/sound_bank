@@ -11,7 +11,7 @@ import java.util.Scanner;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.boot.sound.exchange.ExchangeRateDTO;
+import com.boot.sound.exchange.dto.ExchangeRateDTO;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

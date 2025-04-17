@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Chart } from 'react-google-charts';
-import '../../Css/fund/Fund.css';
+import { Chart } from "react-google-charts";
+import styles from "../../Css/fund/FundList.module.css";
+import RefreshToken from "../../jwt/RefreshToken";
 
 const FundList = () => {
   const [data, setData] = useState([]);
-  const [funds, setFunds] = useState([]); // 등록된 펀드 상품만 저장
+  const [funds, setFunds] = useState([]);
   const [selectedFunds, setSelectedFunds] = useState([]);
   const [expandedManagers, setExpandedManagers] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -12,114 +13,48 @@ const FundList = () => {
   const popupRef = useRef(null);
 
   useEffect(() => {
-    fetch('http://localhost:8081/api/registeredFunds')  // 등록된 펀드 상품 API 호출
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error('Failed to fetch registered funds');
+    const fetchFunds = async () => {
+      try {
+        const response = await RefreshToken.get("http://localhost:8081/api/registeredFunds");
+        setFunds(response.data);
+      } catch (error) {
+        console.error("Error fetching registered funds:", error);
       }
-      return response.json();
-    })
-    .then((data) => {
-      console.log('Registered Funds:', data); // 데이터 로드 확인
-      setFunds(data); // 등록된 펀드 상품으로 상태 업데이트
-    })
-    .catch((error) => {
-      console.error('Error fetching registered funds:', error);
-    });
-}, []);
+    };
+    fetchFunds();
+  }, []);
 
   const handleFundClick = (fundName) => {
-    setSelectedFunds(prevSelectedFunds => {
-      if (prevSelectedFunds.includes(fundName)) {
-        return prevSelectedFunds.filter(name => name !== fundName);
-      } else {
-        return [...prevSelectedFunds, fundName];
-      }
-    });
+    setSelectedFunds(prev =>
+      prev.includes(fundName) ? prev.filter(name => name !== fundName) : [...prev, fundName]
+    );
     setShowPopup(true);
   };
 
   const handleManagerClick = (managerName) => {
-    setExpandedManagers(prevExpandedManagers => {
-      if (prevExpandedManagers.includes(managerName)) {
-        return prevExpandedManagers.filter((name) => name !== managerName);
-      } else {
-        return [...prevExpandedManagers, managerName];
-      }
-    });
+    setExpandedManagers(prev =>
+      prev.includes(managerName) ? prev.filter(name => name !== managerName) : [...prev, managerName]
+    );
   };
 
-  const handleCategoryChange = (event) => {
-    setSelectedCategory(event.target.value);
-  };
+  const handleCategoryChange = (e) => setSelectedCategory(e.target.value);
 
-  // 수정 =>  모달 전체 드래그 처리 (표 제외)
-  useEffect(() => {
-    const popup = popupRef.current;
-    if (!popup) return;
-
-    const handleMouseDown = (e) => {
-      const target = e.target;
-
-      // 수정 =>  표 내부 클릭 시 드래그 막기
-      if (
-        target.tagName === 'TD' ||
-        target.tagName === 'TH' ||
-        target.closest('table')
-      ) {
-        return;
-      }
-
-      const shiftX = e.clientX - popup.getBoundingClientRect().left;
-      const shiftY = e.clientY - popup.getBoundingClientRect().top;
-
-      const moveAt = (clientX, clientY) => {
-        popup.style.left = `${clientX - shiftX}px`;
-        popup.style.top = `${clientY - shiftY}px`;
-      };
-
-      const onMouseMove = (e) => {
-        moveAt(e.clientX, e.clientY);
-      };
-
-      document.addEventListener('mousemove', onMouseMove);
-
-      document.addEventListener('mouseup', () => {
-        document.removeEventListener('mousemove', onMouseMove);
-      }, { once: true });
-    };
-
-    popup.addEventListener('mousedown', handleMouseDown);
-    popup.ondragstart = () => false;
-
-    return () => {
-      popup.removeEventListener('mousedown', handleMouseDown);
-    };
-  }, [showPopup]);
-
-
-  const handleClosePopup = () => {
-    setShowPopup(false);
-  };
+  const handleClosePopup = () => setShowPopup(false);
 
   useEffect(() => {
     if (selectedFunds.length > 0) {
-      const chartData = [
-        ['기간', ...selectedFunds.map((fund) => `${fund} 수익률`)], // 헤더 생성
-      ];
+      const chartData = [["기간", ...selectedFunds]];
+      const periods = ["1개월", "3개월", "6개월", "12개월"];
 
-      const periods = ['1개월', '3개월', '6개월', '12개월'];
-      periods.forEach((period) => {
-        const row = [period]; // 첫 번째 열은 기간
-        selectedFunds.forEach((fund) => {
-          const fundData = funds.find((row) => row.fund_name === fund);
-          const value = fundData ? parseFloat(fundData[`return_${period.replace('개월', 'm')}`]) : 0; // 값이 없으면 0으로 설정
-          row.push(value);
+      periods.forEach(period => {
+        const row = [period];
+        selectedFunds.forEach(fund => {
+          const found = funds.find(f => f.fund_name === fund);
+          const key = `return_${period.replace("개월", "m")}`;
+          row.push(found ? parseFloat(found[key]) || 0 : 0);
         });
         chartData.push(row);
       });
-
-      console.log('Chart Data:', chartData); // 차트 데이터 확인
       setData(chartData);
     } else {
       setData([]);
@@ -127,56 +62,46 @@ const FundList = () => {
   }, [selectedFunds, funds]);
 
   const groupedFunds = funds.reduce((acc, fund) => {
-    if (!acc[fund.fund_company]) {
-      acc[fund.fund_company] = {};
-    }
-    if (!acc[fund.fund_company][fund.fund_type]) {
-      acc[fund.fund_company][fund.fund_type] = [];
-    }
+    if (!acc[fund.fund_company]) acc[fund.fund_company] = {};
+    if (!acc[fund.fund_company][fund.fund_type]) acc[fund.fund_company][fund.fund_type] = [];
     acc[fund.fund_company][fund.fund_type].push(fund);
     return acc;
   }, {});
 
   return (
-    <div className="Fund">
+    <div className={styles.fundContainer}>
       <main>
-        <div className="fund-list">
-          {Object.keys(groupedFunds).map((manager, index) => (
-            <div key={index}>
-              <button onClick={() => handleManagerClick(manager)}>
+        <div className={styles.fundListSection}>
+          {Object.keys(groupedFunds).map((manager, i) => (
+            <div key={i} className={styles.managerBlock}>
+              <button className={styles.managerButton} onClick={() => handleManagerClick(manager)}>
                 {manager}
               </button>
               {expandedManagers.includes(manager) && (
                 <div>
-                  <select onChange={handleCategoryChange} value={selectedCategory}>
+                  <select className={styles.categorySelect} onChange={handleCategoryChange} value={selectedCategory}>
                     <option value="">펀드 유형 선택</option>
-                    {Object.keys(groupedFunds[manager]).map((category, catIndex) => (
-                      <option key={catIndex} value={category}>
-                        {category}
-                      </option>
+                    {Object.keys(groupedFunds[manager]).map((cat, i) => (
+                      <option key={i} value={cat}>{cat}</option>
                     ))}
                   </select>
                   {selectedCategory && groupedFunds[manager][selectedCategory] && (
-                    <table>
+                    <table className={styles.fundTable}>
                       <thead>
                         <tr>
                           <th>상품명</th>
-                          <th>1개월 누적 수익률(%)</th>
-                          <th>3개월 누적 수익률(%)</th>
-                          <th>6개월 누적 수익률(%)</th>
-                          <th>12개월 누적 수익률(%)</th>
-                          <th>펀드 등급</th>
-                          <th>선취 수수료(%)</th>
-                          <th>총 보수(%)</th>
+                          <th>1M</th>
+                          <th>3M</th>
+                          <th>6M</th>
+                          <th>12M</th>
+                          <th>등급</th>
+                          <th>선취수수료</th>
+                          <th>총보수</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {groupedFunds[manager][selectedCategory].map((fund, fundIndex) => (
-                          <tr
-                            key={fundIndex}
-                            onClick={() => handleFundClick(fund.fund_name)}
-                            className={selectedFunds.includes(fund.fund_name) ? 'selected' : ''}
-                          >
+                        {groupedFunds[manager][selectedCategory].map((fund, idx) => (
+                          <tr key={idx} onClick={() => handleFundClick(fund.fund_name)} className={selectedFunds.includes(fund.fund_name) ? styles.selected : ''}>
                             <td>{fund.fund_name}</td>
                             <td>{fund.return_1m}</td>
                             <td>{fund.return_3m}</td>
@@ -195,12 +120,13 @@ const FundList = () => {
             </div>
           ))}
         </div>
+
         {showPopup && (
-          <div className="popup" ref={popupRef}>
-            <div className="popup-content">
-              <div className="popup-header">
-                <h3>펀드 수익률 비교 차트</h3>
-                <span className="close" onClick={handleClosePopup}>&times;</span>
+          <div className={styles.popupOverlay}>
+            <div className={styles.popupChart} ref={popupRef}>
+              <div className={styles.popupHeader}>
+                <h3>수익률 비교</h3>
+                <span className={styles.closeButton} onClick={handleClosePopup}>&times;</span>
               </div>
               <Chart
                 width={'100%'}
@@ -216,7 +142,13 @@ const FundList = () => {
                     title: '수익률 (%)',
                   },
                   legend: { position: 'bottom' },
-                  colors: ['#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#46f0f0', '#f032e6', '#bcf60c', '#fabebe', '#008080', '#e6beff', '#9a6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075', '#808080'] // 색상 설정
+                  colors: [
+                    '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728',
+                    '#9467bd', '#8c564b', '#e377c2', '#7f7f7f',
+                    '#bcbd22', '#17becf', '#393b79', '#637939',
+                    '#8c6d31', '#843c39', '#7b4173', '#5254a3',
+                    '#6b6ecf', '#9c9ede', '#e7ba52', '#bd9e39'
+                  ]
                 }}
               />
             </div>

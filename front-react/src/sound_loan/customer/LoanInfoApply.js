@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import RefreshToken from "../../jwt/RefreshToken";
 import { useNavigate, useParams } from "react-router-dom";
+import "../../Css/loan/LoanInfoApply.css";
 
 const LoanInfoApply = () => {
   const { loan_id } = useParams();
-  const  navigate  = useNavigate();
-  const [loanInfo, setLoanInfo] = useState({
+  const navigate = useNavigate();
+  const [loan_info, set_loan_info] = useState({
     customer_id: "",
     loan_name: "",
     loan_id: 0,
@@ -20,45 +21,82 @@ const LoanInfoApply = () => {
     loan_type: "",
     loan_min_amount: 0,
     loan_max_amount: 0,
-    account_numbers: [],
+    accountNumbers: [],
     loan_term: 0,
+    remaining_term: 0,
   });
 
-  const changeValue = (e) => {
-    setLoanInfo({
-      ...loanInfo,
+  const [loanTerms, setLoanTerms] = useState({});
+  const [loanTermsAgree, setLoanTermsAgree] = useState({
+    term_id: 0,
+    customer_id: "",
+    loan_id: 0,
+  });
+  const [termsAgree, setTermsAgree] = useState(false);
+
+  const change_value = (e) => {
+    set_loan_info({
+      ...loan_info,
       [e.target.name]: e.target.value,
     });
   };
 
-  const loanApply = () => {
-    console.log(loanInfo);
-    if (!loanInfo.loan_amount) {
+  const payload = {
+    loanInfo: {
+      customerId: loan_info.customer_id,
+      loanName: loan_info.loan_name,
+      loanId: loan_info.loan_id,
+      interestRate: loan_info.interest_rate,
+      customerIncome: loan_info.customer_income,
+      customerCreditScore: loan_info.customer_credit_score,
+      accountNumber: loan_info.account_number,
+      loanAmount: loan_info.loan_amount,
+      balance: loan_info.loan_amount,
+      repaymentMethod: loan_info.repayment_method,
+      repaymentDate: loan_info.repayment_date,
+      loanType: loan_info.loan_type,
+      loanMinAmount: loan_info.loan_min_amount,
+      loanMaxAmount: loan_info.loan_max_amount,
+      loanTerm: loan_info.loan_term * 12,
+      remainingTerm: loan_info.loan_term * 12,
+    },
+    loanTermsAgree: loanTermsAgree,
+  };
+
+  const [showTermsModal, setShowTermsModal] = useState(false);
+
+  const loan_apply = () => {
+    if (!loan_info.loan_amount) {
       alert("신청금액을 작성해주세요");
       return;
     }
-    const loanAmount = loanInfo.loan_amount / 10000;
-    if (loanAmount < loanInfo.loan_min_amount) {
+    const loan_amount = loan_info.loan_amount / 10000;
+    if (loan_amount < loan_info.loan_min_amount) {
       alert("신청금액이 최소대출한도보다 작습니다.");
       return;
-    } else if (loanAmount > loanInfo.loan_max_amount) {
+    } else if (loan_amount > loan_info.loan_max_amount) {
       alert("신청금액이 최대대출한도보다 많습니다.");
       return;
-    } else if (!loanInfo.customer_credit_score) {
+    } else if (!loan_info.customer_credit_score) {
       alert("신용점수를 선택해주세요.");
       return;
-    } else if (!loanInfo.account_number) {
+    } else if (!loan_info.account_number) {
       alert("상환계좌를 선택해주세요.");
       return;
-    } else if (!loanInfo.repayment_method) {
+    } else if (!loan_info.repayment_method) {
       alert("상환방법을 선택해주세요.");
       return;
-    } else if (!loanInfo.repayment_date) {
+    } else if (!loan_info.repayment_date) {
       alert("상환날짜를 선택해주세요.");
       return;
     }
+
+    loan_info.remaining_term = loan_info.loan_term * 12;
+    loan_info.loan_term = loan_info.loan_term * 12;
+    console.log(payload);
+
     if (window.confirm("작성된 정보로 대출신청을 하시겠습니까?")) {
-      RefreshToken.post("/loanApply", loanInfo).then((res) => {
+      RefreshToken.post("/loanApply", payload).then((res) => {
         if (res.status === 201) {
           alert("대출신청이 정상적으로 완료되었습니다.");
           navigate("/loanApply");
@@ -69,7 +107,7 @@ const LoanInfoApply = () => {
     }
   };
 
-  const backToList = () => {
+  const back_to_list = () => {
     if (window.confirm("상품목록화면으로 가시겠습니까?")) {
       navigate("/loanApply");
     } else {
@@ -78,26 +116,49 @@ const LoanInfoApply = () => {
   };
 
   useEffect(() => {
-    const customerId = localStorage.getItem("customerId");
+    const customer_id = localStorage.getItem("customerId");
     RefreshToken.get("/loanCustomer", {
-      params: { customerId: customerId, loan_id: loan_id },
+      params: { customerId: customer_id, loan_id: loan_id },
     })
       .then((response) => {
         let data = response.data;
-
         if (data.accountNumbers && typeof data.accountNumbers === "string") {
-          data.account_numbers = data.accountNumbers
+          data.accountNumbers = data.accountNumbers
             .split(",")
             .map((s) => s.trim());
-        } else {
-          data.account_numbers = [];
         }
-        setLoanInfo(data);
+        set_loan_info(data);
       })
       .catch((error) => {
         console.error("데이터 가져오기 오류:", error);
       });
+
+    RefreshToken.get("/selectLoanTerm/" + loan_id)
+      .then((res) => {
+        setLoanTerms(res.data);
+      })
+      .catch((err) => {
+        console.error("약관 조회 실패", err);
+        alert("약관 조회에 실패하였습니다.");
+      });
   }, [loan_id]);
+
+  useEffect(() => {
+    if (termsAgree && loanTerms.term_id && loan_info.customer_id) {
+      setLoanTermsAgree({
+        term_id: loanTerms.term_id,
+        customer_id: loan_info.customer_id,
+        loan_id: loan_info.loan_id,
+      });
+    }
+  }, [termsAgree, loanTerms, loan_info]);
+
+  useEffect(() => {
+    document.body.style.overflow = showTermsModal ? "hidden" : "auto";
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [showTermsModal]);
 
   return (
     <div>
@@ -116,9 +177,9 @@ const LoanInfoApply = () => {
               <td>
                 <input
                   type="text"
-                  value={loanInfo.customer_id}
-                  style={{ textAlign: "right" }}
+                  value={loan_info.customer_id}
                   readOnly
+                  style={{ textAlign: "right" }}
                 />
               </td>
             </tr>
@@ -127,9 +188,9 @@ const LoanInfoApply = () => {
               <td>
                 <input
                   type="text"
-                  value={loanInfo.loan_name}
-                  style={{ textAlign: "right" }}
+                  value={loan_info.loan_name}
                   readOnly
+                  style={{ textAlign: "right" }}
                 />
               </td>
             </tr>
@@ -138,9 +199,9 @@ const LoanInfoApply = () => {
               <td>
                 <input
                   type="text"
-                  value={loanInfo.loan_type}
-                  style={{ textAlign: "right" }}
+                  value={loan_info.loan_type}
                   readOnly
+                  style={{ textAlign: "right" }}
                 />
               </td>
             </tr>
@@ -151,21 +212,21 @@ const LoanInfoApply = () => {
                   type="text"
                   readOnly
                   value={
-                    (loanInfo.loan_min_amount >= 10000
-                      ? `${(loanInfo.loan_min_amount / 10000).toLocaleString(
-                          "ko-KR"
-                        )} 억원`
-                      : `${loanInfo.loan_min_amount.toLocaleString(
-                          "ko-KR"
-                        )} 만원`) +
+                    ((loan_info.loan_min_amount ?? 0) >= 10000
+                      ? `${(
+                          loan_info.loan_min_amount / 10000
+                        ).toLocaleString()} 억원`
+                      : `${(
+                          loan_info.loan_min_amount ?? 0
+                        ).toLocaleString()} 만원`) +
                     " ~ " +
-                    (loanInfo.loan_max_amount >= 10000
-                      ? `${(loanInfo.loan_max_amount / 10000).toLocaleString(
-                          "ko-KR"
-                        )} 억원`
-                      : `${loanInfo.loan_max_amount.toLocaleString(
-                          "ko-KR"
-                        )} 만원`)
+                    ((loan_info.loan_max_amount ?? 0) >= 10000
+                      ? `${(
+                          loan_info.loan_max_amount / 10000
+                        ).toLocaleString()} 억원`
+                      : `${(
+                          loan_info.loan_max_amount ?? 0
+                        ).toLocaleString()} 만원`)
                   }
                   style={{ textAlign: "right" }}
                 />
@@ -176,44 +237,37 @@ const LoanInfoApply = () => {
               <td>
                 <select
                   name="loan_term"
+                  onChange={change_value}
                   style={{ textAlign: "right" }}
-                  onChange={changeValue}
                 >
-                  {loanInfo.loan_term > 0 &&
-                    Array.from(
-                      { length: loanInfo.loan_term },
-                      (_, i) => loanInfo.loan_term - i
-                    ).map((term) => (
-                      <option key={term} value={term}>
-                        {term}년
-                      </option>
-                    ))}
+                  {Array.from(
+                    { length: loan_info.loan_term },
+                    (_, i) => i + 1
+                  ).map((term) => (
+                    <option key={term} value={term}>
+                      {term}년
+                    </option>
+                  ))}
                 </select>
               </td>
             </tr>
             <tr>
               <th>신청금액</th>
               <td>
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <input
-                    type="text"
-                    name="loan_amount"
-                    value={(loanInfo.loan_amount ?? 0).toLocaleString("ko-KR")}
-                    onChange={(e) => {
-                      const rawValue = e.target.value.replace(/,/g, "");
-                      const num = parseInt(rawValue, 10);
-                      setLoanInfo((prevStatus) => ({
-                        ...prevStatus,
-                        loan_amount: isNaN(num) ? 0 : num,
-                      }));
-                    }}
-                    style={{ textAlign: "right" }}
-                  />
-
-                  <span style={{ marginLeft: "5px", fontSize: "20px" }}>
-                    원
-                  </span>
-                </div>
+                <input
+                  type="text"
+                  name="loan_amount"
+                  value={(loan_info.loan_amount ?? 0).toLocaleString("ko-KR")}
+                  onChange={(e) => {
+                    const rawValue = e.target.value.replace(/,/g, "");
+                    const num = parseInt(rawValue, 10);
+                    set_loan_info({
+                      ...loan_info,
+                      loan_amount: isNaN(num) ? 0 : num,
+                    });
+                  }}
+                  style={{ textAlign: "right" }}
+                />
               </td>
             </tr>
             <tr>
@@ -221,7 +275,7 @@ const LoanInfoApply = () => {
               <td>
                 <input
                   type="text"
-                  value={`${loanInfo.interest_rate}%`}
+                  value={`${loan_info.interest_rate}%`}
                   readOnly
                   style={{ textAlign: "right" }}
                 />
@@ -230,27 +284,22 @@ const LoanInfoApply = () => {
             <tr>
               <th>연소득</th>
               <td>
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <input
-                    type="text"
-                    name="customer_income"
-                    value={(loanInfo.customer_income ?? 0).toLocaleString(
-                      "ko-KR"
-                    )}
-                    onChange={(e) => {
-                      const rawValue = e.target.value.replace(/,/g, "");
-                      const num = parseInt(rawValue, 10);
-                      setLoanInfo((prevStatus) => ({
-                        ...prevStatus,
-                        customer_income: isNaN(num) ? 0 : num,
-                      }));
-                    }}
-                    style={{ textAlign: "right" }}
-                  />
-                  <span style={{ marginLeft: "5px", fontSize: "20px" }}>
-                    원
-                  </span>
-                </div>
+                <input
+                  type="text"
+                  name="customer_income"
+                  value={(loan_info.customer_income ?? 0).toLocaleString(
+                    "ko-KR"
+                  )}
+                  onChange={(e) => {
+                    const rawValue = e.target.value.replace(/,/g, "");
+                    const num = parseInt(rawValue, 10);
+                    set_loan_info({
+                      ...loan_info,
+                      customer_income: isNaN(num) ? 0 : num,
+                    });
+                  }}
+                  style={{ textAlign: "right" }}
+                />
               </td>
             </tr>
             <tr>
@@ -258,12 +307,12 @@ const LoanInfoApply = () => {
               <td>
                 <select
                   name="customer_credit_score"
+                  onChange={change_value}
                   style={{ textAlign: "right" }}
-                  onChange={changeValue}
                 >
-                  <option value={null}>신용점수를 선택해주세요</option>
-                  <option value={"700점 이상"}>700점 이상</option>
-                  <option value={"700점 미만"}>700점 미만</option>
+                  <option value="">신용점수를 선택해주세요</option>
+                  <option value="700점 이상">700점 이상</option>
+                  <option value="700점 미만">700점 미만</option>
                 </select>
               </td>
             </tr>
@@ -272,14 +321,14 @@ const LoanInfoApply = () => {
               <td>
                 <select
                   name="account_number"
+                  onChange={change_value}
                   style={{ textAlign: "right" }}
-                  onChange={changeValue}
                 >
-                  <option value={null}>계좌를 선택해주세요.</option>
-                  {Array.isArray(loanInfo.account_numbers) &&
-                    loanInfo.account_numbers.map((acn, index) => (
-                      <option key={index} value={acn}>
-                        {acn}
+                  <option value="">계좌를 선택해주세요</option>
+                  {Array.isArray(loan_info.accountNumbers) &&
+                    loan_info.accountNumbers.map((acc, idx) => (
+                      <option key={idx} value={acc}>
+                        {acc}
                       </option>
                     ))}
                 </select>
@@ -290,13 +339,13 @@ const LoanInfoApply = () => {
               <td>
                 <select
                   name="repayment_method"
+                  onChange={change_value}
                   style={{ textAlign: "right" }}
-                  onChange={changeValue}
                 >
-                  <option value={null}>상환방법을 선택해주세요.</option>
-                  <option value={"원리금균등"}>원리금균등상환</option>
-                  <option value={"원금균등"}>원금균등상환</option>
-                  <option value={"만기일시"}>만기일시상환</option>
+                  <option value="">상환방식을 선택해주세요</option>
+                  <option value="원리금균등">원리금균등상환</option>
+                  <option value="원금균등">원금균등상환</option>
+                  <option value="만기일시">만기일시상환</option>
                 </select>
               </td>
             </tr>
@@ -305,13 +354,13 @@ const LoanInfoApply = () => {
               <td>
                 <select
                   name="repayment_date"
+                  onChange={change_value}
                   style={{ textAlign: "right" }}
-                  onChange={changeValue}
                 >
-                  <option value={null}>상환날짜를 선택해주세요.</option>
-                  {Array.from({ length: 31 }, (_, i) => (
-                    <option key={i + 1} value={i + 1}>
-                      {i + 1}일
+                  <option value="">상환날짜를 선택해주세요</option>
+                  {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+                    <option key={day} value={day}>
+                      {day}일
                     </option>
                   ))}
                 </select>
@@ -321,13 +370,42 @@ const LoanInfoApply = () => {
           <tfoot>
             <tr>
               <td colSpan={2}>
-                <input type="button" value={"대출신청"} onClick={loanApply} />
-                <input type="button" value={"돌아가기"} onClick={backToList} />
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={termsAgree}
+                    onChange={() => setShowTermsModal(true)}
+                  />
+                  약관에 동의합니다.
+                </label>
+              </td>
+            </tr>
+            <tr>
+              <td colSpan={2}>
+                <button onClick={loan_apply}>대출신청</button>
+                <button onClick={back_to_list}>돌아가기</button>
               </td>
             </tr>
           </tfoot>
         </table>
       </div>
+      {showTermsModal && (
+        <div className="modal">
+          <div className="modal-content">
+            <h3>{loanTerms.term_title}</h3>
+            <div>{loanTerms.term_content}</div>
+            <button
+              onClick={() => {
+                setTermsAgree(true);
+                setShowTermsModal(false);
+              }}
+            >
+              약관에 동의합니다
+            </button>
+            <button onClick={() => setShowTermsModal(false)}>닫기</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -19,7 +19,7 @@ function Chatbot() {
   const sendRequest = useCallback(
     debounce(async (question) => {
       try {
-        const res = await axios.post('http://localhost:8000/ask', { question });
+        const res = await axios.post('http://localhost:8001/ask', { question });
         const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         setMessages((prev) => [
           ...prev,
