@@ -5,14 +5,14 @@ import { getCustomerID } from '../../jwt/AxiosToken';
 import '../../Css/transfer/TransLimit.css';
 
 function TransLimit() {
-  const [accounts, setAccounts] = useState([]); // 계좌 목록
+  const [accounts, setAccounts] = useState([]);
   const [accountNumber, setAccountNumber] = useState('');
-  const [limitType, setLimitType] = useState('출금');
   const [requestedLimit, setRequestedLimit] = useState('');
   const [reason, setReason] = useState('');
   const [customerId, setCustomerId] = useState('');
+  const [currentLimit, setCurrentLimit] = useState(null); // 기존 승인된 한도
 
-  // 고객 ID 및 계좌 목록 불러오기
+  // 고객 ID 설정 및 계좌 목록 조회
   useEffect(() => {
     const id = getCustomerID();
     if (!id) {
@@ -22,6 +22,7 @@ function TransLimit() {
 
     setCustomerId(id);
 
+    // 계좌 목록 조회
     RefreshToken.get(`http://localhost:8081/api/accounts/allAccount/${id}`)
       .then(res => {
         const raw = res.data;
@@ -30,6 +31,15 @@ function TransLimit() {
       })
       .catch(err => console.error('계좌 불러오기 실패:', err));
   }, []);
+
+  // 기존 승인 한도 조회
+  useEffect(() => {
+    if (customerId) {
+      RefreshToken.get(`http://localhost:8081/api/transLimit/approvedLimit/${customerId}`)
+        .then(res => setCurrentLimit(res.data))
+        .catch(err => console.error("기존 한도 조회 실패:", err));
+    }
+  }, [customerId]);
 
   // 신청 등록
   const handleSubmit = (e) => {
@@ -42,22 +52,25 @@ function TransLimit() {
     const data = {
       customer_id: customerId,
       out_account_number: accountNumber,
-      limit_type: limitType,
       requested_limit: requestedLimit,
       reason
     };
 
     RefreshToken.post('http://localhost:8081/api/transLimit/insert', data)
-      .then(() => {
-        alert('이체한도 변경 신청이 완료되었습니다.');
-        setAccountNumber('');
-        setRequestedLimit('');
-        setReason('');
-      })
-      .catch(err => {
+    .then(() => {
+      alert('이체한도 변경 신청이 완료되었습니다.');
+      setAccountNumber('');
+      setRequestedLimit('');
+      setReason('');
+    })
+    .catch(err => {
+      if (err.response?.data === "이미 대기 중인 요청이 존재합니다.") {
+        alert("이미 대기 중인 요청이 존재합니다.");
+      } else {
         console.error('신청 실패:', err);
         alert('신청 중 오류 발생');
-      });
+      }
+    });
   };
 
   return (
@@ -87,6 +100,13 @@ function TransLimit() {
             onChange={e => setRequestedLimit(e.target.value)}
             placeholder="예: 1000000"
           />
+
+          {/* 기존한도 표시 */}
+          {currentLimit !== null && (
+            <p style={{ marginTop: '5px', color: 'gray' }}>
+              현재한도: {Number(currentLimit).toLocaleString()}원
+            </p>
+          )}
 
           <label>신청 사유</label>
           <textarea

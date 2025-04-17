@@ -6,7 +6,9 @@ function AdminLimit() {
   const [requests, setRequests] = useState([]);
 
   // 승인 또는 거절 처리
-  const handleAction = (transfer_id, action) => {
+  const handleAction = (item, action) => {
+    const { transfer_id, requested_limit } = item;
+
     if (action === 'reject') {
       const reason = prompt('거절 사유를 입력하세요:');
       if (!reason) return;
@@ -18,10 +20,10 @@ function AdminLimit() {
         .then(() => {
           alert('거절 완료');
           setRequests(prev =>
-            prev.map(item =>
-              item.transfer_id === transfer_id
-                ? { ...item, status: '거절', approval_date: new Date().toISOString(), reject_reason: reason }
-                : item
+            prev.map(row =>
+              row.transfer_id === transfer_id
+                ? { ...row, status: '거절', approval_date: new Date().toISOString(), reject_reason: reason }
+                : row
             )
           );
         })
@@ -32,15 +34,21 @@ function AdminLimit() {
 
     } else if (action === 'approve') {
       RefreshToken.post('http://localhost:8081/api/transLimit/admin/approve', {
-        transfer_id
+        transfer_id,
+        approval_limit: requested_limit
       })
         .then(() => {
           alert('승인 완료');
           setRequests(prev =>
-            prev.map(item =>
-              item.transfer_id === transfer_id
-                ? { ...item, status: '승인', approval_date: new Date().toISOString() }
-                : item
+            prev.map(row =>
+              row.transfer_id === transfer_id
+                ? {
+                    ...row,
+                    status: '승인',
+                    approval_limit: requested_limit,
+                    approval_date: new Date().toISOString()
+                  }
+                : row
             )
           );
         })
@@ -51,7 +59,7 @@ function AdminLimit() {
     }
   };
 
-  // 관리자용 전체 요청 조회
+  // 요청 목록 조회
   useEffect(() => {
     RefreshToken.get('http://localhost:8081/api/transLimit/admin/list')
       .then(res => setRequests(res.data))
@@ -86,14 +94,25 @@ function AdminLimit() {
                 <td>{Number(item.requested_limit).toLocaleString()}원</td>
                 <td>{item.request_date ? new Date(item.request_date).toLocaleString() : '-'}</td>
                 <td>
-                  {item.status === '대기' ? (
+                  {item.status === '대기' || !item.status ? (
                     <>
-                      <button onClick={() => handleAction(item.transfer_id, 'approve')} className="btn-approve">승인</button>
-                      <button onClick={() => handleAction(item.transfer_id, 'reject')} className="btn-reject">반려</button>
+                      <button
+                        onClick={() => handleAction(item, 'approve')}
+                        className="btn-approve"
+                      >
+                        승인
+                      </button>
+                      <button
+                        onClick={() => handleAction(item, 'reject')}
+                        className="btn-reject"
+                      >
+                        반려
+                      </button>
                     </>
                   ) : item.status === '승인' ? (
                     <div>
                       승인됨<br />
+                      승인한도: {Number(item.approval_limit).toLocaleString()}원<br />
                       승인일: {item.approval_date ? new Date(item.approval_date).toLocaleString() : '-'}
                     </div>
                   ) : item.status === '거절' ? (
@@ -102,7 +121,9 @@ function AdminLimit() {
                       반려일: {item.approval_date ? new Date(item.approval_date).toLocaleString() : '-'}<br />
                       사유: {item.reject_reason || '-'}
                     </div>
-                  ) : '-'}
+                  ) : (
+                    '-'
+                  )}
                 </td>
               </tr>
             ))}

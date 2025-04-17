@@ -5,6 +5,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.springframework.data.annotation.Transient;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -52,6 +54,13 @@ public class CustomerDTO {
 
     @Column(name = "CUSTOMER_RISK_TYPE")
     private String customer_risk_type;
+    
+    // 현재 이체한도 (transfer_tbl에서 계산된 값을 일시적으로 담는 용도)
+    @javax.persistence.Transient // DB 저장 안 함, MyBatis insert용
+    private Integer current_limit;
+    
+    @javax.persistence.Transient 
+    private int account_pwd;  // 4자리 숫자 비밀번호 (회원가입용)
     
     // Auth_token 로그인시 유효시간 만료시 사라지는 실제 인증 토큰
     private String customer_token;
