@@ -46,9 +46,19 @@ const LoanAgreement = () => {
 
   // SMS 인증 성공 시 호출되는 콜백
   const handleSMSVerified = () => {
-    // 모달을 닫고 다음 페이지로 이동
-    setIsSMSModalOpen(false);
-    navigate("/loanInfoApply/" + loan_id);
+    RefreshToken.post("/consertInsert", consent)
+      .then((res) => {
+        if (res && res.status === 201) {
+          setIsSMSModalOpen(false);
+          navigate("/loanInfoApply/" + loan_id);
+        } else {
+          alert("동의내역 저장 실패");
+        }
+      })
+      .catch((err) => {
+        console.error("동의 저장 오류:", err);
+        alert("서버 오류 발생!");
+      });
   };
 
   const nextStep = () => {
@@ -64,23 +74,10 @@ const LoanAgreement = () => {
     ) {
       if (
         window.confirm(
-          "확인버튼을 누르면 대출신청정보 작성 페이지로 이동하며 [귀 행]의 신용점수에 영향을 줄 수 있습니다. 진행 하시겠습니까?"
+          "확인버튼을 누르면 인증 후 대출신청정보 작성 페이지로 이동하며 [귀 행]의 신용점수에 영향을 줄 수 있습니다. 진행 하시겠습니까?"
         )
       ) {
-        RefreshToken.post("/consertInsert", consent)
-          .then((res) => {
-            if (res && res.status === 201) {
-              // 응답이 성공하면 바로 다음 페이지로 이동하지 않고 SMS 인증 모달을 엽니다.
-              setIsSMSModalOpen(true);
-            } else {
-              console.log(res);
-              alert("요청 실패! 서버 응답이 올바르지 않습니다.");
-            }
-          })
-          .catch((err) => {
-            console.error("Axios error:", err);
-            alert("서버 오류 발생!");
-          });
+        setIsSMSModalOpen(true); // ← 여기까지만
       } else {
         navigate("/loanApply");
       }
