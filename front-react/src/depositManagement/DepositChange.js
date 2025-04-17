@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // React Router 사용
 import "../Css/Deposit/DepositChange.css"; // CSS 파일 import
 
 const DepositChange = () => {
   const [sortOption, setSortOption] = useState("추천순"); // 정렬 옵션 상태
   const [viewOption, setViewOption] = useState("5개"); // 조회 옵션 상태
+  const navigate = useNavigate(); // 페이지 이동을 위한 navigate 함수
 
   const depositChangeList = [
     {
@@ -47,6 +49,11 @@ const DepositChange = () => {
       term: "12개월 ~ 36개월",
     },
   ];
+
+  // 상품 클릭 시 상세화면으로 이동
+  const handleRowClick = (product) => {
+    navigate(`/DepositDetail`, { state: { product } }); // 상품 정보를 전달하며 상세화면으로 이동
+  };
 
   return (
     <div className="deposit-change-container">
@@ -118,7 +125,7 @@ const DepositChange = () => {
         </thead>
         <tbody>
           {depositChangeList.map((product) => (
-            <tr key={product.id}>
+            <tr key={product.id} onClick={() => handleRowClick(product)} style={{ cursor: "pointer" }}>
               <td>{product.name}</td>
               <td>{product.interestRate}</td>
               <td>{product.minAmount}</td>
