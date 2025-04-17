@@ -18,13 +18,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boot.sound.customer.CustomerDTO;
-import com.boot.sound.customer.CustomerRepository;
 import com.boot.sound.inquire.account.AccountService;
-import com.boot.sound.jwt.dto.CredentialsDTO;
+import com.boot.sound.loan.dto.LoanApplyWithTermsDTO;
 import com.boot.sound.loan.dto.LoanConsentDTO;
 import com.boot.sound.loan.dto.LoanDTO;
 import com.boot.sound.loan.dto.LoanStatusDTO;
-import com.boot.sound.loan.dto.LoanStatusRequestDTO;
+import com.boot.sound.loan.dto.LoanWithTermsDTO;
 import com.boot.sound.loan.service.LoanAccountService;
 import com.boot.sound.loan.service.LoanService;
 import com.boot.sound.sms.dto.SmsRequest;
@@ -56,9 +55,9 @@ public class LoanController {
 		return new ResponseEntity<>(service.loanList(),HttpStatus.OK);
 	};
 	
-	// 대출 상품 등록 http://localhost:8081/api/loanInsert
+	// 대출 상품 등록 및 약관등록 http://localhost:8081/api/loanInsert
 	@PostMapping("/loanInsert")
-	public ResponseEntity<?> loanInsert(@RequestBody LoanDTO dto){
+	public ResponseEntity<?> loanInsert(@RequestBody LoanWithTermsDTO dto){
 		System.out.println("loanInsert");
 		return new ResponseEntity<>(service.loanInsert(dto),HttpStatus.CREATED);
 	};
@@ -139,11 +138,9 @@ public class LoanController {
 	
 	// 대출신청 정보 저장
 	@PostMapping("/loanApply")
-	public ResponseEntity<?> loanApply(@RequestBody LoanStatusRequestDTO dto) {
+	public ResponseEntity<?> loanApply(@RequestBody LoanApplyWithTermsDTO dto) {
 	    System.out.println("컨트롤 - loanApply()");
-
-	    LoanStatusDTO entity = LoanStatusMapper.toEntity(dto);
-	    return new ResponseEntity<>(service.loanApply(entity), HttpStatus.CREATED);
+	    return new ResponseEntity<>(service.loanApply(dto), HttpStatus.CREATED);
 	}
 	
 	// 대출 현황 리스트
@@ -195,7 +192,6 @@ public class LoanController {
 	            smsRequest.setCustomer_name(customer.getCustomer_name());
 	            smsRequest.setCustomerId(customerId);
 	            smsRequest.setLoan_progress(loan_progress);
-
 	            boolean smsSent = smsService.sendLoanResult(smsRequest);
 
 	            if (smsSent) {
@@ -210,6 +206,18 @@ public class LoanController {
 	    } else {
 	        return new ResponseEntity<>("대출 상태 변경 실패", HttpStatus.BAD_REQUEST);
 	    }
+	}
+	
+	@GetMapping("/myLoanStatus")
+	public ResponseEntity<?>myLoanStatus(@RequestParam ("customerId") String customerId){
+		System.out.println("컨트롤 - myLoanStatus()");
+		return new ResponseEntity<>(service.myLoanStatus(customerId),HttpStatus.OK);
+	}
+	
+	@GetMapping("/selectLoanTerm/{loan_id}")
+	public ResponseEntity<?>selectLoanTerm(@PathVariable int loan_id){
+		System.out.println("컨트롤 - selectLoanTerm()");
+		return new ResponseEntity<>(service.selectLoanTerm(loan_id),HttpStatus.OK);
 	}
 	
 	

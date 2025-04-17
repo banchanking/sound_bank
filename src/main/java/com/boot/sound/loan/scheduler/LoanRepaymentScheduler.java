@@ -30,7 +30,7 @@
 //	    private final LoanDAO loanDAO; // DAO를 통한 DB 접근
 //
 //	    // 매일 오전 11시 35분 30초에 실행되는 스케줄러 (작업 테스트를 위한 임시 적용)
-//	    @Scheduled(cron = "0 09 20 * * ?")
+//	    @Scheduled(cron = "45 22 20 * * ?")
 //	    public void processRepayments() {
 //	        LocalDate today = LocalDate.now(); // 오늘 날짜
 //	        String todayDay = String.valueOf(today.getDayOfMonth()); // 상환날짜 비교를 위해 오늘의 일(day)만 추출
