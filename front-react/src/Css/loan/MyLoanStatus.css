@@ -1,0 +1,21 @@
+.totalArea {
+  width: 100%;
+}
+
+.tableArea {
+  margin: 0 auto;
+  border-collapse: collapse;
+}
+.theadArea {
+}
+.theadArea th {
+  text-align: center;
+  font-size: 35px;
+}
+.tbodyArea th,
+.tbodyArea td {
+  padding: 8px;
+  border: 1px solid black;
+  text-align: center;
+  font-size: 10px;
+}

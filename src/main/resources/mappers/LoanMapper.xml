@@ -9,10 +9,20 @@
         order by loan_id
     </select>
 
-    <insert id="loanInsert">
-        insert into loan_tbl(loan_name, loan_max_amount, loan_min_amount, interest_rate, loan_term, loan_info, loan_type)
-        values(#{loan_name}, #{loan_max_amount}, #{loan_min_amount}, #{interest_rate}, #{loan_term}, #{loan_info}, #{loan_type})
-    </insert>
+    <insert id="loanInsert" parameterType="com.boot.sound.loan.dto.LoanDTO" useGeneratedKeys="true" keyProperty="loan_id">
+	    INSERT INTO loan_tbl (
+	        loan_name, loan_min_amount, loan_max_amount, interest_rate,
+	        loan_term, loan_info, loan_type, prepayment_penalty
+	    ) VALUES (
+	        #{loan_name}, #{loan_min_amount}, #{loan_max_amount},
+	        #{interest_rate}, #{loan_term}, #{loan_info}, #{loan_type}, #{prepayment_penalty}
+	    )
+	</insert>
+	
+	<insert id="loanTermInsert" parameterType="com.boot.sound.loan.dto.LoanTermDTO">
+		INSERT INTO loan_terms_tbl(loan_id,term_title,term_content)
+		VALUES (#{loan_id},#{term_title},#{term_content})
+	</insert>
 
     <select id="loanDetail" parameterType="int">
         select * from loan_tbl
@@ -79,9 +89,23 @@
         where l.loan_id = #{loan_id}
     </select>
 
-    <insert id="loanApply" parameterType="com.boot.sound.loan.dto.LoanStatusDTO">
+    <insert id="loanApply" parameterType="com.boot.sound.loan.dto.LoanApplyWithTermsDTO">
         insert into loan_status_tbl(loan_name, loan_id, interest_rate, customer_id, customer_income, customer_credit_score, loan_amount, balance, account_number, repayment_method, repayment_date, loan_type, loan_progress, loan_term, remaining_term)
-        values(#{loanName}, #{loanId}, #{interestRate}, #{customerId}, #{customerIncome}, #{customerCreditScore}, #{loanAmount}, #{loanAmount}, #{accountNumber}, #{repaymentMethod}, #{repaymentDate}, #{loanType}, '신청', #{loanTerm}, #{remainingTerm})
+        values(#{loanInfo.loanName}
+        , #{loanInfo.loanId}
+        , #{loanInfo.interestRate}
+        , #{loanInfo.customerId}
+        , #{loanInfo.customerIncome}
+        , #{loanInfo.customerCreditScore}
+        , #{loanInfo.loanAmount}
+        , #{loanInfo.loanAmount}
+        , #{loanInfo.accountNumber}
+        , #{loanInfo.repaymentMethod}
+        , #{loanInfo.repaymentDate}
+        , #{loanInfo.loanType}
+        , '신청'
+        , #{loanInfo.loanTerm}
+        , #{loanInfo.remainingTerm})
     </insert>
 
     <select id="loanStatus" resultType="com.boot.sound.loan.dto.LoanStatusDTO">
@@ -280,5 +304,62 @@
         from loan_interest_payment_tbl
         where repayment_status = '미납'
     </select>
+    
+    <resultMap id="LoanStatusMap" type="com.boot.sound.loan.dto.LoanStatusDTO">
+	    <id property="loanStatusNo" column="loan_status_no"/>
+	    <result property="customerId" column="customer_id"/>
+	    <result property="loanId" column="loan_id"/>
+	    <result property="loanName" column="loan_name"/>
+	    <result property="interestRate" column="interest_rate"/>
+	    <result property="customerIncome" column="customer_income"/>
+	    <result property="customerCreditScore" column="customer_credit_score"/>
+	    <result property="loanAmount" column="loan_amount"/>
+	    <result property="balance" column="balance"/>
+	    <result property="accountNumber" column="account_number"/>
+	    <result property="repaymentMethod" column="repayment_method"/>
+	    <result property="repaymentDate" column="repayment_date"/>
+	    <result property="loanType" column="loan_type"/>
+	    <result property="loanProgress" column="loan_progress"/>
+	    <result property="loanDate" column="loan_date"/>
+	    <result property="loanTerm" column="loan_term"/>
+	    <result property="remainingTerm" column="remaining_term"/>
+	</resultMap>
+    
+    <select id="myLoanStatus" parameterType="String" resultMap="LoanStatusMap">
+	    SELECT 
+	        ROW_NUMBER() OVER (ORDER BY loan_status_no) AS no,
+	        loan_status_no,
+	        loan_name,
+	        loan_id,
+	        interest_rate,
+	        customer_id,
+	        customer_income,
+	        customer_credit_score,
+	        loan_amount,
+	        balance,
+	        account_number,
+	        repayment_method,
+	        repayment_date,
+	        loan_type,
+	        loan_progress,
+	        loan_date,
+	        loan_term,
+	        remaining_term
+	    FROM 
+	        loan_status_tbl
+	    WHERE 
+	        customer_id = #{customerId}
+	</select>
+	
+	<select id="selectLoanTerm" parameterType="int" resultType="com.boot.sound.loan.dto.LoanTermDTO">
+		select * from loan_terms_tbl
+		where loan_id = #{loan_id}
+	</select>
+	
+	<insert id="insertTermsAgree" parameterType="com.boot.sound.loan.dto.LoanApplyWithTermsDTO">
+		insert into loan_terms_agree_tbl(term_id,customer_id,loan_id)
+		values (#{loanTermsAgree.term_id},#{loanTermsAgree.customer_id},#{loanTermsAgree.loan_id})
+	</insert>
+
 
 </mapper>

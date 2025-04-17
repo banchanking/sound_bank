@@ -1,33 +1,41 @@
 package com.boot.sound.transfer.multiAdmin;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.springframework.data.repository.query.Param;
+
+import com.boot.sound.inquire.transfer.TransActionDTO;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
 
+
 @Mapper
 public interface MultiAdminDAO {
-    List<MultiAdminDTO> getApproveList();
-    List<MultiAdminDTO> getTransferDetails(int transfer_id);
-    void updateApprovalStatusByGroup(@Param("status") String status,
-                                     @Param("reason") String reason,
-                                     @Param("customer_id") String customer_id,
-                                     @Param("request_date") Timestamp request_date);
-    void updateTransferDateNow(@Param("customer_id") String customer_id,
-                               @Param("request_date") Timestamp request_date);
-    List<MultiAdminDTO> findTransfersByGroup(@Param("customer_id") String customer_id,
-                                             @Param("request_date") Timestamp request_date);
-    void decreaseBalance(@Param("acc") String acc, @Param("amt") BigDecimal amt);
-    void increaseBalance(@Param("acc") String acc, @Param("amt") BigDecimal amt);
 
-    void insertTransaction(
-    	    @Param("account_number") String account_number,
-    	    @Param("transaction_type") String transaction_type,
-    	    @Param("amount") BigDecimal amount,
-    	    @Param("comment") String comment,
-    	    @Param("customer_name") String customer_name,
-    	    @Param("account_type") String account_type
-    	);
+    // 요청리스트
+    public List<MultiAdminDTO> getApproveList();
+
+    // 요청건 상세 (세부 이체건)
+    public List<MultiAdminDTO> getTransferDetails(int transfer_id);
+
+    // 승인 업데이트
+    public void updateApprovalStatus(String customer_id, Timestamp request_date, String reason);
+
+    // 승인건 이체시간 업데이트
+    public void updateTransferDateNow(String customer_id, Timestamp request_date);
+
+    // 승인된 요청건 세부 이체건 조회
+    public List<MultiAdminDTO> findTransfersByGroup(String customer_id, Timestamp request_date);
+
+    // 출금처리
+    public void decreaseBalance(String out_account_number, BigDecimal amount);
+
+    // 입금처리
+    public void increaseBalance(String in_account_number, BigDecimal amount);
+
+    // 거래내역 저장
+    public void insertTransaction(TransActionDTO dto);
+
+    // 반려 업데이트
+    public void updateRejectStatus(String customer_id, Timestamp request_date, String reason);
 }

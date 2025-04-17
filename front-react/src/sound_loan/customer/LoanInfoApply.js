@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import RefreshToken from "../../jwt/RefreshToken";
 import { useNavigate, useParams } from "react-router-dom";
+import "../../Css/loan/LoanInfoApply.css";
 
 const LoanInfoApply = () => {
   const { loan_id } = useParams();
@@ -25,12 +26,44 @@ const LoanInfoApply = () => {
     remaining_term: 0,
   });
 
+  const [loanTerms, setLoanTerms] = useState({});
+  const [loanTermsAgree, setLoanTermsAgree] = useState({
+    term_id: 0,
+    customer_id: "",
+    loan_id: 0,
+  });
+  const [termsAgree, setTermsAgree] = useState(false);
+
   const change_value = (e) => {
     set_loan_info({
       ...loan_info,
       [e.target.name]: e.target.value,
     });
   };
+
+  const payload = {
+    loanInfo: {
+      customerId: loan_info.customer_id,
+      loanName: loan_info.loan_name,
+      loanId: loan_info.loan_id,
+      interestRate: loan_info.interest_rate,
+      customerIncome: loan_info.customer_income,
+      customerCreditScore: loan_info.customer_credit_score,
+      accountNumber: loan_info.account_number,
+      loanAmount: loan_info.loan_amount,
+      balance: loan_info.loan_amount,
+      repaymentMethod: loan_info.repayment_method,
+      repaymentDate: loan_info.repayment_date,
+      loanType: loan_info.loan_type,
+      loanMinAmount: loan_info.loan_min_amount,
+      loanMaxAmount: loan_info.loan_max_amount,
+      loanTerm: loan_info.loan_term * 12,
+      remainingTerm: loan_info.loan_term * 12,
+    },
+    loanTermsAgree: loanTermsAgree,
+  };
+
+  const [showTermsModal, setShowTermsModal] = useState(false);
 
   const loan_apply = () => {
     if (!loan_info.loan_amount) {
@@ -60,9 +93,10 @@ const LoanInfoApply = () => {
 
     loan_info.remaining_term = loan_info.loan_term * 12;
     loan_info.loan_term = loan_info.loan_term * 12;
+    console.log(payload);
 
     if (window.confirm("작성된 정보로 대출신청을 하시겠습니까?")) {
-      RefreshToken.post("/loanApply", loan_info).then((res) => {
+      RefreshToken.post("/loanApply", payload).then((res) => {
         if (res.status === 201) {
           alert("대출신청이 정상적으로 완료되었습니다.");
           navigate("/loanApply");
@@ -93,13 +127,38 @@ const LoanInfoApply = () => {
             .split(",")
             .map((s) => s.trim());
         }
-
         set_loan_info(data);
       })
       .catch((error) => {
         console.error("데이터 가져오기 오류:", error);
       });
+
+    RefreshToken.get("/selectLoanTerm/" + loan_id)
+      .then((res) => {
+        setLoanTerms(res.data);
+      })
+      .catch((err) => {
+        console.error("약관 조회 실패", err);
+        alert("약관 조회에 실패하였습니다.");
+      });
   }, [loan_id]);
+
+  useEffect(() => {
+    if (termsAgree && loanTerms.term_id && loan_info.customer_id) {
+      setLoanTermsAgree({
+        term_id: loanTerms.term_id,
+        customer_id: loan_info.customer_id,
+        loan_id: loan_info.loan_id,
+      });
+    }
+  }, [termsAgree, loanTerms, loan_info]);
+
+  useEffect(() => {
+    document.body.style.overflow = showTermsModal ? "hidden" : "auto";
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [showTermsModal]);
 
   return (
     <div>
@@ -311,6 +370,18 @@ const LoanInfoApply = () => {
           <tfoot>
             <tr>
               <td colSpan={2}>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={termsAgree}
+                    onChange={() => setShowTermsModal(true)}
+                  />
+                  약관에 동의합니다.
+                </label>
+              </td>
+            </tr>
+            <tr>
+              <td colSpan={2}>
                 <button onClick={loan_apply}>대출신청</button>
                 <button onClick={back_to_list}>돌아가기</button>
               </td>
@@ -318,6 +389,23 @@ const LoanInfoApply = () => {
           </tfoot>
         </table>
       </div>
+      {showTermsModal && (
+        <div className="modal">
+          <div className="modal-content">
+            <h3>{loanTerms.term_title}</h3>
+            <div>{loanTerms.term_content}</div>
+            <button
+              onClick={() => {
+                setTermsAgree(true);
+                setShowTermsModal(false);
+              }}
+            >
+              약관에 동의합니다
+            </button>
+            <button onClick={() => setShowTermsModal(false)}>닫기</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

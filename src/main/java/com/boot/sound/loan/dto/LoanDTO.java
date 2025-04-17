@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name="LOAN_TBL")
+@Table(name="loan_tbl")
 public class LoanDTO {
 	
 	@Id
@@ -30,4 +30,5 @@ public class LoanDTO {
 	private int loan_term;
 	private String loan_info;
 	private String loan_type;
+	private BigDecimal prepayment_penalty;
 }

@@ -39,7 +39,7 @@ const LoanList = (props) => {
       <table className="insertTable">
         <thead>
           <tr>
-            <th colSpan={9}>
+            <th colSpan={10}>
               <h2>대출 상품 목록</h2>
             </th>
           </tr>
@@ -50,6 +50,7 @@ const LoanList = (props) => {
             <th>최소 대출 금액</th>
             <th>최대 대출 금액</th>
             <th>이자율</th>
+            <th>중도상환수수료(율)</th>
             <th>대출기간</th>
             <th>대출정보</th>
             <th>관리</th>
@@ -71,7 +72,8 @@ const LoanList = (props) => {
                   ? `${(loan.loan_max_amount / 10000).toLocaleString()} 억원` // 10,000만원 이상일 경우 억원 단위로 표기
                   : `${loan.loan_max_amount.toLocaleString()} 만원`}
               </td>
-              <td>{loan.interest_rate}</td>
+              <td>{loan.interest_rate}%</td>
+              <td>{loan.prepayment_penalty}%</td>
               <td>{loan.loan_term}</td>
               <td>{loan.loan_info}</td>
               <td>

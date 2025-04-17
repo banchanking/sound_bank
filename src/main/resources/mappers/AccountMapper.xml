@@ -4,22 +4,24 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.boot.sound.inquire.account.AccountDAO">
 
+	<!-- 고객 계좌정보 조회 -->
   <select id="findAllByCustomerId" resultType="com.boot.sound.inquire.account.AccountDTO" parameterType="String">
         SELECT *
         FROM account_tbl
         WHERE customer_id = #{customer_id}
     </select>
 
+	<!-- 계좌정보 저장 -->
 	 <insert id="insertAccount">
     INSERT INTO account_tbl (
       ACCOUNT_NUMBER, CUSTOMER_ID, ACCOUNT_TYPE,
       BALANCE, INTEREST_RATE, YIELD_RATE,
-      CURRENCY_TYPE, ACCOUNT_NAME, OPEN_DATE
+      CURRENCY_TYPE, ACCOUNT_NAME, OPEN_DATE, ACCOUNT_PWD
     )
     VALUES (
       #{account_number}, #{customer_id}, #{account_type},
       #{balance}, #{interest_rate}, #{yield_rate},
-      #{currency_type}, #{account_name}, #{open_date}
+      #{currency_type}, #{account_name}, #{open_date}, #{account_pwd}
     )
   </insert>
   

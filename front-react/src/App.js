@@ -22,6 +22,7 @@ import TransAutoEdit from "./transfer/customer/TransAutoEdit";
 import TransMulti from "./transfer/customer/TransMulti";
 import TransMultiEdit from "./transfer/customer/TransMultiEdit";
 import TransLimit from "./transfer/customer/TransLimit";
+import TransLimitEdit from "./transfer/customer/TransLimitEdit";
 import TransferAdmin from "./transfer/admin/TransferAdmin";
 import LimitAdmin from "./transfer/admin/LimitAdmin";
 import MultiAdmin from "./transfer/admin/MultiAdmin";
@@ -83,12 +84,14 @@ import DepositJoin from "./productSubscription/DepositJoin";
 import LoanAgreement from "./sound_loan/customer/LoanAgreement";
 import LoanInfoApply from "./sound_loan/customer/LoanInfoApply";
 import ExchangeWalletStatus from "./exchange/customer/ExchangeWalletStatus";
+import LoanInterestList from "./sound_loan/admin/LoanInterestList";
+import LoanLateInterestList from "./sound_loan/admin/LoanLateInterestList";
+import MyLoanDetail from "./sound_loan/customer/MyLoanDetail";
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        {/* F12 방지 블록방지 */}
-        {" "}
+        {/* F12 방지 블록방지 */}{" "}
         {/* Header.js의 Link연동을 위해서 BrowserRouter추가해야됨 */}
         <Header />
         <Routes>
@@ -100,7 +103,8 @@ function App() {
           {/* 조회/입출금 Route 끝 */}
           {/* 상품가입 Route 시작 */}
           <Route path="/fixedDeposit" element={<FixedDeposit />} />
-          <Route path="/DepositJoin/:name" element={<DepositJoin />} /> {/* ID를 URL 파라미터로 전달 */}
+          <Route path="/DepositJoin/:name" element={<DepositJoin />} />{" "}
+          {/* ID를 URL 파라미터로 전달 */}
           <Route path="/installmentSavings" element={<InstallmentSavings />} />
           <Route path="/precautions" element={<Precautions />} />
           {/* 상품가입 Route 끝 */}
@@ -130,6 +134,7 @@ function App() {
           <Route path="/transMulti" element={<TransMulti />} />
           <Route path="/transMultiEdit" element={<TransMultiEdit />} />
           <Route path="/transLimit" element={<TransLimit />} />
+          <Route path="/transLimitEdit" element={<TransLimitEdit />} />
           {/* 이체(고객) Route 끝 */}
           {/* 이체(관리자) Route 시작 */}
           <Route path="/transferAdmin" element={<TransferAdmin />} />
@@ -151,6 +156,12 @@ function App() {
           <Route path="/loanDetail/:loan_id" element={<LoanDetail />} />
           <Route path="/loanUpdate/:loan_id" element={<LoanUpdate />} />
           <Route path="/loanCustomerList" element={<LoanCustomerList />} />
+          <Route path="/loanInterestList" element={<LoanInterestList />} />
+          <Route
+            path="/loanLateInterestList"
+            element={<LoanLateInterestList />}
+          />
+          <Route path="/myLoanDetail" element={<MyLoanDetail />} />
           {/* 대출관련 Route 종료 */}
           {/* 펀드 Route 시작 */}
           <Route path="/fund" element={<Fund />} />
@@ -178,26 +189,50 @@ function App() {
           {/* 펀드 Route 끝 */}
           {/* 외환 Route 시작 */}
           <Route path="/ex_rate" element={<ExRate />} /> {/* 환율조회/계산기 */}
-          <Route path="/ex_request" element={<ExRequest />} /> {/* 환전신청하기 */}
-          <Route path="/exchange_list" element={<ExList />} /> {/* 환전내역 조회 */}
-          <Route path="/ex_account_management" element={<ExAccountManagement />} /> {/* 외환 지갑 해지 */}
-          <Route path="/exchange_wallet_status" element={<ExchangeWalletStatus />} /> {/* 내 지갑 */}
-          <Route path="/admin_ex_request_list" element={<AdminExAccountRequestList />} /> {/* 환전 신청 현황 (customer로 이동됨) */}
-          <Route path="/admin_ex_management" element={<AdminExAccountStatement />} /> {/* (관리자)지갑상태변경 */}        
+          <Route path="/ex_request" element={<ExRequest />} />{" "}
+          {/* 환전신청하기 */}
+          <Route path="/exchange_list" element={<ExList />} />{" "}
+          {/* 환전내역 조회 */}
+          <Route
+            path="/ex_account_management"
+            element={<ExAccountManagement />}
+          />{" "}
+          {/* 외환 지갑 해지 */}
+          <Route
+            path="/exchange_wallet_status"
+            element={<ExchangeWalletStatus />}
+          />{" "}
+          {/* 내 지갑 */}
+          <Route
+            path="/admin_ex_request_list"
+            element={<AdminExAccountRequestList />}
+          />{" "}
+          {/* 환전 신청 현황 (customer로 이동됨) */}
+          <Route
+            path="/admin_ex_management"
+            element={<AdminExAccountStatement />}
+          />{" "}
+          {/* (관리자)지갑상태변경 */}
           {/* 외환 Route 끝 */}
           {/* 고객센터 Route 시작 */}
-          <Route path="/customerservice" element={<Customerservice />} /> {/* 고객센터 헤더 */}
-          <Route path="/faq" element={<FAQ />} />                         {/* 자주하는 질문  */}
-          <Route path="/chatbot" element={<Chatbot />} />                 {/* 누르는 상담 (챗봇) */}
-          <Route path="/voicebot" element={<Voicebot />} />               {/* 말하는 상담 (음성봇) */}
-          <Route path="/authcenter" element={<Authcenter />} />           {/* 인증 센터  */}
-          <Route path="/bankauth" element={<Bankauth />} />               {/* 통장 인증 */}
-          <Route path="/idauth" element={<IdAuth />} />                   {/* 주민등록증인증 (OCR) */}
-          <Route path="/notice" element={<Notice />} />                   {/* 공지사항(고객용) */}
-          <Route path="/admin/notice" element={<AdminNotice />} />        {/* 공지사항(관리자용) */}
-          <Route path="/business_hour" elemen={<Businesshour/>} />        {/* 이용 시간 */}
-          <Route path="/charge" element={<Charge />} />                   {/* 금리 안내 */}
-          
+          <Route path="/customerservice" element={<Customerservice />} />{" "}
+          {/* 고객센터 헤더 */}
+          <Route path="/faq" element={<FAQ />} /> {/* 자주하는 질문  */}
+          <Route path="/chatbot" element={<Chatbot />} />{" "}
+          {/* 누르는 상담 (챗봇) */}
+          <Route path="/voicebot" element={<Voicebot />} />{" "}
+          {/* 말하는 상담 (음성봇) */}
+          <Route path="/authcenter" element={<Authcenter />} />{" "}
+          {/* 인증 센터  */}
+          <Route path="/bankauth" element={<Bankauth />} /> {/* 통장 인증 */}
+          <Route path="/idauth" element={<IdAuth />} />{" "}
+          {/* 주민등록증인증 (OCR) */}
+          <Route path="/notice" element={<Notice />} /> {/* 공지사항(고객용) */}
+          <Route path="/admin/notice" element={<AdminNotice />} />{" "}
+          {/* 공지사항(관리자용) */}
+          <Route path="/business_hour" elemen={<Businesshour />} />{" "}
+          {/* 이용 시간 */}
+          <Route path="/charge" element={<Charge />} /> {/* 금리 안내 */}
           {/* 고객센터 Route 끝 */}
           {/* 계좌개설 / 로그인 Route 시작 */}
           <Route path="/join" element={<Join />} />
