@@ -11,12 +11,16 @@ import org.springframework.transaction.annotation.Transactional;
 import com.boot.sound.customer.CustomerDTO;
 import com.boot.sound.jwt.dto.CredentialsDTO;
 import com.boot.sound.loan.dao.LoanDAO;
+import com.boot.sound.loan.dto.LoanApplyWithTermsDTO;
 import com.boot.sound.loan.dto.LoanConsentDTO;
 import com.boot.sound.loan.dto.LoanCustomerDTO;
 import com.boot.sound.loan.dto.LoanDTO;
 import com.boot.sound.loan.dto.LoanInterestPaymentDTO;
 import com.boot.sound.loan.dto.LoanLatePaymentDTO;
 import com.boot.sound.loan.dto.LoanStatusDTO;
+import com.boot.sound.loan.dto.LoanTermDTO;
+import com.boot.sound.loan.dto.LoanTermsAgreeDTO;
+import com.boot.sound.loan.dto.LoanWithTermsDTO;
 import com.boot.sound.loan.repo.LoanStatusRepository;
 import com.boot.sound.loan.scheduler.LoanOverdueScheduler;
 
@@ -41,9 +45,25 @@ public class LoanService {
 	
 	// 대출 상품 등록
 	@Transactional
-	public int loanInsert(LoanDTO dto) {
+	public int loanInsert(LoanWithTermsDTO dto) {
 		System.out.println("서비스 - loanInsert");
-		return dao.loanInsert(dto);
+		LoanDTO loanDTO = new LoanDTO();
+		loanDTO.setLoan_name(dto.getLoan_name());
+		loanDTO.setLoan_min_amount(dto.getLoan_min_amount());
+		loanDTO.setLoan_max_amount(dto.getLoan_max_amount());
+		loanDTO.setInterest_rate(dto.getInterest_rate());
+		loanDTO.setLoan_term(dto.getLoan_term());
+		loanDTO.setLoan_info(dto.getLoan_info());
+		loanDTO.setLoan_type(dto.getLoan_type());
+		
+		dao.loanInsert(loanDTO);
+		int loanId = loanDTO.getLoan_id();
+		 
+		LoanTermDTO loanTermDTO = new LoanTermDTO();
+		loanTermDTO.setLoan_id(loanId);
+		loanTermDTO.setTerm_title(dto.getTerm_title());
+		loanTermDTO.setTerm_content(dto.getTerm_content());
+		return dao.loanTermInsert(loanTermDTO);
 	}
 	
 	// 대출 상품 수정
@@ -122,9 +142,11 @@ public class LoanService {
 	
 	// 대출신청 정보 저장
 	@Transactional
-	public int loanApply(LoanStatusDTO dto) {
+	public int loanApply(LoanApplyWithTermsDTO dto) {
 		System.out.println("서비스 - loanApply()");
-		return dao.loanApply(dto);
+		
+		dao.loanApply(dto);
+		return dao.insertTermsAgree(dto);
 	}
 	
 	// 대출 현황 리스트
@@ -235,6 +257,18 @@ public class LoanService {
 		@Transactional
 		public List<LoanInterestPaymentDTO> getMissedPaymentsToRetry() {
 		    return dao.getMissedPayments();
+		}
+		
+		// 고객 대출 가입 현황
+		@Transactional
+		public List<LoanStatusDTO>myLoanStatus(String customerId){
+			return dao.myLoanStatus(customerId);
+		}
+		
+		// 대출상품 약관 조회
+		@Transactional
+		public LoanTermDTO selectLoanTerm(int loan_id) {
+			return dao.selectLoanTerm(loan_id);
 		}
 
 	

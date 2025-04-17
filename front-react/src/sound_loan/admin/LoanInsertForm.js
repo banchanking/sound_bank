@@ -10,9 +10,12 @@ const LoanInsertForm = (props) => {
     loan_min_amount: 0, // 최소 대출 금액
     loan_max_amount: 0, // 최대 대출 금액
     interest_rate: 0.0, // 연 이자율
+    prepayment_penalty: 0.0,
     loan_term: 0, // 최대 대출 기간
     loan_info: "", // 대출 정보
     loan_type: "", // 대출 유형
+    term_title: "", // 약관 제목
+    term_content: "", // 약관 내용
   });
 
   const changeValue = (e) => {
@@ -168,6 +171,22 @@ const LoanInsertForm = (props) => {
             </tr>
             <tr>
               <th>
+                <label htmlFor="prepayment_penalty">
+                  중도 상환수수료(율) :
+                </label>
+              </th>
+              <td>
+                <input
+                  type="number"
+                  id="prepayment_penalty"
+                  name="prepayment_penalty"
+                  onChange={changeValue}
+                  step={0.01}
+                />
+              </td>
+            </tr>
+            <tr>
+              <th>
                 <label htmlFor="loan_term">대출기간 :</label>
               </th>
               <td>
@@ -190,6 +209,33 @@ const LoanInsertForm = (props) => {
                   type="text"
                   id="loan_info"
                   name="loan_info"
+                  onChange={changeValue}
+                />
+              </td>
+            </tr>
+            <tr>
+              <th>
+                <label htmlFor="term_title">약관 제목 :</label>
+              </th>
+              <td>
+                <input
+                  type="text"
+                  id="term_title"
+                  name="term_title"
+                  onChange={changeValue}
+                />
+              </td>
+            </tr>
+            <tr>
+              <th>
+                <label htmlFor="term_content">약관 내용 :</label>
+              </th>
+              <td>
+                {" "}
+                <textarea
+                  type="text"
+                  id="term_content"
+                  name="term_content"
                   onChange={changeValue}
                 />
               </td>
