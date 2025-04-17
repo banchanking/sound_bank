@@ -8,12 +8,17 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.boot.sound.transfer.instant.TransInstantService;
+
 @Service
 public class TransAutoService {
 
     @Autowired
     private TransAutoDAO dao;
 
+    @Autowired
+    private TransInstantService service;
+    
     // 자동이체 등록
     public void saveTransAuto(TransAutoDTO dto) {
         dao.insertAutoTransfer(dto);
@@ -56,10 +61,20 @@ public class TransAutoService {
         // 두 목록 합치기
         dayList.addAll(monthList);
 
+        
         // 자동이체 수행
         for (TransAutoDTO dto : dayList) {
             int balance = dao.getBalance(dto.getOut_account_number()); // 잔액 확인
 
+            // 한도 검사
+            try {
+                service.checkTransferLimit(dto.getCustomer_id(), dto.getAmount());
+            } catch (IllegalArgumentException e) {
+            	System.out.println("당일 이체한도 초과되었습니다");
+                continue;
+            }
+            
+            
             if (balance >= dto.getAmount()) {
             	// 출금
                 dao.updateBalance(dto.getOut_account_number(), -dto.getAmount()); 

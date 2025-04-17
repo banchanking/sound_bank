@@ -14,11 +14,14 @@ import javax.transaction.Transactional;
 @Repository
 public interface AccountRepository extends CrudRepository<AccountDTO, String> {
 
-	// 고객 소유한 모든계좌 조회
-	@Query("SELECT a FROM AccountDTO a WHERE a.customer_id = :customer_id")
-		// == SELECT * FROM ACCOUNT_TBL WHERE CUSTOMER_ID = 'customer_id'
-	List<AccountDTO> findAccountsByCustomerId(@Param("customer_id") String customer_id);
-	 
+	// 고객 소유한 전체 계좌 조회 (DTO 전체 반환)
+    @Query("SELECT a FROM AccountDTO a WHERE a.customer_id = :customer_id")
+    List<AccountDTO> findAccountsByCustomerId(@Param("customer_id") String customer_id);
+
+    // 고객 소유한 계좌번호만 추출 (한도/거래 집계용)
+    @Query("SELECT a.accountNumber FROM AccountDTO a WHERE a.customer_id = :customer_id")
+    List<String> findAccountNumbersByCustomerId(@Param("customer_id") String customer_id);
+
 	
 	// 이체부분-> 
 
@@ -35,7 +38,7 @@ public interface AccountRepository extends CrudRepository<AccountDTO, String> {
     @Query("UPDATE AccountDTO a SET a.balance = a.balance + :money WHERE a.accountNumber = :acc")
     int plusBalance(@Param("acc") String acc, @Param("money") BigDecimal money);
 
-    // 계좌번호(account_number)로 계좌를 찾는 메서드
+    // 계좌번호 조회
     Optional<AccountDTO> findByAccountNumber(String account_number);
     
 }

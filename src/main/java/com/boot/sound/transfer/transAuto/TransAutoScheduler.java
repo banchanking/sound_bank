@@ -17,9 +17,9 @@
 //	
 //	@Scheduled(cron = "0 * * * * *")
 //	public void runAuto() {
-//		//System.out.println("스케줄러 시작");
+//		System.out.println("스케줄러 시작");
 //		service.runTransAuto();
-//		//System.out.println("스케줄러 종료");
+//		System.out.println("스케줄러 종료\n");
 //	}
 //
 ///*	

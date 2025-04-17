@@ -3,8 +3,11 @@ import RefreshToken from '../../jwt/RefreshToken';
 import Sidebar from './Sidebar';
 import '../../Css/transfer/TransMulti.css';
 import { getCustomerID } from '../../jwt/AxiosToken';
+import { useNavigate } from 'react-router-dom';
 
 function TransMulti() {
+  const navigate = useNavigate();
+
   const [accounts, setAccounts] = useState([]); // 출금 계좌 목록
   const [form, setForm] = useState({
     out_account_number: '',
@@ -24,6 +27,7 @@ function TransMulti() {
   useEffect(() => {
     if (!customer_id || !token) {
       alert('로그인이 필요합니다');
+      navigate('/login');
       return;
     }
     RefreshToken.get(`http://localhost:8081/api/accounts/allAccount/${customer_id}`, {
@@ -102,6 +106,7 @@ function TransMulti() {
 
       alert('다건이체 요청이 완료되었습니다.');
       setTransfers([{ in_account_number: '', amount: '', in_name: '', memo: '' }]);
+      navigate('/transMultiEdit');
     } catch (err) {
       console.error('이체 요청 실패:', err);
       alert('서버 오류로 이체 요청에 실패했습니다.');

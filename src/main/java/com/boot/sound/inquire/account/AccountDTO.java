@@ -58,8 +58,8 @@ public class AccountDTO {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updated_at;              // 변경일
 
-    @Column(name = "ACCOUNT_PWD")
-    private int account_pwd;              // 계좌비밀번호
+    @Column(name = "ACCOUNT_PWD", nullable = false, length = 100)
+    private String account_pwd;              // 계좌비밀번호
 
     @Transient
     private String account_number_column;    // 타입별 실제 컬럼명 (DB 저장 안 됨)
