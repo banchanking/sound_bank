@@ -68,6 +68,18 @@
       #{customer_id}, #{out_account_number}, '한도', #{requested_limit}, #{reason}, NOW()
     )
   </insert>
+  
+  <!-- [고객] 중복요청 체크 -->
+  <select id="existsPendingRequest" resultType="boolean">
+	  SELECT EXISTS (
+	    SELECT 1
+	    FROM transfer_tbl
+	    WHERE customer_id = #{customer_id}
+	      AND out_account_number = #{out_account_number}
+	      AND transfer_type = '한도'
+	      AND status = '대기'
+	  )
+	</select>
 
   <!-- [고객] 요청 수정 -->
   <update id="update" parameterType="com.boot.sound.transfer.transLimit.TransLimitDTO">
@@ -111,9 +123,16 @@
       transfer_id, approval_type, status, approval_limit, approval_date
     ) 
     VALUES (
-      #{transfer_id}, '한도', '승인', #{requested_limit}, NOW()
+      #{transfer_id}, '한도', '승인', #{approval_limit}, NOW()
     )
   </insert>
+  
+  <!-- transfer_tbl 상태 - 승인 -->
+  <update id="updateTransferStatusApproval">
+	  UPDATE transfer_tbl
+	  SET status = #{status}
+	  WHERE transfer_id = #{transfer_id}
+  </update>
 
   <!-- [관리자] 거절 -->
   <insert id="reject" parameterType="com.boot.sound.transfer.transLimit.ApprovalDTO">
@@ -124,5 +143,12 @@
       #{transfer_id}, '한도', '거절', #{reject_reason}, NOW()
     )
   </insert>
+  
+    <!-- transfer_tbl 상태 - 거절 -->
+  <update id="updateTransferStatusReject">
+	  UPDATE transfer_tbl
+	  SET status = #{status}
+	  WHERE transfer_id = #{transfer_id}
+  </update>
 
 </mapper>

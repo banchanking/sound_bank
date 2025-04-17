@@ -1,10 +1,13 @@
 package com.boot.sound.transfer.multiAdmin;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.boot.sound.inquire.transfer.TransActionDTO;
+import com.boot.sound.transfer.instant.TransInstantService;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -17,6 +20,8 @@ public class MultiAdminService {
 
     private final MultiAdminDAO dao;
 
+    @Autowired
+    private TransInstantService service;
 
     // Thread -> 여러이체 동시 실행 
     // ThreadPool -> 미리 정해진 수의 Thread를 풀에 만들어놓고, 필요시 쓰고 다시 넣는 구조, 과부하 방지
@@ -54,6 +59,15 @@ public class MultiAdminService {
         for (MultiAdminDTO dto : list) {
             pool.submit(() -> {
                 try {
+                	
+                	// 한도 검사
+                    try {
+                        service.checkTransferLimit(dto.getCustomer_id(), dto.getAmount().intValue());
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("이체 한도 초과: " + dto.getCustomer_id() + ", 금액: " + dto.getAmount());
+                        return;
+                    }
+
                     // 출금 처리
                     dao.decreaseBalance(dto.getOut_account_number(), dto.getAmount());
 

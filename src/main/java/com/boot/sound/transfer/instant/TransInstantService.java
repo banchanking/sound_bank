@@ -74,10 +74,12 @@ public class TransInstantService {
         } catch (IllegalArgumentException e) {
             return e.getMessage();
         }
-
+        
+        // 출금진행
         int minus = accountRepo.minusBalance(dto.getOut_account_number(), amount);
         if (minus == 0) return "잔액 부족";
-
+        
+        // 입금진행
         int plus = accountRepo.plusBalance(dto.getIn_account_number(), amount);
         if (plus == 0) return "입금 실패";
 
