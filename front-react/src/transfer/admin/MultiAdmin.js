@@ -8,41 +8,46 @@ function TransMultiApprove() {
   const token = localStorage.getItem('auth_token');
   const [loading, setLoading] = useState(false);
 
-  // 초기 승인 목록 조회
-  useEffect(() => {
+  //  목록 불러오기 함수 분리
+  const fetchApproveList = () => {
     RefreshToken.get('http://localhost:8081/api/multiAdmin/approveList', {
       headers: { Authorization: `Bearer ${token}` }
     })
-    .then(res => {
-      const rawList = res.data;
-      const grouped = {};
+      .then(res => {
+        const rawList = res.data;
+        const grouped = {};
 
-      rawList.forEach(item => {
-        const key = `${item.customer_id}_${item.request_date}`;
-        if (!grouped[key]) {
-          grouped[key] = {
-            key,
-            customer_id: item.customer_id,
-            request_date: item.request_date,
-            out_account_number: item.out_account_number,
-            status: item.status,
-            reject_reason: item.reject_reason,
-            approval_date: item.approval_date,
-            children: []
-          };
-        }
-        grouped[key].children.push(item);
+        rawList.forEach(item => {
+          const key = `${item.customer_id}_${item.request_date}`;
+          if (!grouped[key]) {
+            grouped[key] = {
+              key,
+              customer_id: item.customer_id,
+              request_date: item.request_date,
+              out_account_number: item.out_account_number,
+              status: item.status,
+              reject_reason: item.reject_reason,
+              approval_date: item.approval_date,
+              children: []
+            };
+          }
+          grouped[key].children.push(item);
+        });
+
+        setGroupedList(Object.values(grouped));
+      })
+      .catch(err => {
+        console.error('목록 조회 실패:', err);
+        alert('요청 목록 불러오기 실패');
       });
+  };
 
-      setGroupedList(Object.values(grouped));
-    })
-    .catch(err => {
-      console.error('목록 조회 실패:', err);
-      alert('요청 목록 불러오기 실패');
-    });
+  // 최초 로딩
+  useEffect(() => {
+    fetchApproveList();
   }, []);
 
-  // 승인
+  // 승인 처리
   const handleApprove = (group) => {
     setLoading(true);
     RefreshToken.post(`http://localhost:8081/api/multiAdmin/approveMultiGroup`, {
@@ -51,15 +56,15 @@ function TransMultiApprove() {
     }, {
       headers: { Authorization: `Bearer ${token}` }
     })
-    .then(() => {
-      alert('승인 완료');
-      window.location.reload();
-    })
-    .catch(() => alert('승인 실패'))
-    .finally(() => setLoading(false));
+      .then(() => {
+        alert('승인 완료');
+        fetchApproveList(); // 목록 새로 불러오기
+      })
+      .catch(() => alert('승인 실패'))
+      .finally(() => setLoading(false));
   };
 
-  // 반려
+  // 반려 처리
   const handleReject = (group) => {
     const reason = prompt('반려 사유를 입력하세요:');
     if (!reason) return;
@@ -71,11 +76,11 @@ function TransMultiApprove() {
     }, {
       headers: { Authorization: `Bearer ${token}` }
     })
-    .then(() => {
-      alert('반려 완료');
-      window.location.reload();
-    })
-    .catch(() => alert('반려 실패'));
+      .then(() => {
+        alert('반려 완료');
+        fetchApproveList(); // 목록 새로 불러오기
+      })
+      .catch(() => alert('반려 실패'));
   };
 
   return (
@@ -98,15 +103,11 @@ function TransMultiApprove() {
               <tr>
                 <td>{group.customer_id}</td>
                 <td>{group.out_account_number}</td>
-                <td>
-                  {group.request_date
-                    ? new Date(Number(group.request_date)).toLocaleString()
-                    : '-'}
-                </td>
+                <td>{group.request_date ? new Date(Number(group.request_date)).toLocaleString() : '-'}</td>
                 <td>
                   {group.status === '대기' ? '대기'
-                  : group.status === '승인' ? '승인함'
-                  : `반려함`}
+                    : group.status === '승인' ? '승인됨'
+                    : '반려됨'}
                 </td>
                 <td>
                   {group.status === '대기' ? (
@@ -115,29 +116,27 @@ function TransMultiApprove() {
                       <button onClick={() => handleApprove(group)} className="btn-approve">승인</button>
                       <button onClick={() => handleReject(group)} className="btn-reject">반려</button>
                     </>
-                  ) : group.status === '거절' ? (
-                    <div>
-                      반려함<br />
-                      <span>
-                        반려일: {group.approval_date
-                          ? new Date(group.approval_date).toLocaleString()
-                          : '-'}
-                      </span>
-                      <span>반려사유: {group.reject_reason || '-'}</span>
-                    </div>
                   ) : group.status === '승인' ? (
                     <div>
-                      승인함<br />
-                      <span>
-                        승인일: {group.approval_date
-                          ? new Date(group.approval_date).toLocaleString()
-                          : '-'}
-                      </span>
+                      승인일:<br />
+                      {group.approval_date
+                        ? new Date(group.approval_date).toLocaleString()
+                        : '-'}
                     </div>
-                  ) : null}
+                  ) : (
+                    <div>
+                      반려일:<br />
+                      {group.approval_date
+                        ? new Date(group.approval_date).toLocaleString()
+                        : '-'}
+                      <br />
+                      사유: {group.reject_reason || '-'}
+                    </div>
+                  )}
                 </td>
-
               </tr>
+
+              {/* 상세보기 */}
               {selectedKey === group.key && (
                 <tr>
                   <td colSpan="5">

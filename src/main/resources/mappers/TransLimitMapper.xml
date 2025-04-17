@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boot.sound.transfer.transLimit.TransLimitDAO">
+
+  <!-- [회원가입] 한도요청 등록 -->
+  <insert id="joinInsertLimit" parameterType="com.boot.sound.transfer.transLimit.TransLimitDTO" useGeneratedKeys="true" keyProperty="transfer_id">
+    INSERT INTO transfer_tbl (
+      customer_id, out_account_number, transfer_type, requested_limit, reason, request_date
+    ) 
+    VALUES (
+      #{customer_id}, #{out_account_number}, #{transfer_type}, #{requested_limit}, #{reason}, #{request_date}
+    )
+  </insert>
+
+  <!-- [회원가입] 한도승인 등록 -->
+  <insert id="insertApproval" parameterType="com.boot.sound.transfer.transLimit.ApprovalDTO">
+    INSERT INTO approval_tbl (
+      transfer_id, approval_type, approval_limit, status, reject_reason, approval_date
+    ) 
+    VALUES (
+      #{transfer_id}, #{approval_type}, #{approval_limit}, #{status}, #{reject_reason}, #{approval_date}
+    )
+  </insert>
+  
+  <!-- [고객] 기존한도 조회 -->
+	<select id="selectLatestApprovedLimit" resultType="int">
+	  SELECT a.approval_limit
+	  FROM transfer_tbl t
+	  JOIN approval_tbl a ON t.transfer_id = a.transfer_id
+	  WHERE t.customer_id = #{customer_id}
+	    AND a.status = '승인'
+	  ORDER BY a.approval_date DESC
+	  LIMIT 1
+	</select>
+
+  <!-- [고객] 요청 내역 조회 -->
+  <select id="getLimitList" resultType="com.boot.sound.transfer.transLimit.TransLimitDTO">
+    SELECT
+      t.transfer_id, 
+      t.customer_id, 
+      t.out_account_number, 
+      t.transfer_type,
+      t.requested_limit, 
+      t.reason, 
+      t.request_date,
+      a.approval_id, 
+      a.approval_type, 
+      a.status,
+      a.reject_reason, 
+      a.approval_date, 
+      a.approval_limit
+    FROM transfer_tbl t
+    LEFT JOIN approval_tbl a ON t.transfer_id = a.transfer_id
+    WHERE t.customer_id = #{customer_id}
+      AND t.transfer_type = '한도'
+    ORDER BY t.request_date DESC
+  </select>
+
+  <!-- [고객] 요청 등록 -->
+  <insert id="insert" parameterType="com.boot.sound.transfer.transLimit.TransLimitDTO">
+    INSERT INTO transfer_tbl (
+      customer_id, out_account_number, transfer_type, requested_limit, reason, request_date
+    ) 
+    VALUES (
+      #{customer_id}, #{out_account_number}, '한도', #{requested_limit}, #{reason}, NOW()
+    )
+  </insert>
+  
+  <!-- [고객] 중복요청 체크 -->
+  <select id="existsPendingRequest" resultType="boolean">
+	  SELECT EXISTS (
+	    SELECT 1
+	    FROM transfer_tbl
+	    WHERE customer_id = #{customer_id}
+	      AND out_account_number = #{out_account_number}
+	      AND transfer_type = '한도'
+	      AND status = '대기'
+	  )
+	</select>
+
+  <!-- [고객] 요청 수정 -->
+  <update id="update" parameterType="com.boot.sound.transfer.transLimit.TransLimitDTO">
+    UPDATE transfer_tbl
+    SET requested_limit = #{requested_limit},
+        reason = #{reason}
+    WHERE transfer_id = #{transfer_id}
+  </update>
+
+  <!-- [고객] 요청 삭제 -->
+  <delete id="delete" parameterType="int">
+    DELETE FROM transfer_tbl
+    WHERE transfer_id = #{transfer_id}
+  </delete>
+
+  <!-- [관리자] 전체 요청 목록 -->
+  <select id="getAllLimitList" resultType="com.boot.sound.transfer.transLimit.TransLimitDTO">
+    SELECT
+      t.transfer_id, 
+      t.customer_id, 
+      t.out_account_number, 
+      t.transfer_type,
+      t.requested_limit, 
+      t.reason, 
+      t.request_date,
+      a.approval_id, 
+      a.approval_type, 
+      a.status,
+      a.reject_reason, 
+      a.approval_date, 
+      a.approval_limit
+    FROM transfer_tbl t
+    LEFT JOIN approval_tbl a ON t.transfer_id = a.transfer_id
+    WHERE t.transfer_type = '한도'
+    ORDER BY t.request_date DESC
+  </select>
+
+  <!-- [관리자] 승인 -->
+  <insert id="approve" parameterType="com.boot.sound.transfer.transLimit.ApprovalDTO">
+    INSERT INTO approval_tbl (
+      transfer_id, approval_type, status, approval_limit, approval_date
+    ) 
+    VALUES (
+      #{transfer_id}, '한도', '승인', #{approval_limit}, NOW()
+    )
+  </insert>
+  
+  <!-- transfer_tbl 상태 - 승인 -->
+  <update id="updateTransferStatusApproval">
+	  UPDATE transfer_tbl
+	  SET status = #{status}
+	  WHERE transfer_id = #{transfer_id}
+  </update>
+
+  <!-- [관리자] 거절 -->
+  <insert id="reject" parameterType="com.boot.sound.transfer.transLimit.ApprovalDTO">
+    INSERT INTO approval_tbl (
+      transfer_id, approval_type, status, reject_reason, approval_date
+    ) 
+    VALUES (
+      #{transfer_id}, '한도', '거절', #{reject_reason}, NOW()
+    )
+  </insert>
+  
+    <!-- transfer_tbl 상태 - 거절 -->
+  <update id="updateTransferStatusReject">
+	  UPDATE transfer_tbl
+	  SET status = #{status}
+	  WHERE transfer_id = #{transfer_id}
+  </update>
+
+</mapper>
