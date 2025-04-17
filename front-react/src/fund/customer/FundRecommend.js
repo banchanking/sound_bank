@@ -39,6 +39,7 @@ const FundRecommend = () => {
                             <th>등급</th>
                             <th>선취수수료</th>
                             <th>성향</th>
+                            <th>선택</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -52,7 +53,6 @@ const FundRecommend = () => {
                                 <td>{fund.fund_grade}</td>
                                 <td>{fund.fund_upfront_fee}%</td>
                                 <td>{fund.fund_risk_type}</td>
-                                <td>선택</td>
                                 <td>
                                     <button
                                     onClick={() =>

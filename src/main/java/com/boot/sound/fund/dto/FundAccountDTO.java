@@ -27,6 +27,9 @@ public class FundAccountDTO {
     @Column(name = "FUND_ACCOUNT_NUMBER", nullable = false, unique = true)
     private String fundAccountNumber;
 
+    @Column(name = "FUND_ACCOUNT_NAME", length = 50)
+    private String fundAccountName;
+    
     @Column(name = "FUND_BALANCE", precision = 15, scale = 2)
     private BigDecimal fundBalance = BigDecimal.ZERO;
 
@@ -34,7 +37,7 @@ public class FundAccountDTO {
     private LocalDate fundOpenDate;
 
     @Column(name = "LINKED_ACCOUNT_NUMBER")
-    private String linkedAccount_number;
+    private String linkedAccountNumber;
 
     @Column(name = "STATUS", length = 20)
     private String status = "PENDING";

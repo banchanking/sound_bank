@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,8 @@ public class FundServiceImpl {
 	private final FundRepository fundRepository;	// MyBatis Mapper
 	
     private final FundAccountRepository JpaRepository; // JPA Repository
+    
+    private final PasswordEncoder encoder;
 	
 	// 펀드상품 목록
 	@Transactional(readOnly=true)
@@ -113,15 +116,38 @@ public class FundServiceImpl {
 		return fundRepository.recommendedFunds(fund_risk_type);
 	}
 	
-    // 펀드 계좌 개설 (JPA)
-    public void openFundAccount(FundAccountDTO dto) {
-        dto.setFundAccountNumber("FUND-" + System.currentTimeMillis());
-        dto.setFundBalance(BigDecimal.ZERO);
-        dto.setStatus("PENDING");
-        dto.setFundOpenDate(LocalDate.now());
+    // 펀드 계좌 개설 (JPA) -비밀번호를 검증통과시 해당 비밀번호를 암호화
+	public String openFundAccountWithVerification(FundAccountDTO dto, String inputPassword) {
 
-        JpaRepository.save(dto); // JPA 방식으로 저장
-    }
+	    // 1. 사용자가 선택한 연동계좌(입출금/예금)의 비밀번호 확인
+	    boolean isMatched = checkAccountPassword(dto.getLinkedAccountNumber(), inputPassword);
+	    if (!isMatched) {
+	        throw new IllegalArgumentException("입력한 계좌 비밀번호가 일치하지 않습니다.");
+	    }
+
+	    // 2. 펀드 계좌 비밀번호를 기존 비밀번호로 설정 (단, 반드시 암호화해서 저장)
+	    dto.setFundAccountPassword(encoder.encode(inputPassword));
+
+	    // 3. 펀드 계좌 기타 정보 세팅 (계좌번호 생성 등)
+	    dto.setFundAccountNumber("FUND-" + System.currentTimeMillis()); // 고유 계좌번호 생성
+	    dto.setFundBalance(BigDecimal.ZERO);                             // 초기 잔액 0원
+	    dto.setStatus("PENDING");                                        // 관리자 승인 대기
+	    dto.setFundOpenDate(LocalDate.now());                            // 개설일자 설정
+	    dto.setFundAccountName(dto.getFundAccountName()); 									// 계좌 별칭
+	    // 4. JPA를 통해 저장 (fund_account_tbl에 insert)
+	    JpaRepository.save(dto);
+
+	    return "펀드 계좌 개설 신청 완료"; // 리액트에서 alert(res.data)
+	}
+    
+    // 고객이 입력한 계좌 비밀번호 일치여부 확인
+	public boolean checkAccountPassword(String accountNumber, String inputPassword) {
+	    // 1. 해당 계좌의 암호화된 실제 비밀번호 조회 (DB에서 암호화된 값 가져옴)
+	    String encodedPwd = fundRepository.findPasswordByAccount(accountNumber);
+
+	    // 2. 사용자가 입력한 평문 비밀번호(inputPassword)와 DB에 저장된 암호화 비밀번호 비교
+	    return encodedPwd != null && encoder.matches(inputPassword, encodedPwd);
+	}
 
     // 펀드 계좌 목록 (JPA)
     public List<FundAccountDTO> getFundAccounts(String customerId) {
@@ -145,6 +171,8 @@ public class FundServiceImpl {
 
         fundRepository.insertFundTransaction(dto);
     }
+    
+
     
 
 }

@@ -6,39 +6,45 @@ const OpenAccount = () => {
   const customer_id = localStorage.getItem("customerId");
   const [accounts, setAccounts] = useState([]);
   const [selectedAccount, setSelectedAccount] = useState("");
-  const [password, setPassword] = useState("");
+  const [inputPassword, setInputPassword] = useState("");
   const [accountName, setAccountName] = useState("");
 
+  // 기존 보유계좌 조회 (입출금/예금 등)
   useEffect(() => {
     const fetchAccounts = async () => {
       try {
         const res = await RefreshToken.get(
           `http://localhost:8081/api/accounts/allAccount/${customer_id}`
         );
-        console.log("✅ 응답 확인:", res.data);
         const allAccounts = Object.values(res.data).flat(); // 입출금 + 예금 합침
         setAccounts(allAccounts);
       } catch (err) {
-        console.error("❌ 계좌 불러오기 실패:", err);
+        console.error("계좌 불러오기 실패:", err);
       }
     };
 
     fetchAccounts();
   }, [customer_id]);
 
+  // 개설 요청
   const handleSubmit = async () => {
+    if (!selectedAccount || !inputPassword) {
+      alert("계좌와 비밀번호를 모두 입력해주세요.");
+      return;
+    }
+
     const payload = {
-      customer_id: customer_id,
-      fund_account_password: password,
-      linked_account_number: selectedAccount,
-      fund_account_name: accountName,
+      customerId: customer_id,
+      linkedAccountNumber: selectedAccount,
+      fundAccountName: accountName,
+      fundAccountPassword: inputPassword // 여기서 백엔드에 inputPassword처럼 전송
     };
 
     try {
-      await RefreshToken.post("http://localhost:8081/api/fund/open", payload);
-      alert("펀드 계좌 개설 신청이 완료되었습니다.");
+      const res = await RefreshToken.post("http://localhost:8081/api/fund/open/verified", payload);
+      alert(res.data); // service에서 넘긴 return문 "펀드 계좌 개설 신청 완료"
       setSelectedAccount("");
-      setPassword("");
+      setInputPassword("");
       setAccountName("");
     } catch (error) {
       console.error("계좌 개설 실패", error);
@@ -63,16 +69,16 @@ const OpenAccount = () => {
               </option>
             ))
           ) : (
-            <option disabled>계좌가 없습니다</option>
+            <option disabled>보유계좌가 없습니다</option>
           )}
         </select>
 
-        <label>🔒 펀드 계좌 비밀번호</label>
+        <label>🔒 보유 계좌 비밀번호</label>
         <input
           type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="4자리 숫자"
+          value={inputPassword}
+          onChange={(e) => setInputPassword(e.target.value)}
+          placeholder="입출금 계좌 비밀번호 입력"
         />
 
         <label>📝 펀드 계좌 이름</label>

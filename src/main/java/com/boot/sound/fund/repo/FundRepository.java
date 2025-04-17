@@ -50,4 +50,7 @@ public interface FundRepository {
     // 펀드 거래 등록
     int insertFundTransaction(FundTransactionDTO dto);
     
+    // 기존 계좌 비밀번호 조회 (MyBatis)
+    String findPasswordByAccount(@Param("account_number") String accountNumber);
+    
 }

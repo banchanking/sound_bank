@@ -119,6 +119,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	    WHERE CUSTOMER_ID = #{customerId}
 	</select>
 	
+	<!-- 고객 보유계좌 비밀번호 확인 -->
+	<select id="findPasswordByAccount" resultType="String">
+	  SELECT account_pwd
+	  FROM account_tbl
+	  WHERE account_number = #{account_number}
+	</select>
+	
 	<!-- 펀드 거래 등록 -->
 	<insert id="insertFundTransaction" parameterType="com.boot.sound.fund.dto.FundTransactionDTO">
 	  INSERT INTO fund_transaction_tbl (

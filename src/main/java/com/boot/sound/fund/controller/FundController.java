@@ -119,11 +119,28 @@ public class FundController {
         return ResponseEntity.ok(recommendedFunds);
     }
     
-    // 펀드 계좌 개설
-    @PostMapping("/fund/open")
-    public ResponseEntity<?> openFundAccount(@RequestBody FundAccountDTO dto) {
-    	service.openFundAccount(dto);
-        return ResponseEntity.ok("펀드 계좌 개설 신청 완료");
+    // 펀드 계좌 개설 (보유계좌 비밀번호 검증 포함)
+    @PostMapping("/fund/open/verified")
+    public ResponseEntity<String> openFundAccount(@RequestBody FundAccountDTO dto) {
+
+        // 주의: fundAccountPassword 필드는 사용자가 입력한 "보유 계좌 비밀번호"
+        // 이걸 inputPassword처럼 활용함 (별도 필드 추가 없이 처리)
+        String result = service.openFundAccountWithVerification(dto, dto.getFundAccountPassword());
+
+        
+        return ResponseEntity.ok(result);
+    }
+    
+    // 펀드 계좌 비밀번호 확인
+    @PostMapping("/fund/check-password")
+    public ResponseEntity<?> checkPassword(@RequestBody FundAccountDTO dto) {
+        boolean isMatched = service.checkAccountPassword(dto.getLinkedAccountNumber(), dto.getFundAccountPassword());
+
+        if (isMatched) {
+            return ResponseEntity.ok("비밀번호 일치");
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호 불일치");
+        }
     }
     
     // 펀드 계좌 조회
@@ -138,6 +155,8 @@ public class FundController {
         service.processTransaction(dto);
         return ResponseEntity.ok("거래 완료");
     }
+    
+    
     
 }
     
