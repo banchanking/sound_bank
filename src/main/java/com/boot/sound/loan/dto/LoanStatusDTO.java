@@ -72,4 +72,7 @@ public class LoanStatusDTO {
     
     @Transient
     private int no;
+    
+    private BigDecimal prepayment_penalty; 
+
 } 
