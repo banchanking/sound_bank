@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
 import styles from "../../Css/fund/FundList.module.css"; // 스타일 파일 추가
 import RefreshToken from "../../jwt/RefreshToken"; // 인증 포함된 인스턴스 사용
-import BuyFund from "./OpenAccount";
 
 const FundRecommend = () => {
     const [recommendedFunds, setRecommendedFunds] = useState([]);
-    const [selectedFund, setSelectedFund] = useState(null);
     useEffect(() => {
         const fetchRecommendedFunds = async () => {
             const customerId = localStorage.getItem("customerId");
@@ -54,16 +52,16 @@ const FundRecommend = () => {
                                 <td>{fund.fund_grade}</td>
                                 <td>{fund.fund_upfront_fee}%</td>
                                 <td>{fund.fund_risk_type}</td>
+                                <td>선택</td>
                                 <td>
-                                <button
-                                    className={styles.fundbuyButton}
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        setSelectedFund(fund);
-                                    }}
+                                    <button
+                                    onClick={() =>
+                                        alert(`${fund.fund_name} 매수 신청이 완료되었습니다. 관리자 승인 후 계좌에 반영됩니다.`)
+                                    }
+                                    className={styles.fundBuyButton}
                                     >
                                     매수하기
-                                </button>
+                                    </button>
                                 </td>
                             </tr>
                         ))}
@@ -72,13 +70,6 @@ const FundRecommend = () => {
             ) : (
                 <p>추천할 펀드가 없습니다.</p>
             )}
-            {selectedFund && (
-            <BuyFund
-                fund={selectedFund}
-                onClose={() => setSelectedFund(null)}
-                onBuySuccess={() => setSelectedFund(null)}
-            />
-        )}
         </div>
         </div>
     );
