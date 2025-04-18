@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.boot.sound.transfer.instant.TransInstantService;
@@ -19,6 +20,9 @@ public class TransAutoService {
     @Autowired
     private TransInstantService service;
     
+	@Autowired
+	private PasswordEncoder encoder;
+    
     // 자동이체 등록
     public void saveTransAuto(TransAutoDTO dto) {
         dao.insertAutoTransfer(dto);
@@ -27,7 +31,7 @@ public class TransAutoService {
     // 비밀번호 확인
     public boolean checkPassword(String accountNum, String password) {
         String pwd = dao.getPasswordByAccount(accountNum);
-        return pwd != null && pwd.equals(password);
+        return pwd != null && encoder.matches(password, pwd);
     }
     
     // 자동이체 목록
