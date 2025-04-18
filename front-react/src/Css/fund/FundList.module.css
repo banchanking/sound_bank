@@ -13,7 +13,7 @@
 }
 
 /* 버튼 공통 */
-button,
+.fundButton,
 .fundtestsubmit {
   background-color: #000000;
   color: white;
@@ -29,7 +29,7 @@ button,
   font-size: 1rem;
 }
 
-button:hover,
+.fundButton:hover,
 .fundtestsubmit:hover {
   background-color: #333;
 }
@@ -223,4 +223,38 @@ button:hover,
   font-weight: 800;
   font-size: 1.3rem;
   color: #111;
+}
+
+.fundbuyButton {
+  padding: 6px 12px;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.fundbuyButton:hover {
+  background-color: #333;
+}
+
+.fundbuttonGroup {
+  display: flex;
+  justify-content: space-evenly;
+  margin-top: 1rem;
+}
+
+.fundButton {
+  padding: 6px 12px;
+  font-size: 14px;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.fundButton:hover {
+  background-color: #555;
 }

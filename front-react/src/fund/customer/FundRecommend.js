@@ -4,8 +4,6 @@ import RefreshToken from "../../jwt/RefreshToken"; // 인증 포함된 인스턴
 
 const FundRecommend = () => {
     const [recommendedFunds, setRecommendedFunds] = useState([]);
-    const customerId = localStorage.getItem("customerId"); // 로그인된 사용자 ID 가져오기
-
     useEffect(() => {
         const fetchRecommendedFunds = async () => {
             const customerId = localStorage.getItem("customerId");
@@ -41,6 +39,7 @@ const FundRecommend = () => {
                             <th>등급</th>
                             <th>선취수수료</th>
                             <th>성향</th>
+                            <th>선택</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -54,6 +53,16 @@ const FundRecommend = () => {
                                 <td>{fund.fund_grade}</td>
                                 <td>{fund.fund_upfront_fee}%</td>
                                 <td>{fund.fund_risk_type}</td>
+                                <td>
+                                    <button
+                                    onClick={() =>
+                                        alert(`${fund.fund_name} 매수 신청이 완료되었습니다. 관리자 승인 후 계좌에 반영됩니다.`)
+                                    }
+                                    className={styles.fundBuyButton}
+                                    >
+                                    매수하기
+                                    </button>
+                                </td>
                             </tr>
                         ))}
                     </tbody>

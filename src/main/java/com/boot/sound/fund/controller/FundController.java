@@ -1,4 +1,4 @@
-package com.boot.sound.fund;
+package com.boot.sound.fund.controller;
 
 import java.util.List;
 
@@ -8,6 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import com.boot.sound.fund.dto.FundAccountDTO;
+import com.boot.sound.fund.dto.FundDTO;
+import com.boot.sound.fund.dto.FundTestDTO;
+import com.boot.sound.fund.dto.FundTransactionDTO;
+import com.boot.sound.fund.service.FundServiceImpl;
 
 @RestController
 @RequestMapping("/api")
@@ -97,6 +103,7 @@ public class FundController {
         }
     }
     
+    // 펀드 추천
     @GetMapping("/fundRecommend/{customer_id}")
     public ResponseEntity<List<FundDTO>> recommendFunds(@PathVariable String customer_id) {
         logger.info("<<< controller - recommendFunds >>>");
@@ -111,5 +118,45 @@ public class FundController {
         
         return ResponseEntity.ok(recommendedFunds);
     }
+    
+    // 펀드 계좌 개설 (보유계좌 비밀번호 검증 포함)
+    @PostMapping("/fund/open/verified")
+    public ResponseEntity<String> openFundAccount(@RequestBody FundAccountDTO dto) {
+
+        // 주의: fundAccountPassword 필드는 사용자가 입력한 "보유 계좌 비밀번호"
+        // 이걸 inputPassword처럼 활용함 (별도 필드 추가 없이 처리)
+        String result = service.openFundAccountWithVerification(dto, dto.getFundAccountPassword());
+
+        
+        return ResponseEntity.ok(result);
+    }
+    
+    // 펀드 계좌 비밀번호 확인
+    @PostMapping("/fund/check-password")
+    public ResponseEntity<?> checkPassword(@RequestBody FundAccountDTO dto) {
+        boolean isMatched = service.checkAccountPassword(dto.getLinkedAccountNumber(), dto.getFundAccountPassword());
+
+        if (isMatched) {
+            return ResponseEntity.ok("비밀번호 일치");
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호 불일치");
+        }
+    }
+    
+    // 펀드 계좌 조회
+    @GetMapping("/accounts/allAccount/fund/{customer_id}")
+    public ResponseEntity<List<FundAccountDTO>> getAccounts(@PathVariable("customer_id") String customerId) {
+        return ResponseEntity.ok(service.getFundAccounts(customerId));
+    }
+    
+    // 펀드 거래(매수)
+    @PostMapping("/fundTrade/buy")
+    public ResponseEntity<String> tradeFund(@RequestBody FundTransactionDTO dto) {
+        service.processTransaction(dto);
+        return ResponseEntity.ok("거래 완료");
+    }
+    
+    
+    
 }
     
