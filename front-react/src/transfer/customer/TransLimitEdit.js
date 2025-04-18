@@ -7,6 +7,8 @@ import '../../Css/transfer/TransLimitEdit.css';
 function TransLimitEdit() {
   const [list, setList] = useState([]);
   const [editItem, setEditItem] = useState(null);
+  const [displayLimit, setDisplayLimit] = useState('');
+
   const customer_id = getCustomerID();
   const token = localStorage.getItem('auth_token');
 
@@ -47,7 +49,15 @@ function TransLimitEdit() {
   // 입력값 변경
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setEditItem(prev => ({ ...prev, [name]: value }));
+
+    if (name === 'requested_limit') {
+      const raw = value.replace(/[^0-9]/g, '');
+      const formatted = raw ? Number(raw).toLocaleString() : '';
+      setEditItem(prev => ({ ...prev, requested_limit: raw }));
+      setDisplayLimit(formatted);
+    } else {
+      setEditItem(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   // 수정 저장
@@ -93,9 +103,12 @@ function TransLimitEdit() {
                 <td>{item.status || '대기'}</td>
                 <td>{item.status === '거절' ? (item.reject_reason) : '-'}</td>
                 <td>
-                {(!item.status || item.status.trim() === '대기') && (
+                  {(!item.status || item.status.trim() === '대기') && (
                     <>
-                      <button onClick={() => setEditItem(item)} className="btn-blue">수정</button>
+                      <button onClick={() => {
+                        setEditItem(item);
+                        setDisplayLimit(Number(item.requested_limit).toLocaleString());
+                      }} className="btn-blue">수정</button>
                       <button onClick={() => deleteRow(item.transfer_id)} className="btn-red">삭제</button>
                     </>
                   )}
@@ -112,9 +125,9 @@ function TransLimitEdit() {
               <h3>이체한도 수정</h3>
               <label>요청금액</label>
               <input
-                type="number"
+                type="text"
                 name="requested_limit"
-                value={editItem.requested_limit}
+                value={displayLimit}
                 onChange={handleChange}
               />
               <label>신청 사유</label>

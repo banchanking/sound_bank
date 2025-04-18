@@ -25,8 +25,12 @@ public class ExchangeRateDTO {
     @JsonProperty("tts")
     private String buy_rate;   // 고객이 외화를 살 때 (은행 입장에서 매도)
     
+    @JsonProperty("fee_rate")
+    private String fee_rate;	//수수료
+    
+    @JsonProperty("base_date")
     private LocalDate base_date;
-
+    
 }
 
 //-- 환율저장테이블

@@ -284,7 +284,7 @@ const Header = () => {
                         거래내역
                       </NavDropdown.Item>
                     </li>
-                    <li>
+                    {/* <li>
                       <NavDropdown.Item
                         className="sub-item"
                         as={Link}
@@ -292,7 +292,7 @@ const Header = () => {
                       >
                         자산통계
                       </NavDropdown.Item>
-                    </li>
+                    </li> */}
                   </ul>
 
                   <ul>
@@ -748,7 +748,7 @@ const Header = () => {
                         as={Link}
                         to="/admin_ex_management"
                       >
-                        지갑상태변경
+                        외환관리자페이지
                       </NavDropdown.Item>
                     </li>
                   </ul>

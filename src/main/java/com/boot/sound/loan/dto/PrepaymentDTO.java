@@ -14,4 +14,10 @@ public class PrepaymentDTO {
 	private LocalDate  prepaymentDate;
 	private Date loanDate;
 	private BigDecimal prepayment_penalty;
+	private String customerId;
+	private String accountNumber;
+	private int loanId;
+	private int repaymentAmount;
+	private int interestpaymentNo;
+	
 }

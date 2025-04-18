@@ -69,7 +69,7 @@ function TransMultiEdit() {
   };
 
   return (
-    <div style={{ display: 'flex', minHeight: '600px' }}>
+    <div style={{ display: 'flex', minHeight: '560px'  }}>
       <Sidebar />
 
       <div className="edit-wrap">

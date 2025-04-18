@@ -2,8 +2,12 @@ import React, { useEffect, useState } from 'react';
 import RefreshToken from "../jwt/RefreshToken"; 
 import '../Css/inquire/InquireAccount.css';
 import { getCustomerID } from "../jwt/AxiosToken";
+import { useNavigate } from 'react-router-dom';
+
 
 function AccountCheck() {
+    
+  const navigate = useNavigate();
   const [data, setData] = useState({});
   const [type, setType] = useState(null);
   const [accNum, setAccNum] = useState(null);
@@ -13,6 +17,7 @@ function AccountCheck() {
     const id = getCustomerID();   // 로그인된 사용자 ID 가져오기
     if (!id) {
       alert('로그인이 필요합니다.');
+      navigate('/login')
       return;
     }
 
@@ -47,7 +52,7 @@ function AccountCheck() {
         <h4>상세 정보</h4>
         <p><b>이름:</b> {item.account_name}</p>
         <p><b>번호:</b> {item.account_number}</p>
-        <p><b>잔액:</b> {item.balance.toLocaleString()}원</p>
+        <p><b>잔액:</b> {item.balance.toLocaleString("ko-KR")} 원</p>
         <p><b>이자율:</b> {item.interest_rate || 0}%</p>
         <p><b>개설일:</b> {new Date(item.open_date).toLocaleString()}</p>
       </div>
