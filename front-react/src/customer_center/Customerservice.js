@@ -17,15 +17,14 @@ const CustomerService = () => {
         {[ 
           { title: "이용안내", links: [
               { text: "공지사항", path: "/notice" },
-              { text: "자주 묻는 질문", path: "/faq" },
               { text: "이용안내 시간", path: "/business_hour" },
               { text: "금리 안내", path: "#" },
               { text: "수수료 안내", path: "#" }
           ]},
           { title: "온라인 상담", links: [
-              { text: "자주 묻는 질문", path: "/chatbot" },
-              { text: "누르는 상담", path: "/voicebot" },
-              { text: "말하는 상담", path: "/bankauth" }
+              { text: "자주 묻는 질문", path: "/faq" },
+              { text: "누르는 상담", path: "/chatbot" },
+              { text: "말하는 상담", path: "/voicebot" },
           ]},
           { title: "인증도우미", links: [
               { text: "증명서 진위 확인", path: "/bankauth" },
