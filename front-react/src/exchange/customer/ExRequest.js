@@ -62,19 +62,21 @@ const ExRequest = () => {
   useEffect(() => {
     const selected = rates.find((r) => r.currency_code === selectedCurrency);
     if (selected && inputAmount) {
-      const buyRate = selected.buy_rate;
-      const sellRate = selected.sell_rate;
+      const feeRate = selected.fee_rate ?? 0; // 없을 경우 0%
       const numericAmount = Number(inputAmount.replace(/,/g, ""));
       let result = 0;
-
+  
       if (transactionType === "buy") {
-        result = (numericAmount / buyRate).toFixed(2);
+        // 구매: 수수료 추가된 환율로 계산 (예: 1320 * 1.015)
+        const adjustedBuyRate = selected.buy_rate * (1 + feeRate / 100);
+        result = (numericAmount / adjustedBuyRate).toFixed(2); // 외화
       } else {
-        result = (numericAmount * sellRate).toFixed(0);
+        // 판매: 수수료 차감된 환율로 계산 (예: 1280 * 0.985)
+        const adjustedSellRate = selected.sell_rate * (1 - feeRate / 100);
+        result = (numericAmount * adjustedSellRate).toFixed(0); // 원화
       }
-
+      
       setExchangedAmount(result);
-
     } else {
       setExchangedAmount("");
     }
@@ -216,7 +218,9 @@ const ExRequest = () => {
       >
         {transactionType === "buy" ? "환전 신청" : "외화 판매"}
       </button>
-
+      <p style={{ fontSize: "0.9rem", color: "#888" }}>
+            ※ 위 환전 금액은 수수료가 포함된 환율 기준으로 계산되었습니다.
+      </p>
       {result && (
         <div style={{ marginTop: "2rem", backgroundColor: "#f9f9f9", padding: "1rem", borderRadius: "8px" }}>
           <h3>거래 요청 완료</h3>
@@ -236,6 +240,8 @@ const ExRequest = () => {
               지갑으로 이동
             </a>
           </button>
+          
+
         </div>
       )}
     </div>

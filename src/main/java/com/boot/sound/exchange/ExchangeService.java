@@ -28,7 +28,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class ExchangeService {
+	
+	// 통화별 수수료율 설정
+    private static final Map<String, BigDecimal> defaultFeeRates = new HashMap<>();
 
+    static {
+    	defaultFeeRates.put("USD", new BigDecimal("1.5"));
+        defaultFeeRates.put("EUR", new BigDecimal("1.8"));
+        defaultFeeRates.put("JPY", new BigDecimal("2.0"));
+        defaultFeeRates.put("CNH", new BigDecimal("2.2"));
+    }
+	
     @Value("${api-key}")
     private String apikey;
     public String getApiKey() {
@@ -393,7 +403,16 @@ public class ExchangeService {
                 rate.put("buy_rate", toDecimal(dto.getBuy_rate()));
                 rate.put("sell_rate", toDecimal(dto.getSell_rate()));
 
+                // 수수료율 설정: 주요 통화는 개별 설정, 나머지는 기본 3%
+                BigDecimal feeRate = defaultFeeRates.getOrDefault(
+                    dto.getCurrency_code(), new BigDecimal("3.0")
+                
+                );
+                
+                rate.put("fee_rate", feeRate);
+
                 successCount += dao.insertExchangeRate(rate);
+                
             } catch (Exception e) {
                 System.out.println("환율 저장 실패: " + dto.getCurrency_code());
                 e.printStackTrace();
@@ -404,7 +423,10 @@ public class ExchangeService {
     }
     
     private BigDecimal toDecimal(String raw) {
-        if (raw == null || raw.isBlank()) return BigDecimal.ZERO;
+        if (raw == null || raw.isBlank()) 
+        
+        	return BigDecimal.ZERO;
+        
         return new BigDecimal(raw.replace(",", "").trim());
     }
     

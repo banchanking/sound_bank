@@ -104,7 +104,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	        currency_name,
 	        base_rate,
 	        buy_rate,
-	        sell_rate
+	        sell_rate,
+	        fee_rate
 	    )
 	    VALUES (
 	        #{base_date},
@@ -112,7 +113,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	        #{currency_name},
 	        #{base_rate},
 	        #{buy_rate},
-	        #{sell_rate}
+	        #{sell_rate},
+	        #{fee_rate}
 	    )
 	</insert>
 	
