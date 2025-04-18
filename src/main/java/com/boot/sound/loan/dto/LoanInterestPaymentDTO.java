@@ -52,6 +52,15 @@ public class LoanInterestPaymentDTO {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
     
+    @Transient
+    private int no;
+    
+    @Transient
+    private String loanName;
+    
+    @Transient
+    private String accountNumber;
+    
     @Override
     public String toString() {
         return "LoanInterestPaymentDTO{" +
