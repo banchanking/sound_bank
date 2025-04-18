@@ -1,9 +1,14 @@
-package com.boot.sound.fund;
+package com.boot.sound.fund.repo;
 
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
+import com.boot.sound.fund.dto.FundDTO;
+import com.boot.sound.fund.dto.FundTestDTO;
+import com.boot.sound.fund.dto.FundTransactionDTO;
+import com.boot.sound.inquire.account.AccountDTO;
 
 @Mapper
 public interface FundRepository {
@@ -41,4 +46,11 @@ public interface FundRepository {
     // 투자성향 분석 AI 학습 완료된 펀드상품 목록 업데이트
     public void updateRiskType(@Param("fund_name") String fund_name, 
     					@Param("fund_risk_type") String fund_risk_type);
+
+    // 펀드 거래 등록
+    int insertFundTransaction(FundTransactionDTO dto);
+    
+    // 기존 계좌 비밀번호 조회 (MyBatis)
+    String findPasswordByAccount(@Param("account_number") String accountNumber);
+    
 }

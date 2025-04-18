@@ -1,4 +1,4 @@
-package com.boot.sound.fund;
+package com.boot.sound.fund.dto;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,7 +18,7 @@ import lombok.ToString;
 @Entity				// ORM(table의 컬럼과 object의 멤버변수를 매핑)
 @Builder			// 매개변수 생성자에 순서없이 값을 입력해서 세팅해도 마지막에 build()를 통해 빌더를 작동시킨다. 같은 타입의 다른변수의 값을 서로 바꿔넣는 것을 방지한다. 
 @ToString
-@Table(name = "FUND_TBL")
+@Table(name = "fund_tbl")
 public class FundDTO {
 	
 	@Id
@@ -56,23 +56,25 @@ public class FundDTO {
 	@Column(name = "return_12m", precision = 6, scale = 3)
     private Double return_12m;     // 12개월 누적 수익률 (%)
 	
-	@Column(name = "fund_risk_type", nullable = false)
+	@Column(name = "fund_risk_type", nullable = true)
     private String fund_risk_type;      // 펀드명
 
 }
 
 
-//<< FUND_TBL (펀드상품 테이블) >>fund_risk_type
-//CREATE TABLE FUND_TBL (
-//    FUND_ID NUMBER(10) GENERATED ALWAYS AS IDENTITY PRIMARY KEY, -- 펀드 ID
-//    FUND_NAME VARCHAR2(255) NOT NULL, -- 펀드명
-//    FUND_COMPANY VARCHAR2(255) NOT NULL, -- 운용사명
-//    FUND_TYPE VARCHAR2(100), -- 펀드 유형 (주식형, 채권형 등)
-//    FUND_GRADE NUMBER(1), -- 펀드 등급 (1~5)
-//    FUND_FEE_RATE NUMBER(5,2), -- 총보수 (%)
-//    FUND_UPFRONT_FEE NUMBER(5,2), -- 선취 수수료 (%)
-//    RETURN_1M NUMBER(6,3), -- 1개월 누적 수익률 (%)
-//    RETURN_3M NUMBER(6,3), -- 3개월 누적 수익률 (%)
-//    RETURN_6M NUMBER(6,3), -- 6개월 누적 수익률 (%)
-//    RETURN_12M NUMBER(6,3) -- 12개월 누적 수익률 (%)
-//);
+//CREATE TABLE `fund_tbl` (
+//		  `fund_id` bigint(20) NOT NULL AUTO_INCREMENT,
+//		  `FUND_NAME` varchar(255) NOT NULL,
+//		  `FUND_COMPANY` varchar(255) NOT NULL,
+//		  `FUND_TYPE` varchar(100) DEFAULT NULL,
+//		  `FUND_GRADE` int(1) DEFAULT NULL,
+//		  `FUND_FEE_RATE` decimal(5,2) DEFAULT NULL,
+//		  `FUND_UPFRONT_FEE` decimal(5,2) DEFAULT NULL,
+//		  `RETURN_1M` decimal(6,3) DEFAULT NULL,
+//		  `RETURN_3M` decimal(6,3) DEFAULT NULL,
+//		  `RETURN_6M` decimal(6,3) DEFAULT NULL,
+//		  `RETURN_12M` decimal(6,3) DEFAULT NULL,
+//		  `FUND_RISK_TYPE` varchar(50) DEFAULT NULL,
+//		  PRIMARY KEY (`fund_id`),
+//		  UNIQUE KEY `unique_fund_name` (`FUND_NAME`)
+//		) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
