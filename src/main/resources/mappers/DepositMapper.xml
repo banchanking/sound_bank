@@ -6,48 +6,66 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  <mapper namespace="com.boot.sound.deposit.DepositDAO">
  
  
- 	    <!-- 예금/적금 계좌 전체 조회 -->
-    <select id="depositList" resultType="com.boot.sound.deposit.DepositDTO">
-        SELECT 
-            dat_id ,                             
-            dat_account_num,
-            dat_deposit_account_num,
-            dat_balance,
-            dat_term,
-            dat_start_day,
-            dat_end_day
-        FROM 
-            deposit_account_tbl
-    </select>
+ 	<!-- 로그인한 사용자의 계좌번호와 일치하는 예금 목록 조회 -->
+<select id="findDepositsByCustomerId" parameterType="String" resultType="com.boot.sound.deposit.DepositDTO">
+    SELECT 
+        d.dat_account_num,
+        d.dat_deposit_account_num,
+        d.dat_balance,
+        d.dat_term,
+        d.dat_start_day,
+        d.dat_end_day
+    FROM 
+        deposit_account_tbl d
+    INNER JOIN 
+        customer_tbl c
+    ON 
+        c.customer_account_number = d.dat_account_num
+    WHERE 
+        c.customer_id = #{customerId} -- customerId로 필터링
+</select>
+
+<!--  신규 예금 계좌 생성 -->
+<insert id="depositInsert">
+    insert into deposit_account_tbl(
+    dat_account_num,
+    dat_account_pwd,
+    dat_deposit_account_num,
+    dat_deposit_account_pwd,
+    dat_new_amount,
+    dat_balance,
+    dat_derm,
+    dat_start_day,
+    dat_end_day         
+    )        
+    VALUES(
+       #{dat_account_num},
+       #{dat_account_pwd},        
+       #{dat_deposit_account_num},   
+       #{dat_deposit_account_pwd},
+       #{dat_new_amount},
+       #{dat_balance},
+       #{dat_term},
+       #{dat_start_day},
+       #{dat_end_day}
+    )
     
-    <!--  신규 예금 계좌 생성 -->
-    <insert id="depositInsert">
-        insert into deposit_account_tbl(
-        dat_account_num,
-        dat_account_pwd,
-        dat_deposit_account_num,
-        dat_deposit_account_pwd,
-        dat_new_amount,
-        dat_balance,
-        dat_derm,
-        dat_start_day,
-        dat_end_day         
-        )        
-        VALUES(
-           #{dat_account_num},
-           #{dat_account_pwd},        
-           #{dat_deposit_account_num},   
-           #{dat_deposit_account_pwd},
-           #{dat_new_amount},
-           #{dat_balance},
-           #{dat_term},
-           #{dat_start_day},
-           #{dat_end_day}
-        )
-        
+
+
+</insert>
     
-    
-    </insert>
+    <!-- 계좌번호로 잔액 조회 -->
+     <select id="getBalanceByAccountNumber" parameterType="String" resultType="java.math.BigDecimal">
+     SELECT dat_balance FROM deposit_account_tbl
+      WHERE dat_deposit_account_num = #{accountNumber}
+     </select> 
+     
+     <!-- 잔액 업데이트 --> 
+     <update id="updateBalance" parameterType="com.boot.sound.deposit.DepositDTO">
+      UPDATE deposit_account_tbl SET
+       dat_balance = #{dat_balance}
+        WHERE dat_deposit_account_num = #{dat_deposit_account_num}
+         </update>
     
  
  
