@@ -13,4 +13,5 @@ public interface AccountDAO {
 	public List<AccountDTO> findAllByCustomerId(String customer_id);    
 	
     public void insertAccount(AccountDTO account);
+    
 }
