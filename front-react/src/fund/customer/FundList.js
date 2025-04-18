@@ -41,20 +41,40 @@ const FundList = () => {
     setShowDetail(true);
   };
 
-  // const handleFundBuy = async () => {
-  //   try {
-  //     await RefreshToken.post("http://localhost:8081/api/fund/buy", {
-  //       customer_id: customerId,
-  //       fund_id: selectedFundId,
-  //       buy_amount: inputAmount, // 사용자가 입력한 금액
-  //     });
+  const handleFundBuy = async (fund) => {
+    try {
+      const customerId = localStorage.getItem("customerId");
+      const fundAccountList = await RefreshToken.get(
+        `http://localhost:8081/api/accounts/allAccount/fund/${customerId}`
+      );
   
-  //     alert("매수 신청이 완료되었습니다. 관리자 승인 후 계좌에 반영됩니다.");
-  //   } catch (error) {
-  //     console.error("매수 신청 실패", error);
-  //     alert("매수 신청 중 오류가 발생했습니다.");
-  //   }
-  // };
+      const fundAccount = fundAccountList.data?.[0];
+      const fundAccountId = fundAccount?.fundAccountId;
+      const withdrawAccountNumber = fundAccount?.linkedAccountNumber;
+  
+      if (!fundAccountId || !withdrawAccountNumber) {
+        alert("펀드 계좌 정보가 올바르지 않습니다.");
+        return;
+      }
+  
+      const dto = {
+        customerId,
+        fundId: fund.fund_id,
+        fundAccountId,
+        withdrawAccountNumber,
+        fundAccountName: fund.fundAccountName, 
+        fundTransactionType: "BUY",
+        fundInvestAmount: Number(fund.buyAmount),
+        fundUnitsPurchased: fund.unitCount ? Number(fund.unitCount) : null,
+      };
+  
+      const res = await RefreshToken.post("http://localhost:8081/api/fundTrade/buy", dto);
+      alert("매수 신청 완료: " + res.data);
+    } catch (error) {
+      console.error("매수 신청 실패", error);
+      alert("매수 처리 중 오류 발생");
+    }
+  };
 
   const closeDetail = () => setShowDetail(false);
 
@@ -93,18 +113,8 @@ const FundList = () => {
           <Fund
             fundId={selectedFundId}
             onClose={closeDetail}
-            onBuy={(fund) => console.log("매수 처리 예정:", fund)}
-          />
-          <div style={{ textAlign: "center", marginTop: "1rem" }}>
-            <button
-              onClick={() => {
-                alert("매수 신청이 완료되었습니다. 관리자 승인 후 계좌에 반영됩니다.");
-              }}
-              className={styles.fundBuyButton}
-            >
-              매수하기
-            </button>
-          </div>
+            onBuy={(fund) => handleFundBuy(fund)} // fund 안에 buyAmount, unitCount 같이 옴
+          /> 
         </>
       )}
     </div>

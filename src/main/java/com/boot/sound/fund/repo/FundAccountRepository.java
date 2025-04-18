@@ -10,6 +10,5 @@ import com.boot.sound.fund.dto.FundAccountDTO;
 @Repository
 public interface FundAccountRepository extends JpaRepository<FundAccountDTO, Integer> {
 	
-    List<FundAccountDTO> findByCustomerId(String customer_id);
-
+    List<FundAccountDTO> findByCustomerId(String customerId);
 }

@@ -151,23 +151,28 @@ public class FundServiceImpl {
 
     // 펀드 계좌 목록 (JPA)
     public List<FundAccountDTO> getFundAccounts(String customerId) {
-    	System.out.println("조회 요청 받은 customerId: " + customerId);
-        return JpaRepository.findByCustomerId(customerId);
+    	System.out.println("고객 ID: " + customerId);
+    	if (customerId == null || customerId.isBlank()) {
+            throw new IllegalArgumentException("고객 ID가 유효하지 않습니다.");
+        }
+
+    	return JpaRepository.findByCustomerId(customerId);
     }
     
     // 펀드 매수
     @Transactional
     public void processTransaction(FundTransactionDTO dto) {
-        // 단가 계산: 예시로 1원 = 1단위 (나중에 시세 API 연동 가능)
-        BigDecimal unitPrice = BigDecimal.ONE;
-        BigDecimal units = dto.getFundInvestAmount() != null
-        		? dto.getFundInvestAmount().divide(unitPrice, 6, RoundingMode.DOWN)
-        		: dto.getFundUnitsPurchased();        		
-
-        dto.setFundUnitsPurchased(units);
-        dto.setFundPricePerUnit(unitPrice);
+        // 단가 계산: 투자금 / 좌수
+    	if (dto.getFundInvestAmount() != null && dto.getFundUnitsPurchased() != null) {
+    	    dto.setFundPricePerUnit(
+    	        dto.getFundInvestAmount().divide(dto.getFundUnitsPurchased(), 6, RoundingMode.HALF_UP)
+    	    );
+    	} else {
+    	    dto.setFundPricePerUnit(BigDecimal.ONE); // fallback
+    	}
+    	
         dto.setFundTransactionDate(LocalDate.now());
-        dto.setStatus("APPROVED");
+        dto.setStatus("PENDING");	// 관리자 승인 전
 
         fundRepository.insertFundTransaction(dto);
     }

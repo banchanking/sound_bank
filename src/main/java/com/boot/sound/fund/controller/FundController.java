@@ -145,12 +145,12 @@ public class FundController {
     
     // 펀드 계좌 조회
     @GetMapping("/accounts/allAccount/fund/{customer_id}")
-    public ResponseEntity<List<FundAccountDTO>> getAccounts(@PathVariable String customerId) {
+    public ResponseEntity<List<FundAccountDTO>> getAccounts(@PathVariable("customer_id") String customerId) {
         return ResponseEntity.ok(service.getFundAccounts(customerId));
     }
     
-    // 펀드 거래
-    @PostMapping("/trade")
+    // 펀드 거래(매수)
+    @PostMapping("/fundTrade/buy")
     public ResponseEntity<String> tradeFund(@RequestBody FundTransactionDTO dto) {
         service.processTransaction(dto);
         return ResponseEntity.ok("거래 완료");

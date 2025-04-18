@@ -129,11 +129,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<!-- 펀드 거래 등록 -->
 	<insert id="insertFundTransaction" parameterType="com.boot.sound.fund.dto.FundTransactionDTO">
 	  INSERT INTO fund_transaction_tbl (
-	    CUSTOMER_ID, FUND_ACCOUNT_ID, FUND_ID, FUND_TRANSACTION_TYPE,
+	    CUSTOMER_ID, FUND_ACCOUNT_ID, WITHDRAW_ACCOUNT_NUMBER, FUND_ID, FUND_TRANSACTION_TYPE,
 	    FUND_INVEST_AMOUNT, FUND_UNITS_PURCHASED, FUND_PRICE_PER_UNIT,
 	    FUND_TRANSACTION_DATE, STATUS
 	  ) VALUES (
-	    #{customerId}, #{fundAccountId}, #{fundId}, #{fundTransactionType},
+	    #{customerId}, #{fundAccountId}, #{withdrawAccountNumber}, #{fundId}, #{fundTransactionType},
 	    #{fundInvestAmount}, #{fundUnitsPurchased}, #{fundPricePerUnit},
 	    #{fundTransactionDate}, #{status}
 	  )

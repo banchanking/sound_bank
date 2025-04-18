@@ -28,6 +28,7 @@ public class FundTransactionDTO {
 	
     private String customerId;               // 고객 ID
     private Integer fundAccountId;           // 펀드 계좌 ID
+    private String withdrawAccountNumber;	 // 선택한 출금 계좌
     private Integer fundId;                  // 펀드 상품 ID
     private String fundTransactionType;      // BUY / SELL
     private BigDecimal fundInvestAmount;     // 매수 or 환매 금액
