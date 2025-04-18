@@ -19,6 +19,28 @@ const ExRequest = () => {
   const today = new Date().toISOString().split("T")[0];
   const { rates } = useExchangeRates(today);
 
+
+
+  // 입력 시 처리
+  const handleInputChange = (e) => {
+    let rawValue = e.target.value.replace(/,/g, "");
+  
+    // 숫자 or 소수점만 허용 (정규표현식으로 필터링)
+    if (!/^\d*\.?\d*$/.test(rawValue)) return;
+  
+    // 소수점 입력 중일 때는 toLocaleString() 하면 안 됨 (계속 날아감)
+    if (rawValue.includes(".")) {
+      setInputAmount(rawValue); // 소수점 그대로 유지
+    } else if (rawValue) {
+      const [intPart, decimalPart] = rawValue.split(".");
+      const formatted = Number(intPart).toLocaleString();
+      setInputAmount(decimalPart !== undefined ? `${formatted}.${decimalPart}` : formatted);
+    } else {
+      setInputAmount("");
+    }
+  };
+  
+
   useEffect(() => {
     RefreshToken
       .get(`http://localhost:8081/api/exchange/account/${customer_id}`)
@@ -40,16 +62,20 @@ const ExRequest = () => {
   useEffect(() => {
     const selected = rates.find((r) => r.currency_code === selectedCurrency);
     if (selected && inputAmount) {
-      const buyRate = selected.buy_rate;
-      const sellRate = selected.sell_rate;
+      const feeRate = selected.fee_rate ?? 0; // 없을 경우 0%
+      const numericAmount = Number(inputAmount.replace(/,/g, ""));
       let result = 0;
-
+  
       if (transactionType === "buy") {
-        result = (parseFloat(inputAmount) / buyRate).toFixed(2);
+        // 구매: 수수료 추가된 환율로 계산 (예: 1320 * 1.015)
+        const adjustedBuyRate = selected.buy_rate * (1 + feeRate / 100);
+        result = (numericAmount / adjustedBuyRate).toFixed(2); // 외화
       } else {
-        result = (parseFloat(inputAmount) * sellRate).toFixed(0);
+        // 판매: 수수료 차감된 환율로 계산 (예: 1280 * 0.985)
+        const adjustedSellRate = selected.sell_rate * (1 - feeRate / 100);
+        result = (numericAmount * adjustedSellRate).toFixed(0); // 원화
       }
-
+      
       setExchangedAmount(result);
     } else {
       setExchangedAmount("");
@@ -78,11 +104,11 @@ const ExRequest = () => {
     };
 
     if (transactionType === "buy") {
-      dto.request_amount = parseInt(inputAmount);
-      dto.exchanged_amount = parseFloat(exchangedAmount);
+      dto.request_amount = Number(inputAmount.replace(/,/g, "")); // 원화
+      dto.exchanged_amount = parseFloat(exchangedAmount);        // 외화
     } else {
-      dto.request_amount = parseFloat(inputAmount);
-      dto.exchanged_amount = parseInt(exchangedAmount);
+      dto.request_amount = parseFloat(inputAmount.replace(/,/g, "")); // 외화 (소수점 포함)
+      dto.exchanged_amount = parseInt(exchangedAmount);               // 원화 (정수)
     }
 
     RefreshToken
@@ -158,12 +184,14 @@ const ExRequest = () => {
         </p>
       )}
 
-      <label>{transactionType === "buy" ? "환전할 금액 (KRW)" : "판매할 외화 금액"}</label>
+      <label>
+        {transactionType === "buy" ? "환전할 금액 (KRW)" : "판매할 외화 금액"}
+      </label>
       <input
-        type="number"
-        placeholder={transactionType === "buy" ? "예: 100000" : "예: 100"}
+        type="text"
+        placeholder={transactionType === "buy" ? "예: 100000" : "예: 100.12"}
         value={inputAmount}
-        onChange={(e) => setInputAmount(e.target.value)}
+        onChange={handleInputChange}
         style={{ display: "block", marginBottom: "1rem", padding: "0.5rem", width: "100%" }}
       />
 
@@ -190,21 +218,30 @@ const ExRequest = () => {
       >
         {transactionType === "buy" ? "환전 신청" : "외화 판매"}
       </button>
-
+      <p style={{ fontSize: "0.9rem", color: "#888" }}>
+            ※ 위 환전 금액은 수수료가 포함된 환율 기준으로 계산되었습니다.
+      </p>
       {result && (
         <div style={{ marginTop: "2rem", backgroundColor: "#f9f9f9", padding: "1rem", borderRadius: "8px" }}>
           <h3>거래 요청 완료</h3>
           <p>
             {result.request_amount.toLocaleString()} {transactionType === "buy" ? "KRW" : selectedCurrency}
             {" → "}
-            {result.exchanged_amount} {transactionType === "buy" ? selectedCurrency : "KRW"}
+            {result.exchanged_amount.toLocaleString()} {transactionType === "buy" ? selectedCurrency : "KRW"}
           </p>
-          <p>거래 시간: {new Date(result.exchange_transaction_date).toLocaleString()}</p>
+          <p>
+            거래 시간:{" "}
+            {result.exchange_transaction_date
+              ? result.exchange_transaction_date.replace("T", " ")
+              : "시간 정보 없음"}
+          </p>
           <button>
             <a href="/exchange_wallet_status" style={{ textDecoration: "none", color: "inherit" }}>
               지갑으로 이동
             </a>
           </button>
+          
+
         </div>
       )}
     </div>

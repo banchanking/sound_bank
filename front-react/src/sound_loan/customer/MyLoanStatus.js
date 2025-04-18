@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import RefreshToken from "../../jwt/RefreshToken";
 import "../../Css/loan/MyLoanStatus.css";
 
-const MyLoanStatus = () => {
+const MyLoanStatus = ({ onRefresh }) => {
   const [myLoanStatus, setMyLoanStatus] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); // 로딩 상태
 
   const formatDate = (timestamp) => {
     const date = new Date(timestamp);
-    return date.toISOString().split("T")[0]; // 'YYYY-MM-DD' 형식
+    return date.toISOString().split("T")[0]; // YYYY-MM-DD 형식
   };
 
   const earlyRepayment = (my) => {
@@ -19,7 +20,10 @@ const MyLoanStatus = () => {
         prepayment_penalty: my.prepayment_penalty,
       };
       RefreshToken.post("/calculatePrepaymentPenalty", prepaymentRequest)
-        .then(alert("중도상환 처리가 완료되었습니다."))
+        .then((res) => {
+          alert("중도상환 처리가 완료되었습니다.");
+          onRefresh();
+        })
         .catch((error) => {
           console.log(error);
           alert("중도상환 처리가 되지 않았습니다.");
@@ -34,20 +38,30 @@ const MyLoanStatus = () => {
       },
     })
       .then((res) => {
-        console.log(res.data);
         setMyLoanStatus(res.data);
+        setIsLoading(false);
       })
       .catch((error) => {
         console.error("서버 통신 에러: ", error);
         alert("서버 통신 중 에러 발생!");
+        setIsLoading(false);
       });
   }, [setMyLoanStatus]);
+
   return (
     <div className="totalArea">
-      {myLoanStatus.length > 0 ? (
+      {isLoading ? (
+        <div className="spinnerContainer">
+          <div className="spinner"></div>
+        </div>
+      ) : myLoanStatus.length > 0 ? (
         <table className="tableArea">
           <thead className="theadArea">
-            <th>나의 대출 현황</th>
+            <tr>
+              <th colSpan={15}>
+                {localStorage.getItem("customerId")}님의 대출 현황
+              </th>
+            </tr>
           </thead>
 
           <tbody className="tbodyArea">
@@ -84,17 +98,21 @@ const MyLoanStatus = () => {
                 <td>{formatDate(my.loanDate)}</td>
                 <td>{my.loanProgress}</td>
                 <td>{my.prepayment_penalty}%</td>
-                <td>
-                  <button onClick={() => earlyRepayment(my)}>중도상환</button>
-                </td>
+                {["중도상환", "만기"].includes(my.loanProgress) ? (
+                  <td>
+                    <button>상환완료</button>
+                  </td>
+                ) : (
+                  <td>
+                    <button onClick={() => earlyRepayment(my)}>중도상환</button>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
         </table>
       ) : (
-        <div className="noDataMessage">
-          <p>진행 중인 대출이 없습니다.</p>
-        </div>
+        <p>진행 중인 대출이 없습니다.</p>
       )}
     </div>
   );

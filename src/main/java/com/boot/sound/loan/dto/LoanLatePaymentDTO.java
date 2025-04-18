@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class LoanLatePaymentDTO {
+	private int latePaymentNo;
     private int loanId;
     private String customerId;
     private int unpaidAmount;

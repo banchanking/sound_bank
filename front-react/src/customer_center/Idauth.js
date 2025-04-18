@@ -22,7 +22,7 @@ const handleUpload = async () => {
   const formData = new FormData();
   formData.append("file", selectedFile);
   try {                           // ngrok 8시간주기로 or 로컬서버(노트북을 off) 서버 꺼짐
-      const response = await fetch("https://ba5e-180-71-139-27.ngrok-free.app/ocr", {  
+      const response = await fetch("https://53f7-180-71-139-27.ngrok-free.app/ocr", {   
           method: "POST",
           body: formData,
       });

@@ -13,9 +13,14 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.8.4",
     "bootstrap": "^5.3.3",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.7",
+    "express": "^5.1.0",
     "fastapi": "^0.0.8",
+    "lodash": "^4.17.21",
     "papaparse": "^5.5.2",
+    "pyodide": "^0.27.5",
+    "python-shell": "^5.0.0",
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.9",
     "react-dom": "^18.3.1",
@@ -29,6 +34,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "start-backend": "node server.js",
+    "dev": "start /b npm run start-backend && set PORT=3000 && npm run start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
