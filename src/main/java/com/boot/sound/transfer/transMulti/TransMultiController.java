@@ -28,7 +28,7 @@ public class TransMultiController {
         String accountNumber = payload.get("account_number");
         String password = payload.get("password");
 
-        return service.checkPwd(accountNumber, password);
+        return service.checkAccountPassword(accountNumber, password);
     }
 	
 	// 다건이체 요청저장

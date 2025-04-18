@@ -24,6 +24,7 @@ import com.boot.sound.loan.dto.LoanConsentDTO;
 import com.boot.sound.loan.dto.LoanDTO;
 import com.boot.sound.loan.dto.LoanStatusDTO;
 import com.boot.sound.loan.dto.LoanWithTermsDTO;
+import com.boot.sound.loan.dto.PrepaymentDTO;
 import com.boot.sound.loan.service.LoanAccountService;
 import com.boot.sound.loan.service.LoanService;
 import com.boot.sound.sms.dto.SmsRequest;
@@ -218,6 +219,14 @@ public class LoanController {
 	public ResponseEntity<?>selectLoanTerm(@PathVariable int loan_id){
 		System.out.println("컨트롤 - selectLoanTerm()");
 		return new ResponseEntity<>(service.selectLoanTerm(loan_id),HttpStatus.OK);
+	}
+	
+	// 중도 상환처리 및 대출상태 변경처리
+	@PostMapping("/calculatePrepaymentPenalty")
+	public ResponseEntity<?>calculatePrepaymentPenalty(@RequestBody PrepaymentDTO dto){
+		System.out.println("컨트롤 - calculatePrepaymentPenalty()");
+		
+		return new ResponseEntity<>(service.calculatePrepaymentPenalty(dto),HttpStatus.OK);
 	}
 	
 	
