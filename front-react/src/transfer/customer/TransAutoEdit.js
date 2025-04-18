@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import RefreshToken from '../../jwt/RefreshToken';
-import Sidebar from './Sidebar';
-import '../../Css/transfer/TransAutoEdit.css';
-import { getCustomerID } from '../../jwt/AxiosToken';
+import RefreshToken from '../../jwt/RefreshToken'; 
+import Sidebar from './Sidebar';                 
+import '../../Css/transfer/TransAutoEdit.css';   
+import { getCustomerID } from '../../jwt/AxiosToken'; 
 
 function TransAutoEdit() {
   const [list, setList] = useState([]);
-  const [editItem, setEditItem] = useState(null);
+  const [editItem, setEditItem] = useState(null);        // 수정 대상 객체
+  const [displayAmount, setDisplayAmount] = useState(''); // 쉼표 표시용
 
+  // 페이지 마운트 시 자동이체 목록 불러오기
   useEffect(() => {
     const id = getCustomerID();
     if (!id) {
@@ -23,11 +25,40 @@ function TransAutoEdit() {
       });
   }, []);
 
+  // 수정 모달 열기 (금액 표시용 상태 설정 포함)
+  const openEditModal = (item) => {
+    setEditItem(item);
+    const [intPart, decimalPart] = String(item.amount).split('.')
+    const formatted = Number(intPart).toLocaleString('en-US') + (decimalPart ? '.' + decimalPart : '');
+    setDisplayAmount(formatted);
+  };
+
+  // 입력값 변경 처리
   const change = (e) => {
     const { name, value } = e.target;
+
+    if (name === 'amount') {
+      let raw = value.replace(/[^\d.]/g, '');
+      raw = raw.replace(/^(\d*\.?\d*).*$/, '$1');
+
+      if (!raw) {
+        setDisplayAmount('');
+        setEditItem(prev => ({ ...prev, amount: '' }));
+        return;
+      }
+
+      const [intPart, decimalPart] = raw.split('.')
+      const formatted = Number(intPart).toLocaleString('en-US') + (decimalPart ? '.' + decimalPart : '');
+
+      setDisplayAmount(formatted);
+      setEditItem(prev => ({ ...prev, amount: raw }));
+      return;
+    }
+
     setEditItem(prev => ({ ...prev, [name]: value }));
   };
 
+  // 수정 요청
   const update = () => {
     RefreshToken.put('http://localhost:8081/api/transAuto/update', editItem)
       .then(() => {
@@ -41,6 +72,7 @@ function TransAutoEdit() {
       });
   };
 
+  // 삭제 요청
   const handleDelete = (id) => {
     if (window.confirm('정말 삭제하시겠습니까?')) {
       RefreshToken.delete(`http://localhost:8081/api/transAuto/delete/${id}`)
@@ -55,6 +87,7 @@ function TransAutoEdit() {
     }
   };
 
+  // 모달 내 삭제 처리
   const remove = () => {
     if (!window.confirm('정말 삭제하시겠습니까?')) return;
     RefreshToken.delete(`http://localhost:8081/api/transAuto/delete/${editItem.transfer_id}`)
@@ -72,6 +105,7 @@ function TransAutoEdit() {
   return (
     <div style={{ display: 'flex', minHeight: '600px' }}>
       <Sidebar />
+
       <div className="auto-edit-wrap">
         <h2>자동이체 관리</h2>
 
@@ -93,15 +127,15 @@ function TransAutoEdit() {
                 <td>{item.out_account_number}</td>
                 <td>{item.in_account_number}</td>
                 <td>{item.in_name}</td>
-                <td>{item.amount}원</td>
+                <td>{Number(item.amount).toLocaleString('en-US')}원</td>
                 <td>
                   {item.schedule_mode === 'day'
-                    ? `매주 ${['월','화','수','목','금','토','일'][item.schedule_day - 1]}요일 ${item.schedule_time}분   이체실행`
+                    ? `매주 ${['월','화','수','목','금','토','일'][item.schedule_day - 1]}요일 ${item.schedule_time}분 이체실행`
                     : `매월 ${item.schedule_month_day}일 ${item.schedule_time}분 이체실행`}
                 </td>
                 <td>{item.memo}</td>
                 <td>
-                  <button className="edit-btn" onClick={() => setEditItem(item)}>수정</button>
+                  <button className="edit-btn" onClick={() => openEditModal(item)}>수정</button>
                   <button className="delete-btn" onClick={() => handleDelete(item.transfer_id)}>삭제</button>
                 </td>
               </tr>
@@ -115,7 +149,7 @@ function TransAutoEdit() {
               <h3>자동이체 수정</h3>
 
               <label>이체금액</label>
-              <input className="input" type="number" name="amount" value={editItem.amount} onChange={change} /> 원
+              <input className="input" type="text" name="amount" value={displayAmount} onChange={change} /> 원
 
               <label>이체방식</label>
               <select name="schedule_mode" value={editItem.schedule_mode} onChange={change}>

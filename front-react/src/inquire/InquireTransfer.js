@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import RefreshToken from "../jwt/RefreshToken";
 import '../Css/inquire/InquireTransfer.css';
 import { getCustomerID } from "../jwt/AxiosToken";
-
+import { useNavigate } from 'react-router-dom';
 function CheckTx() {
+
+  const navigate = useNavigate();
   const [accountList, setAccountList] = useState([]);
   const [selectedAccount, setSelectedAccount] = useState('');
   const [startDate, setStartDate] = useState('');
@@ -26,6 +28,7 @@ function CheckTx() {
     const id = getCustomerID();
     if (!id) {
       alert('로그인이 필요합니다.');
+      navigate('/login')
       return;
     }
     setCustomerId(id);
@@ -133,7 +136,7 @@ function CheckTx() {
                 <tr key={tx.transaction_id}>
                   <td>{formatFullDate(tx.transaction_date)}</td>
                   <td>{tx.transaction_type}</td>
-                  <td>{tx.amount.toLocaleString()}원</td>
+                  <td>{tx.amount.toLocaleString("ko-KR")} 원</td>
                   <td>{tx.currency}</td>
                   <td>{tx.comment || '-'}</td>
                 </tr>
