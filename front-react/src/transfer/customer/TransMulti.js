@@ -8,13 +8,17 @@ import { useNavigate } from 'react-router-dom';
 function TransMulti() {
   const navigate = useNavigate();
 
-  const [accounts, setAccounts] = useState([]); // 출금 계좌 목록
+  // 출금 계좌 목록 상태
+  const [accounts, setAccounts] = useState([]);
+
+  // 출금 폼 상태
   const [form, setForm] = useState({
     out_account_number: '',
     password: '',
     memo: ''
   });
 
+  // 입금 대상 리스트 상태
   const [transfers, setTransfers] = useState([
     { in_account_number: '', amount: '', in_name: '', memo: '' },
     { in_account_number: '', amount: '', in_name: '', memo: '' }
@@ -23,7 +27,7 @@ function TransMulti() {
   const customer_id = getCustomerID();
   const token = localStorage.getItem('auth_token');
 
-  // 출금계좌 목록 불러오기
+  // 출금 계좌 목록 로딩
   useEffect(() => {
     if (!customer_id || !token) {
       alert('로그인이 필요합니다');
@@ -41,26 +45,39 @@ function TransMulti() {
     .catch(err => console.error('계좌 불러오기 실패:', err));
   }, []);
 
-  // 출금 정보 변경
+  // 출금 폼 입력 처리
   const changeForm = (e) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
   };
 
-  // 이체 항목 개별 변경
+  // 개별 이체 항목 입력 처리 (금액 쉼표 및 소수점 포함 처리)
   const changeTransfer = (e, index) => {
     const { name, value } = e.target;
     const list = [...transfers];
-    list[index][name] = value;
+
+    if (name === 'amount') {
+      let raw = value.replace(/[^\d.]/g, '');
+      raw = raw.replace(/^(\d*\.?\d*).*$/, '$1');
+
+      const [intPart, decimalPart] = raw.split('.')
+      const formatted = Number(intPart || 0).toLocaleString('en-US') + (decimalPart ? '.' + decimalPart : '');
+
+      list[index][name] = raw;
+      e.target.value = formatted; // 표시값
+    } else {
+      list[index][name] = value;
+    }
+
     setTransfers(list);
   };
 
-  // 행 추가
+  // 이체 항목 행 추가
   const addRow = () => {
     setTransfers([...transfers, { in_account_number: '', amount: '', in_name: '', memo: '' }]);
   };
 
-  // 행 삭제
+  // 이체 항목 행 삭제
   const removeRow = (index) => {
     const list = [...transfers];
     list.splice(index, 1);
@@ -70,7 +87,7 @@ function TransMulti() {
   // 총 이체 금액 계산
   const totalAmount = transfers.reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
-  // 이체 요청 전송
+  // 이체 요청 처리
   const send = async () => {
     if (!form.out_account_number || !form.password || transfers.length === 0) {
       alert('모든 필수 항목을 입력해주세요.');
@@ -85,13 +102,13 @@ function TransMulti() {
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      
+
       if (pwdRes.data !== true) {
         alert('비밀번호가 일치하지 않습니다.');
         return;
       }
 
-      // 이체 등록 요청
+      // 이체 데이터 구성
       const data = {
         customer_id,
         out_account_number: form.out_account_number,
@@ -100,6 +117,7 @@ function TransMulti() {
         transfers
       };
 
+      // 이체 등록 요청
       await RefreshToken.post('http://localhost:8081/api/transMulti/add', data, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -116,9 +134,12 @@ function TransMulti() {
   return (
     <div style={{ display: 'flex', minHeight: '600px' }}>
       <Sidebar />
+
+      {/* 다건이체 폼 */}
       <div className="multi-wrap">
         <h2>다건이체</h2>
 
+        {/* 출금 정보 영역 */}
         <div className="out-section">
           <label>출금계좌</label><br />
           <select className='selectCSS' name="out_account_number" value={form.out_account_number} onChange={changeForm}>
@@ -134,6 +155,7 @@ function TransMulti() {
           <input className='inputCSS-short' type="password" name="password" value={form.password} onChange={changeForm} />
         </div>
 
+        {/* 입금 정보 테이블 */}
         <div className="in-section">
           <h4>입금 정보</h4>
           <table className="multi-table">
@@ -150,7 +172,7 @@ function TransMulti() {
               {transfers.map((row, index) => (
                 <tr key={index}>
                   <td><input className='inputCSS-short' name="in_account_number" value={row.in_account_number} onChange={(e) => changeTransfer(e, index)} /></td>
-                  <td><input className='inputCSS-short' type="number" name="amount" value={row.amount} onChange={(e) => changeTransfer(e, index)} /></td>
+                  <td><input className='inputCSS-short' type="text" name="amount" value={row.amount} onChange={(e) => changeTransfer(e, index)} /></td>
                   <td><input className='inputCSS-short' name="in_name" value={row.in_name} onChange={(e) => changeTransfer(e, index)} /></td>
                   <td><input className='inputCSS-short' name="memo" value={row.memo} onChange={(e) => changeTransfer(e, index)} /></td>
                   <td><button onClick={() => removeRow(index)} className="btn-delete">행삭제</button></td>
@@ -161,7 +183,7 @@ function TransMulti() {
           <button onClick={addRow} className="btn-add">행 추가</button>
         </div>
 
-        <br /><br />
+        {/* 전송 영역 */}
         <div className="submit-area">
           <p>총 이체 금액: <strong>{totalAmount.toLocaleString()}원</strong></p>
           <button onClick={send} className="btn-send">다건이체 요청</button>
