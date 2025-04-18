@@ -55,8 +55,8 @@ const FundProductAdmin = () => {
             fund_upfront_fee: fund["fund_upfront_fee"],
             return_1m: fund["return_1m"],
             return_3m: fund["return_3m"],
-            return_6m: fund["return_6m"], 
-            return_12m: fund["return_12m"],
+            return_6m: fund["return_6m"],
+            return_12m: fund["return_12m"]
           }));
 
           // 5. 등록된 펀드 목록 저장

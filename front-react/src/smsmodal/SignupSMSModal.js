@@ -11,8 +11,6 @@ const SignupSMSModal = ({ isOpen, onRequestClose, onVerified, phoneNumber }) => 
   useEffect(() => {
     if (!isOpen) {
       setVerificationCode("");
-    } else {
-      sendVerificationCode();
     }
   }, [isOpen]);
 

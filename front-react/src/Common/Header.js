@@ -284,7 +284,7 @@ const Header = () => {
                         거래내역
                       </NavDropdown.Item>
                     </li>
-                    <li>
+                    {/* <li>
                       <NavDropdown.Item
                         className="sub-item"
                         as={Link}
@@ -292,7 +292,7 @@ const Header = () => {
                       >
                         자산통계
                       </NavDropdown.Item>
-                    </li>
+                    </li> */}
                   </ul>
 
                   <ul>
@@ -748,7 +748,7 @@ const Header = () => {
                         as={Link}
                         to="/admin_ex_management"
                       >
-                        지갑상태변경
+                        외환관리자페이지
                       </NavDropdown.Item>
                     </li>
                   </ul>
@@ -880,9 +880,9 @@ const Header = () => {
                       <NavDropdown.Item
                         className="sub-item"
                         as={Link}
-                        to="/bankauth"
+                        to="/roi"
                       >
-                        증명서 진위 확인
+                        실시간 신분증 인증
                       </NavDropdown.Item>
                     </li>
                     <li>
@@ -891,7 +891,7 @@ const Header = () => {
                         as={Link}
                         to="/idauth"
                       >
-                        주민등록증 인증
+                        신분증 인증
                       </NavDropdown.Item>
                     </li>
                     <li>

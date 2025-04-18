@@ -1,8 +1,9 @@
-package com.boot.sound.exchange;
+package com.boot.sound.exchange.service;
 
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import com.boot.sound.exchange.api.ExchangeRateApiClient;
+import com.boot.sound.exchange.dao.ExchangeDAO;
 import com.boot.sound.exchange.dto.ExchangeRateDTO;
 import com.boot.sound.exchange.dto.ExchangeTransactionDTO;
 import com.boot.sound.exchange.dto.ExchangeWalletDTO;
@@ -27,7 +29,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class ExchangeService {
+	
+	// 통화별 수수료율 설정
+    private static final Map<String, BigDecimal> defaultFeeRates = new HashMap<>();
 
+    static {
+    	defaultFeeRates.put("USD", new BigDecimal("1.5"));
+        defaultFeeRates.put("EUR", new BigDecimal("1.8"));
+        defaultFeeRates.put("JPY", new BigDecimal("2.0"));
+        defaultFeeRates.put("CNH", new BigDecimal("2.2"));
+    }
+	
     @Value("${api-key}")
     private String apikey;
     public String getApiKey() {
@@ -105,15 +117,6 @@ public class ExchangeService {
 
         return dao.findAccountById(customer_id);
     }
-
-    
-    
-    
-    
-    
-    
-    
-    
     
     // 지갑 존재여부 확인 (1)
     private void handleWalletTransaction(String customerId, String currencyCode, BigDecimal exchangedAmount, BigDecimal exchangeRate) {
@@ -154,7 +157,8 @@ public class ExchangeService {
         String account_num = dto.getWithdraw_account_number();
         String customer_name = dao.getNameById(customerId);
         Date baseDate = dao.findLatestRateDate(currencyCode); // 가장 최근 환율 날짜
-        dto.setBase_date(baseDate);
+        dto.setBase_date(baseDate);    
+        System.out.println(LocalDate.now());
 
         // 승인 조건 체크
         if ("buy".equals(dto.getTransaction_type()) && requestAmount.compareTo(new BigDecimal("1000000")) >= 0) { // 100만원 넘을시 Pending
@@ -182,7 +186,7 @@ public class ExchangeService {
             trasnaction.setComment(currencyCode+"외환구매");
             trasnaction.setAccount_type("입출금");
             trasnaction.setTransaction_type("출금");
-            trasnaction.setCustomer_name(customer_name);
+            trasnaction.setCustomer_name(customer_name);            
         	System.out.println("입출금 거래내역 저장" + trasnaction);
         	int result = dao.saveTransactionOut(trasnaction);
         	System.out.println("내역 저장 결과 = " + result);
@@ -274,6 +278,9 @@ public class ExchangeService {
         BigDecimal sellAmount = dto.getRequest_amount();      // 외화 금액
         BigDecimal exchangedKrw = dto.getExchanged_amount();  // 환전 후 받을 KRW
         String customer_name = dao.getNameById(customerId);
+        Date baseDate = dao.findLatestRateDate(currencyCode); // 가장 최근 환율 날짜
+        dto.setApproval_status("APPROVED");
+        dto.setBase_date(baseDate);
 
         // 1. 외화 지갑 확인
         ExchangeWalletDTO wallet = dao.findWalletByCustomerAndCurrency(customerId, currencyCode);
@@ -315,32 +322,6 @@ public class ExchangeService {
 
         return dao.findTransById(customerId);
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    // 출금기록 저장
-    public void saveTransaction(ExchangeTransactionDTO exchange) {
-//    	TransActionDTO dto = new TransActionDTO();
-//    	
-//    	dto.setAccount_number(exchange.getWithdraw_account_number());
-//    	dto.setAccount_type("출금");
-//    	dto.setAmount(exchange.getRequest_amount());
-//    	dto.setCurrency("KRW");
-//    	dto.setComment("외환구매");
-//    	dto.setAccount_type("입출금");
-    	
-//    	dao.saveTransactionOut(dto);
-    }
-    
     
     // 전체 환전 내역 조회
     public List<ExchangeTransactionDTO> exchangeList(String customer_id){
@@ -388,7 +369,16 @@ public class ExchangeService {
                 rate.put("buy_rate", toDecimal(dto.getBuy_rate()));
                 rate.put("sell_rate", toDecimal(dto.getSell_rate()));
 
+                // 수수료율 설정: 주요 통화는 개별 설정, 나머지는 기본 3%
+                BigDecimal feeRate = defaultFeeRates.getOrDefault(
+                    dto.getCurrency_code(), new BigDecimal("3.0")
+                
+                );
+                
+                rate.put("fee_rate", feeRate);
+
                 successCount += dao.insertExchangeRate(rate);
+                
             } catch (Exception e) {
                 System.out.println("환율 저장 실패: " + dto.getCurrency_code());
                 e.printStackTrace();
@@ -399,7 +389,10 @@ public class ExchangeService {
     }
     
     private BigDecimal toDecimal(String raw) {
-        if (raw == null || raw.isBlank()) return BigDecimal.ZERO;
+        if (raw == null || raw.isBlank()) 
+        
+        	return BigDecimal.ZERO;
+        
         return new BigDecimal(raw.replace(",", "").trim());
     }
     
@@ -410,7 +403,7 @@ public class ExchangeService {
     	
     	return dao.findWalletList(customer_id);
     }
-    
+    // 지갑 봉인
     @Transactional
     public int deactivateWallet(Long wallet_id) {
     	System.out.println("service - deactivateWallet");

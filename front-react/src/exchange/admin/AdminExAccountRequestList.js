@@ -61,8 +61,8 @@ const AdminExAccountRequestList = () => {
               <td>{req.exchange_transaction_id}</td>
               <td>{req.customer_id}</td>
               <td>{req.withdraw_account_number}</td>           
-              <td>{req.request_amount} {req.from_currency}</td>              
-              <td>{req.exchanged_amount} {req.to_currency}</td>
+              <td>{req.request_amount.toLocaleString()} {req.from_currency}</td>              
+              <td>{req.exchanged_amount.toLocaleString()} {req.to_currency}</td>
               <td>{req.exchange_transaction_date?.slice(0, 10)}</td>
               <td>{req.approval_status}</td>
               <td className={styles.actions}>

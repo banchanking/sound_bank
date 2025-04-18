@@ -104,7 +104,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	        currency_name,
 	        base_rate,
 	        buy_rate,
-	        sell_rate
+	        sell_rate,
+	        fee_rate
 	    )
 	    VALUES (
 	        #{base_date},
@@ -112,39 +113,40 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	        #{currency_name},
 	        #{base_rate},
 	        #{buy_rate},
-	        #{sell_rate}
+	        #{sell_rate},
+	        #{fee_rate}
 	    )
 	</insert>
 	
 	<!-- 고객 지갑 목록 + 평균 매입 환율 조회 -->
 	<select id="findWalletsWithAvgRate" resultType="com.boot.sound.exchange.dto.ExchangeWalletDTO" parameterType="String">
-	  SELECT 
-	    ew.wallet_id,
-	    ew.customer_id,
-	    ew.currency_code,
-	    ew.balance,
-	    IFNULL(avg.avg_rate, 0) AS average_rate,
-	    IFNULL(er.BASE_RATE, 0) AS current_rate
-	FROM exchange_wallet ew
-	LEFT JOIN (
-	    SELECT 
-	        et.customer_id,
-	        et.currency_code,
-	        AVG(er.base_rate) AS avg_rate
-	    FROM exchange_transaction et
-	    JOIN exchange_rate er
-	        ON et.base_date = er.base_date
-	       AND et.currency_code = er.currency_code
-	    WHERE et.transaction_type = 'buy'
-	    GROUP BY et.customer_id, et.currency_code
-	) avg
-	  ON ew.customer_id = avg.customer_id
-	 AND ew.currency_code = avg.currency_code
-	LEFT JOIN exchange_rate er
-	  ON er.base_date = CURDATE()
-	 AND ew.currency_code = er.currency_code
-	WHERE ew.customer_id = #{customer_id}
-	  AND ew.balance > 0;
+		SELECT 
+			ew.wallet_id,
+			ew.customer_id,
+			ew.currency_code,
+			ew.balance,
+			IFNULL(avg.avg_rate, 0) AS average_rate,
+			IFNULL(er.BASE_RATE, 0) AS current_rate
+		FROM exchange_wallet ew
+		LEFT JOIN (
+			SELECT 
+				et.customer_id,
+				et.currency_code,
+				AVG(er.base_rate) AS avg_rate
+			FROM exchange_transaction et
+			JOIN exchange_rate er
+				ON et.base_date = er.base_date
+			AND et.currency_code = er.currency_code
+			WHERE et.transaction_type = 'buy'
+			GROUP BY et.customer_id, et.currency_code
+		) avg
+		ON ew.customer_id = avg.customer_id
+		AND ew.currency_code = avg.currency_code
+		LEFT JOIN exchange_rate er
+		ON er.base_date = CURDATE()
+		AND ew.currency_code = er.currency_code
+		WHERE ew.customer_id = #{customer_id}
+		AND ew.balance > 0;
 	</select>
 	
 	<!-- DB저장 환율 조회 -->

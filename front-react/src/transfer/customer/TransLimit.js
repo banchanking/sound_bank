@@ -10,7 +10,8 @@ function TransLimit() {
 
   const [accounts, setAccounts] = useState([]);
   const [accountNumber, setAccountNumber] = useState('');
-  const [requestedLimit, setRequestedLimit] = useState('');
+  const [requestedLimit, setRequestedLimit] = useState(''); // 실제 전송 값
+  const [displayLimit, setDisplayLimit] = useState('');     // 표시용 쉼표포함
   const [reason, setReason] = useState('');
   const [customerId, setCustomerId] = useState('');
   const [currentLimit, setCurrentLimit] = useState(null); // 기존 승인된 한도
@@ -34,16 +35,20 @@ function TransLimit() {
         setAccounts(list);
       })
       .catch(err => console.error('계좌 불러오기 실패:', err));
+
+    // 기존 승인 한도 조회
+    RefreshToken.get(`http://localhost:8081/api/transLimit/approvedLimit/${id}`)
+      .then(res => setCurrentLimit(res.data))
+      .catch(err => console.error("기존 한도 조회 실패:", err));
   }, []);
 
-  // 기존 승인 한도 조회
-  useEffect(() => {
-    if (customerId) {
-      RefreshToken.get(`http://localhost:8081/api/transLimit/approvedLimit/${customerId}`)
-        .then(res => setCurrentLimit(res.data))
-        .catch(err => console.error("기존 한도 조회 실패:", err));
-    }
-  }, [customerId]);
+  // 입력값 변경 시 쉼표 포함 표시 처리
+  const handleLimitChange = (e) => {
+    let raw = e.target.value.replace(/[^0-9]/g, '');
+    const formatted = raw ? Number(raw).toLocaleString() : '';
+    setRequestedLimit(raw);
+    setDisplayLimit(formatted);
+  };
 
   // 신청 등록
   const handleSubmit = (e) => {
@@ -61,21 +66,22 @@ function TransLimit() {
     };
 
     RefreshToken.post('http://localhost:8081/api/transLimit/insert', data)
-    .then(() => {
-      alert('이체한도 변경 신청이 완료되었습니다.');
-      setAccountNumber('');
-      setRequestedLimit('');
-      setReason('');
-      navigate('/transLimitEdit');
-    })
-    .catch(err => {
-      if (err.response?.data === "이미 대기 중인 요청이 존재합니다.") {
-        alert("이미 대기 중인 요청이 존재합니다.");
-      } else {
-        console.error('신청 실패:', err);
-        alert('신청 중 오류 발생');
-      }
-    });
+      .then(() => {
+        alert('이체한도 변경 신청이 완료되었습니다.');
+        setAccountNumber('');
+        setRequestedLimit('');
+        setDisplayLimit('');
+        setReason('');
+        navigate('/transLimitEdit');
+      })
+      .catch(err => {
+        if (err.response?.data === "이미 대기 중인 요청이 존재합니다.") {
+          alert("이미 대기 중인 요청이 존재합니다.");
+        } else {
+          console.error('신청 실패:', err);
+          alert('신청 중 오류 발생');
+        }
+      });
   };
 
   return (
@@ -100,16 +106,16 @@ function TransLimit() {
 
           <label>1일한도 신청 금액</label>
           <input
-            type="number"
-            value={requestedLimit}
-            onChange={e => setRequestedLimit(e.target.value)}
-            placeholder="예: 1000000"
+            type="text"
+            value={displayLimit}
+            onChange={handleLimitChange}
+            placeholder="예: 5,000,000원"
           />
 
           {/* 기존한도 표시 */}
           {currentLimit !== null && (
             <p style={{ marginTop: '5px', color: 'gray' }}>
-              현재한도: {Number(currentLimit).toLocaleString()}원
+              현재한도: {Number(currentLimit).toLocaleString("ko-KR")}원
             </p>
           )}
 

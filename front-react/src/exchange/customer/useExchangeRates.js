@@ -9,7 +9,7 @@ const normalizeRateData = (item) => {
       currency_name: item.cur_nm,                                //통화명
       base_rate: parseFloat(item.deal_bas_r.replace(",", "")),   //기준환율
       buy_rate: parseFloat(item.tts.replace(",", "")),           //매입환율         
-      sell_rate: parseFloat(item.ttb.replace(",", "")),          //매도환율             
+      sell_rate: parseFloat(item.ttb.replace(",", "")),          //매도환율                   
     };
   } else {
     // DB에서 가져온 데이터 형식에 맞게 변환
@@ -19,6 +19,7 @@ const normalizeRateData = (item) => {
       base_rate: parseFloat(item.BASE_RATE),
       buy_rate: parseFloat(item.BUY_RATE),
       sell_rate: parseFloat(item.SELL_RATE),
+      fee_rate: parseFloat(item.FEE_RATE)
     };
   }
 };
