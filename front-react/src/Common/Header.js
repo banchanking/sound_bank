@@ -748,7 +748,7 @@ const Header = () => {
                         as={Link}
                         to="/admin_ex_management"
                       >
-                        지갑상태변경
+                        외환관리자페이지
                       </NavDropdown.Item>
                     </li>
                   </ul>

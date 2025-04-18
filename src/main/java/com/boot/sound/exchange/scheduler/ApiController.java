@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.boot.sound.exchange.ExchangeService;
+import com.boot.sound.exchange.service.ExchangeService;
 
 import lombok.RequiredArgsConstructor;
 

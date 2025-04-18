@@ -1,0 +1,50 @@
+.adminContainer {
+    display: flex;
+    min-height: 100vh;
+    font-family: sans-serif;
+    padding-left: 3rem; /* 왼쪽 메뉴 간 여백 */
+  }
+  
+  /* 왼쪽 메뉴 */
+  .leftMenu {
+    width: 220px;
+    background-color: #f5f5f5;
+    padding: 1.5rem;
+    border-right: 1px solid #ddd;
+  }
+  
+  /* 메뉴 리스트 */
+  .menuList {
+    list-style: none;
+    padding: 0;
+    margin-top: 1rem;
+  }
+  
+  .menuList li {
+    margin-bottom: 1rem;
+  }
+  
+  .menuList button {
+    width: 100%;
+    padding: 10px;
+    background-color: #2f80ed;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .menuList button:hover {
+    background-color: #1c60b3;
+  }
+  
+  /* 메인 콘텐츠 */
+  .mainContent {
+    flex: 1;
+    display: flex;
+    justify-content: center;      /* 👉 가운데 정렬 */
+    align-items: flex-start;
+    padding: 3rem;
+  }
+  
