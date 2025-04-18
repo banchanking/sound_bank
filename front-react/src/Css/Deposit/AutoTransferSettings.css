@@ -1,52 +1,134 @@
-/* 컨테이너 스타일 */
-.auto-transfer-container {
-    padding: 20px;
-    font-family: Arial, sans-serif;
-    max-width: 600px;
-    margin: 0 auto;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-  }
-  
-  .auto-transfer-title {
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 24px;
-    font-weight: bold;
-  }
-  
-  /* 폼 그룹 스타일 */
-  .form-group {
-    margin-bottom: 15px;
-  }
-  
-  .form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-  }
-  
-  .form-control {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-  }
-  
-  /* 저장 버튼 스타일 */
-  .save-button {
-    width: 100%;
-    padding: 10px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 16px;
-    cursor: pointer;
-  }
-  
-  .save-button:hover {
-    background-color: #0056b3;
-  }
+/* 전체 컨테이너 스타일 */
+.auto-transfer-wrap {
+  width: 100%;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 제목 스타일 */
+.auto-transfer-wrap h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* 폼 스타일 */
+.auto-transfer-wrap form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* 라벨 스타일 */
+.auto-transfer-wrap label {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+/* 입력 필드 스타일 */
+.auto-transfer-wrap input[type="text"],
+.auto-transfer-wrap input[type="number"],
+.auto-transfer-wrap input[type="password"],
+.auto-transfer-wrap input[type="time"],
+.auto-transfer-wrap select {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+/* 라디오 버튼 그룹 */
+.schedule-mode label {
+  margin-right: 15px;
+  font-size: 14px;
+}
+
+/* 약관 동의 체크박스 */
+.terms-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+/* 약관 보기 버튼 */
+.terms-wrap button {
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* 등록 버튼 스타일 */
+.auto-transfer-wrap button[type="submit"] {
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.auto-transfer-wrap button[type="submit"]:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* 모달 오버레이 */
+.auto-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* 모달 박스 */
+.auto-modal-box {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 400px;
+  max-width: 90%;
+  text-align: center;
+}
+
+/* 모달 제목 */
+.auto-modal-box h3 {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+/* 모달 내용 */
+.auto-modal-content {
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+/* 모달 닫기 버튼 */
+.auto-modal-box button {
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
