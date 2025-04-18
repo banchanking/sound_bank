@@ -1,4 +1,4 @@
-package com.boot.sound.exchange;
+package com.boot.sound.exchange.service;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import com.boot.sound.exchange.api.ExchangeRateApiClient;
+import com.boot.sound.exchange.dao.ExchangeDAO;
 import com.boot.sound.exchange.dto.ExchangeRateDTO;
 import com.boot.sound.exchange.dto.ExchangeTransactionDTO;
 import com.boot.sound.exchange.dto.ExchangeWalletDTO;
@@ -116,15 +117,6 @@ public class ExchangeService {
 
         return dao.findAccountById(customer_id);
     }
-
-    
-    
-    
-    
-    
-    
-    
-    
     
     // 지갑 존재여부 확인 (1)
     private void handleWalletTransaction(String customerId, String currencyCode, BigDecimal exchangedAmount, BigDecimal exchangeRate) {
@@ -331,32 +323,6 @@ public class ExchangeService {
         return dao.findTransById(customerId);
     }
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    // 출금기록 저장
-    public void saveTransaction(ExchangeTransactionDTO exchange) {
-//    	TransActionDTO dto = new TransActionDTO();
-//    	
-//    	dto.setAccount_number(exchange.getWithdraw_account_number());
-//    	dto.setAccount_type("출금");
-//    	dto.setAmount(exchange.getRequest_amount());
-//    	dto.setCurrency("KRW");
-//    	dto.setComment("외환구매");
-//    	dto.setAccount_type("입출금");
-    	
-//    	dao.saveTransactionOut(dto);
-    }
-    
-    
     // 전체 환전 내역 조회
     public List<ExchangeTransactionDTO> exchangeList(String customer_id){
     	System.out.println("service - exchangeList");
@@ -437,7 +403,7 @@ public class ExchangeService {
     	
     	return dao.findWalletList(customer_id);
     }
-    
+    // 지갑 봉인
     @Transactional
     public int deactivateWallet(Long wallet_id) {
     	System.out.println("service - deactivateWallet");

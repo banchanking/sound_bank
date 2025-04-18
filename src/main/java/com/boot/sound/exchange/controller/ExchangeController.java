@@ -1,4 +1,4 @@
-package com.boot.sound.exchange;
+package com.boot.sound.exchange.controller;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -22,14 +22,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.boot.sound.exchange.dto.ExchangeTransactionDTO;
 import com.boot.sound.exchange.dto.ExchangeWalletDTO;
+import com.boot.sound.exchange.service.ExchangeService;
 import com.boot.sound.inquire.account.AccountDTO;
-
-
-
 
 @RestController
 @RequestMapping("/api/exchange")
-@CrossOrigin // React 프론트엔드 주소
+@CrossOrigin // Origin 에러 방지
 public class ExchangeController {
 
     @Autowired

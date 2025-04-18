@@ -28,8 +28,9 @@ public class ExchangeRateDTO {
     @JsonProperty("fee_rate")
     private String fee_rate;	//수수료
     
+    @JsonProperty("base_date")
     private LocalDate base_date;
-
+    
 }
 
 //-- 환율저장테이블

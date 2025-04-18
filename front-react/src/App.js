@@ -66,7 +66,7 @@ import ExRequest from "./exchange/customer/ExRequest";
 import ExList from "./exchange/customer/ExList";
 import ExAccountManagement from "./exchange/customer/ExAccountManagement";
 import AdminExAccountRequestList from "./exchange/admin/AdminExAccountRequestList";
-import AdminExAccountStatement from "./exchange/admin/AdminExAccountStatement";
+import AdminExMenu from "./exchange/admin/AdminExMenu";
 import LoanInsertForm from "./sound_loan/admin/LoanInsertForm";
 import LoanCalculator from "./sound_loan/customer/LoanCalculator";
 import LoanChart from "./sound_loan/customer/LoanChart";
@@ -210,7 +210,7 @@ function App() {
           {/* 환전 신청 현황 (customer로 이동됨) */}
           <Route
             path="/admin_ex_management"
-            element={<AdminExAccountStatement />}
+            element={<AdminExMenu />}
           />{" "}
           {/* (관리자)지갑상태변경 */}
           {/* 외환 Route 끝 */}
