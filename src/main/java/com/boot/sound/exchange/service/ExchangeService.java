@@ -3,7 +3,6 @@ package com.boot.sound.exchange.service;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +22,6 @@ import com.boot.sound.exchange.dto.ExchangeTransactionDTO;
 import com.boot.sound.exchange.dto.ExchangeWalletDTO;
 import com.boot.sound.inquire.account.AccountDTO;
 import com.boot.sound.inquire.transfer.TransActionDTO;
-import com.boot.sound.transfer.transAuto.TransAutoDAO;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

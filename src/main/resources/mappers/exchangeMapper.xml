@@ -3,7 +3,7 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
  
-<mapper namespace="com.boot.sound.exchange.ExchangeDAO">
+<mapper namespace="com.boot.sound.exchange.dao.ExchangeDAO">
 	<!-- 계좌 조회 -->
 	<select id="findAccountByNumber" parameterType="String" resultType="com.boot.sound.inquire.account.AccountDTO">
 	  SELECT * FROM account_tbl
