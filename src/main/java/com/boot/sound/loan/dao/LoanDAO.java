@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import com.boot.sound.customer.CustomerDTO;
+import com.boot.sound.loan.dto.LateInterestDTO;
 import com.boot.sound.loan.dto.LoanApplyWithTermsDTO;
 import com.boot.sound.loan.dto.LoanConsentDTO;
 import com.boot.sound.loan.dto.LoanCustomerDTO;
@@ -18,6 +19,7 @@ import com.boot.sound.loan.dto.LoanLatePaymentDTO;
 import com.boot.sound.loan.dto.LoanStatusDTO;
 import com.boot.sound.loan.dto.LoanTermDTO;
 import com.boot.sound.loan.dto.LoanTermsAgreeDTO;
+import com.boot.sound.loan.dto.PrepaymentEntity;
 
 @Mapper
 @Repository
@@ -98,7 +100,7 @@ public interface LoanDAO  {
 
     // 납부상태변경
 	public int updateRepaymentStatus(@Param("interestPaymentNo") int interestPaymentNo,
-            @Param("repaymentStatus") String repaymentStatus);
+            							@Param("repaymentStatus") String repaymentStatus);
 
 	// 연체 정보 등록
 	public void insertLatePayment(LoanLatePaymentDTO dto);
@@ -114,13 +116,11 @@ public interface LoanDAO  {
 	public String getCustomerName(@Param("customerId") String customerId);
 
     // 연체 내역 상태를 납부완료로 업데이트
-	public int updateLatePaymentStatusToPaid(@Param("loanId") int loanId,
-                                       @Param("customerId") String customerId,
+	public int updateLatePaymentStatusToPaid(@Param("latePaymentNo") int latePaymentNo,
                                        @Param("repaymentStatus") String repaymentStatus);
 
     // 이자 납부 테이블 상태를 납부완료로 업데이트
-	public int updateInterestPaymentStatus(@Param("loanId") int loanId,
-                                     @Param("customerId") String customerId,
+	public int updateInterestPaymentStatus(@Param("interestPaymentNo") int interestPaymentNo,
                                      @Param("repaymentStatus") String repaymentStatus);
 
     // loan_status_tbl의 remaining_term 감소
@@ -138,4 +138,31 @@ public interface LoanDAO  {
 	// 상품약관 동의내역 저장
 	public int insertTermsAgree(LoanApplyWithTermsDTO dto);
 	
+	// 중도상환수수료 계산을 위한 대출 실행일 조회
+	public java.sql.Date selectLoanDate(int loanStatusNo);
+	
+	//  중도상환 처리 결과를 위한 대출 상세정보 조회
+	public LoanStatusDTO selectLoanStatusDetail(int loanStatusNo);
+	
+	// 중도 상환 내역 저장
+	public void insertPrepayment(PrepaymentEntity entity);
+	
+	// 대출상태 변경
+	public void updateLoanStatus(LoanStatusDTO dto);
+	
+	// 고객 대출이자 납입내역 ( 추후 관리자 페이지에서 사용 예정 )
+	public List<LoanInterestPaymentDTO> myInterestList(String customerId);
+	
+	// 대출이자 납입내역에 표시할 대출상품명 조회
+	public String selectLoanName(int loanId);
+	
+	// 고객 연체이력 조회
+	public List<LateInterestDTO>getLateInterestList(String customerId);
+	
+	// 관리자페이지 대출이자 납부 전체 목록
+	public List<LoanInterestPaymentDTO>adminLoanInterestList();
+	
+	// 관리자페이지 연체이력 전체 목록
+	public List<LateInterestDTO>adminLoanLateInterestList();
+ 	
 }

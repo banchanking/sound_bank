@@ -19,11 +19,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.boot.sound.customer.CustomerDTO;
 import com.boot.sound.inquire.account.AccountService;
+import com.boot.sound.loan.dto.LateInterestDTO;
 import com.boot.sound.loan.dto.LoanApplyWithTermsDTO;
 import com.boot.sound.loan.dto.LoanConsentDTO;
 import com.boot.sound.loan.dto.LoanDTO;
 import com.boot.sound.loan.dto.LoanStatusDTO;
 import com.boot.sound.loan.dto.LoanWithTermsDTO;
+import com.boot.sound.loan.dto.PrepaymentDTO;
 import com.boot.sound.loan.service.LoanAccountService;
 import com.boot.sound.loan.service.LoanService;
 import com.boot.sound.sms.dto.SmsRequest;
@@ -220,5 +222,50 @@ public class LoanController {
 		return new ResponseEntity<>(service.selectLoanTerm(loan_id),HttpStatus.OK);
 	}
 	
+	// 중도 상환처리 및 대출상태 변경처리
+	@PostMapping("/calculatePrepaymentPenalty")
+	public ResponseEntity<?>calculatePrepaymentPenalty(@RequestBody PrepaymentDTO dto){
+		System.out.println("컨트롤 - calculatePrepaymentPenalty()");
+		return new ResponseEntity<>(service.calculatePrepaymentPenalty(dto),HttpStatus.OK);
+	}
+	
+	// 고객별 대출이자 납부내역
+	@GetMapping("/myInterestList")
+	public ResponseEntity<?>myInterestList(@RequestParam("customerId")String customerId){
+		System.out.println("컨트롤 - myInterestList()");
+		return new ResponseEntity<>(service.myInterestList(customerId),HttpStatus.OK);
+	}
+	
+	// 미납내역 수동입금처리
+	@PostMapping("/paymentRequest")
+	public ResponseEntity<?> paymentRequest(@RequestBody PrepaymentDTO dto) {
+	    boolean success = service.paymentRequest(dto);
+
+	    if (success) {
+	        return ResponseEntity.status(HttpStatus.CREATED).body("미납요금이 납부되었습니다.");
+	    } else {
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("잔액 부족 등으로 납부 실패했습니다.");
+	    }
+	}
+	
+	@GetMapping("/myLateInterest")
+	public ResponseEntity<?> myLateInterest(@RequestParam String customerId) {
+	    return new ResponseEntity<>(service.getLateInterestList(customerId), HttpStatus.OK);
+	}
+	
+	@GetMapping("/admin/loanInterestList")
+	public ResponseEntity<?> adminLoanInterestList(){
+		System.out.println("컨트롤 - adminLoanInterestList()");
+		return new ResponseEntity<>(service.adminLoanInterestList(),HttpStatus.OK);
+	}
+	
+	@GetMapping("/admin/loanLateInterestList")
+	public ResponseEntity<?>adminLoanLateInterestList(){
+		System.out.println("컨트롤 - adminLoanLateInterestList()");
+		return new ResponseEntity<>(service.adminLoanLateInterestList(),HttpStatus.OK);
+	}
+	
+
+
 	
 }

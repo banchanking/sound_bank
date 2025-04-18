@@ -148,6 +148,16 @@
         from customer_tbl
         where customer_id = #{customerId}
     </select>
+    
+    <update id="updateLoanStatus" parameterType="com.boot.sound.loan.dto.LoanStatusDTO">
+	    update loan_status_tbl
+	    set 
+	        balance = #{balance},
+	        remaining_term = #{remainingTerm},
+	        loan_progress = #{loanProgress}
+	    where 
+	        loan_status_no = #{loanStatusNo}
+	</update>
 
     <insert id="insertTransaction" parameterType="map">
         insert into transaction_tbl (
@@ -214,7 +224,7 @@
           and timestampdiff(day, created_at, now()) > 5
     </select>
 
-    <update id="updateRepaymentStatus">
+    <update id="updateRepaymentStatus" parameterType="map">
         update loan_interest_payment_tbl
         set repayment_status = #{repaymentStatus}
         where interest_payment_no = #{interestPaymentNo}
@@ -256,15 +266,14 @@
     <update id="updateLatePaymentStatusToPaid">
         update loan_late_payment_tbl
         set repayment_status = #{repaymentStatus}
-        where loan_id = #{loanId}
-          and customer_id = #{customerId}
+        where late_payment_no = #(latePaymentNo)
+          
     </update>
 
     <update id="updateInterestPaymentStatus">
         update loan_interest_payment_tbl
         set repayment_status = #{repaymentStatus}
-        where loan_id = #{loanId}
-          and customer_id = #{customerId}
+        where interest_payment_no = #{interestPaymentNo}
     </update>
 
     <update id="reduceLoanRemainingTerm">
@@ -286,6 +295,8 @@
         <result property="repaymentStatus" column="repayment_status"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
+        <result property="loanName" column="loan_name" /> 
+        <result property="accountNumber" column="account_number" /> 
     </resultMap>
 
     <select id="getMissedPayments" resultMap="LoanInterestPaymentMap">
@@ -344,7 +355,8 @@
 	        loan_progress,
 	        loan_date,
 	        loan_term,
-	        remaining_term
+	        remaining_term,
+	        prepayment_penalty
 	    FROM 
 	        loan_status_tbl
 	    WHERE 
@@ -360,6 +372,83 @@
 		insert into loan_terms_agree_tbl(term_id,customer_id,loan_id)
 		values (#{loanTermsAgree.term_id},#{loanTermsAgree.customer_id},#{loanTermsAgree.loan_id})
 	</insert>
+	
+	<select id="selectLoanDate" parameterType="int" resultType="java.sql.Date">
+		select loan_date
+		from loan_status_tbl
+		where loan_status_no = #{loanStatusNo}
+	</select>
+	
+	<select id="selectLoanStatusDetail" resultMap="LoanStatusMap" parameterType="int">
+		select * from loan_status_tbl
+		where loan_status_no = #{loanStatusNo}
+	</select>
+	
+	<insert id="insertPrepayment" parameterType="com.boot.sound.loan.dto.PrepaymentEntity">
+		insert into prepayment_tbl(
+			loan_status_no,
+			customer_id,
+			repayment_amount,
+			penalty_amount,
+			total_deducted_amount,
+			repayment_date,
+			account_number,
+			status
+		)
+		values(
+			#{loanStatusNo},
+			#{customerId},
+			#{repaymentAmount},
+			#{penaltyAmount},
+			#{totalDeductedAmount},
+			#{repaymentDate},
+			#{accountNumber},
+			#{status}
+		)
+	</insert>
+	
+	<select id="myInterestList" parameterType="String" resultMap="LoanInterestPaymentMap">
+	    SELECT 
+		    ROW_NUMBER() OVER (ORDER BY a.interest_payment_no) AS no,
+		    a.*,
+		    b.loan_name,
+		    b.account_number 
+		FROM loan_interest_payment_tbl a
+		JOIN loan_status_tbl b ON a.loan_id = b.loan_id
+		WHERE a.customer_id = #{customerId}
+	</select>
+
+	
+	<select id="selectLoanName" parameterType="int" resultType="String">
+		select loan_name
+		from loan_tbl
+		where loan_id = #{loanId}
+	</select>
+	
+	<resultMap id="LateInterestMap" type="com.boot.sound.loan.dto.LateInterestDTO">
+	    <id property="latePaymentNo" column="late_payment_no" />
+	    <result property="loanId" column="loan_id" />
+	    <result property="customerId" column="customer_id" />
+	    <result property="unpaidAmount" column="unpaid_amount" />
+	    <result property="repaymentStatus" column="repayment_status" />
+	    <result property="overdueInterest" column="overdue_interest" />
+	    <result property="interestPaymentNo" column="interest_payment_no" />
+	</resultMap>
+	
+	<select id="getLateInterestList" resultMap="LateInterestMap">
+	  SELECT * FROM loan_late_payment_tbl
+	  WHERE customer_id = #{customerId}
+	</select>
+	
+	<select id="adminLoanInterestList" resultMap="LoanInterestPaymentMap">
+		SELECT * FROM loan_interest_payment_tbl
+		ORDER BY interest_payment_no
+	</select>
+	
+	<select id="adminLoanLateInterestList" resultMap="LateInterestMap">
+		SELECT * FROM loan_late_payment_tbl
+		ORDER BY late_payment_no
+	</select>
 
 
 </mapper>

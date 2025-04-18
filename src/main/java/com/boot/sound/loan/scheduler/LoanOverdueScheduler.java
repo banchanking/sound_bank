@@ -1,30 +1,30 @@
-package com.boot.sound.loan.scheduler;
-
-import com.boot.sound.inquire.account.AccountService;
-import com.boot.sound.loan.dto.LoanInterestPaymentDTO;
-import com.boot.sound.loan.dto.LoanLatePaymentDTO;
-import com.boot.sound.loan.service.LoanAccountService;
-import com.boot.sound.loan.service.LoanService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import java.math.BigDecimal;
-import java.util.List;
-
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-
-@Slf4j
-@Component
-@RequiredArgsConstructor
-public class LoanOverdueScheduler {
-
-    private final LoanService loanService; // 대출 관련 비즈니스 로직 처리 서비스
-    private final LoanAccountService loanAccountService; // 대출 거래내역 기록 서비스
-    private final AccountService accountService; // 계좌 출금 처리 서비스
-
-    // ✅ [1] 미납 내역 자동 납부 스케줄러 - 매일 특정 시각에 실행
-//    @Scheduled(cron = "20 54 22 * * ?")
+//package com.boot.sound.loan.scheduler;
+//
+//import com.boot.sound.inquire.account.AccountService;
+//import com.boot.sound.loan.dto.LoanInterestPaymentDTO;
+//import com.boot.sound.loan.dto.LoanLatePaymentDTO;
+//import com.boot.sound.loan.service.LoanAccountService;
+//import com.boot.sound.loan.service.LoanService;
+//import lombok.RequiredArgsConstructor;
+//import lombok.extern.slf4j.Slf4j;
+//
+//import java.math.BigDecimal;
+//import java.util.List;
+//
+//import org.springframework.scheduling.annotation.Scheduled;
+//import org.springframework.stereotype.Component;
+//
+//@Slf4j
+//@Component
+//@RequiredArgsConstructor
+//public class LoanOverdueScheduler {
+//
+//    private final LoanService loanService; // 대출 관련 비즈니스 로직 처리 서비스
+//    private final LoanAccountService loanAccountService; // 대출 거래내역 기록 서비스
+//    private final AccountService accountService; // 계좌 출금 처리 서비스
+//
+//    // ✅ [1] 미납 내역 자동 납부 스케줄러 - 매일 특정 시각에 실행
+//    @Scheduled(cron = "0 43 17 * * ?")
 //    public void processMissedRepayments() {
 //        log.info("\u23F0 [미납 자동납부 스케줄러] 미납 납부 시도 시작");
 //
@@ -69,7 +69,7 @@ public class LoanOverdueScheduler {
 //    }
 //
 //    // ✅ [2] 미납 상태에서 5일이 지나면 '연체'로 전환하는 스케줄러
-//    @Scheduled(cron = "0 16 22 * * ?")
+//    @Scheduled(cron = "0 52 17 * * ?")
 //    public void processOverdueInterestPayments() {
 //        log.info("\u23F0 [연체 스케줄러] 미납 내역 연체 처리 시작");
 //        try {
@@ -127,5 +127,5 @@ public class LoanOverdueScheduler {
 //            log.error("\u274C [연체 납부 스케줄러] 실행 오류: {}", e.getMessage());
 //        }
 //    }
-
-}
+//
+//}

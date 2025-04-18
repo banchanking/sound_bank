@@ -1,5 +1,10 @@
 package com.boot.sound.loan.service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 
@@ -9,8 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.boot.sound.customer.CustomerDTO;
-import com.boot.sound.jwt.dto.CredentialsDTO;
+import com.boot.sound.inquire.account.AccountService;
 import com.boot.sound.loan.dao.LoanDAO;
+import com.boot.sound.loan.dto.LateInterestDTO;
 import com.boot.sound.loan.dto.LoanApplyWithTermsDTO;
 import com.boot.sound.loan.dto.LoanConsentDTO;
 import com.boot.sound.loan.dto.LoanCustomerDTO;
@@ -19,10 +25,10 @@ import com.boot.sound.loan.dto.LoanInterestPaymentDTO;
 import com.boot.sound.loan.dto.LoanLatePaymentDTO;
 import com.boot.sound.loan.dto.LoanStatusDTO;
 import com.boot.sound.loan.dto.LoanTermDTO;
-import com.boot.sound.loan.dto.LoanTermsAgreeDTO;
 import com.boot.sound.loan.dto.LoanWithTermsDTO;
+import com.boot.sound.loan.dto.PrepaymentDTO;
+import com.boot.sound.loan.dto.PrepaymentEntity;
 import com.boot.sound.loan.repo.LoanStatusRepository;
-import com.boot.sound.loan.scheduler.LoanOverdueScheduler;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +41,8 @@ public class LoanService {
 	@Autowired
 	private LoanDAO dao;
 	private final LoanStatusRepository repo;
+	private final LoanAccountService loanAccountService;
+	private final AccountService accountService; 
 	
 	// 대출 상품 리스트
 	@Transactional(readOnly=true)
@@ -235,8 +243,7 @@ public class LoanService {
 		public void markLatePaymentAsPaid(LoanLatePaymentDTO latePayment) {
 		    // 연체 상태를 '납부완료'로 업데이트 
 		    dao.updateLatePaymentStatusToPaid(
-		        latePayment.getLoanId(),
-		        latePayment.getCustomerId(),
+		        latePayment.getLatePaymentNo(),
 		        "납부완료"
 		    );
 		}
@@ -244,8 +251,7 @@ public class LoanService {
 		@Transactional
 		public void updateInterestPaymentStatusToPaid(LoanLatePaymentDTO latePayment) {
 			dao.updateInterestPaymentStatus(
-		        latePayment.getLoanId(),
-		        latePayment.getCustomerId(),
+		        latePayment.getLatePaymentNo(),
 		        "납부완료"
 		    );
 		}
@@ -270,6 +276,143 @@ public class LoanService {
 		public LoanTermDTO selectLoanTerm(int loan_id) {
 			return dao.selectLoanTerm(loan_id);
 		}
+		
+		
+		
+		
+		// 가입 상품 중도상환 처리
+		@Transactional
+		public int calculatePrepaymentPenalty(PrepaymentDTO dto) {
+			LoanStatusDTO status = new LoanStatusDTO();
+			
+			 // 1. 필요한 값 추출
+		    int loanTermMonths = status.getLoanTerm(); // 총 대출기간 (개월 수)
+		    BigDecimal repaymentAmount = dto.getBalance(); // 상환금액
+		    BigDecimal rawPenaltyRate = dto.getPrepayment_penalty(); // 수수료율 (예: 1.4)
+		    LocalDate loanStartDate = dto.getLoanDate().toLocalDate(); // 실행일
+		    LocalDate now = LocalDate.now();
+		    BigDecimal penalty;
+		    // 2. 대출 실행일로부터 3년 초과 시 수수료 면제
+		    long daysSinceLoan = ChronoUnit.DAYS.between(loanStartDate, now);
+		    if (daysSinceLoan > 1095) {
+		    		 penalty = BigDecimal.ZERO; // 수수료는 없음
+		    }
 
+		    // 3. 대출 종료일 계산 (대출 시작일 + 대출 개월 수)
+		    LocalDate loanEndDate = loanStartDate.plusMonths(loanTermMonths);
+		    long totalLoanDays = ChronoUnit.DAYS.between(loanStartDate, loanEndDate);
+
+		    // 4. 남은 일수 계산
+		    long remainingDays = ChronoUnit.DAYS.between(now, loanEndDate);
+		    if (remainingDays < 0) {
+		        remainingDays = 0;
+		    }
+
+		    // 5. 수수료 계산식: 원금 × (수수료율 / 100) × (잔여일수 / 전체기간일수)
+		    BigDecimal penaltyRate = rawPenaltyRate.divide(BigDecimal.valueOf(100), 5, RoundingMode.HALF_UP);
+		    BigDecimal dayRatio ;
+		    if (totalLoanDays <= 0) {
+		        dayRatio = BigDecimal.ZERO; // 수수료 계산에 영향 없도록
+		    } else {
+		        dayRatio = BigDecimal.valueOf(remainingDays)
+		            .divide(BigDecimal.valueOf(totalLoanDays), 5, RoundingMode.HALF_UP);
+		    }
+
+		     penalty = repaymentAmount
+		            .multiply(penaltyRate)
+		            .multiply(dayRatio)
+		            .setScale(2, RoundingMode.HALF_UP);
+
+		    System.out.println("▶ 중도상환 수수료 계산 완료: " + penalty + "원");
+		    
+		    BigDecimal totalAmount = repaymentAmount.add(penalty);
+		    
+		    // 대출 상세 정보 조회
+		    status = dao.selectLoanStatusDetail(dto.getLoanStatusNo());
+		    
+		    String accountNumber = status.getAccountNumber();
+
+		    // 계좌 출금
+		    accountService.withdraw(accountNumber, totalAmount);
+
+		    // 거래내역 저장
+		    String customerName = dao.selectCustomerName(status.getCustomerId());
+		    loanAccountService.saveLoanTransaction(
+		    		accountNumber,
+			        "출금",
+			        totalAmount,
+			        "KRW",
+			        "중도상환 원금 및 수수료 납부",
+			        customerName,
+			        "입출금"
+		    );
+
+		    // 중도상환 내역 저장
+		    PrepaymentEntity entity = new PrepaymentEntity();
+		    entity.setLoanStatusNo(dto.getLoanStatusNo()); // 대출번호
+		    entity.setCustomerId(status.getCustomerId());     // 고객ID
+		    entity.setRepaymentAmount(dto.getBalance());   // 상환금액(원금)
+		    entity.setPenaltyAmount(penalty);              // 수수료
+		    entity.setTotalDeductedAmount(totalAmount);    // 총 출금액
+		    entity.setRepaymentDate(Date.valueOf(LocalDate.now())); // 상환일
+		    entity.setAccountNumber(accountNumber);        // 출금 계좌
+		    dao.insertPrepayment(entity);
+
+		    // 대출 상태 변경
+		    status.setLoanStatusNo(dto.getLoanStatusNo());
+		    status.setBalance(BigDecimal.ZERO);
+		    status.setRemainingTerm(0);
+		    status.setLoanProgress("중도상환");
+		    dao.updateLoanStatus(status);
+			return 1;
+		}
+		
+		@Transactional
+		public List<LoanInterestPaymentDTO> myInterestList(String customerId){
+			return dao.myInterestList(customerId);
+		}
+		
+		@Transactional
+		public Boolean paymentRequest(PrepaymentDTO dto) {
+			try {
+				
+			int amount = dto.getRepaymentAmount();
+			
+			accountService.withdraw(dto.getAccountNumber(), BigDecimal.valueOf(amount));
+			String customerName = dao.getCustomerName(dto.getCustomerId());
+			
+			loanAccountService.saveLoanTransaction(
+					dto.getAccountNumber(), 
+					"출금", 
+					 BigDecimal.valueOf(amount), 
+					"KRW", 
+					"미납 수동납부", 
+					customerName, 
+					"입출금");
+			System.out.println(dto.getInterestpaymentNo());
+			dao.updateRepaymentStatus(dto.getInterestpaymentNo(), "납부완료");
+			
+			return true;
+			}catch(Exception e) {
+				e.printStackTrace();
+		        return false;
+			}
+		}
+
+		@Transactional
+		public List<LateInterestDTO> getLateInterestList(String customerId){
+			return dao.getLateInterestList(customerId);
+		}
+		
+		@Transactional
+		public List<LoanInterestPaymentDTO> adminLoanInterestList(){
+			return dao.adminLoanInterestList();
+		}
+		
+		@Transactional
+		public List<LateInterestDTO> adminLoanLateInterestList(){
+			return dao.adminLoanLateInterestList();
+		}
+		
 	
 }

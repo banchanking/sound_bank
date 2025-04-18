@@ -3,10 +3,9 @@ package com.boot.sound.transfer.transMulti;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.boot.sound.transfer.transMulti.TransMultiDTO.InList;
@@ -14,15 +13,18 @@ import com.boot.sound.transfer.transMulti.TransMultiDTO.InList;
 @Service
 public class TransMultiService {
 
-    @Autowired
-    private TransMultiDAO dao;
-    
-    // 비밀번호 확인
-    public boolean checkPwd(String accountNumber, String inputPassword) {
-        String realPassword = dao.findPasswordByAccount(accountNumber);
-        return realPassword != null && realPassword.equals(inputPassword);
-    }
-    
+	@Autowired
+	private TransMultiDAO dao;
+	@Autowired
+	private PasswordEncoder encoder;
+
+	public boolean checkAccountPassword(String accountNumber, String inputPassword) {
+	    String realPassword = dao.findPasswordByAccount(accountNumber);
+
+	    return realPassword != null && encoder.matches(inputPassword, realPassword);
+	}
+	
+
     public void sendMulti(TransMultiDTO dto) {
         List<InList> list = dto.getInList();
 

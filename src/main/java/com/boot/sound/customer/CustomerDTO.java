@@ -60,7 +60,7 @@ public class CustomerDTO {
 
     // AES 양방향 암호화 대상
     @javax.persistence.Transient
-    private int account_pwd;
+    private String account_pwd;
 
     private String customer_token;
 

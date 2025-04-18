@@ -11,7 +11,7 @@ import java.util.Base64;
 @Component
 public class EncryptionUtils {
 
-    @Value("${security.jwt.token.secret-key:secret-value}") // 설정 없으면 기본 키 사용
+    @Value("${security.jwt.token.secret-key:set-secret-value}") // 설정 없으면 기본 키 사용
     private String rawKey;
 
     private static String secretKey; // 실제 암복호화에 쓰이는 키

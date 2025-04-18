@@ -59,6 +59,7 @@ const LoanInfoApply = () => {
       loanMaxAmount: loan_info.loan_max_amount,
       loanTerm: loan_info.loan_term * 12,
       remainingTerm: loan_info.loan_term * 12,
+      prepayment_penalty: loan_info.prepayment_penalty,
     },
     loanTermsAgree: loanTermsAgree,
   };

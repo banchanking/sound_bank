@@ -30,7 +30,7 @@
 //	    private final LoanDAO loanDAO; // DAO를 통한 DB 접근
 //
 //	    // 매일 오전 11시 35분 30초에 실행되는 스케줄러 (작업 테스트를 위한 임시 적용)
-//	    @Scheduled(cron = "45 22 20 * * ?")
+//	    @Scheduled(cron = "0 49 17 * * ?")
 //	    public void processRepayments() {
 //	        LocalDate today = LocalDate.now(); // 오늘 날짜
 //	        String todayDay = String.valueOf(today.getDayOfMonth()); // 상환날짜 비교를 위해 오늘의 일(day)만 추출
@@ -74,7 +74,8 @@
 //	                // 일할이자 여부 -- 오늘이 대출 실행일 이후이고 정기상환일 이전일 경우  일할이자 납입으로 판단
 //	                boolean isMiddleInterest = today.isAfter(loanDate) && today.isBefore(firstRepaymentDate);  
 //	                // 정기상환일 여부	-- 오늘이 정기상환일인지 비교하고 참일시 정기상환일로 판단			
-//	                boolean isRegularRepayment = today.equals(firstRepaymentDate);
+//	                boolean isRegularRepayment = today.getDayOfMonth() == repaymentDay &&
+//                            !today.isBefore(firstRepaymentDate);
 //
 //	                log.info("\uD83D\uDD50 loanDate: {}, firstRepaymentDate: {}, today: {}", loanDate, firstRepaymentDate, today);
 //	                log.info("\u2705 isRegularRepayment: {}, isMiddleInterest: {}", isRegularRepayment, isMiddleInterest);
