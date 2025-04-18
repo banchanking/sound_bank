@@ -20,8 +20,6 @@ public class AdminExchangeService {
     @Transactional
     public int updateFeeRates(List<Map<String, Object>> feeRateList) {
     	
-    	
-    	
         int updatedCount = 0;
         for (Map<String, Object> rate : feeRateList) {
             updatedCount += dao.updateFeeRate(rate);
@@ -29,5 +27,36 @@ public class AdminExchangeService {
         return updatedCount;
     }
 
-	
+    // 전체 지갑 목록 조회
+    public List<Map<String, Object>> findAllWallets() {
+
+        System.out.println("service - findAllWallets");
+
+        return dao.findAllWallets();
+    }
+
+    // 고객 ID 목록 조회
+    public List<Map<String, Object>> findAllCustomerIds() {
+
+        System.out.println("service - findAllCustomerIds");
+
+        return dao.findAllCustomerIds();
+    }
+
+    // 특정 고객 ID의 지갑 목록 조회
+    public List<Map<String, Object>> findWalletsByCustomerId(String customer_id) {
+
+        System.out.println("service - findWalletsByCustomerId");
+
+        return dao.findWalletsByCustomerId(customer_id);
+    }
+
+    // 지갑 상태 단건 수정
+    @Transactional
+    public int updateWalletStatus(Map<String, Object> wallet) {
+        
+        System.out.println("service - updateWalletStatus");
+        
+        return dao.updateWalletStatus(wallet);
+    }
 }

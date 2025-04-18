@@ -127,7 +127,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			ew.balance,
 			IFNULL(avg.avg_rate, 0) AS average_rate,
 			IFNULL(er.BASE_RATE, 0) AS current_rate
-		FROM exchange_wallet ew
+		FROM exchange_wallet ew		 
 		LEFT JOIN (
 			SELECT 
 				et.customer_id,
@@ -146,7 +146,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		ON er.base_date = CURDATE()
 		AND ew.currency_code = er.currency_code
 		WHERE ew.customer_id = #{customer_id}
-		AND ew.balance > 0;
+		AND ew.balance > 0
+		AND ew.status = 'ACTIVE';
 	</select>
 	
 	<!-- DB저장 환율 조회 -->

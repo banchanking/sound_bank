@@ -3,7 +3,6 @@ import styles from "../../Css/exchange/ExchangeAdminPage.module.css";
 import AdminExAccountRequestList from "./AdminExAccountRequestList";
 import AdminExchangeRateManage from "./AdminExchangeRateManage";
 import AdminWalletList from "./AdminWalletList";
-import AdminWalletStatus from "./AdminWalletStatus";
 
 const ExchangeAdminPage = () => {
   const [selectedMenu, setSelectedMenu] = useState("rate");
@@ -14,8 +13,6 @@ const ExchangeAdminPage = () => {
         return <AdminExchangeRateManage />;
       case "walletList":
         return <AdminWalletList />;
-      case "walletStatus":
-        return <AdminWalletStatus />;
       case "exchangeApproval":
         return <AdminExAccountRequestList />;
       default:
@@ -31,7 +28,6 @@ const ExchangeAdminPage = () => {
         <ul className={styles.menuList}>
           <li><button onClick={() => setSelectedMenu("rate")}>환율/수수료 조정</button></li>
           <li><button onClick={() => setSelectedMenu("walletList")}>회원 지갑 목록</button></li>
-          <li><button onClick={() => setSelectedMenu("walletStatus")}>지갑 상태 변경</button></li>
           <li><button onClick={() => setSelectedMenu("exchangeApproval")}>환전 승인/거부</button></li>
         </ul>
       </div>
