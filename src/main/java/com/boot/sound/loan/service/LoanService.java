@@ -15,8 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.boot.sound.customer.CustomerDTO;
 import com.boot.sound.inquire.account.AccountService;
-import com.boot.sound.jwt.dto.CredentialsDTO;
 import com.boot.sound.loan.dao.LoanDAO;
+import com.boot.sound.loan.dto.LateInterestDTO;
 import com.boot.sound.loan.dto.LoanApplyWithTermsDTO;
 import com.boot.sound.loan.dto.LoanConsentDTO;
 import com.boot.sound.loan.dto.LoanCustomerDTO;
@@ -25,12 +25,10 @@ import com.boot.sound.loan.dto.LoanInterestPaymentDTO;
 import com.boot.sound.loan.dto.LoanLatePaymentDTO;
 import com.boot.sound.loan.dto.LoanStatusDTO;
 import com.boot.sound.loan.dto.LoanTermDTO;
-import com.boot.sound.loan.dto.LoanTermsAgreeDTO;
 import com.boot.sound.loan.dto.LoanWithTermsDTO;
 import com.boot.sound.loan.dto.PrepaymentDTO;
 import com.boot.sound.loan.dto.PrepaymentEntity;
 import com.boot.sound.loan.repo.LoanStatusRepository;
-import com.boot.sound.loan.scheduler.LoanOverdueScheduler;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -245,8 +243,7 @@ public class LoanService {
 		public void markLatePaymentAsPaid(LoanLatePaymentDTO latePayment) {
 		    // 연체 상태를 '납부완료'로 업데이트 
 		    dao.updateLatePaymentStatusToPaid(
-		        latePayment.getLoanId(),
-		        latePayment.getCustomerId(),
+		        latePayment.getLatePaymentNo(),
 		        "납부완료"
 		    );
 		}
@@ -254,8 +251,7 @@ public class LoanService {
 		@Transactional
 		public void updateInterestPaymentStatusToPaid(LoanLatePaymentDTO latePayment) {
 			dao.updateInterestPaymentStatus(
-		        latePayment.getLoanId(),
-		        latePayment.getCustomerId(),
+		        latePayment.getLatePaymentNo(),
 		        "납부완료"
 		    );
 		}
@@ -370,6 +366,53 @@ public class LoanService {
 		    dao.updateLoanStatus(status);
 			return 1;
 		}
+		
+		@Transactional
+		public List<LoanInterestPaymentDTO> myInterestList(String customerId){
+			return dao.myInterestList(customerId);
+		}
+		
+		@Transactional
+		public Boolean paymentRequest(PrepaymentDTO dto) {
+			try {
+				
+			int amount = dto.getRepaymentAmount();
+			
+			accountService.withdraw(dto.getAccountNumber(), BigDecimal.valueOf(amount));
+			String customerName = dao.getCustomerName(dto.getCustomerId());
+			
+			loanAccountService.saveLoanTransaction(
+					dto.getAccountNumber(), 
+					"출금", 
+					 BigDecimal.valueOf(amount), 
+					"KRW", 
+					"미납 수동납부", 
+					customerName, 
+					"입출금");
+			System.out.println(dto.getInterestpaymentNo());
+			dao.updateRepaymentStatus(dto.getInterestpaymentNo(), "납부완료");
+			
+			return true;
+			}catch(Exception e) {
+				e.printStackTrace();
+		        return false;
+			}
+		}
 
+		@Transactional
+		public List<LateInterestDTO> getLateInterestList(String customerId){
+			return dao.getLateInterestList(customerId);
+		}
+		
+		@Transactional
+		public List<LoanInterestPaymentDTO> adminLoanInterestList(){
+			return dao.adminLoanInterestList();
+		}
+		
+		@Transactional
+		public List<LateInterestDTO> adminLoanLateInterestList(){
+			return dao.adminLoanLateInterestList();
+		}
+		
 	
 }

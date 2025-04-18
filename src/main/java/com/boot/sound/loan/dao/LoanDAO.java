@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import com.boot.sound.customer.CustomerDTO;
+import com.boot.sound.loan.dto.LateInterestDTO;
 import com.boot.sound.loan.dto.LoanApplyWithTermsDTO;
 import com.boot.sound.loan.dto.LoanConsentDTO;
 import com.boot.sound.loan.dto.LoanCustomerDTO;
@@ -99,7 +100,7 @@ public interface LoanDAO  {
 
     // 납부상태변경
 	public int updateRepaymentStatus(@Param("interestPaymentNo") int interestPaymentNo,
-            @Param("repaymentStatus") String repaymentStatus);
+            							@Param("repaymentStatus") String repaymentStatus);
 
 	// 연체 정보 등록
 	public void insertLatePayment(LoanLatePaymentDTO dto);
@@ -115,13 +116,11 @@ public interface LoanDAO  {
 	public String getCustomerName(@Param("customerId") String customerId);
 
     // 연체 내역 상태를 납부완료로 업데이트
-	public int updateLatePaymentStatusToPaid(@Param("loanId") int loanId,
-                                       @Param("customerId") String customerId,
+	public int updateLatePaymentStatusToPaid(@Param("latePaymentNo") int latePaymentNo,
                                        @Param("repaymentStatus") String repaymentStatus);
 
     // 이자 납부 테이블 상태를 납부완료로 업데이트
-	public int updateInterestPaymentStatus(@Param("loanId") int loanId,
-                                     @Param("customerId") String customerId,
+	public int updateInterestPaymentStatus(@Param("interestPaymentNo") int interestPaymentNo,
                                      @Param("repaymentStatus") String repaymentStatus);
 
     // loan_status_tbl의 remaining_term 감소
@@ -151,5 +150,19 @@ public interface LoanDAO  {
 	// 대출상태 변경
 	public void updateLoanStatus(LoanStatusDTO dto);
 	
+	// 고객 대출이자 납입내역 ( 추후 관리자 페이지에서 사용 예정 )
+	public List<LoanInterestPaymentDTO> myInterestList(String customerId);
 	
+	// 대출이자 납입내역에 표시할 대출상품명 조회
+	public String selectLoanName(int loanId);
+	
+	// 고객 연체이력 조회
+	public List<LateInterestDTO>getLateInterestList(String customerId);
+	
+	// 관리자페이지 대출이자 납부 전체 목록
+	public List<LoanInterestPaymentDTO>adminLoanInterestList();
+	
+	// 관리자페이지 연체이력 전체 목록
+	public List<LateInterestDTO>adminLoanLateInterestList();
+ 	
 }
