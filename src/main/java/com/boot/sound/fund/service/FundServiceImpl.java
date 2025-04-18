@@ -162,7 +162,7 @@ public class FundServiceImpl {
     // 펀드 매수
     @Transactional
     public void processTransaction(FundTransactionDTO dto) {
-        // 단가 계산: 투자금 / 좌수
+        // 단가 계산 = 투자금 / 좌수
     	if (dto.getFundInvestAmount() != null && dto.getFundUnitsPurchased() != null) {
     	    dto.setFundPricePerUnit(
     	        dto.getFundInvestAmount().divide(dto.getFundUnitsPurchased(), 6, RoundingMode.HALF_UP)
@@ -176,8 +176,46 @@ public class FundServiceImpl {
 
         fundRepository.insertFundTransaction(dto);
     }
-    
 
+    // 펀드 매수요청 관리자 확인
+    public List<FundTransactionDTO> getPendingTransactions() {
+    	List<FundTransactionDTO> list = fundRepository.findPendingTransactions();
+    	
+    	for (FundTransactionDTO dto : list) {
+            System.out.println("✅ 백엔드에서 가져온 거래 ID: " + dto.getFundTransactionId());
+        }
+        return list;
+    }
+    
+    // 펀드 매수요청 관리자 승인/거절
+    public void updateTransactionStatus(int fundTransactionId, String status) {
+        fundRepository.updateStatus(fundTransactionId, status);
+    }
+    
+    // 펀드 매수 확정
+    public List<FundTransactionDTO> getApprovedBuys(String customerId) {
+        return fundRepository.findApprovedBuys(customerId);
+    }
+    
+    // 펀드 환매
+    @Transactional
+    public void processSellTransaction(FundTransactionDTO dto) {
+        // 1. 단가 계산
+        if (dto.getFundInvestAmount() != null && dto.getFundUnitsPurchased() != null) {
+            dto.setFundPricePerUnit(
+                dto.getFundInvestAmount().divide(dto.getFundUnitsPurchased(), 6, RoundingMode.HALF_UP)
+            );
+        } else {
+            dto.setFundPricePerUnit(BigDecimal.ONE); // fallback
+        }
+
+        // 2. 거래일, 상태, 타입
+        dto.setFundTransactionDate(LocalDate.now());
+        dto.setStatus("PENDING");
+        dto.setFundTransactionType("SELL");
+
+        fundRepository.insertFundTransaction(dto);
+    }
     
 
 }

@@ -47,10 +47,19 @@ public interface FundRepository {
     public void updateRiskType(@Param("fund_name") String fund_name, 
     					@Param("fund_risk_type") String fund_risk_type);
 
-    // 펀드 거래 등록
+    // 펀드 거래(매수/환매) 등록
     int insertFundTransaction(FundTransactionDTO dto);
     
     // 기존 계좌 비밀번호 조회 (MyBatis)
     String findPasswordByAccount(@Param("account_number") String accountNumber);
+    
+    // 펀드 거래 관리자 요청확인
+    public List<FundTransactionDTO> findPendingTransactions();
+    
+    // 펀드 거래 관리자 승인/거절
+    public void updateStatus(int fundTransactionId, String status);
+    
+    // 펀드 매수 확정
+    public List<FundTransactionDTO> findApprovedBuys(@Param("customer_id") String customerId);
     
 }
