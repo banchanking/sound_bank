@@ -14,14 +14,18 @@ public interface DepositDAO {
 	// 예금 리스트
 	List<DepositDTO> findDepositsByCustomerId(@Param("customerId") String customerId);
 
+	// 예금 계좌 등록
+	int depositInsert(DepositDTO dto);
 
-	// 신규 예금계좌 추가
-	public int depositInsert(DepositDTO dto);
-
-
-	// 계좌번호로 잔액 조회
+	// 잔액 조회
 	BigDecimal getBalanceByAccountNumber(@Param("accountNumber") String accountNumber);
 
 	// 잔액 업데이트
 	void updateBalance(DepositDTO dto);
+
+	// 적금 리스트 조회
+	List<SavingsDTO> findSavingsByCustomerId(@Param("customerId") String customerId);
+
+	// 적금 계좌 등록
+	int savingsInsert(SavingsDTO dto);
 }

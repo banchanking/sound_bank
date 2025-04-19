@@ -30,14 +30,22 @@ function AutoTransferSettings() {
     }
     setForm(prev => ({ ...prev, customer_id: id }));
 
+    // 예금 계좌만 필터링하여 가져오기
     RefreshToken.get(`http://localhost:8081/api/accounts/allAccount/${id}`)
       .then(res => {
         const raw = res.data;
         let list = [];
-        if (typeof raw === 'object') list = Object.values(raw).flat();
+        if (typeof raw === 'object') {
+          list = Object.values(raw)
+            .flat()
+            .filter(acc => acc.account_type === '예금'); // 예금 계좌만 필터링
+        }
         setAccounts(list);
       })
-      .catch(err => console.error('계좌 불러오기 실패:', err));
+      .catch(err => {
+        console.error('계좌 불러오기 실패:', err);
+        alert('계좌 정보를 불러오는데 실패했습니다.');
+      });
   }, []);
 
   const change = (e) => {

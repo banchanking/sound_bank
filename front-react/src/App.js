@@ -87,6 +87,7 @@ import LoanInterestList from "./sound_loan/admin/LoanInterestList";
 import LoanLateInterestList from "./sound_loan/admin/LoanLateInterestList";
 import MyLoanDetail from "./sound_loan/customer/MyLoanDetail";
 import Roi from "./customer_center/Roi";
+import InstallmentSavingsJoin from "./productSubscription/installmentSavingsJoin";
 
 function App() {
   return (
@@ -104,10 +105,10 @@ function App() {
           {/* 조회/입출금 Route 끝 */}
           {/* 상품가입 Route 시작 */}
           <Route path="/fixedDeposit" element={<FixedDeposit />} />
-          <Route path="/DepositJoin/:name" element={<DepositJoin />} />{" "}
-          {/* ID를 URL 파라미터로 전달 */}
+          <Route path="/depositJoin/:name" element={<DepositJoin />} />
           <Route path="/installmentSavings" element={<InstallmentSavings />} />
           <Route path="/precautions" element={<Precautions />} />
+          <Route path="/installmentSavingsJoin/:productName" element={<InstallmentSavingsJoin />} />
           {/* 상품가입 Route 끝 */}
           {/* 예금관리 Route 시작 */}
           <Route path="/depositChange" element={<DepositChange />} />
