@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import '../Css/AccountOverview/DepositInquire.css';
 
 const DepositInquire = () => {
   const [deposit, setDeposit] = useState([]); // 예금/적금 데이터 상태
@@ -22,10 +23,14 @@ const DepositInquire = () => {
       try {
         const response = await fetch(`http://localhost:8081/api/depositList?customerId=${customerId}`); // 고객 ID를 쿼리 파라미터로 전달
         const data = await response.json();
-        console.log('Fetched deposits:', data); // 응답 데이터 출력
+        console.log('API 응답 데이터:', data); // API 응답 데이터 출력
 
         // 데이터가 배열인지 확인
         if (Array.isArray(data)) {
+          // 데이터 구조 확인을 위한 로그
+          if (data.length > 0) {
+            console.log('첫 번째 계좌 데이터:', data[0]);
+          }
           setDeposit(data); // 데이터 설정
         } else {
           console.error('API 응답이 배열이 아닙니다:', data);
@@ -55,9 +60,9 @@ const DepositInquire = () => {
     }
 
     // 파일 문자열 생성
-    const headers = ['예금번호', '출금계좌', '예금계좌번호', '현재잔액', '가입기간', '개설일자', '만기일'];
+    const headers = ['계좌종류', '출금계좌', '예금계좌번호', '현재잔액', '가입기간', '개설일자', '만기일'];
     const rows = deposit.map((item) => [
-      item.dat_id,
+      item.dat_transaction_type,
       item.dat_account_num,
       item.dat_deposit_account_num,
       item.dat_balance,
@@ -80,72 +85,48 @@ const DepositInquire = () => {
   };
 
   return (
-    <div style={{ minHeight: 600, padding: '20px' }}>
-      {/* 헤더 */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1 style={{ textAlign: 'center' }}>예금/적금 계좌조회</h1>
-        <button
-          onClick={saveToFile}
-          style={{
-            padding: '10px 20px',
-            backgroundColor: 'black',
-            color: 'white',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer',
-          }}
-        >
-          파일 저장
-        </button>
+    <div className="deposit-inquire-container">
+      <h1 className="deposit-inquire-title">예금/적금 계좌조회</h1>
+
+      <div className="deposit-inquire-info">
+        <h2>기준일시: {currentTime}</h2>
       </div>
 
-      {/* 기준일시 */}
-      <div style={{ textAlign: 'right', marginBottom: '20px' }}>
-        기준일시 : {currentTime}
-      </div>
-
-      {/* 예금/적금 테이블 */}
-      <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '20px' }}>
+      <table className="deposit-inquire-table">
         <thead>
           <tr>
-            <th style={{ border: '1px solid black', padding: '10px' }}>예금번호</th>
-            <th style={{ border: '1px solid black', padding: '10px' }}>출금계좌</th>
-            <th style={{ border: '1px solid black', padding: '10px' }}>예금계좌번호</th>
-            <th style={{ border: '1px solid black', padding: '10px' }}>현재잔액</th>
-            <th style={{ border: '1px solid black', padding: '10px' }}>가입기간</th>
-            <th style={{ border: '1px solid black', padding: '10px' }}>개설일자</th>
-            <th style={{ border: '1px solid black', padding: '10px' }}>만기일</th>
+            <th>계좌종류</th>
+            <th>출금계좌</th>
+            <th>예금계좌번호</th>
+            <th>현재잔액</th>
+            <th>가입기간</th>
+            <th>개설일자</th>
+            <th>만기일</th>
           </tr>
         </thead>
         <tbody>
-          {deposit && deposit.length > 0 ? (
-            deposit.map((item, index) => (
-              <tr key={index}>
-                <td style={{ border: '1px solid black', padding: '10px' }}>{item.dat_id}</td>
-                <td style={{ border: '1px solid black', padding: '10px' }}>{item.dat_account_num}</td>
-                <td
-                  style={{ border: '1px solid black', padding: '10px', color: 'blue', cursor: 'pointer' }}
-                  onClick={() => handleAccountClick(item.dat_deposit_account_num)} // 계좌번호 클릭 시 상세 페이지로 이동
-                >
-                  {item.dat_deposit_account_num}
-                </td>
-                <td style={{ border: '1px solid black', padding: '10px' }}>{item.dat_balance.toLocaleString()}원</td>
-                <td style={{ border: '1px solid black', padding: '10px' }}>{item.dat_term}</td>
-                <td style={{ border: '1px solid black', padding: '10px' }}>{item.dat_start_day}</td>
-                <td style={{ border: '1px solid black', padding: '10px' }}>{item.dat_end_day}</td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="7" style={{ textAlign: 'center', padding: '10px' }}>데이터가 없습니다.</td>
+          {deposit.map((item, index) => (
+            <tr key={index} onClick={() => handleAccountClick(item.dat_deposit_account_num)}>
+              <td>{item.dat_transaction_type}</td>
+              <td>{item.dat_account_num}</td>
+              <td>{item.dat_deposit_account_num}</td>
+              <td>{item.dat_balance.toLocaleString()}원</td>
+              <td>{item.dat_term}</td>
+              <td>{item.dat_start_day}</td>
+              <td>{item.dat_end_day}</td>
             </tr>
-          )}
+          ))}
         </tbody>
       </table>
 
-      {/* 잔액 합계 */}
-      <div style={{ marginTop: '20px', textAlign: 'right' }}>
-        예금/적금 합계: {sum.toLocaleString()} 원
+      <div className="deposit-inquire-info">
+        <h2>예금/적금 합계: {sum.toLocaleString()}원</h2>
+      </div>
+
+      <div className="button-group">
+        <button onClick={saveToFile} className="action-button submit-button">
+          파일 저장
+        </button>
       </div>
     </div>
   );

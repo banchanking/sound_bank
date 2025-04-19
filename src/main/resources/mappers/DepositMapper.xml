@@ -23,6 +23,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         c.customer_account_number = d.dat_account_num
     WHERE 
         c.customer_id = #{customerId} -- customerId로 필터링
+        AND d.dat_transaction_type = 'DEPOSIT'
 </select>
 
 <!--  신규 예금 계좌 생성 -->
@@ -36,7 +37,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     dat_balance,
     dat_derm,
     dat_start_day,
-    dat_end_day         
+    dat_end_day,
+    dat_transaction_type         
     )        
     VALUES(
        #{dat_account_num},
@@ -47,7 +49,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
        #{dat_balance},
        #{dat_term},
        #{dat_start_day},
-       #{dat_end_day}
+       #{dat_end_day},
+       'DEPOSIT'
     )
     
 
@@ -66,7 +69,78 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
        dat_balance = #{dat_balance}
         WHERE dat_deposit_account_num = #{dat_deposit_account_num}
          </update>
-    
+         
+    <!-- 적금 리스트 조회 -->
+    <select id="findSavingsByCustomerId" parameterType="String" resultType="com.boot.sound.deposit.SavingsDTO">
+        SELECT 
+            d.dat_account_num,
+            d.dat_deposit_account_num,
+            d.dat_balance,
+            d.dat_term,
+            d.dat_start_day,
+            d.dat_end_day,
+            d.dat_interest_rate,
+            d.dat_max_interest_rate,
+            d.dat_min_amount,
+            d.dat_max_amount,
+            d.dat_monthly_deposit,
+            d.dat_description,
+            d.dat_target_age,
+            d.dat_features
+        FROM 
+            deposit_account_tbl d
+        INNER JOIN 
+            customer_tbl c
+        ON 
+            c.customer_account_number = d.dat_account_num
+        WHERE 
+            c.customer_id = #{customerId}
+            AND d.dat_transaction_type = 'SAVINGS'
+    </select>
+
+    <!-- 적금 계좌 등록 -->
+    <insert id="savingsInsert">
+        insert into deposit_account_tbl(
+            dat_account_num,
+            dat_account_pwd,
+            dat_deposit_account_num,
+            dat_deposit_account_pwd,
+            dat_new_amount,
+            dat_balance,
+            dat_term,
+            dat_start_day,
+            dat_end_day,
+            dat_transaction_type,
+            dat_interest_rate,
+            dat_max_interest_rate,
+            dat_min_amount,
+            dat_max_amount,
+            dat_monthly_deposit,
+            dat_description,
+            dat_target_age,
+            dat_features
+        )        
+        VALUES(
+            #{dat_account_num},
+            #{dat_account_pwd},        
+            #{dat_deposit_account_num},   
+            #{dat_deposit_account_pwd},
+            #{dat_new_amount},
+            #{dat_balance},
+            #{dat_term},
+            #{dat_start_day},
+            #{dat_end_day},
+            'SAVINGS',
+            #{dat_interest_rate},
+            #{dat_max_interest_rate},
+            #{dat_min_amount},
+            #{dat_max_amount},
+            #{dat_monthly_deposit},
+            #{dat_description},
+            #{dat_target_age},
+            #{dat_features}
+        )
+    </insert>
  
  
  </mapper>

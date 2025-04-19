@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import '../Css/Deposit/DepositChange.css';
+import '../Css/Deposit/DepositWithdrawal.css';
 
-const DepositChange = () => {
+const DepositWithdrawal = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { initialAccount } = location.state || {};
     const [accounts, setAccounts] = useState([]);
     const [selectedAccount, setSelectedAccount] = useState(initialAccount || '');
-    const [changeType, setChangeType] = useState('');
-    const [newValue, setNewValue] = useState('');
+    const [amount, setAmount] = useState('');
+    const [transactionType, setTransactionType] = useState('deposit');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
@@ -22,9 +22,9 @@ const DepositChange = () => {
                 
                 if (response.ok) {
                     const depositAccounts = data.map(account => ({
-                        accountNumber: account.accountNumber || '',
-                        accountName: account.accountName || '',
-                        balance: account.balance || 0
+                        accountNumber: account.accountNumber,
+                        accountName: account.accountName,
+                        balance: account.balance
                     }));
                     setAccounts(depositAccounts);
                     if (!initialAccount && depositAccounts.length > 0) {
@@ -47,26 +47,26 @@ const DepositChange = () => {
         setSuccess('');
 
         try {
-            const response = await fetch('http://localhost:8081/api/deposit/change', {
+            const response = await fetch('http://localhost:8081/api/deposit/transaction', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
                     accountNumber: selectedAccount,
-                    changeType: changeType,
-                    newValue: newValue
+                    amount: transactionType === 'deposit' ? amount : -amount,
+                    transactionType: transactionType
                 })
             });
 
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.message || '변경 처리에 실패했습니다.');
+                throw new Error(data.message || '거래 처리에 실패했습니다.');
             }
 
-            setSuccess('변경이 성공적으로 처리되었습니다.');
-            setNewValue('');
+            setSuccess('거래가 성공적으로 처리되었습니다.');
+            setAmount('');
             setTimeout(() => {
                 navigate('/accountOverview');
             }, 2000);
@@ -76,9 +76,9 @@ const DepositChange = () => {
     };
 
     return (
-        <div className="deposit-change-container">
-            <h1 className="deposit-change-title">예금 정보 변경</h1>
-            <div className="change-form">
+        <div className="deposit-withdrawal-container">
+            <h1 className="deposit-withdrawal-title">예금 입출금</h1>
+            <div className="withdrawal-form">
                 <div className="form-section">
                     <h2 className="section-title">계좌 선택</h2>
                     <div className="form-group">
@@ -99,43 +99,42 @@ const DepositChange = () => {
 
                 <form onSubmit={handleSubmit}>
                     <div className="form-section">
-                        <h2 className="section-title">변경 정보</h2>
+                        <h2 className="section-title">거래 정보</h2>
                         <div className="form-group">
-                            <label className="form-label">변경 유형</label>
-                            <div className="change-options">
-                                <div 
-                                    className={`change-option ${changeType === 'accountName' ? 'selected' : ''}`}
-                                    onClick={() => setChangeType('accountName')}
+                            <label className="form-label">거래 유형</label>
+                            <div className="button-group">
+                                <button
+                                    type="button"
+                                    className={`action-button ${transactionType === 'deposit' ? 'deposit-button active' : 'deposit-button'}`}
+                                    onClick={() => setTransactionType('deposit')}
                                 >
-                                    <h3>계좌명 변경</h3>
-                                    <p>계좌의 별칭을 변경합니다.</p>
-                                </div>
-                                <div 
-                                    className={`change-option ${changeType === 'password' ? 'selected' : ''}`}
-                                    onClick={() => setChangeType('password')}
+                                    입금
+                                </button>
+                                <button
+                                    type="button"
+                                    className={`action-button ${transactionType === 'withdrawal' ? 'withdrawal-button active' : 'withdrawal-button'}`}
+                                    onClick={() => setTransactionType('withdrawal')}
                                 >
-                                    <h3>비밀번호 변경</h3>
-                                    <p>계좌의 비밀번호를 변경합니다.</p>
-                                </div>
+                                    출금
+                                </button>
                             </div>
                         </div>
                         <div className="form-group">
-                            <label className="form-label">
-                                {changeType === 'accountName' ? '새 계좌명' : '새 비밀번호'}
-                            </label>
+                            <label className="form-label">금액</label>
                             <input
-                                type={changeType === 'password' ? 'password' : 'text'}
-                                value={newValue}
-                                onChange={(e) => setNewValue(e.target.value)}
+                                type="number"
+                                value={amount}
+                                onChange={(e) => setAmount(e.target.value)}
                                 className="form-input"
                                 required
+                                min="1"
                             />
                         </div>
                     </div>
 
                     <div className="button-group">
                         <button type="submit" className="action-button submit-button">
-                            변경하기
+                            {transactionType === 'deposit' ? '입금하기' : '출금하기'}
                         </button>
                         <button 
                             type="button" 
@@ -154,4 +153,4 @@ const DepositChange = () => {
     );
 };
 
-export default DepositChange;
+export default DepositWithdrawal; 

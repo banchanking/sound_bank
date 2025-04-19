@@ -1,192 +1,187 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../Css/Deposit/InstallmentSavings.css";
 
 const InstallmentSavings = () => {
-  const [searchTerm, setSearchTerm] = useState(""); // 검색어 상태
-  const [sortOption, setSortOption] = useState("추천순"); // 정렬 옵션 상태
-  const [viewOption, setViewOption] = useState("5개"); // 조회 옵션 상태
-  const [selectedChannels, setSelectedChannels] = useState([]); // 체크박스 선택 상태
+  const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortOption, setSortOption] = useState("기본순");
+  const [viewOption, setViewOption] = useState("전체");
 
+  // 적금 상품 목록
   const savingsProducts = [
     {
       id: 1,
-      name: "자유적금",
-      interestRate: "3.2%",
-      minAmount: "500,000원",
-      maxAmount: "30,000,000원",
-      term: "6개월 ~ 24개월",
+      name: "SOUND 청년희망적금",
+      interestRate: 4.0,
+      maxInterestRate: 4.5,
+      term: "12개월",
+      minAmount: 10000,
+      maxAmount: 1000000,
+      monthlyDeposit: 100000,
+      description: "만 19세~34세 청년을 위한 특별 적금 상품",
+      targetAge: "19~34세",
+      features: ["청년우대금리", "월 10만원 이상 납입", "만기일시지급식"]
     },
     {
       id: 2,
-      name: "청년희망적금",
-      interestRate: "4.0%",
-      minAmount: "100,000원",
-      maxAmount: "10,000,000원",
-      term: "24개월",
+      name: "SOUND 노후준비적금",
+      interestRate: 3.7,
+      maxInterestRate: 4.0,
+      term: "36개월",
+      minAmount: 50000,
+      maxAmount: 500000,
+      monthlyDeposit: 50000,
+      description: "안정적인 노후를 준비하시는 분들을 위한 적금",
+      targetAge: "50세 이상",
+      features: ["노후우대금리", "월 5만원 이상 납입", "만기일시지급식"]
     },
     {
       id: 3,
-      name: "스마트 적금",
-      interestRate: "3.8%",
-      minAmount: "1,000,000원",
-      maxAmount: "100,000,000원",
-      term: "6개월 ~ 36개월",
+      name: "SOUND 자유적금",
+      interestRate: 3.0,
+      maxInterestRate: 3.2,
+      term: "12개월",
+      minAmount: 10000,
+      maxAmount: 300000,
+      monthlyDeposit: 10000,
+      description: "자유로운 입출금이 가능한 적금 상품",
+      targetAge: "전체",
+      features: ["자유우대금리", "월 1만원 이상 납입", "자유입출금"]
     },
     {
       id: 4,
-      name: "우대 적금",
-      interestRate: "4.2%",
-      minAmount: "5,000,000원",
-      maxAmount: "50,000,000원",
-      term: "12개월 ~ 36개월",
+      name: "SOUND 꿈나무적금",
+      interestRate: 3.5,
+      maxInterestRate: 3.8,
+      term: "24개월",
+      minAmount: 10000,
+      maxAmount: 200000,
+      monthlyDeposit: 10000,
+      description: "자녀의 미래를 위한 교육적금",
+      targetAge: "만 18세 미만",
+      features: ["교육우대금리", "월 1만원 이상 납입", "만기일시지급식"]
     },
+    {
+      id: 5,
+      name: "SOUND 주거안정적금",
+      interestRate: 3.8,
+      maxInterestRate: 4.2,
+      term: "24개월",
+      minAmount: 100000,
+      maxAmount: 1000000,
+      monthlyDeposit: 100000,
+      description: "주거안정을 위한 특별 적금",
+      targetAge: "전체",
+      features: ["주거우대금리", "월 10만원 이상 납입", "만기일시지급식"]
+    }
   ];
 
-  const handleChannelChange = (channel) => {
-    setSelectedChannels((prev) =>
-      prev.includes(channel)
-        ? prev.filter((c) => c !== channel)
-        : [...prev, channel]
-    );
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
   };
 
-  const handleSearch = () => {
-    console.log("검색어:", searchTerm);
-    console.log("선택된 채널:", selectedChannels);
-    console.log("정렬 옵션:", sortOption);
-    console.log("조회 옵션:", viewOption);
+  const handleSortChange = (e) => {
+    setSortOption(e.target.value);
   };
+
+  const handleViewChange = (e) => {
+    setViewOption(e.target.value);
+  };
+
+  const handleProductClick = (product) => {
+    navigate(`/installmentSavingsJoin/${product.name}`, { state: { product } });
+  };
+
+  // 검색 및 필터링 로직
+  const filteredProducts = savingsProducts
+    .filter((product) => {
+      if (viewOption === "전체") return true;
+      if (viewOption === "청년") return product.targetAge.includes("19~34세");
+      if (viewOption === "노후") return product.targetAge.includes("50세");
+      if (viewOption === "자녀") return product.targetAge.includes("18세");
+      return true;
+    })
+    .filter((product) =>
+      product.name.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .sort((a, b) => {
+      switch (sortOption) {
+        case "금리높은순":
+          return b.interestRate - a.interestRate;
+        case "금리낮은순":
+          return a.interestRate - b.interestRate;
+        case "기간짧은순":
+          return parseInt(a.term) - parseInt(b.term);
+        case "기간긴순":
+          return parseInt(b.term) - parseInt(a.term);
+        default:
+          return 0;
+      }
+    });
 
   return (
     <div className="installment-savings-container">
-      <h1 className="installment-savings-title">적금 상품 목록</h1>
-
-      {/* 상단 필터 */}
-      <table className="filter-table">
-        <tbody>
-          <tr>
-            <td>
-              <label>
-                <input
-                  type="checkbox"
-                  value="인터넷"
-                  onChange={() => handleChannelChange("인터넷")}
-                />
-                인터넷
-              </label>
-            </td>
-            <td>
-              <label>
-                <input
-                  type="checkbox"
-                  value="모바일"
-                  onChange={() => handleChannelChange("모바일")}
-                />
-                모바일
-              </label>
-            </td>
-            <td>
-              <label>
-                <input
-                  type="checkbox"
-                  value="영업점"
-                  onChange={() => handleChannelChange("영업점")}
-                />
-                영업점
-              </label>
-            </td>
-            <td>
-              <label>
-                <input
-                  type="checkbox"
-                  value="전화신규"
-                  onChange={() => handleChannelChange("전화신규")}
-                />
-                전화신규
-              </label>
-            </td>
-            <td>
-              <input
-                type="text"
-                placeholder="상품명 입력"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="search-input"
-              />
-            </td>
-            <td>
-              <button onClick={handleSearch} className="search-button">
-                검색
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      {/* 정렬 및 조회 옵션 */}
-      <div className="options-container">
-        <div className="sort-buttons">
-          <button
-            className={sortOption === "추천순" ? "active" : ""}
-            onClick={() => setSortOption("추천순")}
-          >
-            추천순
-          </button>
-          <button
-            className={sortOption === "판매순" ? "active" : ""}
-            onClick={() => setSortOption("판매순")}
-          >
-            판매순
-          </button>
-          <button
-            className={sortOption === "출시순" ? "active" : ""}
-            onClick={() => setSortOption("출시순")}
-          >
-            출시순
-          </button>
-          <button
-            className={sortOption === "상품명순" ? "active" : ""}
-            onClick={() => setSortOption("상품명순")}
-          >
-            상품명순
-          </button>
+      <h1 className="installment-savings-title">적금 상품</h1>
+      
+      <div className="deposit-controls">
+        <div className="search-box">
+          <input
+            type="text"
+            placeholder="상품명 검색"
+            value={searchTerm}
+            onChange={handleSearch}
+          />
         </div>
-        <div className="view-dropdown-container">
-          <select
-            value={viewOption}
-            onChange={(e) => setViewOption(e.target.value)}
-            className="view-dropdown"
-          >
-            <option value="5개">5개</option>
-            <option value="10개">10개</option>
+        
+        <div className="filter-box">
+          <select value={sortOption} onChange={handleSortChange}>
+            <option value="기본순">기본순</option>
+            <option value="금리높은순">금리높은순</option>
+            <option value="금리낮은순">금리낮은순</option>
+            <option value="기간짧은순">기간짧은순</option>
+            <option value="기간긴순">기간긴순</option>
+          </select>
+          
+          <select value={viewOption} onChange={handleViewChange}>
             <option value="전체">전체</option>
+            <option value="청년">청년</option>
+            <option value="노후">노후</option>
+            <option value="자녀">자녀</option>
           </select>
         </div>
       </div>
 
-      {/* 상품 목록 */}
-      <table className="savings-products-table">
-        <thead>
-          <tr>
-            <th>상품명</th>
-            <th>금리</th>
-            <th>최소 금액</th>
-            <th>최대 금액</th>
-            <th>기간</th>
-          </tr>
-        </thead>
-        <tbody>
-          {savingsProducts.map((product) => (
-            <tr key={product.id}>
-              <td>{product.name}</td>
-              <td>{product.interestRate}</td>
-              <td>{product.minAmount}</td>
-              <td>{product.maxAmount}</td>
-              <td>{product.term}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="deposit-grid">
+        {filteredProducts.map((product) => (
+          <div
+            key={product.id}
+            className="deposit-card"
+            onClick={() => handleProductClick(product)}
+          >
+            <h2>{product.name}</h2>
+            <div className="interest-rate">
+              <span className="rate">{product.interestRate}%</span>
+              {product.maxInterestRate && (
+                <span className="max-rate">(최대 {product.maxInterestRate}%)</span>
+              )}
+            </div>
+            <div className="product-details">
+              <p>가입기간: {product.term}</p>
+              <p>월 납입금액: {product.monthlyDeposit.toLocaleString()}원</p>
+              <p>대상연령: {product.targetAge}</p>
+            </div>
+            <div className="product-features">
+              {product.features.map((feature, index) => (
+                <span key={index} className="feature-tag">
+                  {feature}
+                </span>
+              ))}
+            </div>
+            <p className="product-description">{product.description}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
