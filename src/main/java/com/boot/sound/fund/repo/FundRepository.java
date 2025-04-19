@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.boot.sound.fund.dto.FundAccountDTO;
 import com.boot.sound.fund.dto.FundDTO;
 import com.boot.sound.fund.dto.FundTestDTO;
 import com.boot.sound.fund.dto.FundTransactionDTO;
@@ -46,7 +47,7 @@ public interface FundRepository {
     // 투자성향 분석 AI 학습 완료된 펀드상품 목록 업데이트
     public void updateRiskType(@Param("fund_name") String fund_name, 
     					@Param("fund_risk_type") String fund_risk_type);
-
+    
     // 펀드 거래(매수/환매) 등록
     int insertFundTransaction(FundTransactionDTO dto);
     
@@ -61,5 +62,7 @@ public interface FundRepository {
     
     // 펀드 매수 확정
     public List<FundTransactionDTO> findApprovedBuys(@Param("customer_id") String customerId);
+    
+    
     
 }

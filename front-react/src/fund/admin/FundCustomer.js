@@ -20,7 +20,7 @@ const FundCustomer = () => {
   const updateStatus = async (fundTransactionId, status) => {
     try {
       await RefreshToken.put(`http://localhost:8081/api/fundTrade/${fundTransactionId}/${status.toLowerCase()}`);
-      alert(`고객요청 ${status} 처리 완료`);
+      alert(`${status === "APPROVED" ? "승인" : "거절"} 처리 완료`);
       fetchPendingTransactions();
     } catch (err) {
       console.error("처리 실패", err);

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import RefreshToken from "../../jwt/RefreshToken";
+import styles from "../../Css/fund/MyFund.module.css";
 import { Chart } from "react-google-charts";
 import Papa from "papaparse";
 import dayjs from "dayjs";
@@ -69,9 +70,9 @@ const TransHistory = () => {
   };
 
   return (
-    <div>
+    <div align="center" className={styles.fundContainer}>
       <h2>펀드 매수 내역</h2>
-      <table>
+      <table className={styles.fundTable}> 
         <thead>
           <tr>
             <th>펀드 ID</th>

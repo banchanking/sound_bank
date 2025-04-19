@@ -3,9 +3,9 @@ package com.boot.sound.fund.service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -159,7 +159,36 @@ public class FundServiceImpl {
     	return JpaRepository.findByCustomerId(customerId);
     }
     
-    // 펀드 매수
+    // 펀드 계좌 개설요청 조회 (JPA)
+    public List<FundAccountDTO> getPendingAccounts() {
+        return JpaRepository.findByStatus("PENDING");
+    }
+    
+    // 펀드 계좌 개설요청 승인 (JPA)
+    @Transactional
+    public void updateFundAccountStatus(int fundAccountId, String status) {
+        FundAccountDTO account = JpaRepository.findById(fundAccountId)
+            .orElseThrow(() -> new IllegalArgumentException("계좌를 찾을 수 없습니다"));
+        account.setStatus(status);
+        if ("REJECTED".equals(status)) {
+            account.setCloseDate(LocalDateTime.now());
+        }
+        JpaRepository.save(account);
+    }
+    
+    // 펀드 계좌 해지요청 승인 (JPA)
+    @Transactional
+    public void closeFundAccount(int fundAccountId) {
+        FundAccountDTO account = JpaRepository.findById(fundAccountId)
+            .orElseThrow(() -> new IllegalArgumentException("해당 계좌가 존재하지 않습니다."));
+
+        account.setStatus("CLOSED");
+        account.setCloseDate(LocalDateTime.now());
+
+        JpaRepository.save(account);
+    }
+    
+    // 펀드 매수요청
     @Transactional
     public void processTransaction(FundTransactionDTO dto) {
         // 단가 계산 = 투자금 / 좌수

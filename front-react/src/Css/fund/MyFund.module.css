@@ -1,0 +1,79 @@
+.fundContainer {
+    max-width: 800px;
+    margin: 3rem auto;
+    padding: 2rem;
+    background: #ffffff;
+    border: 2px solid #222;
+    border-radius: 16px;
+    box-shadow: 4px 4px 0 #000;
+  }
+  
+  .fundTitle {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #111;
+    margin-bottom: 2rem;
+  }
+  
+  .fundDescription {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .fundTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 2rem;
+  }
+  
+  .fundlabel {
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .fundTable th,
+  .fundTable td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
+  }
+  
+  .fundTable th {
+    background-color: #f9f9f9;
+    font-weight: 600;
+    color: #333;
+  }
+
+.fundstatus {
+    font-weight: bold;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1.5rem;
+    font-size: 1.1rem;
+    background-color: #000;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  
+  .fundapproved {
+    background-color: #e6f9f0;
+    color: #1a7f5a;
+    border: 1px solid #b1e2c9;
+  }
+  
+  .fundrejected {
+    background-color: #fff0f0;
+    color: #c0392b;
+    border: 1px solid #f5c6cb;
+  }
+  
+  .fundpending {
+    background-color: #f0f0f0;
+    color: #777;
+    border: 1px solid #ddd;
+  }
+  
