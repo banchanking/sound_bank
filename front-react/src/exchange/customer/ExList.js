@@ -30,59 +30,28 @@ const ExList = () => {
     transactionList();
   }, [customer_id]);
 
-  const handlePeriodClick = (value) => {
-    setPeriod(value);
-    const now = new Date();
-    const toDate = new Date();
-    let fromDate = '';
-
-    const formatDate = (date) => {
-      return date.toLocaleDateString('sv-SE'); // YYYY-MM-DD 형식
-    };
-
-    switch (value) {
-      case 'today':
-        fromDate = formatDate(toDate);
-        break;
-      case '1w': {
-        const weekAgo = new Date();
-        weekAgo.setDate(toDate.getDate() - 7);
-        fromDate = formatDate(weekAgo);
-        break;
-      }
-      case '1m': {
-        const monthAgo = new Date();
-        monthAgo.setMonth(toDate.getMonth() - 1);
-        fromDate = formatDate(monthAgo);
-        break;
-      }
-      case '6m': {
-        const sixMonthsAgo = new Date();
-        sixMonthsAgo.setMonth(toDate.getMonth() - 6);
-        fromDate = formatDate(sixMonthsAgo);
-        break;
-      }
-      default:
-        fromDate = '';
-    }
-
-    setStartDate(fromDate);
-    setEndDate(formatDate(toDate));
+  const isSameDate = (date1, date2) => {
+    return date1.getFullYear() === date2.getFullYear() &&
+           date1.getMonth() === date2.getMonth() &&
+           date1.getDate() === date2.getDate();
   };
 
   const isWithinPeriod = (dateString) => {
     if (!period || period === 'all') return true;
     const today = new Date();
     const txDate = new Date(dateString.replace(" ", "T"));
-    const diffTime = today - txDate;
-    const diffDays = diffTime / (1000 * 60 * 60 * 24);
 
     switch (period) {
-      case 'today': return today.toDateString() === txDate.toDateString();
-      case '1w': return diffDays <= 7;
-      case '1m': return diffDays <= 30;
-      case '6m': return diffDays <= 180;
-      default: return true;
+      case 'today':
+        return isSameDate(today, txDate);
+      case '1w':
+        return txDate >= new Date(today.setDate(today.getDate() - 7));
+      case '1m':
+        return txDate >= new Date(today.setMonth(today.getMonth() - 1));
+      case '6m':
+        return txDate >= new Date(today.setMonth(today.getMonth() - 6));
+      default:
+        return true;
     }
   };
 
@@ -114,25 +83,30 @@ const ExList = () => {
         <button onClick={() => setFilter('all')}>전체</button>
         <button onClick={() => setFilter('buy')}>구매 (Buy)</button>
         <button onClick={() => setFilter('sell')}>판매 (Sell)</button>
+        <input
+          type="date"
+          value={selectedDate}
+          onChange={(e) => setSelectedDate(e.target.value)}
+          className={styles.dateInput}
+        />
       </div>
 
       <div className={styles.periodButtons}>
-        <button onClick={() => handlePeriodClick('all')}>전체</button>
-        <button onClick={() => handlePeriodClick('today')}>당일</button>
-        <button onClick={() => handlePeriodClick('1w')}>1주일</button>
-        <button onClick={() => handlePeriodClick('1m')}>1개월</button>
-        <button onClick={() => handlePeriodClick('6m')}>6개월</button>
+        <button onClick={() => setPeriod('all')}>전체</button>
+        <button onClick={() => setPeriod('today')}>당일</button>
+        <button onClick={() => setPeriod('1w')}>1주일</button>
+        <button onClick={() => setPeriod('1m')}>1개월</button>
+        <button onClick={() => setPeriod('6m')}>6개월</button>
       </div>
 
       <div className={styles.dateRangeSection}>
-        <label>시작일</label>
+        <label>시작일: </label>
         <input
           type="date"
           value={startDate}
           onChange={(e) => setStartDate(e.target.value)}
         />
-        <span>~</span>
-        <label>종료일</label>
+        <label>종료일: </label>
         <input
           type="date"
           value={endDate}

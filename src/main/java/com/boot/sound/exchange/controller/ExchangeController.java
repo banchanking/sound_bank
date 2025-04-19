@@ -53,57 +53,48 @@ public class ExchangeController {
     
     // 날짜별 환율 DB에서 조회
     @GetMapping("/dbRates")
-    public ResponseEntity<List<Map<String, Object>>> getDbExchangeRates(@RequestParam(required = false) String date) {
+    public ResponseEntity<Map<String, Object>> getDbExchangeRates(@RequestParam(required = false) String date) {
 
         System.out.println("<<<< Controller DB환율 요청 >>>>>>");
 
-        // 날짜 포맷터
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate requestDate;
+        String usedDate = "";
+        String alertMsg = null;
 
         if (date == null || date.isEmpty()) {
             requestDate = LocalDate.now();
-            date = requestDate.format(formatter); // 현재 날짜로 설정
+            date = requestDate.format(formatter);
         } else {
-            requestDate = LocalDate.parse(date, formatter); // 문자열을 LocalDate로 변환
+            requestDate = LocalDate.parse(date, formatter);
         }
 
         System.out.println("paramDate : " + date);
 
         List<Map<String, Object>> rates = service.getDbExchangeRateList(date);
-        System.out.println("List = " + rates);
+        usedDate = date;
 
-        if(rates == null || rates.isEmpty()) {
-            System.out.println("기준일" + date + "의 환율이 없습니다.");
-          
-            // 하루 전 날짜 계산
-            LocalDate previousDate = requestDate.minusDays(1);
-            String previousDateStr = previousDate.format(formatter); // 하루 전 날짜를 문자열로 변환
-            rates = service.getDbExchangeRateList(previousDateStr); // 하루 전 날짜의 환율 조회
-            System.out.println("하루전날짜조회 =" + rates);
-          
-            if(rates == null || rates.isEmpty()){
-                System.out.println("기준일" + date + "의 환율이 없습니다.");
-                
-                // 이틀 전 날짜 계산
-                LocalDate twoDays = requestDate.minusDays(2);
-                String twoDaysStr = twoDays.format(formatter); // 이틀 전 날짜를 문자열로 변환
-                rates = service.getDbExchangeRateList(twoDaysStr); // 이틀 전 날짜의 환율 조회
-                System.out.println("이틀전날짜조회 =" + rates);
-                
-                if(rates == null || rates.isEmpty()){
-                    System.out.println("기준일" + date + "의 환율이 없습니다.");
-                    // 3일 전 날짜 계산
-                    LocalDate threeDays = requestDate.minusDays(3);
-                    String threeDaysStr = threeDays.format(formatter); // 이틀 전 날짜를 문자열로 변환
-                    rates = service.getDbExchangeRateList(threeDaysStr); // 이틀 전 날짜의 환율 조회
-                    System.out.println("3일전날짜조회 =" + rates);
+        if (rates == null || rates.isEmpty()) {
+            for (int i = 1; i <= 3; i++) {
+                LocalDate fallbackDate = requestDate.minusDays(i);
+                String fallbackDateStr = fallbackDate.format(formatter);
+                rates = service.getDbExchangeRateList(fallbackDateStr);
+                System.out.println(i + "일 전 날짜 조회 = " + rates);
+
+                if (rates != null && !rates.isEmpty()) {
+                    usedDate = fallbackDateStr;
+                    alertMsg = "해당 날짜의 환율이 없어 최근일(" + usedDate + ") 기준으로 불러옵니다.";
+                    break;
                 }
             }
-        } 
-       
-        return ResponseEntity.ok(rates); // 상태 코드 200과 함께 반환
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("rates", rates);
+        if (alertMsg != null) result.put("alert", alertMsg);
+        return ResponseEntity.ok(result);
     }
+
     
     // 출금 계좌 조회
     @GetMapping("/account/{customer_id}")

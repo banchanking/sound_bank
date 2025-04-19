@@ -3,23 +3,21 @@ import RefreshToken from "../../jwt/RefreshToken";
 
 const normalizeRateData = (item) => {
   if (item.cur_unit) {
-    // API에서 가져온 데이터 형식에 맞게 변환
-    return {                  
-      currency_code: item.cur_unit,                              //통화코드
-      currency_name: item.cur_nm,                                //통화명
-      base_rate: parseFloat(item.deal_bas_r.replace(",", "")),   //기준환율
-      buy_rate: parseFloat(item.tts.replace(",", "")),           //매입환율         
-      sell_rate: parseFloat(item.ttb.replace(",", "")),          //매도환율                   
+    return {
+      currency_code: item.cur_unit,
+      currency_name: item.cur_nm,
+      base_rate: parseFloat(item.deal_bas_r.replace(",", "")),
+      buy_rate: parseFloat(item.tts.replace(",", "")),
+      sell_rate: parseFloat(item.ttb.replace(",", "")),
     };
   } else {
-    // DB에서 가져온 데이터 형식에 맞게 변환
     return {
       currency_code: item.CURRENCY_CODE,
       currency_name: item.CURRENCY_NAME,
       base_rate: parseFloat(item.BASE_RATE),
       buy_rate: parseFloat(item.BUY_RATE),
       sell_rate: parseFloat(item.SELL_RATE),
-      fee_rate: parseFloat(item.FEE_RATE)
+      fee_rate: parseFloat(item.FEE_RATE),
     };
   }
 };
@@ -33,30 +31,23 @@ const useExchangeRates = (date) => {
     const fetchRates = async () => {
       const formattedDate = new Date(date).toISOString().split("T")[0];
       try {
-        const response = await RefreshToken.get("http://localhost:8081/api/exchange/rates", {
+        const response = await RefreshToken.get("http://localhost:8081/api/exchange/dbRates", {
           params: { date: formattedDate },
         });
-        if (Array.isArray(response.data) && response.data.length > 0) {
-          setRates(response.data.map(normalizeRateData));
+
+        if (response.data.alert) {
+          alert(response.data.alert);
+        }
+
+        if (response.data.rates) {
+          setRates(response.data.rates.map(normalizeRateData));
         } else {
-          const fallback = await RefreshToken.get("http://localhost:8081/api/exchange/dbRates", {
-            params: { date: formattedDate },
-          });
-          alert("실시간환율 정보가 없습니다. 가장 최근의 환율을 가져옵니다.");
-          setRates(fallback.data.map(normalizeRateData));
+          setRates(response.data.map(normalizeRateData));
         }
       } catch (err) {
-        console.error("환율 로딩 실패", err);
-        try {
-          const fallback = await RefreshToken.get("http://localhost:8081/api/exchange/dbRates", {
-            params: { date: formattedDate },
-          });
-          setRates(fallback.data.map(normalizeRateData));
-        } catch (e) {
-          console.error("DB 환율 로딩 실패", e);
-          setError(e);
-          setRates([]);
-        }
+        console.error("DB 환율 로딩 실패", err);
+        setError(err);
+        setRates([]);
       } finally {
         setLoading(false);
       }
