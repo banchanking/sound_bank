@@ -159,7 +159,7 @@ const FundProductAdmin = () => {
 
   return (
     <div className={styles.fundContainer}>
-      <h2>펀드 상품 관리</h2>
+      <h2>펀드 상품 등록</h2>
 
       {/* 펀드 목록 테이블 */}
       <table className={styles.fundTable}>

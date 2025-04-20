@@ -82,11 +82,14 @@ const FundList = () => {
 
   return (
     <div className={styles.fundContainer}>
+      <div className={styles.fundtesttitle}>
+        <h1>펀드 상품 목록</h1>
+      </div>
       {Object.keys(groupedFunds).map((manager, i) => (
         <div key={i}>
-          <button onClick={() => handleManagerClick(manager)}>{manager}</button>
+          <button className={styles.fundButton} onClick={() => handleManagerClick(manager)}>{manager}</button>
           {expandedManagers.includes(manager) && (
-            <div>
+            <div className={styles.categorySelect}>
               <select onChange={(e) => setSelectedCategory(e.target.value)} value={selectedCategory}>
                 <option value="">유형 선택</option>
                 {Object.keys(groupedFunds[manager]).map((type, i) => (
@@ -94,7 +97,7 @@ const FundList = () => {
                 ))}
               </select>
               {selectedCategory && (
-                <table>
+                <table className={styles.fundTable}>
                   <tbody>
                     {groupedFunds[manager][selectedCategory]?.map((fund) => (
                       <tr key={fund.fund_id}>
