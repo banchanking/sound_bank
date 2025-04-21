@@ -31,6 +31,7 @@ const ExchangeWalletStatus = () => {
     const fetchWallet = async () => {
       try {
         const response = await RefreshToken.get(`http://localhost:8081/api/exchange/myWallet/${customer_id}`);
+        console.log(response)
         setWallet(response.data);
       } catch (error) {
         console.error("보유 외화 조회 실패", error);

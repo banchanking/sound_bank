@@ -75,7 +75,7 @@ public class ExchangeController {
         usedDate = date;
 
         if (rates == null || rates.isEmpty()) {
-            for (int i = 1; i <= 3; i++) {
+            for (int i = 1; i <= 7; i++) {
                 LocalDate fallbackDate = requestDate.minusDays(i);
                 String fallbackDateStr = fallbackDate.format(formatter);
                 rates = service.getDbExchangeRateList(fallbackDateStr);
