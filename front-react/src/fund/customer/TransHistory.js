@@ -71,7 +71,7 @@ const TransHistory = () => {
 
   return (
     <div align="center" className={styles.fundContainer}>
-      <h2>펀드 매수 내역</h2>
+      <h2>My펀드 거래내역</h2>
       <table className={styles.fundTable}> 
         <thead>
           <tr>

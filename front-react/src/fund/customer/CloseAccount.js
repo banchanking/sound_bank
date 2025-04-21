@@ -34,7 +34,7 @@ const CloseAccount = () => {
 
   return (
     <div align="center" className={styles.fundContainer}>
-      <h2>내 펀드 계좌</h2>
+      <h2>My펀드 계좌</h2>
       <table className={styles.fundTable}>
         <thead>
           <tr>

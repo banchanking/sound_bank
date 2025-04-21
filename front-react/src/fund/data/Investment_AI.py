@@ -135,5 +135,5 @@ async def recommend_fund(data: InvestmentRequest):
     
 if __name__ == "__main__":
     import uvicorn  # FastAPI 애플리케이션을 실행하기 위해 uvicorn 서버를 시작하는 역할
-    uvicorn.run(app, host="127.0.0.1", port=8000)    
+    uvicorn.run(app, host="0.0.0.0", port=8000)    
     
