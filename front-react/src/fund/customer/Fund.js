@@ -54,6 +54,10 @@ const Fund = ({ fundId, onClose, onBuy }) => {
     );
   }
 
+  const approvedAccounts = fundAccounts.data?.filter(acc =>
+    acc.status === "APPROVED" && acc.linkedAccountNumber
+  );
+
   //  쉼표 포맷 핸들러 함수 추가
   const handleAmountChange = (e) => {   
     const raw = e.target.value.replace(/,/g, "");
@@ -102,10 +106,12 @@ const Fund = ({ fundId, onClose, onBuy }) => {
           }}
         >
           <option value="">계좌를 선택하세요</option>
-          {fundAccounts.map((acc) => (
-            <option key={acc.fundAccountId} value={acc.fundAccountId}>
-              {acc.fundAccountName} ({acc.fundAccountNumber}) / (출금: {acc.linkedAccountNumber})
-            </option>
+          {fundAccounts
+            .filter(acc => acc.status === "APPROVED" && acc.linkedAccountNumber)
+            .map((acc) => (
+              <option key={acc.fundAccountId} value={acc.fundAccountId}>
+                {acc.fundAccountName || "이름 없음"} ({acc.fundAccountNumber}) / 출금: {acc.linkedAccountNumber}
+              </option>
           ))}
         </select>
 
@@ -130,7 +136,6 @@ const Fund = ({ fundId, onClose, onBuy }) => {
         <div className={styles.fundbuttonGroup}>
           <button
             onClick={() => {
-              alert("매수 신청이 완료되었습니다. 관리자 승인 후 계좌에 반영됩니다.");
               onBuy({ ...fundDetail, buyAmount, unitCount, fundAccountId: selectedFundAccountId, withdrawAccountNumber, fundAccountName: selectedFundAccount?.fundAccountName });
             }}
             className={styles.fundBuyButton}

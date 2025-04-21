@@ -1,11 +1,12 @@
 /* 공통 스타일 */
 .fundContainer {
-  background-color: #ffffff;
+  max-width: 1000px;
+  margin: 3rem auto;
   padding: 2rem;
-  color: #000000;
-  font-family: 'Pretendard', sans-serif;
-  max-width: 1200px;
-  margin: 0 auto;
+  background: #ffffff;
+  border: 2px solid #222;
+  border-radius: 16px;
+  box-shadow: 4px 4px 0 #000;
 }
 
 .fundListSection {
@@ -19,14 +20,19 @@
   color: white;
   border: none;
   border-radius: 8px;
-  padding: 0.8rem 2rem;
-  margin-top: 1rem;
+  padding: 10px 20px; /* 버튼 내부 여백 */
+  margin: 10px 0;
   font-weight: 600;
+  font-size: 16px;
   cursor: pointer;
+  white-space: nowrap; /* 텍스트를 한 줄로 표시 */
+  overflow: hidden;
   transition: background-color 0.2s ease;
   display: block;
   margin: 2rem auto 0 auto;
   font-size: 1rem;
+  min-width: 200px; /* 버튼의 최소 너비 설정 */
+  max-width: 300px; /* 버튼의 최대 너비 설정 (선택 사항) */
 }
 
 .fundButton:hover,
@@ -81,11 +87,14 @@
 
 /* 셀렉트박스 */
 .categorySelect {
-  margin: 0.7rem 0 1rem 0;
-  padding: 0.5rem;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 0.95rem;
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #000;
+  border-radius: 8px;
+  padding: 10px;
+  margin: 10px 0;
+  font-size: 16px;
+  cursor: pointer;
 }
 
 /* 테이블 */
@@ -100,8 +109,8 @@
 }
 
 .fundtesttitle {
-  font-size: 2rem;
-  font-weight: 700;
+  font-size: 1rem;
+  font-weight: 70;
   color: #000;
   margin-bottom: 2rem;
   text-align: center;
@@ -109,16 +118,10 @@
 
 
 .fundTable {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 0 auto;
-  border-collapse: collapse;
-  background-color: #ffffff;
-  color: #111;
-  font-size: 0.95rem;
-  border: 1px solid #ddd;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-}
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 2rem;
+  }
 
 .fundTable th,
 .fundTable td {
@@ -148,7 +151,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -157,11 +160,12 @@
 
 .popupChart {
   background: white;
-  padding: 2rem;
+  padding: 1.5rem;
   border-radius: 16px;
-  width: 80%;
-  max-width: 900px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  width: 60%;
+  max-width: 700px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
   position: relative;
 }
 
