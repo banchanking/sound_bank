@@ -119,6 +119,13 @@ async def recommend_fund(data: InvestmentRequest):
 
         # 필터링
         filtered = funds[funds["fund_risk_type"] == user_type]
+        if filtered.empty:
+            return {
+                "user_risk_type": user_type,
+                "recommended_funds": [],
+                "message": "No funds available for the user's risk type."
+            }
+
         return {
             "user_risk_type": user_type,
             "recommended_funds": filtered.to_dict(orient="records")

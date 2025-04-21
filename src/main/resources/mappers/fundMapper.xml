@@ -87,22 +87,22 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 	<!-- 고객의 투자성향을 customer_tbl에 업데이트 -->
 	<update id="updateCustomerRiskType">
-	     UPDATE customer_tbl
-		    SET CUSTOMER_RISK_TYPE = (
-		        SELECT f.FUND_RISK_TYPE
-		        FROM fund_test_tbl f
-		        WHERE f.CUSTOMER_ID = #{customer_id}
-		        ORDER BY f.FUND_TEST_DATE DESC
-		        LIMIT 1
-		    )
-		    WHERE CUSTOMER_ID = #{customer_id}
+	    UPDATE customer_tbl
+	    SET CUSTOMER_RISK_TYPE = (
+	        SELECT f.FUND_RISK_TYPE
+	        FROM fund_test_tbl f
+	        WHERE f.CUSTOMER_ID = #{customer_id}
+	        ORDER BY f.FUND_TEST_ID DESC
+	        LIMIT 1
+	    )
+	    WHERE CUSTOMER_ID = #{customer_id}
 	</update>
 
     <!-- 고객의 투자 성향 조회 -->
     <select id="getCustomerRiskType" parameterType="String" resultType="String">
-        SELECT CUSTOMER_RISK_TYPE
+        SELECT customer_risk_type
         FROM customer_tbl
-        WHERE CUSTOMER_ID = #{customer_id}
+        WHERE customer_id = #{customer_id}
     </select>
 
     <!-- 고객의 투자 성향에 맞는 펀드 목록 조회 -->
