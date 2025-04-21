@@ -37,12 +37,24 @@ const AdminExchangeRateManage = () => {
 
     RefreshToken
       .put("http://localhost:8081/api/admin/updateRatesFee", parsedRates)
-      .then(() => alert("환율 정보가 성공적으로 저장되었습니다."))
+      .then(() => alert("환율 수수료가 성공적으로 저장되었습니다."))
       .catch(() => alert("저장 실패. 다시 시도해주세요."));
   };
 
+  const saveRateBtn = () => {
+    RefreshToken
+    .post("http://localhost:8081/api/exchange/save")
+    .then(() => alert("환율을 저장합니다."))
+    .catch(() => alert("환율저장을 실패했습니다."))
+  }
+
   return (
     <div className={styles.container}>
+      
+      <div className={styles.saveButtonWrapper}>
+            <button onClick={saveRateBtn} className={styles.saveButton}>환율 수동저장</button>
+      </div>
+      
       <div className={styles.dateInput} style={{ marginBottom: "2rem", display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "0.5rem" }}>
         <label htmlFor="date" style={{ fontWeight: "bold" }}>날짜 선택:</label>
         <input

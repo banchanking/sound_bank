@@ -27,6 +27,7 @@ public class ExchangeRateApiClient {
 
     public List<ExchangeRateDTO> getExchangeRateDTOsForToday() {
         try {
+            
             String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));            	
 
             String url = "https://www.koreaexim.go.kr/site/program/financial/exchangeJSON"

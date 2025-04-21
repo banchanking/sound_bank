@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 public class ApiController {
 
     private final ExchangeService exchangeService;
-    // 테스트용 컨트롤러
+    // 환율수동저장 컨트롤러
     @PostMapping("/save") // 실제 호출 경로: POST /api/exchange/save 
     public ResponseEntity<String> saveExchangeRates() {
         int savedCount = exchangeService.saveExchangeRates();
