@@ -131,7 +131,7 @@ public class FundController {
         return ResponseEntity.ok(result);
     }
     
-    // 펀드 계좌 비밀번호 확인
+    // 펀드 계좌개설/환매신청 시 비밀번호 인증
     @PostMapping("/fund/check-password")
     public ResponseEntity<?> checkPassword(@RequestBody FundAccountDTO dto) {
         boolean isMatched = service.checkAccountPassword(dto.getLinkedAccountNumber(), dto.getFundAccountPassword());
@@ -141,6 +141,33 @@ public class FundController {
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호 불일치");
         }
+    }
+    
+    // 펀드 계좌 해지
+    @PatchMapping("/fund/close/{fundAccountId}")
+    public ResponseEntity<String> closeFundAccount(@PathVariable("fundAccountId") int fundAccountId) {
+        service.closeFundAccount(fundAccountId);
+        return ResponseEntity.ok("펀드 계좌 해지 완료");
+    }
+    
+    // 관리자 승인 대기 계좌 목록 조회
+    @GetMapping("/admin/fundAccount/pending")
+    public List<FundAccountDTO> getPendingAccounts() {
+        return service.getPendingAccounts();
+    }
+
+    // 관리자 계좌 승인
+    @PatchMapping("/admin/fundAccount/{fundAccountId}/approved")
+    public ResponseEntity<String> approveAccount(@PathVariable int fundAccountId) {
+        service.updateFundAccountStatus(fundAccountId, "APPROVED");
+        return ResponseEntity.ok("계좌 승인 완료");
+    }
+
+    // 관리자 계좌 거절
+    @PatchMapping("/admin/fundAccount/{fundAccountId}/rejected")
+    public ResponseEntity<String> rejectAccount(@PathVariable int fundAccountId) {
+    	service.updateFundAccountStatus(fundAccountId, "REJECTED");
+        return ResponseEntity.ok("계좌 거절 완료");
     }
     
     // 펀드 계좌 조회
@@ -156,7 +183,48 @@ public class FundController {
         return ResponseEntity.ok("거래 완료");
     }
     
+    // 펀드 매수요청 관리자 확인
+    @GetMapping("/pending-check")
+    public List<FundTransactionDTO> getPendingTransactions() {
+        return service.getPendingTransactions();
+    }
     
+    // 펀드 매수요청 관리자 승인
+    @PutMapping("/fundTrade/{fund_transaction_id}/{status}")
+    public ResponseEntity<String> approveTransaction(
+    		@PathVariable("fund_transaction_id") int fundTransactionId,
+    		@PathVariable("status") String status)	{
+    	
+        service.updateTransactionStatus(fundTransactionId, status.toUpperCase());
+        String message = switch (status.toUpperCase()) {
+        case "APPROVED" -> "거래 승인 완료";
+        case "REJECTED" -> "거래 거절 완료";
+        default -> "처리 완료";
+        };
+        return ResponseEntity.ok(message);
+    }
+    
+    // 펀드 매수 확정
+    @GetMapping("/fundTrade/buy-approve/{customer_id}")
+    public List<FundTransactionDTO> getApprovedBuy(@PathVariable("customer_id") String customerId) {
+        return service.getApprovedBuys(customerId);
+    }
+    
+    // 펀드 매수요청 관리자 거절
+    @PutMapping("/fundTrade/{fund_transaction_id}/rejected")
+    public ResponseEntity<String> rejectTransaction(@PathVariable("fund_transaction_id") int fundTransactionId) {
+        service.updateTransactionStatus(fundTransactionId, "REJECTED");
+        return ResponseEntity.ok("거절 완료");
+    }
+    
+    // 펀드 거래(환매)
+    @PostMapping("/fundTrade/sell")
+    public ResponseEntity<String> sellFund(@RequestBody FundTransactionDTO dto) {
+        service.processSellTransaction(dto);
+        return ResponseEntity.ok("환매 신청 완료");
+    }
+    
+
     
 }
     

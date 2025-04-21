@@ -43,7 +43,8 @@ public class JwtWebConfig {
 					HttpMethod.GET.name(),
 					HttpMethod.POST.name(),
 					HttpMethod.PUT.name(),
-					HttpMethod.DELETE.name()
+					HttpMethod.DELETE.name(),
+					HttpMethod.PATCH.name()
 				));
 		
 		config.setMaxAge(Duration.ofSeconds(3600));  // 옵션 요청이 수락되는 시간 30분
