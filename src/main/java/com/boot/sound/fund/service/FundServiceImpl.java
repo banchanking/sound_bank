@@ -170,15 +170,34 @@ public class FundServiceImpl {
         FundAccountDTO account = JpaRepository.findById(fundAccountId)
             .orElseThrow(() -> new IllegalArgumentException("계좌를 찾을 수 없습니다"));
         account.setStatus(status);
-        if ("REJECTED".equals(status)) {
+        if ("CLOSED".equals(status)) {
             account.setCloseDate(LocalDateTime.now());
         }
+        
+        account.setStatus(status);  // APPROVED, REJECTED, CLOSED 등 다양하게 활용
+        JpaRepository.save(account);
+    }
+    
+    // 펀드 계좌 해지 신청 목록 조회 (status = 'DEACTIVE'인 계좌들만)
+    public List<FundAccountDTO> getCloseApplyAccounts() {
+        return fundRepository.findDeactiveAccounts();
+    }
+    
+    // 펀드 계좌 해지요청 승인대기 확인 (JPA)
+    @Transactional
+    public void requestCloseFundAccount(int fundAccountId) {
+        FundAccountDTO account = JpaRepository.findById(fundAccountId)
+            .orElseThrow(() -> new IllegalArgumentException("해당 계좌가 존재하지 않습니다."));
+
+        account.setStatus("DEACTIVE"); 
+        account.setCloseDate(null);   // 날짜는 아직 없음
+
         JpaRepository.save(account);
     }
     
     // 펀드 계좌 해지요청 승인 (JPA)
     @Transactional
-    public void closeFundAccount(int fundAccountId) {
+    public void approveCloseFundAccount(int fundAccountId) {
         FundAccountDTO account = JpaRepository.findById(fundAccountId)
             .orElseThrow(() -> new IllegalArgumentException("해당 계좌가 존재하지 않습니다."));
 
@@ -186,6 +205,11 @@ public class FundServiceImpl {
         account.setCloseDate(LocalDateTime.now());
 
         JpaRepository.save(account);
+    }
+    
+    // 해지 완료된 계좌 목록 조회 (고객용)
+    public List<FundAccountDTO> getClosedFundAccounts(String customerId) {
+        return fundRepository.findClosedAccountsByCustomerId(customerId);
     }
     
     // 펀드 매수요청
