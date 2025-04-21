@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styles from "../../Css/fund/FundList.module.css";
-import Fund from './Fund';
+import Fund from './Fund';  // 상세보기용 팝업 컴포넌트
 import RefreshToken from "../../jwt/RefreshToken";
 
 const FundList = () => {
@@ -47,13 +47,14 @@ const FundList = () => {
       const fundAccountList = await RefreshToken.get(
         `http://localhost:8081/api/accounts/allAccount/fund/${customerId}`
       );
+      console.log("🔍 펀드 계좌 조회 결과:", fundAccountList.data);
   
-      const fundAccount = fundAccountList.data?.[0];
+      const fundAccount = fundAccountList.data?.find(acc => acc.status === "APPROVED");
       const fundAccountId = fundAccount?.fundAccountId;
       const withdrawAccountNumber = fundAccount?.linkedAccountNumber;
   
-      if (!fundAccountId || !withdrawAccountNumber) {
-        alert("펀드 계좌 정보가 올바르지 않습니다.");
+      if (!fundAccount || !fundAccount.fundAccountId || !fundAccount.linkedAccountNumber) {
+        alert("사용 가능한 펀드 계좌가 없습니다. 관리자 승인 여부를 확인해주세요.");
         return;
       }
   
@@ -69,7 +70,8 @@ const FundList = () => {
       };
   
       const res = await RefreshToken.post("http://localhost:8081/api/fundTrade/buy", dto);
-      alert("매수 신청 완료: " + res.data);
+      alert(`💡${fund.fund_name} 💡\n 매수 신청이 완료되었습니다. 관리자 승인 후 계좌에 반영됩니다.`+ res.data);
+      setShowDetail(false); // 팝업 닫기
     } catch (error) {
       console.error("매수 신청 실패", error);
       alert("매수 처리 중 오류 발생");
@@ -80,11 +82,14 @@ const FundList = () => {
 
   return (
     <div className={styles.fundContainer}>
+      <div className={styles.fundtesttitle}>
+        <h1>펀드 상품 목록</h1>
+      </div>
       {Object.keys(groupedFunds).map((manager, i) => (
         <div key={i}>
-          <button onClick={() => handleManagerClick(manager)}>{manager}</button>
+          <button className={styles.fundButton} onClick={() => handleManagerClick(manager)}>{manager}</button>
           {expandedManagers.includes(manager) && (
-            <div>
+            <div className={styles.categorySelect}>
               <select onChange={(e) => setSelectedCategory(e.target.value)} value={selectedCategory}>
                 <option value="">유형 선택</option>
                 {Object.keys(groupedFunds[manager]).map((type, i) => (
@@ -92,7 +97,7 @@ const FundList = () => {
                 ))}
               </select>
               {selectedCategory && (
-                <table>
+                <table className={styles.fundTable}>
                   <tbody>
                     {groupedFunds[manager][selectedCategory]?.map((fund) => (
                       <tr key={fund.fund_id}>

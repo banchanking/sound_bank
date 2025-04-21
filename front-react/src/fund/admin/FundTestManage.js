@@ -45,12 +45,14 @@ const FundTestManage = () => {
   };
 
   return (
-    <div>
-      <h2>펀드 성향 AI 관리</h2>
-      <button onClick={handleRetrain}>🔄 AI모델 재학습</button>
-      <button onClick={handlePredictFund}>🤖 펀드 투자성향 예측</button>
-      <button onClick={updateRiskTypesToDB}>💾 펀드성향 데이터 업데이트</button>
-      {message && <p>{message}</p>}
+    <div className={styles.fundContainer}>
+      <div className={styles.fundTable}>
+        <h2>펀드 성향 AI 관리</h2>
+        <button className={styles.fundButton} onClick={handleRetrain}>🔄 AI모델 재학습</button>
+        <button className={styles.fundButton} onClick={handlePredictFund}>🤖 펀드 투자성향 예측</button>
+        <button className={styles.fundButton} onClick={updateRiskTypesToDB}>💾 펀드성향 데이터 업데이트</button>
+        {message && <p>{message}</p>}
+      </div>
     </div>
   );
 };

@@ -126,7 +126,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	  WHERE account_number = #{account_number}
 	</select>
 	
-	<!-- 펀드 거래 등록 -->
+	<!-- 펀드 거래(매수/환매) 등록 -->
 	<insert id="insertFundTransaction" parameterType="com.boot.sound.fund.dto.FundTransactionDTO">
 	  INSERT INTO fund_transaction_tbl (
 	    CUSTOMER_ID, FUND_ACCOUNT_ID, WITHDRAW_ACCOUNT_NUMBER, FUND_ID, FUND_TRANSACTION_TYPE,
@@ -138,6 +138,70 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	    #{fundTransactionDate}, #{status}
 	  )
 	</insert>
+	
+	<!-- 펀드 거래 관리자 요청확인 -->
+	<select id="findPendingTransactions" resultMap="fundTransactionMap">
+	  SELECT FUND_TRANSACTION_ID
+	  		, CUSTOMER_ID
+	  		, FUND_ACCOUNT_ID
+	  		, FUND_ID
+	  		, FUND_TRANSACTION_TYPE
+	  		, FUND_INVEST_AMOUNT
+	  		, FUND_UNITS_PURCHASED
+	  		, FUND_TRANSACTION_DATE
+	  		, FUND_CURRENT_VALUE
+	  		, FUND_PRICE_PER_UNIT
+	  		, STATUS
+	  		, WITHDRAW_ACCOUNT_NUMBER
+	  FROM fund_transaction_tbl
+	  WHERE STATUS = 'PENDING'
+	  ORDER BY FUND_TRANSACTION_DATE DESC
+	</select>
+	
+	<!-- 펀드 거래 관리자 승인/거절 -->
+	<update id="updateStatus">
+	  UPDATE fund_transaction_tbl
+	  SET STATUS = #{status}
+	  WHERE FUND_TRANSACTION_ID = #{fundTransactionId}
+	</update>
+	
+	<!-- 펀드 매수 확정 -->
+	<select id="findApprovedBuys" resultMap="fundTransactionMap">
+	  SELECT
+	    FUND_TRANSACTION_ID,
+	    CUSTOMER_ID,
+	    FUND_ACCOUNT_ID,
+	    FUND_ID,
+	    FUND_TRANSACTION_TYPE,
+	    FUND_INVEST_AMOUNT,
+	    FUND_UNITS_PURCHASED,
+	    FUND_PRICE_PER_UNIT,
+	    FUND_TRANSACTION_DATE,
+	    STATUS,
+	    WITHDRAW_ACCOUNT_NUMBER
+	  FROM fund_transaction_tbl
+	  WHERE CUSTOMER_ID = #{customer_id}
+	    AND FUND_TRANSACTION_TYPE = 'BUY'
+	    AND STATUS = 'APPROVED'
+	</select>
+	
+	<resultMap id="fundTransactionMap" type="com.boot.sound.fund.dto.FundTransactionDTO">
+	  <id property="fundTransactionId" column="FUND_TRANSACTION_ID" />
+	  <result property="customerId" column="CUSTOMER_ID" />
+	  <result property="fundAccountId" column="FUND_ACCOUNT_ID" />
+	  <result property="fundId" column="FUND_ID" />
+	  <result property="fundTransactionType" column="FUND_TRANSACTION_TYPE" />
+	  <result property="fundInvestAmount" column="FUND_INVEST_AMOUNT" />
+	  <result property="fundUnitsPurchased" column="FUND_UNITS_PURCHASED" />
+	  <result property="fundTransactionDate" column="FUND_TRANSACTION_DATE" />
+	  <result property="fundCurrentValue" column="FUND_CURRENT_VALUE" />
+	  <result property="fundPricePerUnit" column="FUND_PRICE_PER_UNIT" />
+	  <result property="status" column="STATUS" />
+	  <result property="withdrawAccountNumber" column="WITHDRAW_ACCOUNT_NUMBER" />
+	</resultMap>
+	
+	
+
 
 
 </mapper>

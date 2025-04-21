@@ -1,0 +1,62 @@
+.fundContainer {
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.06);
+}
+
+.fundTitle {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #111;
+  text-align: center;
+}
+
+.fundTable {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #fafafa;
+}
+
+.fundTable th {
+  background-color: #eee;
+  font-weight: 500;
+  padding: 12px;
+  color: #333;
+}
+
+.fundTable td {
+  padding: 12px;
+  text-align: center;
+  border-top: 1px solid #ddd;
+  color: #222;
+}
+
+.fundRow:nth-child(even) {
+  background-color: #f4f4f4;
+}
+
+.fundApproveBtn,
+.fundRejectBtn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.fundApproveBtn {
+  background-color: #000;
+  color: #fff;
+  margin-right: 8px;
+}
+
+.fundRejectBtn {
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #ccc;
+}
