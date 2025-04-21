@@ -14,12 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 public class ExchangeRateScheduler {
 
     private final ExchangeService exchangeService;
-
-    /**
-     * 매일 오전 11시45분에 환율 저장 실행
-     */
     
-    @Scheduled(cron = "0 40 11 * * *") // 매일 11시00분에 한 번 (cron = 초 분 시 일 월 요일)
+//    @Scheduled(cron = "59 8 12 * * *") // 매일 11시00분에 한 번 (cron = 초 분 시 일 월 요일)
     public void saveExchangeRates() {
         log.info("[스케줄러] 환율 저장 시작");
 

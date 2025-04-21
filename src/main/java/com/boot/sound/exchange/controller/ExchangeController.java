@@ -33,7 +33,7 @@ public class ExchangeController {
     @Autowired
     private ExchangeService service;
       
-    // 날짜별 환율 조회 API
+//    // 날짜별 환율 조회 API
 //    @GetMapping("/rates")
 //    public ResponseEntity<List<Map<String, Object>>> getExchangeRates(@RequestParam(required = false) String date) {
 //
