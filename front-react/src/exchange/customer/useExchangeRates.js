@@ -6,9 +6,9 @@ const normalizeRateData = (item) => {
     return {
       currency_code: item.cur_unit,
       currency_name: item.cur_nm,
-      base_rate: parseFloat(item.deal_bas_r.replace(",", "")),
-      buy_rate: parseFloat(item.tts.replace(",", "")),
-      sell_rate: parseFloat(item.ttb.replace(",", "")),
+      base_rate: parseFloat(item.deal_bas_r.replace(",", "")), // 중간환율
+      buy_rate: parseFloat(item.ttb.replace(",", "")), // 고객이 파는가격
+      sell_rate: parseFloat(item.tts.replace(",", "")), //고객이 사는가격
     };
   } else {
     return {
