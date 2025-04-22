@@ -96,6 +96,8 @@ public class MultiAdminService {
 
                     dao.insertTransaction(in);
 
+                    System.out.println("다건이체 성공");
+                    
                 } catch (Exception e) {
                     System.out.println("이체 스레드 오류: " + e.getMessage());
                 }

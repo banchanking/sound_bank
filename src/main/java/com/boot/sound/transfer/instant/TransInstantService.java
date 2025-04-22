@@ -34,27 +34,29 @@ public class TransInstantService {
 
     // 고객 하루 이체총금액 (모든계좌)
     public BigDecimal getTodayTransferTotal(String customerId) {
+    	
+    	// 해당고객 소유한 모든 계좌 가져오기
         List<String> accounts = accountRepo.findAccountNumbersByCustomerId(customerId);
-        if (accounts == null || accounts.isEmpty()) {
-            return BigDecimal.ZERO;
-        }
 
         return taRepo.getTotalTransferredToday(accounts);
     }
 
     // 한도 검사
-    public void checkTransferLimit(String customerId, int requestedAmount) {
-        BigDecimal todayTotal = getTodayTransferTotal(customerId);
+    public void checkTransferLimit(String customer_id, int amount) {
+        BigDecimal todayTotal = getTodayTransferTotal(customer_id);
 
-        Integer approvedLimit = dao.selectLatestApprovedLimit(customerId);
+        Integer approvedLimit = dao.selectLatestApprovedLimit(customer_id);
 
         // 한도설정 없는 계좌 기본한도 1억 원 적용
         if (approvedLimit == null) {
             approvedLimit = 100_000_000;
         }
 
-        BigDecimal totalAfter = todayTotal.add(BigDecimal.valueOf(requestedAmount));
-        if (totalAfter.compareTo(BigDecimal.valueOf(approvedLimit)) > 0) {
+        // totalAfter = 오늘 이체총액 + 이체예정금액(requestedAmount)
+        BigDecimal totalAfter = todayTotal.add(BigDecimal.valueOf(amount));
+        
+        // BigDecimal 때문에  연산자 대신 compareTo 사용   ( 1, 0, -1) 
+        if (totalAfter.compareTo(BigDecimal.valueOf(approvedLimit)) >= 0) {
             throw new IllegalArgumentException("이체한도를 초과했습니다.");
         }
     }

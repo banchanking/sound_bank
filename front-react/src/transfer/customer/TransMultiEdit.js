@@ -97,7 +97,7 @@ function TransMultiEdit() {
                 <td>{item.out_account_number || '-'}</td>
                 <td>{item.in_account_number || '-'}</td>
                 <td>{item.in_name || '-'}</td>
-                <td>{item.amount?.toLocaleString()}원</td>
+                <td>{item.amount?.toLocaleString('ko-KR')}원</td>
                 <td>{item.memo || '-'}</td>
                 <td>{item.status || '대기'}</td>
                 <td>

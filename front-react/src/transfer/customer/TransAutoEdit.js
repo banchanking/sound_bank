@@ -28,8 +28,8 @@ function TransAutoEdit() {
   // 수정 모달 열기 (금액 표시용 상태 설정 포함)
   const openEditModal = (item) => {
     setEditItem(item);
-    const [intPart, decimalPart] = String(item.amount).split('.')
-    const formatted = Number(intPart).toLocaleString('en-US') + (decimalPart ? '.' + decimalPart : '');
+    const [intPart] = String(item.amount).split('.')
+    const formatted = Number(intPart).toLocaleString("ko-KR");
     setDisplayAmount(formatted);
   };
 
@@ -39,7 +39,6 @@ function TransAutoEdit() {
 
     if (name === 'amount') {
       let raw = value.replace(/[^\d.]/g, '');
-      raw = raw.replace(/^(\d*\.?\d*).*$/, '$1');
 
       if (!raw) {
         setDisplayAmount('');
@@ -47,8 +46,8 @@ function TransAutoEdit() {
         return;
       }
 
-      const [intPart, decimalPart] = raw.split('.')
-      const formatted = Number(intPart).toLocaleString('en-US') + (decimalPart ? '.' + decimalPart : '');
+      const [intPart] = raw.split('.')
+      const formatted = Number(intPart).toLocaleString('ko-KR');
 
       setDisplayAmount(formatted);
       setEditItem(prev => ({ ...prev, amount: raw }));
@@ -127,7 +126,7 @@ function TransAutoEdit() {
                 <td>{item.out_account_number}</td>
                 <td>{item.in_account_number}</td>
                 <td>{item.in_name}</td>
-                <td>{Number(item.amount).toLocaleString('en-US')}원</td>
+                <td>{Number(item.amount).toLocaleString('ko-KR')}원</td>
                 <td>
                   {item.schedule_mode === 'day'
                     ? `매주 ${['월','화','수','목','금','토','일'][item.schedule_day - 1]}요일 ${item.schedule_time}분 이체실행`

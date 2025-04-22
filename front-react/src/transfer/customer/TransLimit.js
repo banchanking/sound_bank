@@ -45,7 +45,7 @@ function TransLimit() {
   // 입력값 변경 시 쉼표 포함 표시 처리
   const handleLimitChange = (e) => {
     let raw = e.target.value.replace(/[^0-9]/g, '');
-    const formatted = raw ? Number(raw).toLocaleString() : '';
+    const formatted = raw ? Number(raw).toLocaleString("ko-KR") : '';
     setRequestedLimit(raw);
     setDisplayLimit(formatted);
   };
