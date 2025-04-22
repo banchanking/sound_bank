@@ -26,10 +26,9 @@ public interface AccountRepository extends CrudRepository<AccountDTO, String> {
 	// 이체부분-> 
 
 	// 출금 - 잔액 감소 (잔액이 충분할 때만)
-    @Modifying // @Query는 select만 적용,  cud는 @Modifying 추가 
-    @Transactional // 계좌이체 실패시 자동 롤백 
+    @Modifying 
+    @Transactional 
     @Query("UPDATE AccountDTO a SET a.balance = a.balance - :money WHERE a.accountNumber = :acc AND a.balance >= :money")
-    // AND a.balance >= :money	잔액이 충분한 경우에만 차감됨
     int minusBalance(@Param("acc") String acc, @Param("money") BigDecimal money);
 
     // 입금 - 잔액 증가

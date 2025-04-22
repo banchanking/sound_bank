@@ -57,7 +57,27 @@ function TransAuto() {
   // 일반 필드 변경 처리 함수
   const change = (e) => {
     const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
+  
+    // schedule_mode가 바뀔 때 나머지 필드를 초기화
+    if (name === 'schedule_mode') {
+      if (value === 'day') {
+        setForm(prev => ({
+          ...prev,
+          [name]: value,
+          schedule_month_day: '', // 매월지정일 초기화
+        }));
+      } else if (value === 'monthly') {
+        setForm(prev => ({
+          ...prev,
+          [name]: value,
+          schedule_day: '', // 요일반복 초기화
+        }));
+      } else {
+        setForm(prev => ({ ...prev, [name]: value }));
+      }
+    } else {
+      setForm(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   // 금액 입력 처리 (쉼표 표시 + 숫자만 저장)
@@ -66,7 +86,7 @@ function TransAuto() {
 
     if (name === 'amount') {
       const raw = value.replace(/[^0-9]/g, ''); // 숫자만 남기기
-      const formatted = raw ? Number(raw).toLocaleString() : '';
+      const formatted = raw ? Number(raw).toLocaleString("ko-KR") : '';
       setDisplayAmount(formatted); // 입력창 표시용
       setForm(prev => ({ ...prev, amount: raw })); // 전송용
     } else {

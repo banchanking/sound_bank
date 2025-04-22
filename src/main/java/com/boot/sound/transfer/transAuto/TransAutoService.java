@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.boot.sound.transfer.instant.TransInstantService;
 
@@ -25,6 +26,15 @@ public class TransAutoService {
     
     // 자동이체 등록
     public void saveTransAuto(TransAutoDTO dto) {
+    	
+    	// 스케줄 방식 요일이면 매월 지정일 0으로 표시
+        if ("day".equals(dto.getSchedule_mode())) {
+            dto.setSchedule_month_day(0); 
+        // 스케줄 방식 매월지정일이면 요일 0으로 표시    
+        } else if ("monthly".equals(dto.getSchedule_mode())) {
+            dto.setSchedule_day(0);
+        }
+        
         dao.insertAutoTransfer(dto);
     }
     
@@ -41,6 +51,13 @@ public class TransAutoService {
 
     // 자동이체 수정
     public void updateTransAuto(TransAutoDTO dto) {
+    	
+        if ("day".equals(dto.getSchedule_mode())) {
+            dto.setSchedule_month_day(0);
+        } else if ("monthly".equals(dto.getSchedule_mode())) {
+            dto.setSchedule_day(0);
+        }
+
     	dao.updateAutoTransfer(dto);
     }
     
@@ -52,10 +69,11 @@ public class TransAutoService {
     // ---------------------- 자동이체 실행 부분 -----------------------------    
 
     // 자동이체 실행 (스케줄러에서 주기적으로 호출됨)
+    @Transactional
     public void runTransAuto() {
-        String nowTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")); // 현재 시각
-        int todayDay = LocalDate.now().getDayOfMonth();  // 오늘 날짜 (1~31)
-        int weekDay = LocalDate.now().getDayOfWeek().getValue(); // 요일
+        String nowTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")); // 현재시간 
+        int todayDay = LocalDate.now().getDayOfMonth();  // 오늘날짜
+        int weekDay = LocalDate.now().getDayOfWeek().getValue(); // 오늘요일
 
         // 요일 방식 자동이체 가져오기
         List<TransAutoDTO> dayList = dao.getDayModeTransfers(weekDay, nowTime);
@@ -65,7 +83,6 @@ public class TransAutoService {
         // 두 목록 합치기
         dayList.addAll(monthList);
 
-        
         // 자동이체 수행
         for (TransAutoDTO dto : dayList) {
             int balance = dao.getBalance(dto.getOut_account_number()); // 잔액 확인
@@ -84,7 +101,7 @@ public class TransAutoService {
                 dao.updateBalance(dto.getOut_account_number(), -dto.getAmount()); 
                 
                 // 입금
-                dao.updateBalance(dto.getIn_account_number(), dto.getAmount());
+                dao.updateBalance(dto.getIn_account_number(), +dto.getAmount());
                 
                 // 계좌타입
                 String outType = dao.getAccountOutType(dto.getOut_account_number());
