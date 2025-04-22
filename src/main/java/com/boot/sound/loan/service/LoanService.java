@@ -414,5 +414,10 @@ public class LoanService {
 			return dao.adminLoanLateInterestList();
 		}
 		
+		@Transactional
+		public int selectCreditScore(String customerId) {
+			return dao.selectCreditScore(customerId);
+		}
+		
 	
 }
