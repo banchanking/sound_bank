@@ -449,6 +449,12 @@
 		SELECT * FROM loan_late_payment_tbl
 		ORDER BY late_payment_no
 	</select>
+	
+	<select id="selectCreditScore" parameterType="String" resultType="int">
+		SELECT 	credit_score
+		FROM	credit_score_tbl
+		WHERE	customer_id=#{customer_id}
+	</select>
 
 
 </mapper>

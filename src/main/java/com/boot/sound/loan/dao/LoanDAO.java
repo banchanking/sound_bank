@@ -164,5 +164,8 @@ public interface LoanDAO  {
 	
 	// 관리자페이지 연체이력 전체 목록
 	public List<LateInterestDTO>adminLoanLateInterestList();
+	
+	// 고객 신용점수 조회
+	public int selectCreditScore(String customer_id);
  	
 }
