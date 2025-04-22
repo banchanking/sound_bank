@@ -61,18 +61,15 @@ function TransInstant() {
       // 숫자와 소수점만 허용
       let raw = value.replace(/[^\d.]/g, '');
   
-      // 소수점 하나만 허용
-      raw = raw.replace(/^(\d*\.?\d*).*$/, '$1');
-  
       if (!raw) {
         setDisplayAmount('');
         setForm(prev => ({ ...prev, amount: '' }));
         return;
       }
   
-      // 쉼표 포함 포맷 (정수부만 처리)
-      const [intPart, decimalPart] = raw.split('.');
-      const formatted = Number(intPart).toLocaleString() + (decimalPart !== undefined ? '.' + decimalPart : '');
+      // 쉼표 포함 포맷
+      const [intPart] = raw.split('.');
+      const formatted = Number(intPart).toLocaleString();
   
       setDisplayAmount(formatted);
       setForm(prev => ({ ...prev, amount: raw }));
@@ -174,7 +171,7 @@ function TransInstant() {
             <div className="modal-content">
               <h3>이체 확인</h3>
               <div className="modal-details">
-                <p><b>이체금액:</b> {Number(form.amount).toLocaleString()}원</p>
+                <p><b>이체금액:</b> {Number(form.amount).toLocaleString('ko-KR')}원</p>
                 <p><b>출금계좌:</b> {form.out_account_number}</p>
                 <p><b>입금계좌:</b> {form.in_account_number}</p>
                 <p><b>받는사람:</b> {form.in_name}</p>
