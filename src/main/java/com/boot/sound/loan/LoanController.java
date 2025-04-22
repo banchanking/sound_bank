@@ -265,6 +265,12 @@ public class LoanController {
 		return new ResponseEntity<>(service.adminLoanLateInterestList(),HttpStatus.OK);
 	}
 	
+	@GetMapping("/selectCreditScore/{customerId}")
+	public ResponseEntity<?> getCreditScore(@PathVariable String customerId) {
+		System.out.println("컨트롤 - selectCreditScore()");
+		return new ResponseEntity<>(service.selectCreditScore(customerId),HttpStatus.OK);
+	}
+	
 
 
 	
