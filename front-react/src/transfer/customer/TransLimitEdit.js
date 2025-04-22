@@ -52,7 +52,7 @@ function TransLimitEdit() {
 
     if (name === 'requested_limit') {
       const raw = value.replace(/[^0-9]/g, '');
-      const formatted = raw ? Number(raw).toLocaleString() : '';
+      const formatted = raw ? Number(raw).toLocaleString('ko-KR') : '';
       setEditItem(prev => ({ ...prev, requested_limit: raw }));
       setDisplayLimit(formatted);
     } else {
@@ -107,7 +107,7 @@ function TransLimitEdit() {
                     <>
                       <button onClick={() => {
                         setEditItem(item);
-                        setDisplayLimit(Number(item.requested_limit).toLocaleString());
+                        setDisplayLimit(Number(item.requested_limit).toLocaleString('ko-KR'));
                       }} className="btn-blue">수정</button>
                       <button onClick={() => deleteRow(item.transfer_id)} className="btn-red">삭제</button>
                     </>

@@ -37,7 +37,8 @@ public interface TransActionRepository extends JpaRepository<TransActionDTO, Int
     @Query("SELECT COALESCE(SUM(t.amount), 0) " +
             "FROM TransActionDTO t " +
             "WHERE t.account_number IN :accountList " +
-            "AND FUNCTION('DATE', t.transaction_date) = CURRENT_DATE")
+            "AND FUNCTION('DATE', t.transaction_date) = CURRENT_DATE " +
+    	    "AND t.transaction_type = '출금'")
      BigDecimal getTotalTransferredToday(@Param("accountList") List<String> accountList);
  }
 
