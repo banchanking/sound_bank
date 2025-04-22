@@ -58,10 +58,10 @@ function TransMulti() {
 
     if (name === 'amount') {
       let raw = value.replace(/[^\d.]/g, '');
-      raw = raw.replace(/^(\d*\.?\d*).*$/, '$1');
 
-      const [intPart, decimalPart] = raw.split('.')
-      const formatted = Number(intPart || 0).toLocaleString('en-US') + (decimalPart ? '.' + decimalPart : '');
+
+      const [intPart] = raw.split('.')
+      const formatted = Number(intPart || 0).toLocaleString('ko-KR');
 
       list[index][name] = raw;
       e.target.value = formatted; // 표시값
@@ -185,7 +185,7 @@ function TransMulti() {
 
         {/* 전송 영역 */}
         <div className="submit-area">
-          <p>총 이체 금액: <strong>{totalAmount.toLocaleString()}원</strong></p>
+          <p>총 이체 금액: <strong>{totalAmount.toLocaleString('ko-KR')}원</strong></p>
           <button onClick={send} className="btn-send">다건이체 요청</button>
         </div>
       </div>
