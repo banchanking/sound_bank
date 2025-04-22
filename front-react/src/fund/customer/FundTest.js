@@ -154,7 +154,9 @@ const FundTest = () => {
 
   return (
     <div className={styles.fundContainer}>
-      <h2 className={styles.fundtesttitle}>투자성향 분석</h2>
+      <div className={styles.fundtesttitle}>
+        <h1>투자성향 분석 테스트</h1>
+      </div>
       <div className={styles.fundtestcard}>
         {questions.map((question, index) => (
           <div key={index} id={`question-${index}`} className={styles.testquestion}>

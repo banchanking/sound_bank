@@ -19,10 +19,10 @@
     <!-- 오늘 이체한 총합 -->
 	<select id="getTodayTotal" parameterType="String" resultType="BigDecimal">
 	  SELECT IFNULL(SUM(amount), 0)
-	  FROM transfer_tbl
+	  FROM transaction_tbl
 	  WHERE customer_id = #{customer_id}
-	    AND transfer_type = '이체'
-	    AND DATE(transfer_date) = CURDATE()
+	    AND transaction_type = '출금'
+	    AND DATE(transaction_date) = CURDATE()
 	</select>
 
 </mapper>
