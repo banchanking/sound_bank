@@ -42,6 +42,7 @@ const FindFundCustomer = () => {
             <th>투자 금액</th>
             <th>좌수</th>
             <th>신청일</th>
+            <th>거래유형</th>
             <th>상태</th>
             <th>처리</th>
           </tr>
@@ -57,6 +58,7 @@ const FindFundCustomer = () => {
               <td>{tx.fundInvestAmount?.toLocaleString()}</td>
               <td>{tx.fundUnitsPurchased}</td>
               <td>{tx.fundTransactionDate}</td>
+              <td>{tx.fundTransactionType}</td>
               <td>{tx.status}</td>
               <td>
                 <button className={styles.fundApproveBtn} onClick={() => updateStatus(tx.fundTransactionId, "APPROVED")}>승인</button>

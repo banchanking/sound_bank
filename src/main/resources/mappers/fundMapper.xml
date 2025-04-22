@@ -54,6 +54,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             fund_grade = #{fund_grade},
             fund_fee_rate = #{fund_fee_rate},
             fund_upfront_fee = #{fund_upfront_fee},
+            fund_risk_type = #{fund_risk_type},
             return_1m = #{return_1m},
             return_3m = #{return_3m},
             return_6m = #{return_6m},
