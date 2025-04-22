@@ -143,13 +143,26 @@ public class FundController {
         }
     }
     
-    // 펀드 계좌 해지
+    // 사용자: 펀드 계좌 해지 요청
     @PatchMapping("/fund/close/{fundAccountId}")
     public ResponseEntity<String> closeFundAccount(@PathVariable("fundAccountId") int fundAccountId) {
-        service.closeFundAccount(fundAccountId);
-        return ResponseEntity.ok("펀드 계좌 해지 완료");
+        service.requestCloseFundAccount(fundAccountId); // ✅ 상태: PENDING
+        return ResponseEntity.ok("펀드 계좌 해지 요청 완료");
     }
-    
+
+    // 관리자: 해지 요청 계좌 목록 조회
+    @GetMapping("/admin/fundAccount/close-apply")
+    public List<FundAccountDTO> getCloseApplyAccounts() {
+        return service.getCloseApplyAccounts(); // ✅ status='PENDING'만 조회
+    }
+
+    // 관리자: 계좌 해지 승인 처리
+    @PatchMapping("/admin/fundAccount/{fundAccountId}/closed")
+    public ResponseEntity<String> approveFundClose(@PathVariable int fundAccountId) {
+        service.updateFundAccountStatus(fundAccountId, "CLOSED"); // ✅ status='CLOSED' 처리
+        return ResponseEntity.ok("계좌 해지 승인 완료");
+    }
+
     // 관리자 승인 대기 계좌 목록 조회
     @GetMapping("/admin/fundAccount/pending")
     public List<FundAccountDTO> getPendingAccounts() {
@@ -169,7 +182,13 @@ public class FundController {
     	service.updateFundAccountStatus(fundAccountId, "REJECTED");
         return ResponseEntity.ok("계좌 거절 완료");
     }
-    
+
+	 // 해지 완료된 계좌 목록 조회 (고객용)
+	 @GetMapping("/fundAccount/closed/{customer_id}")
+	 public ResponseEntity<List<FundAccountDTO>> getClosedAccounts(@PathVariable("customer_id") String customerId) {
+	     return ResponseEntity.ok(service.getClosedFundAccounts(customerId));
+	 }
+ 
     // 펀드 계좌 조회
     @GetMapping("/accounts/allAccount/fund/{customer_id}")
     public ResponseEntity<List<FundAccountDTO>> getAccounts(@PathVariable("customer_id") String customerId) {

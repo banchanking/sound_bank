@@ -15,4 +15,5 @@ public interface FundAccountRepository extends JpaRepository<FundAccountDTO, Int
     
     // 펀드 계좌 개설요청 조회
     List<FundAccountDTO> findByStatus(String status);
+    
 }

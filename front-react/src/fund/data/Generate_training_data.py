@@ -1,23 +1,29 @@
 import pandas as pd
 import numpy as np
+import random
 import os
 from imblearn.over_sampling import RandomOverSampler, SMOTE
 
 # ----------- 투자성향 예측을 위한 샘플 데이터 전처리  -----------
 # ----------- 질문과 점수 매핑 -----------
 questions = [
-    {"id": 1, "question": "금융투자상품에 대한 이해도는 어느 정도인가요?", "weights": [1, 3, 4, 5]}, 
-    {"id": 2, "question": "고객님의 수입원은 어떻게 되시나요?", "weights": [1, 3, 5]},  
+    {"id": 1, "question": "금융투자상품에 대한 이해도는 어느 정도인가요?", "weights": [5, 4, 3, 1]}, 
+    {"id": 2, "question": "고객님의 수입원은 어떻게 되시나요?", "weights": [5, 3, 1]},  
     {"id": 3, "question": "고객님의 연간 소득은 어떻게 되시나요?", "weights": [1, 2, 3, 5]},
-    {"id": 4, "question": "고객님이 주로 투자한 금융상품은 어느 것인가요?", "weights": [1, 2, 3, 4, 5]},
+    {"id": 4, "question": "고객님이 주로 투자한 금융상품은 어느 것인가요?", "weights": [5, 4, 3, 2, 1]},
     {"id": 5, "question": "총 자산대비 투자상품의 비중은 어떻게 되시나요?", "weights": [1, 2, 3, 4, 5]},
-    {"id": 6, "question": "파생상품, 파생결합증권, 파생상품 투자펀드에 투자한 기간은 어떻게 되시나요?", "weights": [1, 3, 4, 5]},
-    {"id": 7, "question": "투자금에 대한 기대수익 대비 감내 가능한 손실 수준은 어떻게 되시나요?", "weights": [1, 3, 4, 5]},
-    {"id": 8, "question": "현재 금융투자상품에 가입하는 목적은 어떻게 되시나요?", "weights": [1, 3, 4, 5]},
-    {"id": 9, "question": "투자하려는 자금의 투자기간은 얼마나 되시나요?", "weights": [1, 2, 3, 4, 5]},
+    {"id": 6, "question": "파생상품, 파생결합증권, 파생상품 투자펀드에 투자한 기간은 어떻게 되시나요?", "weights": [5, 4, 3, 1]},
+    {"id": 7, "question": "투자금에 대한 기대수익 대비 감내 가능한 손실 수준은 어떻게 되시나요?", "weights": [5, 4, 3, 1]},
+    {"id": 8, "question": "현재 금융투자상품에 가입하는 목적은 어떻게 되시나요?", "weights": [5, 4, 3, 1]},
+    {"id": 9, "question": "투자하려는 자금의 투자기간은 얼마나 되시나요?", "weights": [5, 4, 3, 2, 1]},
 ]
 
+
 # ----------- 투자성향 데이터 생성 -----------
+# 더미 데이터 생성
+num_samples = 8000
+answer_cols = [f"Q{i+1}" for i in range(9)]
+
 def generate_investment_data(num_samples):
     """
     투자성향 데이터를 생성합니다.
@@ -34,7 +40,7 @@ def generate_investment_data(num_samples):
     }
     
     # 각 성향당 필요한 샘플 수
-    per_type = num_samples # 5개
+    per_type = num_samples // len(risk_type_mapping)  # 각 성향별 균등 분포
     
     type_ranges = {
         0: (10, 18),   # 안정형
