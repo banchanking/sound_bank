@@ -50,7 +50,8 @@ const LoanAgreement = () => {
       .then((res) => {
         if (res && res.status === 201) {
           setIsSMSModalOpen(false);
-          navigate("/loanInfoApply/" + loan_id);
+          alert("신용점수 평가 화면으로 이동합니다.");
+          navigate("/loanCreditScore/" + loan_id);
         } else {
           alert("동의내역 저장 실패");
         }
