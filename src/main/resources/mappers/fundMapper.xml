@@ -54,6 +54,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             fund_grade = #{fund_grade},
             fund_fee_rate = #{fund_fee_rate},
             fund_upfront_fee = #{fund_upfront_fee},
+            fund_risk_type = #{fund_risk_type},
             return_1m = #{return_1m},
             return_3m = #{return_3m},
             return_6m = #{return_6m},
@@ -87,22 +88,22 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 	<!-- 고객의 투자성향을 customer_tbl에 업데이트 -->
 	<update id="updateCustomerRiskType">
-	     UPDATE customer_tbl
-		    SET CUSTOMER_RISK_TYPE = (
-		        SELECT f.FUND_RISK_TYPE
-		        FROM fund_test_tbl f
-		        WHERE f.CUSTOMER_ID = #{customer_id}
-		        ORDER BY f.FUND_TEST_DATE DESC
-		        LIMIT 1
-		    )
-		    WHERE CUSTOMER_ID = #{customer_id}
+	    UPDATE customer_tbl
+	    SET CUSTOMER_RISK_TYPE = (
+	        SELECT f.FUND_RISK_TYPE
+	        FROM fund_test_tbl f
+	        WHERE f.CUSTOMER_ID = #{customer_id}
+	        ORDER BY f.FUND_TEST_ID DESC
+	        LIMIT 1
+	    )
+	    WHERE CUSTOMER_ID = #{customer_id}
 	</update>
 
     <!-- 고객의 투자 성향 조회 -->
     <select id="getCustomerRiskType" parameterType="String" resultType="String">
-        SELECT CUSTOMER_RISK_TYPE
+        SELECT customer_risk_type
         FROM customer_tbl
-        WHERE CUSTOMER_ID = #{customer_id}
+        WHERE customer_id = #{customer_id}
     </select>
 
     <!-- 고객의 투자 성향에 맞는 펀드 목록 조회 -->
@@ -126,6 +127,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	  WHERE account_number = #{account_number}
 	</select>
 	
+	<!-- PENDING 상태인 해지 요청 목록 조회 -->
+	<select id="findDeactiveAccounts"  resultMap="fundAccountMap">
+	  SELECT * FROM fund_account_tbl WHERE status = 'PENDING'
+	</select>
+	
+	<!-- 해지 완료된 계좌 목록 조회 (고객용) -->
+	<select id="findClosedAccountsByCustomerId" resultMap="fundAccountMap">
+	    SELECT *
+	    FROM fund_account_tbl
+	    WHERE CUSTOMER_ID = #{customerId}
+	      AND STATUS = 'CLOSED'
+	</select>
+
 	<!-- 펀드 거래(매수/환매) 등록 -->
 	<insert id="insertFundTransaction" parameterType="com.boot.sound.fund.dto.FundTransactionDTO">
 	  INSERT INTO fund_transaction_tbl (
@@ -200,6 +214,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	  <result property="withdrawAccountNumber" column="WITHDRAW_ACCOUNT_NUMBER" />
 	</resultMap>
 	
+	<resultMap id="fundAccountMap" type="com.boot.sound.fund.dto.FundAccountDTO">
+    <id property="fundAccountId" column="FUND_ACCOUNT_ID"/>
+    <result property="customerId" column="CUSTOMER_ID"/>
+    <result property="fundAccountPassword" column="FUND_ACCOUNT_PASSWORD"/>
+    <result property="fundAccountNumber" column="FUND_ACCOUNT_NUMBER"/>
+    <result property="fundAccountName" column="FUND_ACCOUNT_NAME"/>
+    <result property="fundBalance" column="FUND_BALANCE"/>
+    <result property="fundOpenDate" column="FUND_OPEN_DATE"/>
+    <result property="linkedAccountNumber" column="LINKED_ACCOUNT_NUMBER"/>
+    <result property="status" column="STATUS"/>
+    <result property="closeDate" column="CLOSE_DATE"/>
+</resultMap>
 	
 
 

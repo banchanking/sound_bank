@@ -47,15 +47,22 @@ const TransHistory = () => {
   };
 
   // CSV 파싱 + 펀드 ID별 수익률 매핑
-  useEffect(() => {
-    Papa.parse("../../../public/data/fundList_updated.csv", {
-      header: true,
-      download: true,
-      complete: (results) => {
-        console.log("✅ CSV 파싱 결과:", results.data);
-      }
-    });
-  }, []);
+  Papa.parse("/data/fundList_updated.csv", {
+    header: true,
+    download: true,
+    complete: (results) => {
+      const fundRateMap = {};
+      results.data.forEach((fund) => {
+        fundRateMap[Number(fund.fund_id)] = {
+          return_1m: parseFloat(fund.return_1m || 0),
+          return_3m: parseFloat(fund.return_3m || 0),
+          return_6m: parseFloat(fund.return_6m || 0),
+          return_12m: parseFloat(fund.return_12m || 0),
+        };
+      });
+      setFundRates(fundRateMap);
+    },
+  });
 
   const getApproximateRate = (tx, rateMap) => {
     const rates = rateMap[tx.fundId];
@@ -71,7 +78,7 @@ const TransHistory = () => {
 
   return (
     <div align="center" className={styles.fundContainer}>
-      <h2>펀드 매수 내역</h2>
+      <h2>My펀드 거래내역</h2>
       <table className={styles.fundTable}> 
         <thead>
           <tr>

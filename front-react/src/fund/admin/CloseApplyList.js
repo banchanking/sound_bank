@@ -1,65 +1,66 @@
 import React, { useEffect, useState } from "react";
 import RefreshToken from "../../jwt/RefreshToken";
-import styles from "../../Css/fund/FundAdmin.module.css"; // 공통 스타일 재사용
+import styles from "../../Css/fund/FundAdmin.module.css";
 
 const CloseApplyList = () => {
-  const [sellRequests, setSellRequests] = useState([]);
+  const [accounts, setAccounts] = useState([]);
 
-  // 환매 요청 목록 조회
-  const fetchPendingSells = async () => {
+  // DEACTIVE 상태인 해지 신청 계좌 목록 불러오기
+  const fetchCloseApplyAccounts = async () => {
     try {
-      const res = await RefreshToken.get("http://localhost:8081/api/fundTrade/sell");
-      setSellRequests(res.data);
+      const res = await RefreshToken.get("http://localhost:8081/api/admin/fundAccount/close-apply");
+      setAccounts(res.data);
+      console.log("불러온 계좌 목록:", res.data);
     } catch (err) {
-      console.error("환매 요청 조회 실패", err);
+      console.error("해지 신청 계좌 목록 조회 실패", err);
     }
   };
 
-  // 승인 / 거절 처리
-  const updateStatus = async (transactionId, status) => {
+  // 해지 승인 처리 (상태 CLOSED로 변경)
+  const handleApproveClose = async (fundAccountId) => {
     try {
-      await RefreshToken.put(`http://localhost:8081/api/fundTrade/${transactionId}/${status.toLowerCase()}`);
-      alert(`${status === "APPROVED" ? "승인" : "거절"} 처리 완료`);
-      fetchPendingSells(); // 리스트 갱신
+      await RefreshToken.patch(`http://localhost:8081/api/admin/fundAccount/${fundAccountId}/closed`);
+      alert("계좌 해지 승인 완료");
+      fetchCloseApplyAccounts(); // 목록 갱신
     } catch (err) {
-      console.error("처리 실패", err);
-      alert("처리 중 오류 발생");
+      console.error("해지 승인 실패", err);
+      alert("해지 승인 처리 실패");
     }
   };
 
   useEffect(() => {
-    fetchPendingSells();
+    fetchCloseApplyAccounts();
   }, []);
 
   return (
-    <div className={styles.fundAdminContainer}>
-      <h2>펀드 환매 승인 요청 목록</h2>
+    <div className={styles.fundContainer}>
+      <h2 className={styles.fundTitle}>계좌 해지 신청 목록</h2>
       <table className={styles.fundTable}>
         <thead>
           <tr>
+            <th>계좌 ID</th>
             <th>고객 ID</th>
-            <th>펀드 ID</th>
-            <th>투자 금액</th>
-            <th>매도 좌수</th>
-            <th>요청일</th>
+            <th>펀드 계좌 번호</th>
+            <th>보유 계좌</th>
             <th>상태</th>
             <th>처리</th>
           </tr>
         </thead>
         <tbody>
-          {sellRequests.map((tx) => (
-            <tr key={tx.fundTransactionId}>
-              <td>{tx.customerId}</td>
-              <td>{tx.fundId}</td>
-              <td>{tx.fundInvestAmount?.toLocaleString()} 원</td>
-              <td>{tx.fundUnitsPurchased}</td>
-              <td>{tx.fundTransactionDate}</td>
+          {accounts.map((acc) => (
+            <tr key={acc.fundAccountId || Math.random()} className={styles.fundRow}>
+              <td>{acc.fundAccountId}</td>
+              <td>{acc.customerId}</td>
+              <td>{acc.fundAccountNumber}</td>
+              <td>{acc.linkedAccountNumber}</td>
+              <td>{acc.status}</td>
               <td>
-                <span className={`${styles.status} ${styles.pending}`}>승인 대기</span>
-              </td>
-              <td>
-                <button onClick={() => updateStatus(tx.fundTransactionId, "APPROVED")}>승인</button>
-                <button onClick={() => updateStatus(tx.fundTransactionId, "REJECTED")}>거절</button>
+                <button
+                  onClick={() => handleApproveClose(acc.fundAccountId)}
+                  className={styles.fundRejectBtn}
+                >
+                  해지 승인
+                </button>
               </td>
             </tr>
           ))}
