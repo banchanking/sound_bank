@@ -36,12 +36,12 @@ pip install numpy==1.23.0 (numpy 다운그레이드 - matplotlib와 호환X)
 
 <버전확인>
 fastapi=0.112.2 
-keras=2.10.0
+keras=2.11.0
 numpy=1.23.0 
 pandas=2.2.3 
 pip=25.0.1 
 pydantic=2.10.3 
-tensorflow=2.10.0 
+tensorflow=2.11.0 
 
 
 없으면 pip install 해당이름==버전 (install 실패시 : 에러 떠도 'Installed 해당버전'이면 그냥 무시)

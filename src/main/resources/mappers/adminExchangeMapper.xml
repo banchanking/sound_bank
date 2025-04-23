@@ -11,5 +11,32 @@
 	  WHERE base_date = #{base_date}
 	    AND currency_code = #{currency_code}
 	</update>
+	<!-- 모든 지갑 찾기 -->
+	<select id="findAllWallets" resultType="map">
+		SELECT *
+		FROM exchange_wallet
+		ORDER BY customer_id ASC, currency_code ASC
+	</select>
+	
+	<!-- 지갑보유한모든회원찾기 -->
+	<select id="findAllCustomerIds" resultType="map">
+		SELECT DISTINCT customer_id
+		FROM exchange_wallet
+		ORDER BY customer_id
+	</select>
 
+	<!-- 아이디별 보유지갑찾기 -->
+	<select id="findWalletsByCustomerId" parameterType="string" resultType="map">
+		SELECT *
+		FROM exchange_wallet
+		WHERE customer_id = #{customer_id}
+		ORDER BY currency_code
+	</select>
+
+	<!-- 지갑 상태 업데이트 -->
+	<update id="updateWalletStatus" parameterType="map">
+		UPDATE exchange_wallet
+		SET status = #{STATUS}, updated_at = NOW()
+		WHERE customer_id = #{CUSTOMER_ID} AND currency_code = #{CURRENCY_CODE}
+	</update>
 </mapper>
