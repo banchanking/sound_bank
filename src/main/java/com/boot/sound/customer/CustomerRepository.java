@@ -14,4 +14,6 @@ public interface CustomerRepository extends JpaRepository<CustomerDTO, String> {
 	String findPasswordById(@Param("customerId") String customerId);
 	
 	Optional<CustomerDTO> findByCustomerPhoneNumberAndCustomerNameAndCustomerId(String customerPhoneNumber, String customerName, String customerId);
+	
+	Optional<CustomerDTO> findByCustomerId(String customerId);
 }
