@@ -1,4 +1,3 @@
-// 파일명: AdminExchangeRateManage.jsx
 import React, { useEffect, useState } from "react";
 import styles from "../../Css/exchange/AdminExchangeRateManage.module.css";
 import RefreshToken from "../../jwt/RefreshToken";
@@ -8,6 +7,7 @@ const AdminExchangeRateManage = () => {
   const [date, setDate] = useState("");
   const [editedRates, setEditedRates] = useState([]);
   const { rates, loading } = useExchangeRates(date);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     const today = new Date();
@@ -35,22 +35,71 @@ const AdminExchangeRateManage = () => {
       fee_rate: parseFloat(rate.fee_rate)
     }));
 
+    setIsSaving(true);
     RefreshToken
       .put("http://localhost:8081/api/admin/updateRatesFee", parsedRates)
-      .then(() => alert("환율 정보가 성공적으로 저장되었습니다."))
-      .catch(() => alert("저장 실패. 다시 시도해주세요."));
+      .then(() => {
+        alert(`수수료가 변경되었습니다.`);
+      })
+      .catch(() => {
+        alert("수수료 저장 실패. 다시 시도해주세요.");
+      })
+      .finally(() => {
+        setIsSaving(false);
+      });
+  };
+
+  const saveRateBtn = () => {
+    setIsSaving(true);
+    RefreshToken
+      .post("http://localhost:8081/api/exchange/save")
+      .then(() => {
+        alert(`${date} 환율이 저장되었습니다.`);
+      })
+      .catch(() => {
+        alert("환율 저장에 실패했습니다. 다시 시도해주세요.");
+      })
+      .finally(() => {
+        setIsSaving(false);
+      });
   };
 
   return (
     <div className={styles.container}>
-      <div className={styles.dateInput} style={{ marginBottom: "2rem", display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "0.5rem" }}>
-        <label htmlFor="date" style={{ fontWeight: "bold" }}>날짜 선택:</label>
+      <div className={styles.saveButtonWrapper}>
+        <button
+          onClick={saveRateBtn}
+          className={styles.saveButton}
+          disabled={isSaving}
+        >
+          {isSaving ? "환율을 저장중입니다..." : "환율 수동저장"}
+        </button>
+      </div>
+
+      <div
+        className={styles.dateInput}
+        style={{
+          marginBottom: "2rem",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-start",
+          gap: "0.5rem"
+        }}
+      >
+        <label htmlFor="date" style={{ fontWeight: "bold" }}>
+          날짜 선택:
+        </label>
         <input
           type="date"
           id="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          style={{ padding: "6px 10px", borderRadius: "6px", border: "1px solid #ccc", fontSize: "14px" }}
+          style={{
+            padding: "6px 10px",
+            borderRadius: "6px",
+            border: "1px solid #ccc",
+            fontSize: "14px"
+          }}
         />
       </div>
 
@@ -73,7 +122,9 @@ const AdminExchangeRateManage = () => {
               {editedRates.map((item, idx) => (
                 <tr key={item.currency_code}>
                   <td>{item.currency_code}</td>
-                  <td className={styles.currencyNameCell}>{item.currency_name}</td>
+                  <td className={styles.currencyNameCell}>
+                    {item.currency_name}
+                  </td>
                   <td>
                     <input
                       type="text"
@@ -111,7 +162,13 @@ const AdminExchangeRateManage = () => {
             </tbody>
           </table>
           <div className={styles.saveButtonWrapper}>
-            <button onClick={handleSave} className={styles.saveButton}>저장</button>
+            <button
+              onClick={handleSave}
+              className={styles.saveButton}
+              disabled={isSaving}
+            >
+              {isSaving ? "저장중입니다..." : "저장"}
+            </button>
           </div>
         </>
       )}
