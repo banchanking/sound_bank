@@ -9,7 +9,7 @@ const FundCustomer = () => {
   // 거래 목록 조회
   const fetchPendingTransactions = async () => {
     try {
-      const res = await RefreshToken.get("http://localhost:8081/api/pending-check");
+      const res = await RefreshToken.get("/pending-check");
       setTransactions(res.data);
     } catch (error) {
       console.error("조회 실패", error);
@@ -19,7 +19,7 @@ const FundCustomer = () => {
   // 승인/거절 처리
   const updateStatus = async (fundTransactionId, status) => {
     try {
-      await RefreshToken.put(`http://localhost:8081/api/fundTrade/${fundTransactionId}/${status.toLowerCase()}`);
+      await RefreshToken.put(`/fundTrade/${fundTransactionId}/${status.toLowerCase()}`);
       alert(`${status === "APPROVED" ? "승인" : "거절"} 처리 완료`);
       fetchPendingTransactions();
     } catch (err) {
