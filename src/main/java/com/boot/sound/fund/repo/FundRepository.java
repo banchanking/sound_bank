@@ -69,7 +69,8 @@ public interface FundRepository {
     // 펀드 매수 확정
     public List<FundTransactionDTO> findApprovedBuys(@Param("customer_id") String customerId);
     
-    
+    // 펀드 매수시점 계좌 잔액 조회
+    FundTransactionDTO findTransactionById(@Param("fundTransactionId") int fundTransactionId);
     
 
     

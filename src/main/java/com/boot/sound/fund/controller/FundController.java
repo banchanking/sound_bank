@@ -208,34 +208,29 @@ public class FundController {
         return service.getPendingTransactions();
     }
     
-    // 펀드 매수요청 관리자 승인
+    // 펀드 거래 승인 및 계좌 반영 처리 API (관리자용)
     @PutMapping("/fundTrade/{fund_transaction_id}/{status}")
     public ResponseEntity<String> approveTransaction(
-    		@PathVariable("fund_transaction_id") int fundTransactionId,
-    		@PathVariable("status") String status)	{
-    	
-        service.updateTransactionStatus(fundTransactionId, status.toUpperCase());
-        String message = switch (status.toUpperCase()) {
-        case "APPROVED" -> "거래 승인 완료";
-        case "REJECTED" -> "거래 거절 완료";
-        default -> "처리 완료";
-        };
-        return ResponseEntity.ok(message);
+            @PathVariable("fund_transaction_id") int fundTransactionId,
+            @PathVariable("status") String status) {
+
+        try {
+            // 거래 상태 처리 (APPROVED or REJECTED)
+            service.updateTransactionStatus(fundTransactionId, status.toUpperCase());
+
+            String message = switch (status.toUpperCase()) {
+                case "APPROVED" -> "거래 승인 완료 (잔액 반영 포함)";
+                case "REJECTED" -> "거래 거절 완료";
+                default -> "처리 완료";
+            };
+
+            return ResponseEntity.ok(message);
+        } catch (Exception e) {
+            logger.error("거래 승인 처리 중 오류 발생", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("처리 실패: " + e.getMessage());
+        }
     }
-    
-    // 펀드 매수 확정
-    @GetMapping("/fundTrade/buy-approve/{customer_id}")
-    public List<FundTransactionDTO> getApprovedBuy(@PathVariable("customer_id") String customerId) {
-        return service.getApprovedBuys(customerId);
-    }
-    
-    // 펀드 매수요청 관리자 거절
-    @PutMapping("/fundTrade/{fund_transaction_id}/rejected")
-    public ResponseEntity<String> rejectTransaction(@PathVariable("fund_transaction_id") int fundTransactionId) {
-        service.updateTransactionStatus(fundTransactionId, "REJECTED");
-        return ResponseEntity.ok("거절 완료");
-    }
-    
+
     // 펀드 거래(환매)
     @PostMapping("/fundTrade/sell")
     public ResponseEntity<String> sellFund(@RequestBody FundTransactionDTO dto) {
