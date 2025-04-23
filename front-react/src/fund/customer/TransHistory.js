@@ -13,7 +13,7 @@ const TransHistory = () => {
 
   const fetchTransactions = async () => {
     const customerId = localStorage.getItem("customerId");
-    const res = await RefreshToken.get(`http://localhost:8081/api/fundTrade/buy-approve/${customerId}`);
+    const res = await RefreshToken.get(`/fundTrade/buy-approve/${customerId}`);
     setTransactions(res.data.filter(tx => tx.fundTransactionType === "BUY")); // 매수만
   };
 
@@ -76,6 +76,13 @@ const TransHistory = () => {
     return rates.return_12m;
   };
 
+  const getProfitRate = (tx, rateMap) => {
+    const approxRate = getApproximateRate(tx, rateMap); // 현재 수익률 (%)
+    const currentValue = tx.fundInvestAmount * (1 + approxRate / 100);
+    const profitRate = ((currentValue - tx.fundInvestAmount) / tx.fundInvestAmount) * 100;
+    return profitRate.toFixed(2);
+  };
+
   return (
     <div align="center" className={styles.fundContainer}>
       <h2>My펀드 거래내역</h2>
@@ -98,6 +105,7 @@ const TransHistory = () => {
               <td>{tx.fundUnitsPurchased}</td>
               <td>{tx.fundPricePerUnit}</td>
               <td>{tx.fundTransactionDate}</td>
+              <td>{dayjs(tx.fundTransactionDate).format("YYYY-MM-DD")}</td>
               <td>
                 <button onClick={() => handleSellClick(tx)}>환매하기</button>
               </td>
@@ -113,15 +121,20 @@ const TransHistory = () => {
                 chartType="ColumnChart"
                 data={[
                   ["시점", "수익률"],
-                  ["매수 시점", 0], // 기준선 0 (근사값(보유일수 기준으로 return_1m~12m)으로 현재 수익률을 유추)
-                  ["현재 시점", getApproximateRate(selectedTx, fundRates) / 100]
+                  ["매수 시점", 0], // 기준 0
+                  ["현재 시점", parseFloat(getProfitRate(selectedTx, fundRates)) / 100]
                 ]}
                 width="100%"
                 height="300px"
                 options={{
                   legend: { position: "none" },
-                  colors: ["#333"],
-                  vAxis: { format: "#.##%" },
+                  colors: ["#4caf50"],
+                  vAxis: { format: "#.##%", title: "수익률" },
+                  animation: {
+                    startup: true,
+                    duration: 800,
+                    easing: "out",
+                  },
                 }}
               />
           <h4>환매 비밀번호 입력</h4>

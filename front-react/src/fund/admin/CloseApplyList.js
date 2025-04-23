@@ -8,7 +8,7 @@ const CloseApplyList = () => {
   // DEACTIVE 상태인 해지 신청 계좌 목록 불러오기
   const fetchCloseApplyAccounts = async () => {
     try {
-      const res = await RefreshToken.get("http://localhost:8081/api/admin/fundAccount/close-apply");
+      const res = await RefreshToken.get("/admin/fundAccount/close-apply");
       setAccounts(res.data);
       console.log("불러온 계좌 목록:", res.data);
     } catch (err) {
@@ -19,7 +19,7 @@ const CloseApplyList = () => {
   // 해지 승인 처리 (상태 CLOSED로 변경)
   const handleApproveClose = async (fundAccountId) => {
     try {
-      await RefreshToken.patch(`http://localhost:8081/api/admin/fundAccount/${fundAccountId}/closed`);
+      await RefreshToken.patch(`/admin/fundAccount/${fundAccountId}/closed`);
       alert("계좌 해지 승인 완료");
       fetchCloseApplyAccounts(); // 목록 갱신
     } catch (err) {

@@ -8,7 +8,7 @@ const CustomerTransHistory = () => {
   // 환매 요청 목록 조회
   const fetchPendingSells = async () => {
     try {
-      const res = await RefreshToken.get("http://localhost:8081/api/fundTrade/sell");
+      const res = await RefreshToken.get("/fundTrade/sell");
       setSellRequests(res.data);
     } catch (err) {
       console.error("환매 요청 조회 실패", err);
@@ -18,7 +18,7 @@ const CustomerTransHistory = () => {
   // 승인 / 거절 처리
   const updateStatus = async (transactionId, status) => {
     try {
-      await RefreshToken.put(`http://localhost:8081/api/fundTrade/${transactionId}/${status.toLowerCase()}`);
+      await RefreshToken.put(`/fundTrade/${transactionId}/${status.toLowerCase()}`);
       alert(`${status === "APPROVED" ? "승인" : "거절"} 처리 완료`);
       fetchPendingSells(); // 리스트 갱신
     } catch (err) {

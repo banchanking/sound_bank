@@ -13,10 +13,6 @@ const Fund = ({ fundId, onClose, onBuy }) => {
   const [withdrawAccountNumber, setWithdrawAccountNumber] = useState("");
   const [selectedFundAccount, setSelectedFundAccount] = useState(null);
 
-  // 🔍 진입 확인 로그
-  console.log("🔥 Fund 컴포넌트 실행됨");
-  console.log("➡️ props로 받은 fundId:", fundId);
-
   useEffect(() => {
     const fetchData = async () => {
       if (!fundId) {
