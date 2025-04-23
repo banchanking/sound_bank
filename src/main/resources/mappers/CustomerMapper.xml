@@ -10,4 +10,10 @@
     	SET refresh_token = #{refresh_token}
     	WHERE customer_id = #{customerId}
     </update>
+    
+    <select id="selectRefreshToken">
+    	SELECT refresh_token
+    	FROM customer_tbl
+    	WHERE customer_id=#{customerId}
+    </select>
 </mapper>
