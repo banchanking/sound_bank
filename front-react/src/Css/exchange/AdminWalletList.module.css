@@ -1,0 +1,59 @@
+.container {
+    padding: 20px;
+    font-family: 'Pretendard', sans-serif;
+  }
+  
+  .customerListWrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  
+  .customerButton {
+    padding: 6px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background-color: gray;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .customerButton:hover {
+    background-color: #e0e0e0;
+  }
+  
+  .walletTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+  }
+  
+  .walletTable th, .walletTable td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: center;
+  }
+  
+  .readOnlyInput {
+    width: 100%;
+    border: none;
+    background-color: transparent;
+    text-align: center;
+  }
+  
+  .saveButton {
+    margin-top: 20px;
+    padding: 8px 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  
+  .saveButton:hover {
+    background-color: #3b9740;
+  }
+  

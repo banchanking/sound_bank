@@ -26,7 +26,6 @@ const Login = () => {
       .then((res) => {
         setAuthToken(res.data.customer_token); // access token 저장
         setCustomerID(res.data.customerId); // 고객 ID 저장
-        setRefreshToken(res.data.refresh_token); // refresh token 저장
 
         alert(res.data.customerId + "님 환영합니다.");
         navigate("/");
