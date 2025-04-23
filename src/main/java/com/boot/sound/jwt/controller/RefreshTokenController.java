@@ -22,13 +22,17 @@ public class RefreshTokenController {
 
     @PostMapping("/refresh-token")
     public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequest request) {
-        String refreshToken = request.getRefreshToken();
+        String customerId = request.getCustomerId();  // ✅ customerId만 받음
+        System.out.println("💬 [refresh-token] 받은 customerId: " + customerId);
         try {
-            String customerId = userAuthProvider.validateRefreshToken(refreshToken);
+            // ✅ DB에서 직접 refreshToken을 꺼내서 검증
+            String validatedCustomerId = userAuthProvider.validateRefreshToken(customerId);
+
             String newAccessToken = userAuthProvider.createToken(customerId);
-            return ResponseEntity.ok(newAccessToken);
+            return ResponseEntity.ok(newAccessToken); // 단순 문자열 또는 {"accessToken": newAccessToken}
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
         }
     }
+
 }
