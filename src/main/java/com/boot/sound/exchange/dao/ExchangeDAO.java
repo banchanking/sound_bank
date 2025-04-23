@@ -56,7 +56,7 @@ public interface ExchangeDAO {
     public List<ExchangeTransactionDTO> getExRequestListById(String customer_id);
 
     // DB 저장된 환율 조회
-    public List<Map<String, Object>> getRateByDate(String base_date);
+    public List<Map<String, Object>> getRateByDate(@Param("base_date")String base_date);
 
     // 환율 DB에 자동저장
     public int insertExchangeRate(Map<String, Object> rate);
