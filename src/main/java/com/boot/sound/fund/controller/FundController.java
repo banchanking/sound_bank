@@ -195,11 +195,17 @@ public class FundController {
         return ResponseEntity.ok(service.getFundAccounts(customerId));
     }
     
-    // 펀드 거래(매수)
-    @PostMapping("/fundTrade/buy")
-    public ResponseEntity<String> tradeFund(@RequestBody FundTransactionDTO dto) {
-        service.processTransaction(dto);
-        return ResponseEntity.ok("거래 완료");
+    // 사용자 전체 펀드 거래 내역 조회 (매수/환매 포함)
+    @PostMapping("/fundTrade")
+    public ResponseEntity<String> processTrade(@RequestBody FundTransactionDTO tx) {
+        try {
+            System.out.println("요청받은 거래:" + tx);
+            service.processFundTrade(tx); // 매수 또는 환매
+            return ResponseEntity.ok("펀드 거래 요청 처리 완료");
+        } catch (Exception e) {
+        	System.out.println("거래 요청 처리 실패" + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("펀드 거래 요청 실패");
+        }
     }
     
     // 펀드 매수요청 관리자 확인
@@ -229,13 +235,6 @@ public class FundController {
             logger.error("거래 승인 처리 중 오류 발생", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("처리 실패: " + e.getMessage());
         }
-    }
-
-    // 펀드 거래(환매)
-    @PostMapping("/fundTrade/sell")
-    public ResponseEntity<String> sellFund(@RequestBody FundTransactionDTO dto) {
-        service.processSellTransaction(dto);
-        return ResponseEntity.ok("환매 신청 완료");
     }
     
 

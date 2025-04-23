@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
+import MyFund from "../customer/MyFund";  // 로그인 체크용 팝업 컴포넌트
 import styles from "../../Css/fund/FundList.module.css"; // 스타일 파일 추가
 import RefreshToken from "../../jwt/RefreshToken"; // RefreshToken 모듈 추가
 
 const FundProductManage = () => {
+  const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
   const [funds, setFunds] = useState([]);
   const [dropdownFunds, setDropdownFunds] = useState([]); // 드롭다운에 표시할 펀드 목록
   const [formData, setFormData] = useState({
@@ -20,8 +24,14 @@ const FundProductManage = () => {
     return_12m: 0,
   });
 
-  // 펀드 목록 조회
+  // 로그인 체크 + 펀드 목록 조회
   useEffect(() => {
+    const token = localStorage.getItem("auth_token");
+    if (!token) {
+      setShowModal(true);
+      return;
+    }
+
     const fetchAll = async () => {
       try {
         const response1 = await RefreshToken.get("/fundList");
@@ -77,49 +87,61 @@ const FundProductManage = () => {
     } catch (error) {
       console.error("Error updating fund:", error);
       alert("펀드 수정 중 오류가 발생했습니다.");
+      }
+    };
+
+    // 펀드 삭제
+    const handleDeleteFund = async (fund_id) => {
+      try {
+        const response = await RefreshToken.delete(
+          `/fund/${fund_id}`
+        );
+    
+        console.log("삭제 응답:", response.data);
+        alert("펀드가 성공적으로 삭제되었습니다.");
+    
+      // 목록 새로 불러오기
+      const updatedFundList = await RefreshToken.get("/fundList");
+      setFunds(updatedFundList.data);
+
+      const updatedDropdown = await RefreshToken.get("/registeredFunds");
+      setDropdownFunds(updatedDropdown.data);
+
+      // 폼 상태 초기화
+      setFormData({
+        fund_id: "",
+        fund_name: "",
+        fund_company: "",
+        fund_type: "",
+        fund_grade: "",
+        fund_fee_rate: "",
+        fund_upfront_fee: "",
+        fund_risk_type: "",
+        return_1m: 0,
+        return_3m: 0,
+        return_6m: 0,
+        return_12m: 0,
+      });
+
+    } catch (error) {
+      console.error("펀드 삭제 중 오류:", error);
+      alert("펀드 삭제에 실패했습니다.");
     }
   };
 
-  // 펀드 삭제
-  const handleDeleteFund = async (fund_id) => {
-    try {
-      const response = await RefreshToken.delete(
-        `/fund/${fund_id}`
-      );
-  
-      console.log("삭제 응답:", response.data);
-      alert("펀드가 성공적으로 삭제되었습니다.");
-  
-    // 목록 새로 불러오기
-    const updatedFundList = await RefreshToken.get("/fundList");
-    setFunds(updatedFundList.data);
-
-    const updatedDropdown = await RefreshToken.get("/registeredFunds");
-    setDropdownFunds(updatedDropdown.data);
-
-    // 폼 상태 초기화
-    setFormData({
-      fund_id: "",
-      fund_name: "",
-      fund_company: "",
-      fund_type: "",
-      fund_grade: "",
-      fund_fee_rate: "",
-      fund_upfront_fee: "",
-      fund_risk_type: "",
-      return_1m: 0,
-      return_3m: 0,
-      return_6m: 0,
-      return_12m: 0,
-    });
-
-  } catch (error) {
-    console.error("펀드 삭제 중 오류:", error);
-    alert("펀드 삭제에 실패했습니다.");
-  }
-};
+  const handleConfirm = () => navigate("/login");
+  const handleCancel = () => navigate("/");
 
   return (
+    <>
+    {showModal && (
+      <MyFund
+        message="로그인이 필요한 서비스입니다."
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+      />
+    )}
+
     <div className={styles.fundContainer}>
       <h2>펀드 상품 관리</h2>
 
@@ -279,6 +301,7 @@ const FundProductManage = () => {
         </form>
       </div>
     </div>
+    </>
   );
 };
 

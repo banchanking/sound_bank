@@ -145,11 +145,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	  INSERT INTO fund_transaction_tbl (
 	    CUSTOMER_ID, FUND_ACCOUNT_ID, WITHDRAW_ACCOUNT_NUMBER, FUND_ID, FUND_TRANSACTION_TYPE,
 	    FUND_INVEST_AMOUNT, FUND_UNITS_PURCHASED, FUND_PRICE_PER_UNIT,
-	    FUND_TRANSACTION_DATE, STATUS
+	    FUND_TRANSACTION_DATE, FUND_CURRENT_VALUE, STATUS
 	  ) VALUES (
 	    #{customerId}, #{fundAccountId}, #{withdrawAccountNumber}, #{fundId}, #{fundTransactionType},
 	    #{fundInvestAmount}, #{fundUnitsPurchased}, #{fundPricePerUnit},
-	    #{fundTransactionDate}, #{status}
+	    #{fundTransactionDate}, #{fundCurrentValue}, #{status}
 	  )
 	</insert>
 	
@@ -198,6 +198,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	    AND FUND_TRANSACTION_TYPE = 'BUY'
 	    AND STATUS = 'APPROVED'
 	</select>
+	
+	<!-- 사용자 전체 펀드 거래 내역 조회 (매수/환매 포함) -->
+	<select id="findAllTransactionsByCustomer" parameterType="String" resultMap="fundTransactionMap">
+	    SELECT *
+	    FROM fund_transaction_tbl
+	    WHERE customer_id = #{customer_id}
+	    ORDER BY fund_transaction_date DESC
+	</select>
+
 	
 	<!-- 펀드 매수시 계좌 잔액 업데이트 -->
 	<select id="findTransactionById" resultMap="fundTransactionMap">

@@ -1,20 +1,30 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import RefreshToken from "../../jwt/RefreshToken";
 import styles from "../../Css/fund/FundAccount.module.css";
+import MyFund from "./MyFund";  // 로그인 체크용 팝업 컴포넌트
 
 const OpenAccount = () => {
+  const navigate = useNavigate();
   const customer_id = localStorage.getItem("customerId");
   const [accounts, setAccounts] = useState([]);
   const [selectedAccount, setSelectedAccount] = useState("");
   const [inputPassword, setInputPassword] = useState("");
   const [accountName, setAccountName] = useState("");
+  const [showModal, setShowModal] = useState(false);
 
-  // 기존 보유계좌 조회 (입출금/예금 등)
+  // 로그인 체크 + 기존 보유계좌 조회 (입출금/예금 등)
   useEffect(() => {
+    const token = localStorage.getItem("auth_token");
+    if (!token) {
+      setShowModal(true);
+      return;
+    }
+
     const fetchAccounts = async () => {
       try {
         const res = await RefreshToken.get(
-          `http://localhost:8081/api/accounts/allAccount/${customer_id}`
+          `/accounts/allAccount/${customer_id}`
         );
         const allAccounts = Object.values(res.data).flat(); // 입출금 + 예금 합침
         setAccounts(allAccounts);
@@ -41,7 +51,7 @@ const OpenAccount = () => {
     };
 
     try {
-      const res = await RefreshToken.post("http://localhost:8081/api/fund/open/verified", payload);
+      const res = await RefreshToken.post("/fund/open/verified", payload);
       alert(res.data); // service에서 넘긴 return문 "펀드 계좌 개설 신청 완료"
       setSelectedAccount("");
       setInputPassword("");
@@ -52,7 +62,20 @@ const OpenAccount = () => {
     }
   };
 
+  // 모달 핸들러
+  const handleConfirm = () => navigate("/login");
+  const handleCancel = () => navigate("/");
+
   return (
+    <>
+      {showModal && (
+        <MyFund
+          message="로그인이 필요한 서비스입니다."
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
+        />
+      )}
+
     <div className={styles.fundAccountcontainer}>
       <h2 className={styles.fundAccounttitle}>My펀드 계좌개설</h2>
       <div className={styles.fundAccountform}>
@@ -94,6 +117,7 @@ const OpenAccount = () => {
         </button>
       </div>
     </div>
+    </>
   );
 };
 

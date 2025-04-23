@@ -72,6 +72,7 @@ public interface FundRepository {
     // 펀드 매수시점 계좌 잔액 조회
     FundTransactionDTO findTransactionById(@Param("fundTransactionId") int fundTransactionId);
     
-
+    // 사용자 전체 펀드 거래 내역 조회 (매수/환매 포함)
+    public List<FundTransactionDTO> findAllTransactionsByCustomer(@Param("customer_id") String customerId);
     
 }

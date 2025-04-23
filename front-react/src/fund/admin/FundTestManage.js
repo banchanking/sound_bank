@@ -1,10 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import MyFund from "../customer/MyFund";  // 로그인 체크용 팝업 컴포넌트
 import Papa from "papaparse";
 import styles from "../../Css/fund/FundList.module.css"; // 스타일 파일 추가
 import RefreshToken from "../../jwt/RefreshToken"; // 인증 포함된 인스턴스 사용
 
 const FundTestManage = () => {
+  const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
   const [message, setMessage] = useState("");
+
+  // 로그인 체크
+  useEffect(() => {
+    const token = localStorage.getItem("auth_token");
+    if (!token) {
+      setShowModal(true);
+      return;
+    }
+  }, []);
 
   // 모델 재학습 트리거
   const handleRetrain = async () => {
@@ -36,7 +49,7 @@ const FundTestManage = () => {
       const text = await response.text();
       const rows = Papa.parse(text, { header: true }).data;
   
-      await RefreshToken.post("http://localhost:8081/api/updateRiskTypes", rows);
+      await RefreshToken.post("/updateRiskTypes", rows);
       alert("데이터 업데이트 완료!");
     } catch (error) {
       console.error("데이터 업데이트 실패:", error);
@@ -44,7 +57,19 @@ const FundTestManage = () => {
     }
   };
 
+  const handleConfirm = () => navigate("/login");
+  const handleCancel = () => navigate("/");
+
   return (
+    <>
+    {showModal && (
+      <MyFund
+        message="로그인이 필요한 서비스입니다."
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+      />
+    )}
+
     <div className={styles.fundContainer}>
       <div className={styles.fundTable}>
         <h2>펀드 성향 AI 관리</h2>
@@ -54,6 +79,7 @@ const FundTestManage = () => {
         {message && <p>{message}</p>}
       </div>
     </div>
+    </>
   );
 };
 
