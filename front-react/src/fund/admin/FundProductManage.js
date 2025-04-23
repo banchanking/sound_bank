@@ -24,10 +24,10 @@ const FundProductManage = () => {
   useEffect(() => {
     const fetchAll = async () => {
       try {
-        const response1 = await RefreshToken.get("http://localhost:8081/api/fundList");
+        const response1 = await RefreshToken.get("/fundList");
         setFunds(response1.data);
   
-        const response2 = await RefreshToken.get("http://localhost:8081/api/registeredFunds");
+        const response2 = await RefreshToken.get("/registeredFunds");
         setDropdownFunds(response2.data);
       } catch (error) {
         console.error("펀드 목록 조회 중 오류 발생:", error);
@@ -68,7 +68,7 @@ const FundProductManage = () => {
   const handleUpdateFund = async () => {
     try {
       const response = await RefreshToken.put(
-        `http://localhost:8081/api/fundUpdate/${formData.fund_id}`,
+        `/fundUpdate/${formData.fund_id}`,
         formData
       );
   
@@ -84,17 +84,17 @@ const FundProductManage = () => {
   const handleDeleteFund = async (fund_id) => {
     try {
       const response = await RefreshToken.delete(
-        `http://localhost:8081/api/fund/${fund_id}`
+        `/fund/${fund_id}`
       );
   
       console.log("삭제 응답:", response.data);
       alert("펀드가 성공적으로 삭제되었습니다.");
   
     // 목록 새로 불러오기
-    const updatedFundList = await RefreshToken.get("http://localhost:8081/api/fundList");
+    const updatedFundList = await RefreshToken.get("/fundList");
     setFunds(updatedFundList.data);
 
-    const updatedDropdown = await RefreshToken.get("http://localhost:8081/api/registeredFunds");
+    const updatedDropdown = await RefreshToken.get("/registeredFunds");
     setDropdownFunds(updatedDropdown.data);
 
     // 폼 상태 초기화

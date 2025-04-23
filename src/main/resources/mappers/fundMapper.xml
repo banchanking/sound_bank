@@ -199,6 +199,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	    AND STATUS = 'APPROVED'
 	</select>
 	
+	<!-- 펀드 매수시 계좌 잔액 업데이트 -->
+	<select id="findTransactionById" resultMap="fundTransactionMap">
+	    SELECT *
+	    FROM fund_transaction_tbl
+	    WHERE FUND_TRANSACTION_ID = #{fundTransactionId}
+	</select>
+	
 	<resultMap id="fundTransactionMap" type="com.boot.sound.fund.dto.FundTransactionDTO">
 	  <id property="fundTransactionId" column="FUND_TRANSACTION_ID" />
 	  <result property="customerId" column="CUSTOMER_ID" />

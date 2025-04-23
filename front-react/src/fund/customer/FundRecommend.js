@@ -18,7 +18,7 @@ const FundRecommend = () => {
             }
 
             try {
-                const response = await RefreshToken.get(`http://localhost:8081/api/fundRecommend/${customerId}`);
+                const response = await RefreshToken.get(`/fundRecommend/${customerId}`);
                 setRecommendedFunds(response.data); // 추천 펀드 목록 설정
             } catch (error) {
                 console.error("펀드 추천 목록을 가져오는 중 오류 발생:", error);
@@ -30,6 +30,7 @@ const FundRecommend = () => {
 
     // 팝업에서 매수 완료 시 처리
     const handleBuy = async (fund) => {
+        
         try {
           const customerId = localStorage.getItem("customerId");
       
@@ -52,8 +53,10 @@ const FundRecommend = () => {
             fundInvestAmount: Number(fund.buyAmount),
             fundUnitsPurchased: fund.unitCount ? Number(fund.unitCount) : null,
           };
-      
+          
+          console.log("매수 처리:", dto); // 선택한 펀드 정보 확인
           await RefreshToken.post("http://localhost:8081/api/fundTrade/buy", dto);
+          
           alert(`💡${fund.fund_name} 💡\n 매수 신청이 완료되었습니다. 관리자 승인 후 계좌에 반영됩니다.`);
           setShowDetail(false); // 팝업 닫기
         } catch (error) {
