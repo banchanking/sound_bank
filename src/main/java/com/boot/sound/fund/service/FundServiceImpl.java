@@ -133,7 +133,7 @@ public class FundServiceImpl {
 	    dto.setFundBalance(BigDecimal.ZERO);                             // 초기 잔액 0원
 	    dto.setStatus("PENDING");                                        // 관리자 승인 대기
 	    dto.setFundOpenDate(LocalDate.now());                            // 개설일자 설정
-	    dto.setFundAccountName(dto.getFundAccountName()); 									// 계좌 별칭
+	    dto.setFundAccountName(dto.getFundAccountName()); 				// 계좌 별칭
 	    // 4. JPA를 통해 저장 (fund_account_tbl에 insert)
 	    JpaRepository.save(dto);
 
