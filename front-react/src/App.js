@@ -87,12 +87,14 @@ import LoanInterestList from "./sound_loan/admin/LoanInterestList";
 import LoanLateInterestList from "./sound_loan/admin/LoanLateInterestList";
 import MyLoanDetail from "./sound_loan/customer/MyLoanDetail";
 import Roi from "./customer_center/Roi";
+import Stopgambling from "./customer_center/Stopgambling";
+import BusinessHour from "./customer_center/Businesshour";
 
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        {/* F12 방지 블록방지 */}{" "}
+      {SecurityBlocker}{/* F12 방지 블록방지 */}{" "}
         {/* Header.js의 Link연동을 위해서 BrowserRouter추가해야됨 */}
         <Header />
         <Routes>
@@ -223,10 +225,13 @@ function App() {
           <Route path="/authcenter" element={<Authcenter />} />{" "}    {/* 인증 센터  */}
           <Route path="/roi" element={<Roi />} />                       {/* 실시간 객체인식 (ROI) */}
           <Route path="/idauth" element={<IdAuth />} />{" "}            {/* 신분증 인증 (OCR) */}
-          <Route path="/notice" element={<Notice />} />                 {/* 공지사항(고객용) */}
+          <Route path="/notice" element={<Notice />} />{" "}            {/* 공지사항(고객용) */}
           <Route path="/admin/notice" element={<AdminNotice />} />{" "} {/* 공지사항(관리자용) */}
-          <Route path="/business_hour" element={<Businesshour />} />{" "}{/* 이용 시간 */}
+          <Route path="/businesshour" element={<BusinessHour />} />{" "}{/* 이용 시간 */}
           <Route path="/charge" element={<Charge />} />                 {/* 금리 안내 */}
+          <Route path="/stopgambling" element={<Stopgambling />} />     {/* 불법 도박 계좌 신고 안내 */}
+          
+          
           {/* 고객센터 Route 끝 */}
           {/* 계좌개설 / 로그인 Route 시작 */}
           <Route path="/join" element={<Join />} />
