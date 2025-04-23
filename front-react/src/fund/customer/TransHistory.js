@@ -1,39 +1,54 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import RefreshToken from "../../jwt/RefreshToken";
 import styles from "../../Css/fund/MyFund.module.css";
+import MyFund from "./MyFund";  // 로그인 체크용 팝업 컴포넌트
 import { Chart } from "react-google-charts";
 import Papa from "papaparse";
 import dayjs from "dayjs";
 
 const TransHistory = () => {
+  const navigate = useNavigate();
   const [transactions, setTransactions] = useState([]);
   const [password, setPassword] = useState("");
   const [selectedTx, setSelectedTx] = useState(null);
   const [fundRates, setFundRates] = useState({}); // 펀드 ID → 수익률 매핑
+  const [showModal, setShowModal] = useState(false);
+
+  // 로그인 체크
+  useEffect(() => {
+      const token = localStorage.getItem("auth_token");
+      if (!token) {
+        setShowModal(true);
+        return;
+      }
+
+      fetchTransactions();
+
+  }, []);
 
   const fetchTransactions = async () => {
     const customerId = localStorage.getItem("customerId");
-    const res = await RefreshToken.get(`/fundTrade/buy-approve/${customerId}`);
+    const res = await RefreshToken.get(`/fundTrade/buy/`);
     setTransactions(res.data.filter(tx => tx.fundTransactionType === "BUY")); // 매수만
   };
 
-  useEffect(() => {
-    fetchTransactions();
-  }, []);
-
   const handleSellClick = (tx) => {
     setSelectedTx(tx); // 환매 대상 선택
+    console.log("환매 요청 tx:", selectedTx);
   };
 
   const handleSellConfirm = async () => {
     if (!selectedTx) return;
-    const res = await RefreshToken.post("http://localhost:8081/api/fund/check-password", {
+    console.log("🔥 환매 요청에 포함된 selectedTx 정보:", selectedTx);
+    
+    const res = await RefreshToken.post("/fund/check-password", {
       linkedAccountNumber: selectedTx.withdrawAccountNumber,
       fundAccountPassword: password
     });
 
     if (res.status === 200) {
-      await RefreshToken.post("http://localhost:8081/api/fundTrade/sell", {
+      await RefreshToken.post("/fundTrade/sell", {
         ...selectedTx,
         fundTransactionType: "SELL",
         fundTransactionDate: null, // 백엔드에서 현재 일자로 처리
@@ -83,7 +98,20 @@ const TransHistory = () => {
     return profitRate.toFixed(2);
   };
 
+  // 모달 핸들러
+  const handleConfirm = () => navigate("/login");
+  const handleCancel = () => navigate("/");
+
   return (
+    <>
+      {showModal && (
+        <MyFund
+          message="로그인이 필요한 서비스입니다."
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
+        />
+      )}
+
     <div align="center" className={styles.fundContainer}>
       <h2>My펀드 거래내역</h2>
       <table className={styles.fundTable}> 
@@ -148,6 +176,7 @@ const TransHistory = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
 

@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import RefreshToken from "../../jwt/RefreshToken";
 import styles from "../../Css/fund/FundAdmin.module.css";
+import MyFund from "../customer/MyFund";  // 로그인 체크용 팝업 컴포넌트
 
 const CloseApplyList = () => {
+  const navigate = useNavigate();
   const [accounts, setAccounts] = useState([]);
+  const [showModal, setShowModal] = useState(false);
 
   // DEACTIVE 상태인 해지 신청 계좌 목록 불러오기
   const fetchCloseApplyAccounts = async () => {
@@ -15,6 +19,17 @@ const CloseApplyList = () => {
       console.error("해지 신청 계좌 목록 조회 실패", err);
     }
   };
+
+  // 로그인 체크 + 데이터 fetch 한번에 처리
+  useEffect(() => {
+    const token = localStorage.getItem("auth_token");
+    if (!token) {
+      setShowModal(true);
+      return;
+    }
+
+    fetchCloseApplyAccounts();
+  }, []);
 
   // 해지 승인 처리 (상태 CLOSED로 변경)
   const handleApproveClose = async (fundAccountId) => {
@@ -28,11 +43,19 @@ const CloseApplyList = () => {
     }
   };
 
-  useEffect(() => {
-    fetchCloseApplyAccounts();
-  }, []);
+  const handleConfirm = () => navigate("/login");
+  const handleCancel = () => navigate("/");
 
   return (
+    <>
+    {showModal && (
+      <MyFund
+        message="로그인이 필요한 서비스입니다."
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+      />
+    )}
+
     <div className={styles.fundContainer}>
       <h2 className={styles.fundTitle}>계좌 해지 신청 목록</h2>
       <table className={styles.fundTable}>
@@ -67,6 +90,7 @@ const CloseApplyList = () => {
         </tbody>
       </table>
     </div>
+    </>
   );
 };
 

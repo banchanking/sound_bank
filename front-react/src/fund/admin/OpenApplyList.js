@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import MyFund from "../customer/MyFund";  // 로그인 체크용 팝업 컴포넌트
 import RefreshToken from "../../jwt/RefreshToken";
 import styles from "../../Css/fund/FundAdmin.module.css";
 
 const OpenApplyList = () => {
+  const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
   const [accounts, setAccounts] = useState([]);
 
   // 승인 대기 계좌 조회
   const fetchPendingAccounts = async () => {
     try {
-      const res = await RefreshToken.get("http://localhost:8081/api/admin/fundAccount/pending");
+      const res = await RefreshToken.get("/admin/fundAccount/pending");
       setAccounts(res.data);
     } catch (err) {
       console.error("계좌 목록 조회 실패", err);
@@ -17,7 +21,7 @@ const OpenApplyList = () => {
 
   const handleApprove = async (fundAccountId) => {
     try {
-      await RefreshToken.patch(`http://localhost:8081/api/admin/fundAccount/${fundAccountId}/approved`);
+      await RefreshToken.patch(`/admin/fundAccount/${fundAccountId}/approved`);
       alert("승인 완료");
       fetchPendingAccounts();
     } catch (err) {
@@ -27,7 +31,7 @@ const OpenApplyList = () => {
 
   const handleReject = async (fundAccountId) => {
     try {
-      await RefreshToken.patch(`http://localhost:8081/api/admin/fundAccount/${fundAccountId}/rejected`);
+      await RefreshToken.patch(`/admin/fundAccount/${fundAccountId}/rejected`);
       alert("거절 완료");
       fetchPendingAccounts();
     } catch (err) {
@@ -36,10 +40,28 @@ const OpenApplyList = () => {
   };
 
   useEffect(() => {
+    const token = localStorage.getItem("auth_token");
+    if (!token) {
+      setShowModal(true);
+      return;
+    }
+
     fetchPendingAccounts();
   }, []);
 
+  const handleConfirm = () => navigate("/login");
+  const handleCancel = () => navigate("/");
+
   return (
+    <>
+    {showModal && (
+      <MyFund
+        message="로그인이 필요한 서비스입니다."
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+      />
+    )}
+
     <div className={styles.fundContainer}>
       <h2 className={styles.fundTitle}>펀드 계좌 승인 요청 목록</h2>
       <table className={styles.fundTable}>
@@ -70,6 +92,7 @@ const OpenApplyList = () => {
         </tbody>
       </table>
     </div>
+    </>
   );
 };
 
