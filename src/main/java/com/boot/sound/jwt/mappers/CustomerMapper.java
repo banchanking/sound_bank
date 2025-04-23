@@ -11,4 +11,5 @@ public interface CustomerMapper {
 	CustomerDTO toCustomerDTO(CustomerDTO customer);
 	CustomerDTO signUpToCustomer(SignUpDTO customerDTO);
 	int saveRefreshToken(String customerId, String refresh_token);
+	String selectRefreshToken(String customerId);
 }
