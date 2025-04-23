@@ -12,7 +12,7 @@ const LoanInfoApply = () => {
     loan_id: 0,
     interest_rate: 0.0,
     customer_income: 0,
-    customer_credit_score: "",
+    customer_credit_score: 0,
     account_number: "",
     loan_amount: 0,
     balance: 0,
@@ -25,6 +25,8 @@ const LoanInfoApply = () => {
     loan_term: 0,
     remaining_term: 0,
   });
+
+  const [creditScore, setCreditScore] = useState(0);
 
   const [loanTerms, setLoanTerms] = useState({});
   const [loanTermsAgree, setLoanTermsAgree] = useState({
@@ -78,9 +80,6 @@ const LoanInfoApply = () => {
     } else if (loan_amount > loan_info.loan_max_amount) {
       alert("신청금액이 최대대출한도보다 많습니다.");
       return;
-    } else if (!loan_info.customer_credit_score) {
-      alert("신용점수를 선택해주세요.");
-      return;
     } else if (!loan_info.account_number) {
       alert("상환계좌를 선택해주세요.");
       return;
@@ -133,7 +132,9 @@ const LoanInfoApply = () => {
       .catch((error) => {
         console.error("데이터 가져오기 오류:", error);
       });
+  }, [loan_id]);
 
+  useEffect(() => {
     RefreshToken.get("/selectLoanTerm/" + loan_id)
       .then((res) => {
         setLoanTerms(res.data);
@@ -144,6 +145,19 @@ const LoanInfoApply = () => {
       });
   }, [loan_id]);
 
+  useEffect(() => {
+    RefreshToken.get(`/selectCreditScore/${localStorage.getItem("customerId")}`)
+      .then((res) => {
+        setCreditScore(res.data);
+        set_loan_info((prev) => ({
+          ...prev,
+          customer_credit_score: res.data,
+        }));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
   useEffect(() => {
     if (termsAgree && loanTerms.term_id && loan_info.customer_id) {
       setLoanTermsAgree({
@@ -306,15 +320,12 @@ const LoanInfoApply = () => {
             <tr>
               <th>신용점수</th>
               <td>
-                <select
+                <input
+                  type="text"
                   name="customer_credit_score"
-                  onChange={change_value}
                   style={{ textAlign: "right" }}
-                >
-                  <option value="">신용점수를 선택해주세요</option>
-                  <option value="700점 이상">700점 이상</option>
-                  <option value="700점 미만">700점 미만</option>
-                </select>
+                  value={creditScore + "점"}
+                ></input>
               </td>
             </tr>
             <tr>

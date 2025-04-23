@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.boot.sound.fund.dto.FundAccountDTO;
 import com.boot.sound.fund.dto.FundDTO;
 import com.boot.sound.fund.dto.FundTestDTO;
 import com.boot.sound.fund.dto.FundTransactionDTO;
@@ -46,11 +47,30 @@ public interface FundRepository {
     // 투자성향 분석 AI 학습 완료된 펀드상품 목록 업데이트
     public void updateRiskType(@Param("fund_name") String fund_name, 
     					@Param("fund_risk_type") String fund_risk_type);
-
-    // 펀드 거래 등록
+    
+    // 펀드 거래(매수/환매) 등록
     int insertFundTransaction(FundTransactionDTO dto);
     
     // 기존 계좌 비밀번호 조회 (MyBatis)
     String findPasswordByAccount(@Param("account_number") String accountNumber);
+    
+    // 펀드 계좌 해지요청 조회
+    List<FundAccountDTO> findDeactiveAccounts();
+    
+    // 해지 완료된 계좌 조회 (고객용)
+    List<FundAccountDTO> findClosedAccountsByCustomerId(String customerId);
+    
+    // 펀드 거래 관리자 요청확인
+    public List<FundTransactionDTO> findPendingTransactions();
+    
+    // 펀드 거래 관리자 승인/거절
+    public void updateStatus(int fundTransactionId, String status);
+    
+    // 펀드 매수 확정
+    public List<FundTransactionDTO> findApprovedBuys(@Param("customer_id") String customerId);
+    
+    
+    
+
     
 }

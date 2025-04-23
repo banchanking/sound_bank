@@ -47,6 +47,7 @@
     border-radius: 8px;
     cursor: pointer;
     transition: 0.2s;
+    width: auto;
   }
   
   .fundAccountbutton:hover {

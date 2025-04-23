@@ -3,9 +3,9 @@ package com.boot.sound.fund.service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -159,10 +159,63 @@ public class FundServiceImpl {
     	return JpaRepository.findByCustomerId(customerId);
     }
     
-    // 펀드 매수
+    // 펀드 계좌 개설요청 조회 (JPA)
+    public List<FundAccountDTO> getPendingAccounts() {
+        return JpaRepository.findByStatus("PENDING");
+    }
+    
+    // 펀드 계좌 개설요청 승인 (JPA)
+    @Transactional
+    public void updateFundAccountStatus(int fundAccountId, String status) {
+        FundAccountDTO account = JpaRepository.findById(fundAccountId)
+            .orElseThrow(() -> new IllegalArgumentException("계좌를 찾을 수 없습니다"));
+        account.setStatus(status);
+        if ("CLOSED".equals(status)) {
+            account.setCloseDate(LocalDateTime.now());
+        }
+        
+        account.setStatus(status);  // APPROVED, REJECTED, CLOSED 등 다양하게 활용
+        JpaRepository.save(account);
+    }
+    
+    // 펀드 계좌 해지 신청 목록 조회 (status = 'DEACTIVE'인 계좌들만)
+    public List<FundAccountDTO> getCloseApplyAccounts() {
+        return fundRepository.findDeactiveAccounts();
+    }
+    
+    // 펀드 계좌 해지요청 승인대기 확인 (JPA)
+    @Transactional
+    public void requestCloseFundAccount(int fundAccountId) {
+        FundAccountDTO account = JpaRepository.findById(fundAccountId)
+            .orElseThrow(() -> new IllegalArgumentException("해당 계좌가 존재하지 않습니다."));
+
+        account.setStatus("DEACTIVE"); 
+        account.setCloseDate(null);   // 날짜는 아직 없음
+
+        JpaRepository.save(account);
+    }
+    
+    // 펀드 계좌 해지요청 승인 (JPA)
+    @Transactional
+    public void approveCloseFundAccount(int fundAccountId) {
+        FundAccountDTO account = JpaRepository.findById(fundAccountId)
+            .orElseThrow(() -> new IllegalArgumentException("해당 계좌가 존재하지 않습니다."));
+
+        account.setStatus("CLOSED");
+        account.setCloseDate(LocalDateTime.now());
+
+        JpaRepository.save(account);
+    }
+    
+    // 해지 완료된 계좌 목록 조회 (고객용)
+    public List<FundAccountDTO> getClosedFundAccounts(String customerId) {
+        return fundRepository.findClosedAccountsByCustomerId(customerId);
+    }
+    
+    // 펀드 매수요청
     @Transactional
     public void processTransaction(FundTransactionDTO dto) {
-        // 단가 계산: 투자금 / 좌수
+        // 단가 계산 = 투자금 / 좌수
     	if (dto.getFundInvestAmount() != null && dto.getFundUnitsPurchased() != null) {
     	    dto.setFundPricePerUnit(
     	        dto.getFundInvestAmount().divide(dto.getFundUnitsPurchased(), 6, RoundingMode.HALF_UP)
@@ -176,8 +229,46 @@ public class FundServiceImpl {
 
         fundRepository.insertFundTransaction(dto);
     }
-    
 
+    // 펀드 매수요청 관리자 확인
+    public List<FundTransactionDTO> getPendingTransactions() {
+    	List<FundTransactionDTO> list = fundRepository.findPendingTransactions();
+    	
+    	for (FundTransactionDTO dto : list) {
+            System.out.println("✅ 백엔드에서 가져온 거래 ID: " + dto.getFundTransactionId());
+        }
+        return list;
+    }
+    
+    // 펀드 매수요청 관리자 승인/거절
+    public void updateTransactionStatus(int fundTransactionId, String status) {
+        fundRepository.updateStatus(fundTransactionId, status);
+    }
+    
+    // 펀드 매수 확정
+    public List<FundTransactionDTO> getApprovedBuys(String customerId) {
+        return fundRepository.findApprovedBuys(customerId);
+    }
+    
+    // 펀드 환매
+    @Transactional
+    public void processSellTransaction(FundTransactionDTO dto) {
+        // 1. 단가 계산
+        if (dto.getFundInvestAmount() != null && dto.getFundUnitsPurchased() != null) {
+            dto.setFundPricePerUnit(
+                dto.getFundInvestAmount().divide(dto.getFundUnitsPurchased(), 6, RoundingMode.HALF_UP)
+            );
+        } else {
+            dto.setFundPricePerUnit(BigDecimal.ONE); // fallback
+        }
+
+        // 2. 거래일, 상태, 타입
+        dto.setFundTransactionDate(LocalDate.now());
+        dto.setStatus("PENDING");
+        dto.setFundTransactionType("SELL");
+
+        fundRepository.insertFundTransaction(dto);
+    }
     
 
 }

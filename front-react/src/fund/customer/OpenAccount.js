@@ -54,7 +54,7 @@ const OpenAccount = () => {
 
   return (
     <div className={styles.fundAccountcontainer}>
-      <h2 className={styles.fundAccounttitle}>펀드 계좌 개설</h2>
+      <h2 className={styles.fundAccounttitle}>My펀드 계좌개설</h2>
       <div className={styles.fundAccountform}>
         <label>📄 보유 계좌 선택</label>
         <select

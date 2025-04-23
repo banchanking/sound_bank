@@ -38,7 +38,7 @@ public class LoanStatusDTO {
     private int customerIncome;
 
     @Column(name = "customer_credit_score")
-    private String customerCreditScore;
+    private int customerCreditScore;
 
     @Column(name = "loan_amount")
     private int loanAmount;
