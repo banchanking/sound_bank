@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="com.boot.sound.credit.dao.CreditScoreDAO">
+  	<!-- 최근 3개월 연체 횟수 -->
+		<select id="getLateCount3Months" resultType="int">
+		  SELECT COUNT(*) 
+		  FROM loan_late_payment_tbl
+		  WHERE customer_id = #{customerId}
+		    AND repayment_status = '연체'
+		    AND updated_at >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH)
+		</select>
+		
+		<!-- 총 대출금 -->
+		<select id="getTotalLoanAmount" resultType="java.lang.Long">
+		  SELECT IFNULL(SUM(loan_amount), 0)
+		  FROM loan_status_tbl
+		  WHERE customer_id = #{customerId}
+		</select>
+		
+		<!-- 남은 대출 잔액 -->
+		<select id="getTotalLoanBalance" resultType="java.lang.Long">
+		  SELECT IFNULL(SUM(balance), 0)
+		  FROM loan_status_tbl
+		  WHERE customer_id = #{customerId}
+		</select>
+		
+		<!-- 총 자산 -->
+		<select id="getTotalAssets" resultType="java.lang.Long">
+		  SELECT IFNULL(SUM(balance), 0)
+		  FROM account_tbl
+		  WHERE customer_id = #{customerId}
+		    AND status = 'ACTIVE'
+		</select>
+		
+		<!-- 납부완료 비율 -->
+		<select id="getCompletedTermRatio" resultType="double">
+		  SELECT 
+		    CASE 
+		      WHEN COUNT(*) = 0 THEN 0
+		      ELSE ROUND(SUM(CASE WHEN repayment_status = '납부완료' THEN 1 ELSE 0 END) / COUNT(*), 4)
+		    END
+		  FROM loan_interest_payment_tbl
+		  WHERE customer_id = #{customerId}
+		</select>
+		
+		<insert id="saveCreditScore">
+		    INSERT INTO credit_score_tbl (customer_id, credit_score, credit_rank)
+		    VALUES (#{customerId}, #{creditScore}, 
+		        CASE 
+		            WHEN #{creditScore} >= 900 THEN 1
+		            WHEN #{creditScore} >= 800 THEN 2
+		            WHEN #{creditScore} >= 700 THEN 3
+		            WHEN #{creditScore} >= 600 THEN 4
+		            ELSE 5
+		        END
+		    )
+		    ON DUPLICATE KEY UPDATE
+		         credit_score = IF(credit_score != VALUES(credit_score), VALUES(credit_score), credit_score),
+       			 credit_rank = IF(credit_rank != VALUES(credit_rank), VALUES(credit_rank), credit_rank);
+		</insert>
+  	
+  </mapper>

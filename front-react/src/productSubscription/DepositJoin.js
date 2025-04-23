@@ -7,7 +7,7 @@ import axios from "axios";
 const DepositJoin = () => {
   const { name } = useParams(); // URL에서 상품 ID 가져오기
   const [selectedTerm, setSelectedTerm] = useState("3개월"); // 가입기간 상태 추가
-  const [showCalculator, setShowCalculator] = useState(false); // DepositCalculator 표시 상태
+  const [showCalculator, setShowCalculator] = React.useState(false); // 모달 상태 관리
   const [activeTab, setActiveTab] = useState("상품설명"); // 현재 활성화된 탭 상태
   const location = useLocation(); // location 객체 가져오기
   const { product, customerId: stateCustomerId, customerAccountNumber } = location.state || {};
@@ -46,8 +46,9 @@ const DepositJoin = () => {
   };
 
   const handleToggleCalculator = () => {
-    setShowCalculator((prev) => !prev); // showCalculator 상태를 토글
+    setShowCalculator((prev) => !prev); // 상태를 토글
   };
+
 
   const handleTabChange = (tab) => {
     setActiveTab(tab); // 활성화된 탭 변경
@@ -217,13 +218,17 @@ const DepositJoin = () => {
                 <label>만기수취이자:</label>
               </td>
               <td className="input-cell">
-                <button
-                  type="button"
-                  className="calculator-button"
-                  onClick={handleToggleCalculator} // 버튼 클릭 시 DepositCalculator 표시/숨기기
-                >
-                  계산기
-                </button>
+              <div>
+      {/* 계산기 버튼 */}
+      <button type="button" onClick={handleToggleCalculator}>
+        계산기 열기
+      </button>
+      {showCalculator && (
+        <div className="modal-overlay">
+          <DepositCalculator onClose={handleToggleCalculator} />
+        </div>
+      )}
+    </div>
               </td>
             </tr>
 
@@ -255,14 +260,6 @@ const DepositJoin = () => {
             </tr>
           </tbody>
         </table>
-      {/* DepositCalculator 팝업 */}
-      {showCalculator && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <DepositCalculator onClose={handleToggleCalculator} />
-          </div>
-        </div>
-      )}
 
       {/* 탭 메뉴 */}
       <div className="tab-container">

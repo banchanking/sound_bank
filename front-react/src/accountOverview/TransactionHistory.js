@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom'; // useNavigate 추가
 
 const TransactionHistory = () => {
   const location = useLocation();
-  const { accountNumbers = [] } = location.state || {}; // 계좌번호 목록을 전달받음
-  const [selectedAccount, setSelectedAccount] = useState(accountNumbers[0] || ''); // 기본 선택 계좌번호
+  const navigate = useNavigate(); // useNavigate 훅 사용
+  const { accountNumber } = location.state || {}; // 전달받은 계좌번호
+  const [selectedAccount, setSelectedAccount] = useState(accountNumber || ''); // 기본 선택 계좌번호
 
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -48,7 +49,7 @@ const TransactionHistory = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          accountNumber: selectedAccount,
+          accountNumber: selectedAccount, // 선택된 계좌번호로 조회
           startDate,
           endDate,
           year,
@@ -62,6 +63,11 @@ const TransactionHistory = () => {
     } catch (error) {
       console.error('Error fetching transaction history:', error);
     }
+  };
+
+  // 즉시이체 버튼 클릭 시 DepositWithdrawal 화면으로 이동
+  const handleImmediateTransfer = () => {
+    navigate('/depositWithdrawal', { state: { accountNumbers: [selectedAccount], selectedAccount } }); // 전체 계좌 목록과 선택된 계좌 전달
   };
 
   return (
@@ -81,11 +87,9 @@ const TransactionHistory = () => {
             width: '300px',
           }}
         >
-          {accountNumbers.map((account, index) => (
-            <option key={index} value={account}>
-              {account}
+            <option value={accountNumber}>{accountNumber}
             </option>
-          ))}
+        
         </select>
       </div>
 
@@ -208,12 +212,11 @@ const TransactionHistory = () => {
         </label>
       </div>
 
-      {/* 조회 및 이체 버튼 */}
+      {/* 조회 버튼 */}
       <div style={{ marginBottom: '20px' }}>
-        <button onClick={handleSearch} style={{ marginRight: '10px', padding: '10px 20px' }}>
+        <button onClick={handleSearch} style={{ padding: '10px 20px', backgroundColor: 'blue', color: 'white' }}>
           조회
         </button>
-        <button style={{ backgroundColor: 'blue', color: 'white', padding: '10px 20px' }}>이체</button>
       </div>
 
       {/* 거래내역 테이블 */}
@@ -243,6 +246,23 @@ const TransactionHistory = () => {
           )}
         </tbody>
       </table>
+
+      {/* 즉시이체 버튼 추가 */}
+      <div style={{ marginTop: '20px', textAlign: 'right' }}>
+        <button
+          onClick={handleImmediateTransfer}
+          style={{
+            padding: '10px 20px',
+            backgroundColor: 'blue',
+            color: 'white',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+          }}
+        >
+          즉시이체
+        </button>
+      </div>
     </div>
   );
 };

@@ -14,23 +14,28 @@ const DepositWithdrawal = () => {
       setMessage('유효한 금액을 입력해주세요.');
       return;
     }
-
+  
     try {
+      const requestBody = {
+        dat_deposit_account_num: selectedAccount, // 예금계좌번호
+        dat_new_amount: parseFloat(amount), // 신규 금액
+        dat_transaction_type: transactionType, // 거래 유형 (입금/출금)
+      };
+  
+      console.log('Request Body:', requestBody);
+  
       const response = await fetch(`http://localhost:8081/api/depositWithdrawal`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          accountNumber: selectedAccount,
-          amount: parseFloat(amount),
-          transactionType,
-        }),
+        body: JSON.stringify(requestBody),
       });
-
+  
       if (response.ok) {
-        const data = await response.json();
-        setMessage(`거래 성공: ${data.message}`);
+        const data = await response.text();
+        setMessage(data);
       } else {
-        setMessage('거래 실패: 서버에서 오류가 발생했습니다.');
+        const error = await response.text();
+        setMessage(`거래 실패: ${error}`);
       }
     } catch (error) {
       console.error('Error processing transaction:', error);
@@ -111,7 +116,7 @@ const DepositWithdrawal = () => {
           onClick={handleTransaction}
           style={{
             padding: '10px 20px',
-            backgroundColor: transactionType === '입금' ? 'green' : 'red',
+            backgroundColor: transactionType === '입금' ? 'blue' : 'red',
             color: 'white',
             border: 'none',
             borderRadius: '4px',

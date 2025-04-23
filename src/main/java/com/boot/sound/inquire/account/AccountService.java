@@ -27,7 +27,6 @@ public class AccountService {
         grouped.put("입출금", new ArrayList<>());
         grouped.put("예금", new ArrayList<>());
         grouped.put("적금", new ArrayList<>());
-        grouped.put("외환", new ArrayList<>());
 
         // 전체계좌 반복하며 타입별로 분류 
         for (AccountDTO account : allAccounts) {		// 전체 계좌 목록을 하나씩 꺼내서 account라는 변수로 반복
@@ -62,7 +61,7 @@ public class AccountService {
     public void deposit(String accountNumber, BigDecimal amount) {
         int updated = accountRepository.plusBalance(accountNumber, amount);
         if (updated == 0) {
-            throw new IllegalStateException("💥 입금 실패 - 존재하지 않거나 비정상 계좌입니다.");
+            throw new IllegalStateException("입금 실패 - 존재하지 않거나 비정상 계좌입니다.");
         }
     }
     

@@ -153,7 +153,10 @@ function App() {
           <Route path="/loanService" element={<LoanService />} />
           <Route path="/loanCalculator" element={<LoanCalculator />} />
           <Route path="/loanChart" element={<LoanChart />} />
-          <Route path="/loanCreditScore" element={<LoanCreditScore />} />
+          <Route
+            path="/loanCreditScore/:loan_id"
+            element={<LoanCreditScore />}
+          />
           <Route path="/loanList" element={<LoanList />} />
           <Route path="/loanInsertForm" element={<LoanInsertForm />} />
           <Route path="/loanDetail/:loan_id" element={<LoanDetail />} />
@@ -211,13 +214,11 @@ function App() {
             element={<AdminExAccountRequestList />}
           />{" "}
           {/* 환전 신청 현황 (customer로 이동됨) */}
-          <Route
-            path="/admin_ex_management"
-            element={<AdminExMenu />}
-          />{" "}
+          <Route path="/admin_ex_management" element={<AdminExMenu />} />{" "}
           {/* (관리자)지갑상태변경 */}
           {/* 외환 Route 끝 */}
           {/* 고객센터 Route 시작 */}
+
           <Route path="/customerservice" element={<Customerservice />} />{" "}{/* 고객센터 헤더 */}
           <Route path="/faq" element={<FAQ />} />                       {/* 자주하는 질문  */}
           <Route path="/chatbot" element={<Chatbot />} />{" "}          {/* 누르는 상담 (챗봇) */}
@@ -230,8 +231,7 @@ function App() {
           <Route path="/businesshour" element={<BusinessHour />} />{" "}{/* 이용 시간 */}
           <Route path="/charge" element={<Charge />} />                 {/* 금리 안내 */}
           <Route path="/stopgambling" element={<Stopgambling />} />     {/* 불법 도박 계좌 신고 안내 */}
-          
-          
+      
           {/* 고객센터 Route 끝 */}
           {/* 계좌개설 / 로그인 Route 시작 */}
           <Route path="/join" element={<Join />} />

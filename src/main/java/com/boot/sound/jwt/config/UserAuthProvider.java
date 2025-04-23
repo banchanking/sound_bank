@@ -19,6 +19,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.boot.sound.customer.CustomerDTO;
 import com.boot.sound.customer.CustomerService;
 import com.boot.sound.jwt.exception.CustomTokenExpiredException;
+import com.boot.sound.jwt.mappers.CustomerMapper;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,6 +35,7 @@ public class UserAuthProvider {
 	private String secretKey;
 	
 	private final CustomerService service;
+	private final CustomerMapper mapper;
 	
 //	private UserService userService;
 //	
@@ -53,7 +55,7 @@ public class UserAuthProvider {
 		System.out.println("<<< UserAuthProvider - createToken() >>>");
 		
 		Date now = new Date();  // java.util
-		Date validity = new Date(now.getTime() + 1800000);   // 토큰 유효시간 1시간
+		Date validity = new Date(now.getTime() + 180);   // 토큰 유효시간 1시간
 		
 		// JWT를 사용하려면 pom.xml에 java-jwt 추가
 		return JWT.create()
@@ -76,23 +78,26 @@ public class UserAuthProvider {
 	        DecodedJWT decoded = verifier.verify(token); // ⛔ 만료되면 여기서 예외 발생
 
 	        System.out.println("<<< UserAuthProvider - validationToken() 2 >>>");
+	        String issuer = decoded.getIssuer();
+	        System.out.println("✅ issuer(customerId): " + issuer);
 	       
 	        CustomerDTO user = service.findById(decoded.getIssuer());
 
 	        return new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList());
 
 	    } catch (com.auth0.jwt.exceptions.TokenExpiredException e) {
-	        System.out.println("⚠️ 토큰이 만료되었습니다: " + e.getMessage());
+	        System.out.println("⚠️ TokenExpiredException 발생: " + e.getMessage());
 	        throw new CustomTokenExpiredException("토큰이 만료되었습니다.");
-	    } catch (Exception e) {
-	        System.out.println("❌ 토큰 검증 실패: " + e.getMessage());
-	        // 인증 실패이므로 무조건 예외로 던지기
-	        throw new CustomTokenExpiredException("유효하지 않은 토큰입니다.");
+	    }
+	    catch (com.auth0.jwt.exceptions.JWTVerificationException e) {
+	        System.out.println("❗ JWTVerificationException 발생: " + e.getMessage());
+	        throw new CustomTokenExpiredException("JWT 검증 실패");
 	    }
 	}
 	
 	 // Refresh Token 발급
     public String createRefreshToken(String customer_id) {
+    	System.out.println("<<< UserAuthProvider - createRefreshToken() >>>");
         Date now = new Date();
         Date validity = new Date(now.getTime() + 86400000); // 24시간
 
@@ -103,26 +108,24 @@ public class UserAuthProvider {
                 .sign(Algorithm.HMAC256(secretKey));
     }
 
-    // Refresh Token 검증
-    public String validateRefreshToken(String refreshToken) {
-        System.out.println("<<< UserAuthProvider - validateRefreshToken() >>>");
-        System.out.println("<<< UserAuthProvider - refreshToken >>>" + refreshToken);
+    public String validateRefreshToken(String customerId) {
+        String refreshToken = mapper.selectRefreshToken(customerId);  // DB에서 꺼냄
 
         try {
-            // Refresh Token 검증
-            JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secretKey)).build();
-            DecodedJWT decoded = verifier.verify(refreshToken);
+            DecodedJWT decoded = JWT.require(Algorithm.HMAC256(secretKey)).build().verify(refreshToken);
 
-            // Refresh Token에서 customerId 추출
-            String customerId = decoded.getIssuer();
+            // 토큰 만료 여부 자동 검사됨
+            if (!decoded.getIssuer().equals(customerId)) {
+                throw new RuntimeException("토큰 발급자 불일치");
+            }
 
-            // customerId 반환
-            return customerId;
+            return createToken(customerId);  // 새 Access Token 발급
         } catch (JWTVerificationException e) {
-            // Refresh Token 검증 실패 또는 만료
-            System.out.println("<<< UserAuthProvider - validateRefreshToken() - JWTVerificationException >>>" + e.getMessage());
-            throw new RuntimeException("Invalid refresh token", e);
+            throw new RuntimeException("Refresh Token 유효하지 않음", e);
         }
     }
+
+
+
 
 }
