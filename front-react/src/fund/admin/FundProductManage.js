@@ -12,6 +12,8 @@ const FundProductManage = () => {
     fund_type: "",
     fund_grade: "",
     fund_fee_rate: "",
+    fund_upfront_fee: "",
+    fund_risk_type: "",
     return_1m: 0,
     return_3m: 0,
     return_6m: 0,
@@ -46,8 +48,10 @@ const FundProductManage = () => {
         fund_type: selected.fund_type,
         fund_grade: selected.fund_grade,
         fund_fee_rate: selected.fund_fee_rate,
-        return_1m: selected.return_1m,
-        return_3m: selected.return_3m,
+        fund_upfront_fee: selected.fund_upfront_fee,  
+        fund_risk_type: selected.fund_risk_type || "",
+        return_1m: selected.return_1m,  
+        return_3m: selected.return_3m,  
         return_6m: selected.return_6m,
         return_12m: selected.return_12m,
       });
@@ -101,6 +105,8 @@ const FundProductManage = () => {
       fund_type: "",
       fund_grade: "",
       fund_fee_rate: "",
+      fund_upfront_fee: "",
+      fund_risk_type: "",
       return_1m: 0,
       return_3m: 0,
       return_6m: 0,
@@ -190,6 +196,16 @@ const FundProductManage = () => {
             />
           </div>
           <div>
+            <label>선취 수수료 (%):</label>
+            <input
+              type="number"
+              name="fund_upfront_fee"
+              value={formData.fund_upfront_fee}
+              onChange={handleChange}
+              step="0.01"
+            />
+          </div>
+          <div>
             <label>총보수 (%):</label>
             <input
               type="number"
@@ -197,6 +213,16 @@ const FundProductManage = () => {
               value={formData.fund_fee_rate}
               onChange={handleChange}
               step="0.01"
+            />
+          </div>
+          <div>
+            <label>투자 성향:</label>
+            <input
+              type="text"
+              name="fund_risk_type"
+              value={formData.fund_risk_type}
+              onChange={handleChange}
+              readOnly // AI 모델 예측 결과로 읽기 전용
             />
           </div>
           <div>

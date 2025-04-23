@@ -4,6 +4,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -43,7 +44,7 @@ public class FundAccountDTO {
     private String status = "PENDING";
 
     @Column(name = "CLOSE_DATE")
-    private LocalDate closeDate;
+    private LocalDateTime closeDate;
 
 }
 

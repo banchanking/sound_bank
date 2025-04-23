@@ -26,13 +26,20 @@ const Login = () => {
       .then((res) => {
         setAuthToken(res.data.customer_token); // access token 저장
         setCustomerID(res.data.customerId); // 고객 ID 저장
-        setRefreshToken(res.data.refresh_token); // refresh token 저장
 
         alert(res.data.customerId + "님 환영합니다.");
         navigate("/");
       })
       .catch((error) => {
         console.error("로그인 실패:", error);
+
+        const msg = error.response?.data?.message;
+
+        if (msg === "UnKnown user" || msg === "Invalid password") {
+          alert("아이디 또는 비밀번호를 다시 확인하세요");
+        } else {
+          alert("서버 오류가 발생했습니다");
+        }
         setAuthToken(null);
       });
   };
