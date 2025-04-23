@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getAuthToken, refreshAccessToken } from "./AxiosToken";
+import { getAuthToken, getCustomerID, setAuthToken } from "./AxiosToken";
 
 const RefreshToken = axios.create({
   baseURL: "http://localhost:8081/api",
@@ -8,29 +8,76 @@ const RefreshToken = axios.create({
   },
 });
 
+let isRefreshing = false;
+let refreshSubscribers = [];
+
+const onRefreshed = (newAccessToken) => {
+  refreshSubscribers.forEach((callback) => callback(newAccessToken));
+  refreshSubscribers = [];
+};
+
+const addRefreshSubscriber = (callback) => {
+  refreshSubscribers.push(callback);
+};
+
+// ✅ Authorization 헤더 설정 (refresh-token 요청은 예외)
 RefreshToken.interceptors.request.use((config) => {
   const token = getAuthToken();
-  if (token) {
+  const isRefreshEndpoint = config.url?.includes("/refresh-token");
+
+  if (token && !isRefreshEndpoint) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
   return config;
 });
 
+// ✅ 401 응답 처리: Access Token 만료 시 토큰 재발급 및 재요청
 RefreshToken.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response && error.response.status === 401) {
-      console.log("🔄 토큰 만료됨. 재발급 시도 중...");
-      const newToken = await refreshAccessToken();
-      if (newToken) {
-        error.config.headers.Authorization = `Bearer ${newToken}`;
-        return RefreshToken(error.config); // 원래 요청 재시도
-      } else {
-        // window.location.href = "/login";
-        alert("서버 오류 발생");
-      }
+    const { config: originalRequest, response } = error;
+
+    const isUnauthorized = response?.status === 401;
+    const isFirstRetry = !originalRequest._retry;
+
+    if (!isUnauthorized || !isFirstRetry) {
+      return Promise.reject(error);
     }
-    return Promise.reject(error);
+
+    const customerId = getCustomerID();
+    if (!customerId) return Promise.reject(error);
+
+    if (isRefreshing) {
+      return new Promise((resolve) => {
+        addRefreshSubscriber((newToken) => {
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+          resolve(RefreshToken(originalRequest));
+        });
+      });
+    }
+
+    originalRequest._retry = true;
+    isRefreshing = true;
+
+    try {
+      console.log("🚨 refresh-token 요청 customerId:", customerId); // 👈 바로 여기!
+      const { data } = await RefreshToken.post("/refresh-token", {
+        customerId,
+      });
+      const newAccessToken = data.accessToken || data;
+
+      setAuthToken(newAccessToken);
+      onRefreshed(newAccessToken);
+
+      originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+      return RefreshToken(originalRequest);
+    } catch (refreshError) {
+      console.error("❌ 토큰 재발급 실패", refreshError);
+      return Promise.reject(refreshError);
+    } finally {
+      isRefreshing = false;
+    }
   }
 );
 
