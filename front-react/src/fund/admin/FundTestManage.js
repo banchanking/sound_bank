@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import MyFund from "../customer/MyFund";  // 로그인 체크용 팝업 컴포넌트
+import FundCustomer from "./FundCustomer";  // 로그인 체크용 팝업 컴포넌트
 import Papa from "papaparse";
 import styles from "../../Css/fund/FundList.module.css"; // 스타일 파일 추가
 import RefreshToken from "../../jwt/RefreshToken"; // 인증 포함된 인스턴스 사용
@@ -63,7 +63,7 @@ const FundTestManage = () => {
   return (
     <>
     {showModal && (
-      <MyFund
+      <FundCustomer
         message="로그인이 필요한 서비스입니다."
         onConfirm={handleConfirm}
         onCancel={handleCancel}
@@ -71,8 +71,9 @@ const FundTestManage = () => {
     )}
 
     <div className={styles.fundContainer}>
-      <div className={styles.fundTable}>
-        <h2>펀드 성향 AI 관리</h2>
+    <h2 className={styles.fundTitle}>투자성향분석 AI 관리</h2>
+    <br></br>
+      <div className={styles.fundTable}> 
         <button className={styles.fundButton} onClick={handleRetrain}>🔄 AI모델 재학습</button>
         <button className={styles.fundButton} onClick={handlePredictFund}>🤖 펀드 투자성향 예측</button>
         <button className={styles.fundButton} onClick={updateRiskTypesToDB}>💾 펀드성향 데이터 업데이트</button>

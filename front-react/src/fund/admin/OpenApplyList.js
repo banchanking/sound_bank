@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import MyFund from "../customer/MyFund";  // 로그인 체크용 팝업 컴포넌트
+import FundCustomer from "./FundCustomer";  // 로그인 체크용 팝업 컴포넌트
 import RefreshToken from "../../jwt/RefreshToken";
 import styles from "../../Css/fund/FundAdmin.module.css";
 
@@ -55,7 +55,7 @@ const OpenApplyList = () => {
   return (
     <>
     {showModal && (
-      <MyFund
+      <FundCustomer
         message="로그인이 필요한 서비스입니다."
         onConfirm={handleConfirm}
         onCancel={handleCancel}
@@ -63,16 +63,17 @@ const OpenApplyList = () => {
     )}
 
     <div className={styles.fundContainer}>
-      <h2 className={styles.fundTitle}>펀드 계좌 승인 요청 목록</h2>
+      <h2 className={styles.fundTitle}>계좌 개설신청 목록</h2>
       <table className={styles.fundTable}>
         <thead>
           <tr>
             <th>계좌 ID</th>
             <th>고객 ID</th>
-            <th>계좌번호</th>
-            <th>보유계좌</th>
+            <th>펀드계좌 번호</th>
+            <th>보유 계좌</th>
             <th>개설일</th>
-            <th>처리</th>
+            <th>처리상태</th>
+            <th>선택</th>
           </tr>
         </thead>
         <tbody>
@@ -83,6 +84,15 @@ const OpenApplyList = () => {
               <td>{acc.fundAccountNumber}</td>
               <td>{acc.linkedAccountNumber}</td>
               <td>{acc.fundOpenDate}</td>
+              <td>
+                {acc.status === 'PENDING'
+                  ? "승인 대기 중"
+                  : acc.status === 'APPROVED'
+                  ? "승인 완료"
+                  : acc.status === 'REJECTED'
+                  ? "승인 거절"
+                  : acc.status}
+              </td>
               <td>
                 <button onClick={() => handleApprove(acc.fundAccountId)} className={styles.fundApproveBtn}>승인</button>
                 <button onClick={() => handleReject(acc.fundAccountId)} className={styles.fundRejectBtn}>거절</button>

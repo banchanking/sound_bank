@@ -1,13 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from 'react-router-dom';
-import MyFund from "../customer/MyFund";  // 로그인 체크용 팝업 컴포넌트
+import React, { useState } from "react";
 import Papa from "papaparse"; // CSV 파싱 라이브러리
 import styles from "../../Css/fund/FundList.module.css"; // 스타일 파일 추가
 import RefreshToken from "../../jwt/RefreshToken"; // RefreshToken 모듈 추가
 
 const FundProductAdmin = () => {
-  const navigate = useNavigate();
-  const [showModal, setShowModal] = useState(false);
   const [funds, setFunds] = useState([]); // CSV 파일에서 가져온 펀드 목록
   const [formData, setFormData] = useState({
     fund_name: "",
@@ -72,17 +68,6 @@ const FundProductAdmin = () => {
       console.error("Error fetching CSV file:", error); // 오류 발생 시 콘솔에 출력
     }
   };
-
-  // 컴포넌트가 처음 렌더링될 때 CSV 파일에서 펀드 목록을 가져옴
-  useEffect(() => {
-    const token = localStorage.getItem("auth_token");
-    if (!token) {
-      setShowModal(true);
-      return;
-    }
-
-    fetchFundsFromCSV()
-  }, []);
 
   // 팝업창 열기
   const handleOpenPopup = (fund) => {
@@ -167,19 +152,7 @@ const FundProductAdmin = () => {
       }
     };
 
-  const handleConfirm = () => navigate("/login");
-  const handleCancel = () => navigate("/");
-
   return (
-    <>
-    {showModal && (
-      <MyFund
-        message="로그인이 필요한 서비스입니다."
-        onConfirm={handleConfirm}
-        onCancel={handleCancel}
-      />
-    )}
-
     <div className={styles.fundContainer}>
       <h2>펀드 상품 등록</h2>
 
@@ -350,7 +323,6 @@ const FundProductAdmin = () => {
           </div>
         )}
     </div>
-    </>
   );
 };
 

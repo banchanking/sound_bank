@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import styles from "../../Css/fund/FundList.module.css"; // 스타일 파일 추가
-import MyFund from "./MyFund"; // 로그인 체크용 팝업 컴포넌트
+import FundCustomer from "../admin/FundCustomer"; // 로그인 체크용 팝업 컴포넌트
 
 // 투자성향 테스트 질문과 점수 매핑
 const questions = [
@@ -171,7 +171,7 @@ const FundTest = () => {
   return (
     <>
     {showModal && (
-      <MyFund
+      <FundCustomer
         message="로그인이 필요한 서비스입니다."
         onConfirm={handleConfirm}
         onCancel={handleCancel}

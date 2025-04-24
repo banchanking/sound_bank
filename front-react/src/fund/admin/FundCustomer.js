@@ -1,16 +1,19 @@
-import React, { useEffect, useState } from "react";
-import RefreshToken from "../../jwt/RefreshToken";
-import styles from "../../Css/fund/FundAdmin.module.css";
+import React from "react";
+import styles from "../../Css/fund/MyFund.module.css";
 
-// 관리자 펀드 승인 페이지
-const FundCustomer = () => {
-  
+const FundCustomer = ({ message, onConfirm, onCancel }) => {
   return (
-    <div className={styles.fundContainer}>
-      <h2 className={styles.fundTitle}>펀드 고객 관리</h2>
-      
+    <div className={styles.fundmodalBackdrop}>
+      <div className={styles.fundmodal}>
+        <p>{message}</p>
+        <div className={styles.fundbuttonGroup}>
+          <button onClick={onConfirm}>로그인하기</button>
+          <button onClick={onCancel}>메인으로</button>
+        </div>
+      </div>
     </div>
   );
-}
+};
 
 export default FundCustomer;
+

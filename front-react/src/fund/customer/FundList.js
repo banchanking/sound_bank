@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styles from "../../Css/fund/FundList.module.css";
 import Fund from './Fund';  // 상세보기용 팝업 컴포넌트
 import RefreshToken from "../../jwt/RefreshToken";
-import MyFund from "./MyFund";  // 로그인 체크용 팝업 컴포넌트
+import FundCustomer from "../admin/FundCustomer";  // 로그인 체크용 팝업 컴포넌트
 
 const FundList = () => {
   const navigate = useNavigate();
@@ -98,7 +98,7 @@ const FundList = () => {
   return (
     <>
       {showModal && (
-        <MyFund
+        <FundCustomer
           message="로그인이 필요한 서비스입니다."
           onConfirm={handleConfirm}
           onCancel={handleCancel}

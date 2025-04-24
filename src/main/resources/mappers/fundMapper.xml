@@ -129,7 +129,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<!-- PENDING 상태인 해지 요청 목록 조회 -->
 	<select id="findDeactiveAccounts"  resultMap="fundAccountMap">
-	  SELECT * FROM fund_account_tbl WHERE status = 'PENDING'
+	  SELECT * FROM fund_account_tbl WHERE status = 'DEACTIVE'
 	</select>
 	
 	<!-- 해지 완료된 계좌 목록 조회 (고객용) -->
@@ -213,6 +213,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	    FROM fund_transaction_tbl
 	    WHERE FUND_TRANSACTION_ID = #{fundTransactionId}
 	</select>
+	
+	<!-- 관리자: 전체 고객의 펀드 거래내역 조회 -->
+	<select id="findAllTransactions" resultMap="fundTransactionMap">
+	    SELECT *
+	    FROM fund_transaction_tbl
+	    ORDER BY FUND_TRANSACTION_DATE DESC
+	</select>
+
 
 
 	

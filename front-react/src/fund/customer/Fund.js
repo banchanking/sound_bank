@@ -154,7 +154,7 @@ const Fund = ({ fundId, onClose, onBuy }) => {
           <button onClick={() => window.location.href = "/inquireAccont"} className={styles.fundButton}>
             My계좌 이동
           </button>
-          <button onClick={() => window.location.href = "/myFund"} className={styles.fundButton}>
+          <button onClick={() => window.location.href = "/myFundInfo"} className={styles.fundButton}>
             My펀드 이동
           </button>
         </div>

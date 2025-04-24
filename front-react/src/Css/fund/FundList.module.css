@@ -4,10 +4,36 @@
   max-width: 1000px;
   margin: 3rem auto;
   padding: 2rem;
-  background: #ffffff;
+  background-color: #fff;
   border: 2px solid #222;
   border-radius: 16px;
-  box-shadow: 4px 4px 0 #000;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.06);
+}
+
+.fundTitle {
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #111;
+  margin-bottom: 2rem;
+}
+.fundTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 2rem;
+}
+
+.fundTable th,
+.fundTable td {
+  border: 1px solid #ddd;
+  padding: 2px;
+  text-align: center;
+}
+
+.fundTable th {
+  background-color: #f9f9f9;
+  font-weight: 600;
+  color: #333;
 }
 
 .fundListSection {

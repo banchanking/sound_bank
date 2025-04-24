@@ -1,12 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
 import RefreshToken from "../../jwt/RefreshToken";
 import styles from "../../Css/fund/FundAdmin.module.css";
-import MyFund from "../customer/MyFund";  // 로그인 체크용 팝업 컴포넌트
 
 const FindFundCustomer = () => {
-  const navigate = useNavigate();
-  const [showModal, setShowModal] = useState(false);
   const [transactions, setTransactions] = useState([]);
 
   // 거래 목록 조회
@@ -30,30 +26,7 @@ const FindFundCustomer = () => {
     }
   };
 
-  // ✅ 로그인 확인 + 거래 데이터 불러오기
-  useEffect(() => {
-    const token = localStorage.getItem("auth_token");
-    if (!token) {
-      setShowModal(true);
-      return;
-    }
-
-    fetchPendingTransactions();
-  }, []);
-
-  const handleConfirm = () => navigate("/login");
-  const handleCancel = () => navigate("/");
-
   return (
-    <>
-    {showModal && (
-      <MyFund
-        message="로그인이 필요한 서비스입니다."
-        onConfirm={handleConfirm}
-        onCancel={handleCancel}
-      />
-    )}
-
     <div className={styles.fundContainer}>
       <h2 className={styles.fundTitle}>펀드 거래 승인 요청</h2>
       <table className={styles.fundTable}>
@@ -93,7 +66,6 @@ const FindFundCustomer = () => {
         </tbody>
       </table>
     </div>
-    </>
   );
 };
 

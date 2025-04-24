@@ -75,6 +75,11 @@ public interface FundRepository {
     
     // 사용자 전체 펀드 거래 내역 조회 (매수/환매 포함)
     public List<FundTransactionDTO> findAllTransactionsByCustomer(@Param("customer_id") String customerId);
+    
+    // 전체 고객 펀드 거래내역 조회 (관리자용)
+    List<FundTransactionDTO> findAllTransactions();
+
+
 
 
 }
