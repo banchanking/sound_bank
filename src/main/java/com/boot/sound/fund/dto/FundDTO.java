@@ -26,8 +26,8 @@ public class FundDTO {
 	@Column(name = "fund_id", nullable = false,  updatable = false)	//updatable=false : 한 번 저장된 후 수정할 수 없도록 제한
 	private Long fund_id;          // 펀드 ID
 	
-	@Column(name = "FUND_NAME", nullable = false, length = 255)
-    private String fundName;      // 펀드명
+	@Column(name = "fund_name", nullable = false, length = 255)
+    private String fund_name;      // 펀드명
 	
 	@Column(name = "fund_company", nullable = false, length = 255)
     private String fund_company;   // 운용사명

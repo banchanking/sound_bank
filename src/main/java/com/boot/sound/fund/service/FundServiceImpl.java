@@ -95,8 +95,8 @@ public class FundServiceImpl {
 	@Transactional
 	public void updateRiskTypes(List<FundDTO> funds) {
 	    for (FundDTO fund : funds) {
-	    	System.out.println("🔁 업데이트: " + fund.getFundName() + " → " + fund.getFund_risk_type());
-	        fundRepository.updateRiskType(fund.getFundName(), fund.getFund_risk_type());
+	    	System.out.println("🔁 업데이트: " + fund.getFund_name() + " → " + fund.getFund_risk_type());
+	        fundRepository.updateRiskType(fund.getFund_name(), fund.getFund_risk_type());
 	    }
 	}
 	
@@ -391,7 +391,7 @@ public class FundServiceImpl {
         // 공통: fund_name 세팅 (BUY든 SELL이든 상관없이)
         FundDTO fund = fundRepository.findById(Long.valueOf(tx.getFundId()));
         if (fund != null) {
-            tx.setFund_name(fund.getFundName());
+            tx.setFund_name(fund.getFund_name());
         }
 
         if ("BUY".equalsIgnoreCase(tx.getFundTransactionType())) {
