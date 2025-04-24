@@ -388,10 +388,10 @@ public class FundServiceImpl {
     @Transactional
     public void processFundTrade(FundTransactionDTO tx) {
 
-        // 공통: fundName 세팅 (BUY든 SELL이든 상관없이)
+        // 공통: fund_name 세팅 (BUY든 SELL이든 상관없이)
         FundDTO fund = fundRepository.findById(Long.valueOf(tx.getFundId()));
         if (fund != null) {
-            tx.setFundName(fund.getFundName());
+            tx.setFund_name(fund.getFundName());
         }
 
         if ("BUY".equalsIgnoreCase(tx.getFundTransactionType())) {
