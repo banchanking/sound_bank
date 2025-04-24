@@ -19,10 +19,10 @@ const ExRequestList = () => {
       });
 
     // 관리자 여부 확인 예시: 로컬스토리지에서 role 확인
-    const role = localStorage.getItem("role");
-    if (role === "ADMIN") {
-      setIsAdmin(true);
-    }
+    // const role = localStorage.getItem("role");
+    // if (role === "ADMIN") {
+    //   setIsAdmin(true);
+    // }
   }, [customerId]);
 
   const handleApproval = async (approvalData) => {
@@ -53,7 +53,9 @@ const ExRequestList = () => {
             <th>환전요청금액</th>
             <th>신청일</th>
             <th>상태</th>
-            {isAdmin && <th>관리</th>}
+            {/* {isAdmin &&  */}
+            <th>관리</th>
+             {/* } */}
           </tr>
         </thead>
         <tbody>
@@ -74,7 +76,8 @@ const ExRequestList = () => {
                   : "-"}
               </td>
               <td>{req.APPROVAL_STATUS}</td>
-              {isAdmin && (
+              {/* {isAdmin &&  */}
+              {/* ( */}
                 <td className={styles.actions}>
                   <button
                     onClick={() =>
@@ -102,9 +105,11 @@ const ExRequestList = () => {
                     거절
                   </button>
                 </td>
-              )}
+              {/* ) */}
+              {/* } */}
             </tr>
-          ))}
+          ))
+          }
         </tbody>
       </table>
     </div>
