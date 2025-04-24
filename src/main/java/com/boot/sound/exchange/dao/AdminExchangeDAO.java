@@ -25,4 +25,7 @@ public interface AdminExchangeDAO {
 
    // 지갑 상태 일괄 업데이트
    public int updateWalletStatus(Map<String, Object> wallet);
+   
+   // 전체 요청 목록
+   public List<Map<String, Object>> getList();
 }

@@ -2,13 +2,28 @@ import React, { useEffect, useState } from "react";
 import RefreshToken from "../../jwt/RefreshToken";
 import { getCustomerID } from "../../jwt/AxiosToken";
 import styles from "../../Css/exchange/ExAccountManage.module.css";
-// import styles from '../../Css/exchange/ExList.module.css';
+import { useNavigate } from 'react-router-dom';
 
 const ExAccountManagement = () => {
+  
+  const navigate = useNavigate();
   const [wallets, setWallets] = useState([]);
   const customer_id = getCustomerID();
 
   useEffect(() => {
+
+    const customer_id = getCustomerID();
+    if (!customer_id) {
+      if (!customer_id) {
+        const goLogin = window.confirm(
+          "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
+        );
+        if (goLogin) {
+          navigate("/login");
+        }
+        return;      
+    }
+  }
     const fetchWallet = async () => {
       try {
         const response = await RefreshToken.get(
