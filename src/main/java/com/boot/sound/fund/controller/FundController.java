@@ -195,7 +195,7 @@ public class FundController {
         return ResponseEntity.ok(service.getFundAccounts(customerId));
     }
     
-    // 사용자 전체 펀드 거래 내역 조회 (매수/환매 포함)
+    // 사용자 전체 펀드 거래 등록 (매수/환매 포함)
     @PostMapping("/fundTrade")
     public ResponseEntity<String> processTrade(@RequestBody FundTransactionDTO tx) {
         try {
@@ -235,6 +235,12 @@ public class FundController {
             logger.error("거래 승인 처리 중 오류 발생", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("처리 실패: " + e.getMessage());
         }
+    }
+
+    // 사용자 전체 펀드 거래 내역 조회 (전체 매수/환매 포함)
+    @GetMapping("/fundTrade/all/{customer_id}")
+    public ResponseEntity<List<FundTransactionDTO>> getAllTransactions(@PathVariable("customer_id") String customerId) {
+        return ResponseEntity.ok(service.getAllTransactions(customerId));
     }
     
 

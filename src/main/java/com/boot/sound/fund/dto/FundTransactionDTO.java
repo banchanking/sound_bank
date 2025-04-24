@@ -61,4 +61,8 @@ public class FundTransactionDTO {
     @Column(name = "STATUS")
     private String status;                   // PENDING / APPROVED / REJECTED
 
+    @Column(name = "FUND_NAME")
+    private String fundName;
+
+    
 }

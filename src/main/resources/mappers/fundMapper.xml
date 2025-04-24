@@ -145,11 +145,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	  INSERT INTO fund_transaction_tbl (
 	    CUSTOMER_ID, FUND_ACCOUNT_ID, WITHDRAW_ACCOUNT_NUMBER, FUND_ID, FUND_TRANSACTION_TYPE,
 	    FUND_INVEST_AMOUNT, FUND_UNITS_PURCHASED, FUND_PRICE_PER_UNIT,
-	    FUND_TRANSACTION_DATE, FUND_CURRENT_VALUE, STATUS
+	    FUND_TRANSACTION_DATE, FUND_CURRENT_VALUE, STATUS, FUND_NAME
 	  ) VALUES (
 	    #{customerId}, #{fundAccountId}, #{withdrawAccountNumber}, #{fundId}, #{fundTransactionType},
 	    #{fundInvestAmount}, #{fundUnitsPurchased}, #{fundPricePerUnit},
-	    #{fundTransactionDate}, #{fundCurrentValue}, #{status}
+	    #{fundTransactionDate}, #{fundCurrentValue}, #{status}, #{fundName}
 	  )
 	</insert>
 	
@@ -206,7 +206,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	    WHERE customer_id = #{customer_id}
 	    ORDER BY fund_transaction_date DESC
 	</select>
-
 	
 	<!-- 펀드 매수시 계좌 잔액 업데이트 -->
 	<select id="findTransactionById" resultMap="fundTransactionMap">
@@ -214,6 +213,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	    FROM fund_transaction_tbl
 	    WHERE FUND_TRANSACTION_ID = #{fundTransactionId}
 	</select>
+
+
 	
 	<resultMap id="fundTransactionMap" type="com.boot.sound.fund.dto.FundTransactionDTO">
 	  <id property="fundTransactionId" column="FUND_TRANSACTION_ID" />
@@ -228,6 +229,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	  <result property="fundPricePerUnit" column="FUND_PRICE_PER_UNIT" />
 	  <result property="status" column="STATUS" />
 	  <result property="withdrawAccountNumber" column="WITHDRAW_ACCOUNT_NUMBER" />
+	  <result property="fundName" column="FUND_NAME"/>
 	</resultMap>
 	
 	<resultMap id="fundAccountMap" type="com.boot.sound.fund.dto.FundAccountDTO">
