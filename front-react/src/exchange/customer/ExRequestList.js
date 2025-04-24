@@ -2,14 +2,32 @@ import React,{useEffect, useState} from "react";
 import RefreshToken from "../../jwt/RefreshToken";
 import { getCustomerID, getAuthToken } from "../../jwt/AxiosToken";
 import styles from "../../Css/exchange/ExRequestList.module.css";
+import { useNavigate } from "react-router-dom";
 
 const ExRequestList = () => {
+  const navigate = useNavigate();
   const [requests, setRequests] = useState([]); // 환전 신청 목록
   const [isAdmin, setIsAdmin] = useState(false); // 관리자 여부 확인
   const customerId = getCustomerID();
 
   useEffect(() => {
-    RefreshToken.get(`http://localhost:8081/api/exchange/requestList`)
+    const id = getCustomerID();
+        if (!id) {
+          const customer_id = getCustomerID();
+              if (!customer_id) {
+                if (!customer_id) {
+                  const goLogin = window.confirm(
+                    "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
+                  );
+                  if (goLogin) {
+                    navigate("/login");
+                  }
+                  return;      
+              }
+            }
+        }
+
+    RefreshToken.get(`http://localhost:8081/api/exchange/requestList/${customerId}`)
       .then((res) => {
         setRequests(res.data);
         console.log(res.data);
