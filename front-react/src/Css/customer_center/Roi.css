@@ -1,0 +1,47 @@
+.roi-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .roi-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .webcam-container {
+    position: relative;
+    margin-bottom: 20px;
+  }
+  
+  .webcam {
+    width: 100%;
+    max-width: 500px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+  }
+  
+  .roi-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70%; /* 1000:700 비율 유지 */
+    aspect-ratio: 1000 / 700;
+    border: 2px dashed #ff0000;
+    pointer-events: none; /* 클릭 방지 */
+    box-sizing: border-box;
+  }
+  
+  .hidden {
+    display: none;
+  }
+  
+  .preview-container {
+    margin: 20px 0;
+  }
+  
+  button {
+    font-size: 16px;
+  }

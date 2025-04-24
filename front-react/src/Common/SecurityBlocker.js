@@ -2,7 +2,23 @@ import { useEffect } from "react";
 
 const SecurityBlocker = () => {
   useEffect(() => {
-    // 개발자 도구(F12) 및 소스 코드 보기 차단
+    // 확대/축소 방지
+    const preventZoom = (event) => {
+      if (
+        (event.ctrlKey && (event.key === "+" || event.key === "-" || event.key === "=")) ||
+        event.ctrlKey || event.metaKey // Mac command 키
+      ) {
+        event.preventDefault();
+      }
+    };
+
+    const preventWheelZoom = (event) => {
+      if (event.ctrlKey) {
+        event.preventDefault();
+      }
+    };
+
+    // 개발자 도구 및 기타 방지
     const handleKeyDown = (event) => {
       if (
         event.key === "F12" ||
@@ -15,17 +31,14 @@ const SecurityBlocker = () => {
       }
     };
 
-    // 마우스 우클릭 방지
     const handleContextMenu = (event) => {
       event.preventDefault();
     };
 
-    // 드래그 방지
     const handleSelectStart = (event) => {
       event.preventDefault();
     };
 
-    // 스크린샷 감지 (화면 크기 변화 체크)
     const detectScreenCapture = () => {
       if (
         window.outerHeight - window.innerHeight > 200 ||
@@ -39,21 +52,26 @@ const SecurityBlocker = () => {
       }
     };
 
-    // 이벤트 리스너 추가
+    // 이벤트 리스너 등록
+    document.addEventListener("keydown", preventZoom, { passive: false });
+    document.addEventListener("wheel", preventWheelZoom, { passive: false });
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("contextmenu", handleContextMenu);
     document.addEventListener("selectstart", handleSelectStart);
-    setInterval(detectScreenCapture, 1000);
+    const intervalId = setInterval(detectScreenCapture, 1000);
 
-    // 컴포넌트 언마운트 시 이벤트 리스너 제거
     return () => {
+      // 이벤트 리스너 제거
+      document.removeEventListener("keydown", preventZoom);
+      document.removeEventListener("wheel", preventWheelZoom);
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("contextmenu", handleContextMenu);
       document.removeEventListener("selectstart", handleSelectStart);
+      clearInterval(intervalId);
     };
   }, []);
 
-  return null; // UI 요소 없이 기능만 제공
+  return null;
 };
 
 export default SecurityBlocker;
