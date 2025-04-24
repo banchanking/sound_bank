@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import RefreshToken from "../jwt/RefreshToken"; 
-import '../Css/inquire/InquireAccount.css';
+import styles from '../Css/inquire/InquireAccount.module.css';
 import { getCustomerID } from "../jwt/AxiosToken";
 import { useNavigate } from 'react-router-dom';
 
-
 function AccountCheck() {
-    
   const navigate = useNavigate();
   const [data, setData] = useState({});
   const [type, setType] = useState(null);
@@ -14,10 +12,10 @@ function AccountCheck() {
   const [customer_id, setCustomerId] = useState('');
 
   useEffect(() => {
-    const id = getCustomerID();   // 로그인된 사용자 ID 가져오기
+    const id = getCustomerID();
     if (!id) {
       alert('로그인이 필요합니다.');
-      navigate('/login')
+      navigate('/login');
       return;
     }
 
@@ -32,38 +30,32 @@ function AccountCheck() {
     setAccNum(num);
   };
 
-  // 계좌 카드 컴포넌트
-  const Card = ({ item }) => {
-    return (
-      <div
-        onClick={() => clickCard(item.account_number)}
-        className={`account-card ${accNum === item.account_number ? 'selected' : ''}`}
-      >
-        <div><strong>{item.account_name}</strong></div>
-        <div>{item.account_number}</div>
-      </div>
-    );
-  };
+  const Card = ({ item }) => (
+    <div
+      onClick={() => clickCard(item.account_number)}
+      className={`${styles.card} ${accNum === item.account_number ? styles.selected : ''}`}
+    >
+      <div className={styles.cardName}><strong>{item.account_name}</strong></div>
+      <div className={styles.cardNumber}>{item.account_number}</div>
+    </div>
+  );
 
-  // 계좌 상세 정보
-  const Detail = ({ item }) => {
-    return (
-      <div className="account-detail">
-        <h4>상세 정보</h4>
-        <p><b>이름:</b> {item.account_name}</p>
-        <p><b>번호:</b> {item.account_number}</p>
-        <p><b>잔액:</b> {item.balance.toLocaleString("ko-KR")} 원</p>
-        <p><b>이자율:</b> {item.interest_rate || 0}%</p>
-        <p><b>개설일:</b> {new Date(item.open_date).toLocaleString()}</p>
-      </div>
-    );
-  };
+  const Detail = ({ item }) => (
+    <div className={styles.detail}>
+      <h4>상세 정보</h4>
+      <p><b>이름:</b> {item.account_name}</p>
+      <p><b>번호:</b> {item.account_number}</p>
+      <p><b>잔액:</b> {item.balance.toLocaleString("ko-KR")} 원</p>
+      <p><b>이자율:</b> {item.interest_rate || 0}%</p>
+      <p><b>개설일:</b> {new Date(item.open_date).toLocaleString()}</p>
+    </div>
+  );
 
   return (
-    <div className="account-wrapper">
-      <h2 className="account-title">{customer_id}님의 계좌 조회</h2>
+    <div className={styles.wrapper}>
+      <h2 className={styles.title}>{customer_id}님의 계좌 조회</h2>
 
-      <div className="account-type-buttons">
+      <div className={styles.buttonGroup}>
         {['입출금', '예금', '적금'].map(t => (
           <button
             key={t}
@@ -71,7 +63,7 @@ function AccountCheck() {
               setType(t);
               setAccNum(null);
             }}
-            className={type === t ? 'active' : ''}
+            className={`${styles.tabButton} ${type === t ? styles.active : ''}`}
           >
             {t} ({(data[t] || []).length})
           </button>
@@ -94,6 +86,12 @@ function AccountCheck() {
       {type && accNum && (
         <Detail item={data[type].find(a => a.account_number === accNum)} />
       )}
+
+      <div className={styles.buttonArea}>
+        <button className={styles.transferButton} onClick={() => navigate('/transInstant')}>
+          이체하기
+        </button>
+      </div>
     </div>
   );
 }

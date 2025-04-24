@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import RefreshToken from '../../jwt/RefreshToken';
-import '../../Css/transfer/MultiAdmin.css';
+import styles from '../../Css/transfer/MultiAdmin.module.css';
 
 function TransMultiApprove() {
   const [groupedList, setGroupedList] = useState([]);
@@ -8,16 +8,13 @@ function TransMultiApprove() {
   const token = localStorage.getItem('auth_token');
   const [loading, setLoading] = useState(false);
 
-  //  목록 불러오기 함수 분리
   const fetchApproveList = () => {
     RefreshToken.get('http://localhost:8081/api/multiAdmin/approveList', {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => {
-        const rawList = res.data;
         const grouped = {};
-
-        rawList.forEach(item => {
+        res.data.forEach(item => {
           const key = `${item.customer_id}_${item.request_date}`;
           if (!grouped[key]) {
             grouped[key] = {
@@ -33,7 +30,6 @@ function TransMultiApprove() {
           }
           grouped[key].children.push(item);
         });
-
         setGroupedList(Object.values(grouped));
       })
       .catch(err => {
@@ -42,12 +38,10 @@ function TransMultiApprove() {
       });
   };
 
-  // 최초 로딩
   useEffect(() => {
     fetchApproveList();
   }, []);
 
-  // 승인 처리
   const handleApprove = (group) => {
     setLoading(true);
     RefreshToken.post(`http://localhost:8081/api/multiAdmin/approveMultiGroup`, {
@@ -58,13 +52,12 @@ function TransMultiApprove() {
     })
       .then(() => {
         alert('승인 완료');
-        fetchApproveList(); // 목록 새로 불러오기
+        fetchApproveList();
       })
       .catch(() => alert('승인 실패'))
       .finally(() => setLoading(false));
   };
 
-  // 반려 처리
   const handleReject = (group) => {
     const reason = prompt('반려 사유를 입력하세요:');
     if (!reason) return;
@@ -78,16 +71,16 @@ function TransMultiApprove() {
     })
       .then(() => {
         alert('반려 완료');
-        fetchApproveList(); // 목록 새로 불러오기
+        fetchApproveList();
       })
       .catch(() => alert('반려 실패'));
   };
 
   return (
-    <div className="approve-wrap">
+    <div className={styles.approveWrap}>
       <h2>다건이체 승인 관리</h2>
 
-      <table className="approve-table">
+      <table className={styles.table}>
         <thead>
           <tr>
             <th>고객ID</th>
@@ -112,9 +105,9 @@ function TransMultiApprove() {
                 <td>
                   {group.status === '대기' ? (
                     <>
-                      <button onClick={() => setSelectedKey(group.key)} className="btn-detail">상세</button>
-                      <button onClick={() => handleApprove(group)} className="btn-approve">승인</button>
-                      <button onClick={() => handleReject(group)} className="btn-reject">반려</button>
+                      <button onClick={() => setSelectedKey(group.key)} className={styles.btnDetail}>상세</button>
+                      <button onClick={() => handleApprove(group)} className={styles.btnApprove}>승인</button>
+                      <button onClick={() => handleReject(group)} className={styles.btnReject}>반려</button>
                     </>
                   ) : group.status === '승인' ? (
                     <div>
@@ -136,11 +129,10 @@ function TransMultiApprove() {
                 </td>
               </tr>
 
-              {/* 상세보기 */}
               {selectedKey === group.key && (
                 <tr>
                   <td colSpan="5">
-                    <table className="detail-table">
+                    <table className={styles.detailTable}>
                       <thead>
                         <tr>
                           <th>입금계좌</th>
@@ -168,7 +160,7 @@ function TransMultiApprove() {
         </tbody>
       </table>
 
-      {loading && <div className="loading">처리중...</div>}
+      {loading && <div className={styles.loading}>처리중...</div>}
     </div>
   );
 }
