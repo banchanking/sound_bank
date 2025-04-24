@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -94,8 +95,8 @@ public class FundServiceImpl {
 	@Transactional
 	public void updateRiskTypes(List<FundDTO> funds) {
 	    for (FundDTO fund : funds) {
-	    	System.out.println("🔁 업데이트: " + fund.getFund_name() + " → " + fund.getFund_risk_type());
-	        fundRepository.updateRiskType(fund.getFund_name(), fund.getFund_risk_type());
+	    	System.out.println("🔁 업데이트: " + fund.getFundName() + " → " + fund.getFund_risk_type());
+	        fundRepository.updateRiskType(fund.getFundName(), fund.getFund_risk_type());
 	    }
 	}
 	
@@ -332,7 +333,7 @@ public class FundServiceImpl {
                 transActionRepository.save(log);
 
             // 7. 환매 승인 처리 (펀드 계좌 → 고객 계좌 이체)
-            } else if ("SELL".equalsIgnoreCase(tx.getFundTransactionType())) {
+            } if ("SELL".equalsIgnoreCase(tx.getFundTransactionType())) {
                 if (fundBalance.compareTo(investAmount) < 0) {
                     throw new IllegalStateException("펀드 계좌 잔액 부족");
                 }
@@ -349,6 +350,7 @@ public class FundServiceImpl {
                 log.setComment("펀드 환매");
                 transActionRepository.save(log);
             }
+            
         }
     }
 
@@ -385,8 +387,15 @@ public class FundServiceImpl {
     // 전체 거래내역 처리 (매수/환매 통합)
     @Transactional
     public void processFundTrade(FundTransactionDTO tx) {
+
+        // 공통: fundName 세팅 (BUY든 SELL이든 상관없이)
+        FundDTO fund = fundRepository.findById(Long.valueOf(tx.getFundId()));
+        if (fund != null) {
+            tx.setFundName(fund.getFundName());
+        }
+
         if ("BUY".equalsIgnoreCase(tx.getFundTransactionType())) {
-            // 프론트에서 fundPricePerUnit을 보내지 않기 때문에 여기서 계산
+
             if (tx.getFundUnitsPurchased() == null || tx.getFundInvestAmount() == null) {
                 throw new IllegalStateException("좌수 또는 금액이 누락되어 있습니다.");
             }
@@ -394,13 +403,14 @@ public class FundServiceImpl {
             BigDecimal fundPricePerUnit = tx.getFundInvestAmount()
                 .divide(tx.getFundUnitsPurchased(), 6, RoundingMode.HALF_UP);
 
-            tx.setFundPricePerUnit(fundPricePerUnit);  // 단가 계산 후 세팅
-            tx.setFundTransactionDate(LocalDate.now()); // 오늘 날짜로 거래일 설정
+            tx.setFundPricePerUnit(fundPricePerUnit);
+            tx.setFundTransactionDate(LocalDate.now());
             tx.setStatus("PENDING");
 
-            fundRepository.insertFundTransaction(tx);  // DB 저장
+            fundRepository.insertFundTransaction(tx);
 
         } else if ("SELL".equalsIgnoreCase(tx.getFundTransactionType())) {
+
             tx.setFundTransactionDate(LocalDate.now());
             tx.setStatus("PENDING");
 
@@ -410,7 +420,8 @@ public class FundServiceImpl {
                 );
             }
 
-            fundRepository.insertFundTransaction(tx);  // DB 저장
+            fundRepository.insertFundTransaction(tx);
+
         } else {
             throw new IllegalArgumentException("지원하지 않는 거래 타입입니다: " + tx.getFundTransactionType());
         }

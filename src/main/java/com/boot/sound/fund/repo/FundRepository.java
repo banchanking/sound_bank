@@ -1,6 +1,7 @@
 package com.boot.sound.fund.repo;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -74,5 +75,6 @@ public interface FundRepository {
     
     // 사용자 전체 펀드 거래 내역 조회 (매수/환매 포함)
     public List<FundTransactionDTO> findAllTransactionsByCustomer(@Param("customer_id") String customerId);
-    
+
+
 }
