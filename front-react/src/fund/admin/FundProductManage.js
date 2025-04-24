@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-import MyFund from "../customer/MyFund";  // 로그인 체크용 팝업 컴포넌트
+import FundCustomer from "./FundCustomer";  // 로그인 체크용 팝업 컴포넌트
 import styles from "../../Css/fund/FundList.module.css"; // 스타일 파일 추가
 import RefreshToken from "../../jwt/RefreshToken"; // RefreshToken 모듈 추가
 
@@ -135,7 +135,7 @@ const FundProductManage = () => {
   return (
     <>
     {showModal && (
-      <MyFund
+      <FundCustomer
         message="로그인이 필요한 서비스입니다."
         onConfirm={handleConfirm}
         onCancel={handleCancel}

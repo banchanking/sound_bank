@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import RefreshToken from "../../jwt/RefreshToken";
 import styles from "../../Css/fund/MyFund.module.css";
-import MyFund from "./MyFund";  // 로그인 체크용 팝업 컴포넌트
+import FundCustomer from "../admin/FundCustomer";  // 로그인 체크용 팝업 컴포넌트
 
 const CloseAccount = () => {
   const navigate = useNavigate();
@@ -35,7 +35,7 @@ const CloseAccount = () => {
 
     try {
       await RefreshToken.patch(`/fund/close/${fundAccountId}`);
-      alert("계좌가 해지되었습니다.");
+      alert("해지 요청이 접수되었습니다. 관리자 승인 후 해지됩니다.");
       // 계좌 목록 새로고침
       const customerId = localStorage.getItem("customerId");
       const res = await RefreshToken.get(`http://localhost:8081/api/accounts/allAccount/fund/${customerId}`);
@@ -53,7 +53,7 @@ const CloseAccount = () => {
   return (
     <>
     {showModal && (
-      <MyFund
+      <FundCustomer
         message="로그인이 필요한 서비스입니다."
         onConfirm={handleConfirm}
         onCancel={handleCancel}
@@ -61,7 +61,7 @@ const CloseAccount = () => {
     )}
 
     <div align="center" className={styles.fundContainer}>
-      <h2>My펀드 계좌</h2>
+      <h2>My펀드 계좌해지</h2>
       <table className={styles.fundTable}>
         <thead>
           <tr>
@@ -89,7 +89,7 @@ const CloseAccount = () => {
                 {acc.status === "APPROVED"
                   ? "활성 (Active)"
                   : acc.status === "REJECTED"
-                  ? "비활성 (Deactivated)"
+                  ? "비활성 (Rejected)"
                   : "승인 대기 중"}
                 </span>
               </td>

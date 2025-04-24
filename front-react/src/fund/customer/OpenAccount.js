@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import RefreshToken from "../../jwt/RefreshToken";
 import styles from "../../Css/fund/FundAccount.module.css";
-import MyFund from "./MyFund";  // 로그인 체크용 팝업 컴포넌트
+import FundCustomer from "../admin/FundCustomer";  // 로그인 체크용 팝업 컴포넌트
 
 const OpenAccount = () => {
   const navigate = useNavigate();
@@ -69,7 +69,7 @@ const OpenAccount = () => {
   return (
     <>
       {showModal && (
-        <MyFund
+        <FundCustomer
           message="로그인이 필요한 서비스입니다."
           onConfirm={handleConfirm}
           onCancel={handleCancel}

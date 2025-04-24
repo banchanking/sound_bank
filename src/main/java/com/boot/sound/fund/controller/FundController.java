@@ -214,6 +214,12 @@ public class FundController {
         return service.getPendingTransactions();
     }
     
+    // 고객의 매수 승인된 거래 조회
+    @GetMapping("/fundTrade/buy-approve/{customer_id}")
+    public ResponseEntity<List<FundTransactionDTO>> getApprovedBuys(@PathVariable String customer_id) {
+        return ResponseEntity.ok(service.getApprovedBuys(customer_id));
+    }
+    
     // 펀드 거래 승인 및 계좌 반영 처리 API (관리자용)
     @PutMapping("/fundTrade/{fund_transaction_id}/{status}")
     public ResponseEntity<String> approveTransaction(
@@ -241,6 +247,12 @@ public class FundController {
     @GetMapping("/fundTrade/all/{customer_id}")
     public ResponseEntity<List<FundTransactionDTO>> getAllTransactions(@PathVariable("customer_id") String customerId) {
         return ResponseEntity.ok(service.getAllTransactions(customerId));
+    }
+    
+    // 관리자: 전체 고객 펀드 거래내역 조회
+    @GetMapping("/admin/fundTrade/all")
+    public ResponseEntity<List<FundTransactionDTO>> getAllTransactionsForAdmin() {
+        return ResponseEntity.ok(service.getAllTransactionsForAdmin());
     }
     
 
