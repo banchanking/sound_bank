@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import RefreshToken from '../../jwt/RefreshToken';
-import '../../Css/transfer/AdminLimit.css';
+import styles from '../../Css/transfer/AdminLimit.module.css';
 
 function AdminLimit() {
   const [requests, setRequests] = useState([]);
 
-  // 승인 또는 거절 처리
   const handleAction = (item, action) => {
     const { transfer_id, requested_limit } = item;
 
     if (action === 'reject') {
-      const reason = prompt('거절 사유를 입력하세요:');
+      const reason = prompt('반려 사유를 입력하세요:');
       if (!reason) return;
 
       RefreshToken.post('http://localhost:8081/api/transLimit/admin/reject', {
@@ -18,7 +17,7 @@ function AdminLimit() {
         reject_reason: reason
       })
         .then(() => {
-          alert('거절 완료');
+          alert('반려 완료');
           setRequests(prev =>
             prev.map(row =>
               row.transfer_id === transfer_id
@@ -28,8 +27,8 @@ function AdminLimit() {
           );
         })
         .catch(err => {
-          console.error('거절 실패:', err);
-          alert('거절 실패');
+          console.error('반려 실패:', err);
+          alert('반려 실패');
         });
 
     } else if (action === 'approve') {
@@ -59,7 +58,6 @@ function AdminLimit() {
     }
   };
 
-  // 요청 목록 조회
   useEffect(() => {
     RefreshToken.get('http://localhost:8081/api/transLimit/admin/list')
       .then(res => setRequests(res.data))
@@ -70,11 +68,10 @@ function AdminLimit() {
   }, []);
 
   return (
-    <div className="admin-limit-container">
-      <div className="admin-limit-content">
+    <div className={styles.container}>
+      <div className={styles.content}>
         <h2>이체한도 변경 요청 목록 (관리자)</h2>
-
-        <table className="admin-limit-table">
+        <table className={styles.table}>
           <thead>
             <tr>
               <th>신청자</th>
@@ -98,13 +95,13 @@ function AdminLimit() {
                     <>
                       <button
                         onClick={() => handleAction(item, 'approve')}
-                        className="btn-approve"
+                        className={`${styles.btn} ${styles.btnApprove}`}
                       >
                         승인
                       </button>
                       <button
                         onClick={() => handleAction(item, 'reject')}
-                        className="btn-reject"
+                        className={`${styles.btn} ${styles.btnReject}`}
                       >
                         반려
                       </button>
@@ -121,9 +118,7 @@ function AdminLimit() {
                       반려일: {item.approval_date ? new Date(item.approval_date).toLocaleString() : '-'}<br />
                       사유: {item.reject_reason || '-'}
                     </div>
-                  ) : (
-                    '-'
-                  )}
+                  ) : '-'}
                 </td>
               </tr>
             ))}
