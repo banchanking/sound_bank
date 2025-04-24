@@ -3,13 +3,13 @@ import RefreshToken from "../../jwt/RefreshToken";
 import { getCustomerID, getAuthToken } from "../../jwt/AxiosToken";
 import styles from "../../Css/exchange/ExRequestList.module.css";
 
-const AdminExAccountRequestList = () => {
+const ExRequestList = () => {
   const [requests, setRequests] = useState([]); // 환전 신청 목록
   const [isAdmin, setIsAdmin] = useState(false); // 관리자 여부 확인
-  const customer_id = getCustomerID();
+  const customerId = getCustomerID();
 
   useEffect(() => {
-    RefreshToken.get(`http://localhost:8081/api/exchange/requestList/${customer_id}`)
+    RefreshToken.get(`http://localhost:8081/api/admin/requestList`)
       .then((res) => {
         setRequests(res.data);
         console.log(res.data);
@@ -23,13 +23,13 @@ const AdminExAccountRequestList = () => {
     if (role === "ADMIN") {
       setIsAdmin(true);
     }
-  }, [customer_id]);
+  }, [customerId]);
 
   const handleApproval = async (approvalData) => {
     console.log("승인 처리 요청:", approvalData);
 
     try {
-      await RefreshToken.put(`/exchange/admin/approval`, approvalData);
+      await RefreshToken.put(`/admin/approval`, approvalData);
       alert(`요청이 ${approvalData.approval_status === "APPROVED" ? "승인" : "거절"}되었습니다.`);
 
       const res = await RefreshToken.get(`/exchange/requestList/${approvalData.customer_id}`);
@@ -49,8 +49,8 @@ const AdminExAccountRequestList = () => {
             <th>신청 번호</th>
             <th>신청자 ID</th>
             <th>출금계좌</th>
-            <th>환전신청금액</th>       
-            <th>환전요청금액</th>            
+            <th>환전신청금액</th>
+            <th>환전요청금액</th>
             <th>신청일</th>
             <th>상태</th>
             {isAdmin && <th>관리</th>}
@@ -59,30 +59,46 @@ const AdminExAccountRequestList = () => {
         <tbody>
           {requests.map((req, idx) => (
             <tr key={idx}>
-              <td>{req.exchange_transaction_id}</td>
-              <td>{req.customer_id}</td>
-              <td>{req.withdraw_account_number}</td>           
-              <td>{req.request_amount.toLocaleString()} {req.from_currency}</td>              
-              <td>{req.exchanged_amount.toLocaleString()} {req.to_currency}</td>
-              <td>{req.exchange_transaction_date?.slice(0, 10)}</td>
-              <td>{req.approval_status}</td>
+              <td>{req.EXCHANGE_TRANSACTION_ID}</td>
+              <td>{req.CUSTOMER_ID}</td>
+              <td>{req.WITHDRAW_ACCOUNT_NUMBER}</td>
+              <td>
+                {req.REQUEST_AMOUNT?.toLocaleString() || "-"} {req.FROM_CURRENCY}
+              </td>
+              <td>
+                {req.EXCHANGED_AMOUNT?.toLocaleString() || "-"} {req.TO_CURRENCY}
+              </td>
+              <td>
+                {req.EXCHANGE_TRANSACTION_DATE
+                  ? new Date(req.EXCHANGE_TRANSACTION_DATE).toLocaleDateString()
+                  : "-"}
+              </td>
+              <td>{req.APPROVAL_STATUS}</td>
               {isAdmin && (
                 <td className={styles.actions}>
-                  <button onClick={() => handleApproval({
-                    exchange_transaction_id: req.exchange_transaction_id,
-                    approval_status: "APPROVED",
-                    customer_id: req.customer_id,
-                    withdraw_account_number: req.withdraw_account_number,
-                    request_amount: req.request_amount,
-                    currency_code: req.currency_code
-                  })}>
+                  <button
+                    onClick={() =>
+                      handleApproval({
+                        exchange_transaction_id: req.EXCHANGE_TRANSACTION_ID,
+                        approval_status: "APPROVED",
+                        customer_id: req.CUSTOMER_ID,
+                        withdraw_account_number: req.WITHDRAW_ACCOUNT_NUMBER,
+                        request_amount: req.REQUEST_AMOUNT,
+                        currency_code: req.CURRENCY_CODE,
+                      })
+                    }
+                  >
                     승인
                   </button>
-                  <button onClick={() => handleApproval({
-                    exchange_transaction_id: req.exchange_transaction_id,
-                    approval_status: "REJECTED",
-                    customer_id: req.customer_id
-                  })}>
+                  <button
+                    onClick={() =>
+                      handleApproval({
+                        exchange_transaction_id: req.EXCHANGE_TRANSACTION_ID,
+                        approval_status: "REJECTED",
+                        customer_id: req.CUSTOMER_ID,
+                      })
+                    }
+                  >
                     거절
                   </button>
                 </td>
@@ -95,4 +111,4 @@ const AdminExAccountRequestList = () => {
   );
 };
 
-export default AdminExAccountRequestList;
+export default ExRequestList;

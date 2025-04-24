@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styles from "../../Css/exchange/ExchangeAdminPage.module.css";
-import AdminExAccountRequestList from "./AdminExAccountRequestList";
+import AdminExRequestList from "./AdminExRequestList";
 import AdminExchangeRateManage from "./AdminExchangeRateManage";
 import AdminWalletList from "./AdminWalletList";
 
@@ -14,7 +14,7 @@ const ExchangeAdminPage = () => {
       case "walletList":
         return <AdminWalletList />;
       case "exchangeApproval":
-        return <AdminExAccountRequestList />;
+        return <AdminExRequestList />;
       default:
         return <div>메뉴를 선택하세요.</div>;
     }
