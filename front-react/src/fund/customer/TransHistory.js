@@ -41,10 +41,10 @@ const TransHistory = () => {
       complete: (results) => {
         const fundRateMap = {};
         results.data.forEach((fund) => {
-          const fundName = fund.fund_name;
+          const fund_name = fund.fund_name;
   
-          if (fundName && typeof fundName === "string" && fundName.trim()) {  // null 및 undefined 처리
-            fundRateMap[fundName.trim()] = {
+          if (fund_name && typeof fund_name === "string" && fund_name.trim()) {  // null 및 undefined 처리
+            fundRateMap[fund_name.trim()] = {
               return_1m: parseFloat(fund.return_1m || 0),
               return_3m: parseFloat(fund.return_3m || 0),
               return_6m: parseFloat(fund.return_6m || 0),
@@ -60,7 +60,7 @@ const TransHistory = () => {
   }, []);
   
   const getApproximateRate = (tx, rateMap) => {
-    const rates = rateMap[tx.fundName];  // 🔵 fundName으로 변경
+    const rates = rateMap[tx.fund_name]; // 펀드명으로 수익률 데이터 가져오기
     if (!rates) return 0;
   
     const daysHeld = dayjs().diff(dayjs(tx.fundTransactionDate), "day");
@@ -71,10 +71,19 @@ const TransHistory = () => {
   };
   
   const getProfitRate = (tx, rateMap) => {
-    const approxRate = getApproximateRate(tx, rateMap); // 현재 수익률 (%)
-    const currentValue = tx.fundInvestAmount * (1 + approxRate / 100);
-    const profitRate = ((currentValue - tx.fundInvestAmount) / tx.fundInvestAmount) * 100;
-    return profitRate.toFixed(2);
+    if (!tx || !tx.fundInvestAmount || !tx.fundUnitsPurchased) return 0;
+  
+    const approxRate = getApproximateRate(tx, rateMap);
+    if (isNaN(approxRate)) return 0;
+  
+    try {
+      const currentValue = tx.fundInvestAmount * (1 + approxRate / 100);
+      const profitRate = ((currentValue - tx.fundInvestAmount) / tx.fundInvestAmount) * 100;
+      return isNaN(profitRate) ? 0 : profitRate.toFixed(2);
+    } catch (e) {
+      console.warn("⚠️ 수익률 계산 에러:", e);
+      return 0;
+    }
   };
 
   const handleSellClick = (tx) => {
@@ -84,10 +93,11 @@ const TransHistory = () => {
 
   useEffect(() => {
     if (selectedTx) {
-      console.log("📌 선택된 거래 펀드명:", selectedTx.fundName);
+      console.log("📌 선택된 거래 펀드명:", selectedTx.fund_name);
+      console.log("✅ 거래 금액:", selectedTx.fundInvestAmount);
       console.log("📌 CSV fundRates 데이터:", fundRates);
-      if(selectedTx.fundName){
-        console.log("📌 매핑확인:", fundRates[selectedTx.fundName.trim()]);
+      if(selectedTx.fund_name){
+        console.log("📌 매핑확인:", fundRates[selectedTx.fund_name.trim()]);
       }
     }
   }, [selectedTx, fundRates]);
@@ -143,7 +153,7 @@ const TransHistory = () => {
           {transactions.map(tx => (
             <tr key={tx.fundTransactionId}>
               <td>{tx.fundId}</td>
-              <td>{tx.fundName}</td>
+              <td>{tx.fund_name}</td>
               <td>{tx.fundInvestAmount?.toLocaleString()}</td>
               <td>{tx.fundUnitsPurchased}</td>
               <td>{tx.fundPricePerUnit}</td>
@@ -157,16 +167,24 @@ const TransHistory = () => {
       </table>
 
       {selectedTx && 
-      !isLoadingRates && selectedTx.fundName && fundRates[selectedTx.fundName.trim()] && (
+      !isLoadingRates && selectedTx.fund_name && fundRates[selectedTx.fund_name.trim()] && (
           <div style={{ marginTop: "1rem" }}>
             <h4>수익률 비교</h4>
             <Chart
               chartType="ColumnChart"
-              data={[
-                ["시점", "수익률"],
-                ["매수 시점", 0],
-                ["현재 시점", parseFloat(getProfitRate(selectedTx, fundRates)) / 100],
-              ]}
+              data={(() => {
+                const rawRate = getProfitRate(selectedTx, fundRates);
+                const parsedRate = parseFloat(rawRate);
+                const chartRate = isNaN(parsedRate) || !isFinite(parsedRate) ? 0 : parsedRate / 100;
+
+                console.log("✅ 최종 Chart에 전달될 수익률(%):", chartRate);
+
+                return [
+                  ["시점", "수익률"],
+                  ["매수 시점", 0],
+                  ["현재 시점", chartRate],
+                ];
+              })()}
               options={{
                 legend: { position: "none" },
                 colors: ["#4caf50"],
