@@ -11,26 +11,43 @@ function Chatbot() {
   const scrollToBottom = () => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
-  
+
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
   const sendRequest = useCallback(
     debounce(async (question) => {
+      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       try {
+        // 사용자 메시지 추가
+        setMessages((prev) => [...prev, { type: 'user', text: question, time }]);
+
+        // FastAPI 서버에 요청
         const res = await axios.post('http://localhost:8001/ask', { question });
-        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        const { faq_answer, generated_answer, source } = res.data;
+
+        // FAQ 답변 추가
         setMessages((prev) => [
           ...prev,
-          { type: 'user', text: question, time },
-          { type: 'bot', text: res.data.faq_answer, time, label: 'FAQ 답변' },
-          { type: 'bot', text: res.data.generated_answer, time, label: 'AI 생성 답변' },
+          { type: 'bot', text: faq_answer || '적합한 FAQ 답변이 없습니다.', time, label: 'FAQ 답변' },
         ]);
+
+        // AI 생성 답변이 있으면 추가
+        if (generated_answer) {
+          setMessages((prev) => [
+            ...prev,
+            { type: 'bot', text: generated_answer, time, label: 'AI 생성 답변' },
+          ]);
+        }
         setQuestion('');
       } catch (error) {
         console.error('챗봇 오류:', error);
-        alert('챗봇 서버에 연결할 수 없습니다.');
+        setMessages((prev) => [
+          ...prev,
+          { type: 'bot', text: '챗봇 서버에 연결할 수 없습니다.', time, label: '오류' },
+        ]);
       }
     }, 500),
     []
@@ -41,7 +58,15 @@ function Chatbot() {
     if (question.trim()) {
       sendRequest(question);
     } else {
-      alert('질문을 입력하세요.');
+      setMessages((prev) => [
+        ...prev,
+        {
+          type: 'bot',
+          text: '질문을 입력해주세요.',
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          label: '알림',
+        },
+      ]);
     }
   };
 
@@ -54,9 +79,7 @@ function Chatbot() {
             key={index}
             className={`chat-message ${msg.type === 'user' ? 'user-message' : 'bot-message'}`}
           >
-            {msg.type === 'bot' && (
-              <div className="bot-label">{msg.label}</div>
-            )}
+            {msg.type === 'bot' && <div className="bot-label">{msg.label}</div>}
             <div className="message-content">
               <p>{msg.text}</p>
               <span className="message-time">{msg.time}</span>
