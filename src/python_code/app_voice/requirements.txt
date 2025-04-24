@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+speechrecognition
+gTTS
+playsound
+transformers
+torch
+pydantic
+python-multipart
