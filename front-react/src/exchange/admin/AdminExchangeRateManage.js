@@ -10,6 +10,7 @@ const AdminExchangeRateManage = () => {
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
+    
     const today = new Date();
     const offset = today.getTimezoneOffset();
     const localDate = new Date(today.getTime() - offset * 60 * 1000);

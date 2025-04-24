@@ -1,0 +1,97 @@
+.container {
+  min-height: 560px;
+  max-width: 2500px;
+  padding: 36px;
+  font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+}
+
+.content {
+  max-width: 1000px;
+  margin: 0 auto;
+  animation: fadeIn 0.6s ease;
+
+}
+
+h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  text-align: center;
+  color: #1a1a1a;
+  animation: fadeInUp 0.6s ease;
+}
+
+/* 테이블 */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  overflow: hidden;
+  animation: fadeIn 0.6s ease;
+}
+
+.table th,
+.table td {
+  border: 1px solid #e5e5e5;
+  padding: 12px;
+  text-align: center;
+  font-size: 14.5px;
+}
+
+.table th {
+  background-color: #efefef;
+  font-weight: 600;
+  color: #333;
+}
+
+/* 행 hover 효과 */
+.table tr:hover {
+  background-color: #f5f7f9;
+  transition: background-color 0.2s ease;
+}
+
+/* 버튼 공통 */
+.btn {
+  padding: 6px 12px;
+  border-radius: 7px;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  color: white;
+  margin: 2px;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 승인 버튼 */
+.btnApprove {
+  background-color: #3a864c;
+}
+
+.btnApprove:hover {
+  background-color: #409753;
+  filter: brightness(1.05);
+  box-shadow: 0 2px 6px rgba(58, 134, 76, 0.25);
+}
+
+/* 반려 버튼 */
+.btnReject {
+  background-color: #984949;
+}
+
+.btnReject:hover {
+  background-color: #823c3c;
+  filter: brightness(1.05);
+  box-shadow: 0 2px 6px rgba(152, 73, 73, 0.25);
+}
+
+/* 애니메이션 */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
