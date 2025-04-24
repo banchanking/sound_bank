@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import RefreshToken from '../../jwt/RefreshToken';
 import Sidebar from './Sidebar';
 import { getCustomerID } from '../../jwt/AxiosToken';
-import '../../Css/transfer/TransLimitEdit.css';
+import styles from '../../Css/transfer/TransLimitEdit.module.css';
 
 function TransLimitEdit() {
   const [list, setList] = useState([]);
@@ -12,7 +12,6 @@ function TransLimitEdit() {
   const customer_id = getCustomerID();
   const token = localStorage.getItem('auth_token');
 
-  // 이체한도 변경 신청 내역 조회
   useEffect(() => {
     if (!customer_id || !token) {
       alert('로그인이 필요합니다');
@@ -29,7 +28,6 @@ function TransLimitEdit() {
       });
   }, []);
 
-  // 삭제
   const deleteRow = (id) => {
     if (!window.confirm('정말 삭제하시겠습니까?')) return;
 
@@ -46,10 +44,8 @@ function TransLimitEdit() {
       });
   };
 
-  // 입력값 변경
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     if (name === 'requested_limit') {
       const raw = value.replace(/[^0-9]/g, '');
       const formatted = raw ? Number(raw).toLocaleString('ko-KR') : '';
@@ -60,7 +56,6 @@ function TransLimitEdit() {
     }
   };
 
-  // 수정 저장
   const handleUpdate = () => {
     RefreshToken.put('http://localhost:8081/api/transLimit/update', editItem, {
       headers: { Authorization: `Bearer ${token}` },
@@ -79,11 +74,9 @@ function TransLimitEdit() {
   return (
     <div style={{ display: 'flex', minHeight: '600px' }}>
       <Sidebar />
-
-      <div className="limit-edit-content">
+      <div className={styles.limitEditContent}>
         <h2>1일한도 변경 신청내역</h2>
-
-        <table className="limit-table">
+        <table className={styles.limitTable}>
           <thead>
             <tr>
               <th>계좌번호</th>
@@ -101,16 +94,26 @@ function TransLimitEdit() {
                 <td>{Number(item.requested_limit).toLocaleString()}원</td>
                 <td>{item.request_date ? new Date(item.request_date).toLocaleString() : '-'}</td>
                 <td>{item.status || '대기'}</td>
-                <td>{item.status === '거절' ? (item.reject_reason) : '-'}</td>
+                <td>{item.status === '거절' ? item.reject_reason : '-'}</td>
                 <td>
                   {(!item.status || item.status.trim() === '대기') && (
-                    <>
-                      <button onClick={() => {
-                        setEditItem(item);
-                        setDisplayLimit(Number(item.requested_limit).toLocaleString('ko-KR'));
-                      }} className="btn-blue">수정</button>
-                      <button onClick={() => deleteRow(item.transfer_id)} className="btn-red">삭제</button>
-                    </>
+                    <div className={styles.buttonGroup}>
+                      <button
+                        onClick={() => {
+                          setEditItem(item);
+                          setDisplayLimit(Number(item.requested_limit).toLocaleString('ko-KR'));
+                        }}
+                        className={styles.btnBlue}
+                      >
+                        수정
+                      </button>
+                      <button
+                        onClick={() => deleteRow(item.transfer_id)}
+                        className={styles.btnRed}
+                      >
+                        삭제
+                      </button>
+                    </div>
                   )}
                 </td>
               </tr>
@@ -118,10 +121,9 @@ function TransLimitEdit() {
           </tbody>
         </table>
 
-        {/* 수정 모달창 */}
         {editItem && (
-          <div className="edit-modal-overlay">
-            <div className="edit-modal-box">
+          <div className={styles.editModalOverlay}>
+            <div className={styles.editModalBox}>
               <h3>이체한도 수정</h3>
               <label>요청금액</label>
               <input
@@ -136,9 +138,9 @@ function TransLimitEdit() {
                 value={editItem.reason || ''}
                 onChange={handleChange}
               />
-              <div className="modal-buttons">
-                <button onClick={handleUpdate} className="btn-blue">수정하기</button>
-                <button onClick={() => setEditItem(null)} className="btn-red">취소</button>
+              <div className={styles.modalButtons}>
+                <button onClick={handleUpdate} className={styles.modalBtn}>수정</button>
+                <button onClick={() => setEditItem(null)} className={styles.modalBtn}>취소</button>
               </div>
             </div>
           </div>
