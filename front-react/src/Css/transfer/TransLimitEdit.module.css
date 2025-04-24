@@ -1,0 +1,187 @@
+.limitEditContent {
+  flex: 1;
+  padding: 36px;
+  font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  animation: fadeIn 0.4s ease;
+}
+
+.limitEditContent h2 {
+  font-size: 24px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 24px;
+  color: #1a1a1a;
+  animation: fadeInUp 0.4s ease;
+}
+
+.limitTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.limitTable th,
+.limitTable td {
+  border: 1px solid #e5e5e5;
+  padding: 12px;
+  text-align: center;
+  font-size: 14.5px;
+}
+
+.limitTable th {
+  background-color: #efefef;
+  color: #333;
+  font-weight: 600;
+}
+
+.limitTable tr:hover {
+  background-color: #f5f7f9;
+}
+
+/* 수정 버튼 */
+.btnBlue {
+  background-color: #537697;
+  color: white;
+  font-weight: 600;
+  width: 85px;
+  height: 30px;
+  border-radius: 7px;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s ease;
+}
+
+.btnBlue:hover {
+  background-color: #6083ac;
+}
+
+/* 삭제 버튼 */
+.btnRed {
+  background-color: #984949;
+  color: white;
+  font-weight: 600;
+  width: 85px;
+  height: 30px;
+  border-radius: 7px;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s ease;
+}
+
+.btnRed:hover {
+  background-color: #823c3c;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 모달 */
+.editModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.editModalBox {
+  background: #fff;
+  padding: 30px;
+  width: 420px;
+  border-radius: 16px;
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.15);
+  animation: fadeInUp 0.4s ease;
+}
+
+.editModalBox h3 {
+  font-size: 20px;
+  margin-bottom: 16px;
+  text-align: center;
+  color: #1a1a1a;
+}
+
+.editModalBox label {
+  font-size: 15px;
+  font-weight: 500;
+  margin-top: 12px;
+  display: block;
+  color: #333;
+}
+
+.editModalBox input,
+.editModalBox textarea {
+  width: 100%;
+  margin-top: 8px;
+  margin-bottom: 14px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1.5px solid #ccc;
+  font-size: 15px;
+  background: #fafafa;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+.editModalBox input:focus,
+.editModalBox textarea:focus {
+  border-color: #3a3a3c;
+  background: #fff;
+  outline: none;
+}
+
+.modalButtons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.modalBtn {
+  background-color: #333;
+  color: white;
+  font-weight: 600;
+  width: 85px;
+  height: 30px;
+  border-radius: 7px;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s ease;
+}
+.modalBtn:hover {
+  background-color: #444;
+}
+
+/* 애니메이션 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
