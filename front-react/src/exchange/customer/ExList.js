@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { getCustomerID } from '../../jwt/AxiosToken';
 import RefreshToken from '../../jwt/RefreshToken';
 import styles from '../../Css/exchange/ExList.module.css';
+import { useNavigate } from 'react-router-dom';
 
 const ExList = () => {
+  const navigate = useNavigate();
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -17,6 +19,21 @@ const ExList = () => {
 
   useEffect(() => {
     const transactionList = async () => {
+      const id = getCustomerID();
+          if (!id) {
+            const customer_id = getCustomerID();
+                if (!customer_id) {
+                  if (!customer_id) {
+                    const goLogin = window.confirm(
+                      "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
+                    );
+                    if (goLogin) {
+                      navigate("/login");
+                    }
+                    return;      
+                }
+              }
+          }
       try {
         const response = await RefreshToken.get(`http://localhost:8081/api/exchange/exchangeList/${customer_id}`);
         setTransactions(response.data);

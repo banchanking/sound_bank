@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import RefreshToken from "../jwt/RefreshToken";
-import '../Css/inquire/InquireTransfer.css';
+import styles from '../Css/inquire/InquireTransfer.module.css';
 import { getCustomerID } from "../jwt/AxiosToken";
 import { useNavigate } from 'react-router-dom';
-function CheckTx() {
 
+function CheckTx() {
   const navigate = useNavigate();
   const [accountList, setAccountList] = useState([]);
   const [selectedAccount, setSelectedAccount] = useState('');
@@ -28,7 +28,7 @@ function CheckTx() {
     const id = getCustomerID();
     if (!id) {
       alert('로그인이 필요합니다.');
-      navigate('/login')
+      navigate('/login');
       return;
     }
     setCustomerId(id);
@@ -71,10 +71,10 @@ function CheckTx() {
   };
 
   return (
-    <div className="checktx-wrap">
-      <h2>{customerId}님의 거래내역 조회</h2>
+    <div className={styles.wrapper}>
+      <h2 className={styles.title}>{customerId}님의 거래내역 조회</h2>
 
-      <div className="input-group">
+      <div className={styles.inputGroup}>
         <label>계좌:</label>
         <select value={selectedAccount} onChange={e => setSelectedAccount(e.target.value)}>
           {accountList.map(account => (
@@ -88,20 +88,21 @@ function CheckTx() {
         </select>
       </div>
 
-      <div className="input-group">
+      <div className={styles.inputGroup}>
         <label>기간:</label>
         <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} />
         ~
         <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} />
-        <div className="range-buttons">
-          <button onClick={() => handleDateRange(1)}>당일</button>
-          <button onClick={() => handleDateRange(7)}>1주일</button>
-          <button onClick={() => handleDateRange(30)}>1개월</button>
-          <button onClick={() => handleDateRange(180)}>6개월</button>
-        </div>
       </div>
 
-      <div className="input-group">
+      <div className={styles.rangeButtons}>
+        <button onClick={() => handleDateRange(1)}>당일</button>
+        <button onClick={() => handleDateRange(7)}>1주일</button>
+        <button onClick={() => handleDateRange(30)}>1개월</button>
+        <button onClick={() => handleDateRange(180)}>6개월</button>
+      </div>
+
+      <div className={styles.inputGroup}>
         <label>유형:</label>
         <select value={txType} onChange={e => setTxType(e.target.value)}>
           <option>전체</option>
@@ -110,17 +111,17 @@ function CheckTx() {
         </select>
       </div>
 
-      <div className="search-button">
-        <button onClick={fetchTransactions}>조회</button>
+      <div className={styles.buttonArea}>
+        <button className={styles.blackButton} onClick={fetchTransactions}>조회</button>
       </div>
 
-      <div className="result-area">
+      <div className={styles.resultArea}>
         <h3>조회 결과</h3>
         <table>
           <thead>
             <tr>
-              <th>날짜</th>
-              <th>유형</th>
+              <th>거래일</th>
+              <th>입/출금</th>
               <th>금액</th>
               <th>통화</th>
               <th>메모</th>
@@ -129,7 +130,7 @@ function CheckTx() {
           <tbody>
             {txResultList.length === 0 ? (
               <tr>
-                <td colSpan="7" align="center">거래내역이 없습니다.</td>
+                <td colSpan="5" className={styles.noData}>거래내역이 없습니다.</td>
               </tr>
             ) : (
               txResultList.map(tx => (

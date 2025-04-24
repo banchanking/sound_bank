@@ -59,4 +59,13 @@ public class AdminExchangeService {
         
         return dao.updateWalletStatus(wallet);
     }
+    
+    // 요청전체목록 조회
+    public List<Map<String, Object>> requestList(){
+    	
+    	System.out.println("service - requestList");
+    	
+    	return dao.getList();
+    }
+    
 }
