@@ -1,0 +1,72 @@
+.business-hour-container {
+    width: 600px;
+    background-color: white;
+    padding: 40px;
+    font-family: 'Arial', sans-serif;
+    color: #333;
+  }
+  
+  .title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 30px;
+  }
+  
+  .tab {
+    padding: 8px 16px;
+    font-size: 14px;
+    color: #999;
+    cursor: pointer;
+  }
+  
+  .tab.active {
+    font-weight: bold;
+    color: #1b64da;
+    border-bottom: 2px solid #1b64da;
+  }
+  
+  .section {
+    margin-bottom: 40px;
+  }
+  
+  .section h3 {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .table {
+    border: 1px solid #eee;
+    background-color: #f9f9f9;
+  }
+  
+  .row {
+    display: flex;
+    border-top: 1px solid #eee;
+  }
+  
+  .row.header {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    color: #555;
+  }
+  
+  .cell {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+    font-size: 13px;
+    color: #555;
+  }
+  
+  .time {
+    color: #1b64da;
+    font-weight: bold;
+  }
+  

@@ -1,240 +1,123 @@
-import React, { useState, useRef, useCallback, useEffect } from "react";
-import Webcam from "react-webcam";
-import "../Css/customer_center/WebcamIdAuth.css";
+import React, { useState, useRef, useEffect } from "react";
+import "../Css/customer_center/Roi.css";
 
 function Roi() {
-  const [message, setMessage] = useState("");
-  const [userConsent, setUserConsent] = useState(false);
-  const [showWebcam, setShowWebcam] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
-  const [processing, setProcessing] = useState(false);
-  
-  const webcamRef = useRef(null);
-  const detectionIntervalRef = useRef(null);
+  const [message, setMessage] = useState("");
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
 
-  const handleConsentChange = (e) => {
-    setUserConsent(e.target.checked);
-  };
-
-  const startWebcam = () => {
-    if (userConsent) {
-      setShowWebcam(true);
-      setCapturedImage(null);
-      setMessage("");
-    } else {
-      setMessage("웹캠 사용 동의가 필요합니다.");
-    }
-  };
-
-  // 웹캠 중지 함수
-  const stopWebcam = () => {
-    setShowWebcam(false);
-    if (detectionIntervalRef.current) {
-      clearInterval(detectionIntervalRef.current);
-      detectionIntervalRef.current = null;
-    }
-  };
-
-  // 이미지 캡처 함수
-  const capture = useCallback(() => {
-    if (webcamRef.current) {
-      const imageSrc = webcamRef.current.getScreenshot();
-      if (imageSrc) {
-        setCapturedImage(imageSrc);
-        stopWebcam();
-        performOCR(imageSrc);
-      }
-    }
-  }, [webcamRef]);
-
-  // 실시간 객체 인식 시작 함수
-  const startObjectDetection = useCallback(() => {
-    if (!webcamRef.current) return;
-    
-    // 기존 인터벌 제거
-    if (detectionIntervalRef.current) {
-      clearInterval(detectionIntervalRef.current);
-    }
-
-    // 실시간 객체 인식 인터벌 설정 (약 500ms 마다)
-    detectionIntervalRef.current = setInterval(() => {
-      if (webcamRef.current) {
-        const imageSrc = webcamRef.current.getScreenshot();
-        if (imageSrc) {
-          detectIdCard(imageSrc);
+  // 웹캠 스트리밍 시작
+  useEffect(() => {
+    async function startWebcam() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
         }
+      } catch (err) {
+        setMessage("웹캠 접근 실패: " + err.message);
       }
-    }, 500);
-  }, [webcamRef]);
+    }
+    startWebcam();
+    return () => {
+      if (videoRef.current && videoRef.current.srcObject) {
+        const stream = videoRef.current.srcObject;
+        const tracks = stream.getTracks();
+        tracks.forEach((track) => track.stop());
+      }
+    };
+  }, []);
 
-  // 신분증 감지 함수
-  const detectIdCard = async (imageSrc) => {
-    if (!imageSrc) return;
+  // 이미지 캡처 (1000x700으로 리사이즈)
+  const handleCapture = () => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    if (!video || !canvas) return;
 
+    const context = canvas.getContext("2d");
+    // 캔버스 크기를 1000x700으로 설정
+    canvas.width = 1000;
+    canvas.height = 700;
+
+    // 비디오 프레임을 1000x700으로 리사이즈하여 그리기
+    context.drawImage(video, 0, 0, 1000, 700);
+
+    // 캔버스에서 이미지 추출
+    canvas.toBlob((blob) => {
+      const file = new File([blob], "captured_roi_image.jpg", { type: "image/jpeg" });
+      setCapturedImage(file);
+    }, "image/jpeg", 0.95);
+  };
+
+  // 서버로 이미지 업로드
+  const handleUpload = async () => {
+    if (!capturedImage) {
+      setMessage("이미지를 캡처해주세요.");
+      return;
+    }
+    const formData = new FormData();
+    formData.append("file", capturedImage);
     try {
-      // Base64 이미지를 Blob으로 변환
-      const response = await fetch(imageSrc);
-      const blob = await response.blob();
-      
-      const formData = new FormData();
-      formData.append("file", blob, "webcam-frame.jpg");
-
-      // YOLOv8 모델 API 호출 (객체 인식)
-      const detectResponse = await fetch("https://53f7-180-71-139-27.ngrok-free.app/detect", {
+      const response = await fetch(" https://ebdf-180-71-139-27.ngrok-free.app/ocr", {
         method: "POST",
         body: formData,
       });
-
-      if (detectResponse.ok) {
-        const result = await detectResponse.json();
-        
-        // 신분증이 감지되면 자동으로 캡처
-        if (result && result.detections && Array.isArray(result.detections)) {
-          const idCard = result.detections.find(
-            det => det.class === "id_card" && det.confidence > 0.7
-          );
-          
-          if (idCard) {
-            console.log("신분증 감지됨, 자동 캡처 수행");
-            capture();
-          }
-        }
-      }
-    } catch (error) {
-      console.error("객체 인식 오류:", error);
-    }
-  };
-
-  // OCR 처리 함수
-  const performOCR = async (imageSrc) => {
-    try {
-      setProcessing(true);
-      
-      // Base64 이미지를 Blob으로 변환
-      const response = await fetch(imageSrc);
-      const blob = await response.blob();
-      
-      const formData = new FormData();
-      formData.append("file", blob, "id-card-capture.jpg");
-
-      // OCR API 호출
-      const ocrResponse = await fetch("https://53f7-180-71-139-27.ngrok-free.app/ocr", {
-        method: "POST",
-        body: formData,
-      });
-      
-      const result = await ocrResponse.json();
-      console.log("OCR 서버 응답:", result);
-      
-      if (ocrResponse.ok && result && result.status === "success") {
+      const result = await response.json();
+      console.log("서버 응답:", result);
+      if (response.ok && result && result.status === "success") {
         setMessage("인증 성공: " + (result.message || "성공"));
       } else {
         setMessage("인증 실패: " + (result.message || "서버 응답 오류"));
       }
     } catch (error) {
-      setMessage("OCR 처리 실패: " + error.message);
-    } finally {
-      setProcessing(false);
+      setMessage("통신 실패: " + error.message);
     }
   };
 
-  // 웹캠이 시작되면 객체 인식 시작
-  useEffect(() => {
-    if (showWebcam) {
-      // 웹캠이 로드되는데 잠시 시간이 필요하므로 약간의 지연 후 객체 인식 시작
-      const timer = setTimeout(() => {
-        startObjectDetection();
-      }, 1000);
-      
-      return () => {
-        clearTimeout(timer);
-        if (detectionIntervalRef.current) {
-          clearInterval(detectionIntervalRef.current);
-        }
-      };
-    }
-  }, [showWebcam, startObjectDetection]);
-
   return (
-    <div className="webcam-id-auth-container">
-      <h1 className="title">웹캠 신분증 인증</h1>
-      
-      {/* 웹캠 동의 섹션 */}
-      <div className="consent-section">
-        <label className="consent-label">
-          <input 
-            type="checkbox" 
-            checked={userConsent} 
-            onChange={handleConsentChange}
-            className="consent-checkbox"
-          />
-          웹캠 사용 및 신분증 촬영에 동의합니다.
-        </label>
-        {!showWebcam ? (
-          <button 
-            className="webcam-button"
-            onClick={startWebcam}
-            disabled={!userConsent}
-          >
-            웹캠 시작
-          </button>
-        ) : (
-          <button 
-            className="webcam-button stop"
-            onClick={stopWebcam}
-          >
-            웹캠 중지
-          </button>
-        )}
+    <div className="roi-container">
+      <h1 className="roi-title">주민등록증 인증 (웹캠)</h1>
+
+      {/* 웹캠 스트리밍 및 ROI 오버레이 */}
+      <div className="webcam-container">
+        <video ref={videoRef} autoPlay className="webcam" width="1280" height="720" />
+        <div className="roi-overlay" />
+        <canvas ref={canvasRef} className="hidden" />
       </div>
 
-      {/* 웹캠 섹션 */}
-      {showWebcam && (
-        <div className="webcam-container">
-          <div className="webcam-wrapper">
-            <Webcam
-              audio={false}
-              ref={webcamRef}
-              screenshotFormat="image/jpeg"
-              width={1000}
-              height={700}
-              className="webcam"
-            />
-            
-            {/* 신분증 가이드 프레임 */}
-            <div className="id-card-guide-frame"></div>
-          </div>
-          
-          <div className="webcam-controls">
-            <button onClick={capture} className="capture-button">수동 캡처</button>
-            <p className="detection-info">
-              가이드 영역 안에 신분증을 위치시키면 자동으로 인식됩니다.
-            </p>
-          </div>
-        </div>
-      )}
+      {/* 캡처 버튼 */}
+      <button
+        className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition mb-4"
+        onClick={handleCapture}
+      >
+        이미지 캡처
+      </button>
 
-      {/* 캡처된 이미지 표시 */}
+      {/* 캡처된 이미지 미리보기 */}
       {capturedImage && (
-        <div className="captured-image-container">
-          <h3>캡처된 신분증 이미지</h3>
-          <img src={capturedImage} alt="캡처된 이미지" className="captured-image" />
-          {processing && <div className="processing-indicator">처리 중...</div>}
+        <div className="preview-container">
+          <img
+            src={URL.createObjectURL(capturedImage)}
+            alt="Captured ROI"
+            className="w-40 h-28 object-contain border rounded shadow"
+          />
         </div>
       )}
 
-      {/* 메시지 표시 */}
+      {/* 업로드 버튼 */}
+      <button
+        className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition"
+        onClick={handleUpload}
+      >
+        확인
+      </button>
+
+      {/* 메시지 출력 */}
       {message && (
-        <div className={`message ${message.includes("성공") ? "success" : "error"}`}>
+        <div className="mt-4 p-4 bg-gray-100 rounded text-sm border">
           {message}
         </div>
-      )}
-      
-      {/* 재시도 버튼 */}
-      {capturedImage && !processing && (
-        <button onClick={startWebcam} className="retry-button">
-          다시 시도
-        </button>
       )}
     </div>
   );
