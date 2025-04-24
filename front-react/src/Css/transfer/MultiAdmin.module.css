@@ -1,0 +1,124 @@
+.approveWrap {
+  flex: 1;
+  min-height: 580px;
+  padding: 36px;
+  font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  animation: fadeIn 0.4s ease;
+}
+
+.approveWrap h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  text-align: center;
+  color: #1a1a1a;
+  animation: fadeInUp 0.4s ease;
+}
+
+/* 테이블 공통 */
+.table,
+.detailTable {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 30px;
+}
+
+.table th,
+.table td,
+.detailTable th,
+.detailTable td {
+  border: 1px solid #e5e5e5;
+  padding: 12px;
+  text-align: center;
+  font-size: 14.5px;
+}
+
+.table th,
+.detailTable th {
+  background-color: #efefef;
+  font-weight: 600;
+  color: #333;
+}
+
+.table tr:hover,
+.detailTable tr:hover {
+  background-color: #f5f7f9;
+  transition: background-color 0.2s ease;
+}
+
+/* 버튼 공통 스타일 */
+.btnDetail,
+.btnApprove,
+.btnReject {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 7px;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* 상세 버튼 */
+.btnDetail {
+  background-color: #537697;
+  margin-right: 6px;
+}
+
+.btnDetail:hover {
+  background-color: #6083ac;
+  filter: brightness(1.05);
+  box-shadow: 0 2px 6px rgba(83, 118, 151, 0.25);
+}
+
+/* 승인 버튼 */
+.btnApprove {
+  background-color: #3a864c;
+  margin-right: 6px;
+}
+
+.btnApprove:hover {
+  background-color: #448f55;
+  filter: brightness(1.05);
+  box-shadow: 0 2px 6px rgba(58, 134, 76, 0.25);
+}
+
+/* 반려 버튼 */
+.btnReject {
+  background-color: #984949;
+}
+
+.btnReject:hover {
+  background-color: #823c3c;
+  filter: brightness(1.05);
+  box-shadow: 0 2px 6px rgba(152, 73, 73, 0.25);
+}
+
+/* 로딩 */
+.loading {
+  text-align: center;
+  font-size: 16px;
+  color: #666;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+/* 애니메이션 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -1,0 +1,214 @@
+.page {
+  display: flex;
+}
+
+.wrapper {
+  flex-grow: 1;
+  max-width: 1200px;
+  min-height: 560px;
+  margin: 60px auto;
+  padding: 36px;
+  background-color: #ffffff;
+  border-radius: 24px;
+  border: 1.5px solid #e2e4e7;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.05);
+  font-family: 'Noto Sans KR', sans-serif;
+  animation: fadeIn 0.4s ease;
+
+}
+
+.title {
+  font-size: 26px;
+  font-weight: 700;
+  text-align: center;
+  color: #1a1a1a;
+  margin-bottom: 28px;
+  animation: fadeIn 0.4s ease;
+
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  overflow: hidden;
+  animation: fadeIn 0.4s ease;
+
+}
+
+.table th,
+.table td {
+  padding: 14px;
+  text-align: center;
+  font-size: 14.5px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.table th {
+  background-color: #f9fafb;
+  color: #333;
+  font-weight: 600;
+}
+
+.table tr:hover {
+  background-color: #f5f7f9;
+}
+
+.editBtn,
+.deleteBtn {
+  padding: 6px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  width: 85px;
+}
+
+/* 수정 버튼: 차분한 네이비 계열 */
+.editBtn {
+  background-color: #537697;
+  color: #fff;
+  margin-right: 8px;
+}
+
+.editBtn:hover {
+  background-color: #6083ac;
+}
+
+/* 삭제 버튼: 어두운 레드 브라운 계열 */
+.deleteBtn {
+  background-color: #984949;
+  color: #fff;
+}
+
+.deleteBtn:hover {
+  background-color: #823c3c;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.4s ease;
+}
+
+.modalBox {
+  background: #fff;
+  padding: 32px;
+  border-radius: 24px;
+  width: 460px;
+  max-height: 90vh;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.15);
+  animation: fadeInUp 0.4s ease;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.modalBox h3 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #1a1a1a;
+}
+
+.modalBox label {
+  font-weight: 500;
+  margin: 10px 0 6px;
+  display: block;
+  color: #333;
+  font-size: 14.5px;
+}
+
+.modalBox input,
+.modalBox select {
+  width: 100%;
+  height: 42px;
+  padding: 0 14px;
+  font-size: 15px;
+  border: 1.5px solid #d5d7da;
+  border-radius: 12px;
+  background-color: #f9f9f9;
+  transition: all 0.4s ease;
+  box-sizing: border-box;
+}
+
+.modalBox input:focus,
+.modalBox select:focus {
+  outline: none;
+  border-color: #3a3a3c;
+  background-color: #ffffff;
+}
+
+.monthDayWrap {
+  margin-top: 20px;
+  display: inline-flex;
+  width: 130px;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 16px;
+  font-size: 15px;
+}
+
+.monthDayWrap label,
+.monthDayWrap span {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.shortInput {
+  width: 70px;
+  height: 42px;
+  padding: 0 10px;
+  font-size: 15px;
+  text-align: center;
+  border-radius: 12px;
+  border: 1.5px solid #d5d7da;
+  background-color: #f9f9f9;
+  transition: all 0.4s ease;
+  box-sizing: border-box;
+}
+
+.modalButtons {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 24px;
+}
+
+.modalButtons button {
+  width: 100px;
+  padding: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(to right, #3a3a3c, #2c2c2e);
+  color: white;
+  cursor: pointer;
+  transition: all 0.4s ease;
+}
+
+.modalButtons button:hover {
+  filter: brightness(1.08);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -130,20 +130,7 @@ public class ExchangeController {
             return new ResponseEntity<>(service.getRequestList(customer_id), HttpStatus.OK);
     }
 
-    // 관리자 승인/거절
-    @PutMapping("/admin/approval")
-    public ResponseEntity<?> handleApproval(@RequestBody ExchangeTransactionDTO dto) {
-
-        System.out.println("controller - handleApproval");
-        
-        try {
-        	System.out.println("dto = " + dto.getCustomer_id());
-            service.handleApprovalAction(dto);
-            return ResponseEntity.ok("거래 처리 완료");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
+    
     
     // 환전결과 출력
     @GetMapping("/exchangeList/{customer_id}")
