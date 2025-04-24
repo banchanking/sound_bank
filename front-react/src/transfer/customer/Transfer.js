@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import RefreshToken from '../../jwt/RefreshToken'; 
-import '../../Css/transfer/TransInstant.css';
+import '../../Css/transfer/TransInstant.module.css';
 import { getCustomerID } from "../../jwt/AxiosToken";
 import Sidebar from './Sidebar'; 
 

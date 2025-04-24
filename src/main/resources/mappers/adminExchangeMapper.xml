@@ -39,4 +39,11 @@
 		SET status = #{STATUS}, updated_at = NOW()
 		WHERE customer_id = #{CUSTOMER_ID} AND currency_code = #{CURRENCY_CODE}
 	</update>
+	
+	<!-- 모든 거래요청 찾기 -->
+	<select id="getList" resultType="java.util.Map">
+		select * from exchange_transaction
+		where approval_status = "PENDING"
+	</select>
+	
 </mapper>

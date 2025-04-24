@@ -697,7 +697,7 @@ const Header = () => {
                       <NavDropdown.Item
                         className="sub-item"
                         as={Link}
-                        to="/admin_ex_request_list"
+                        to="/exchangeRequestList"
                       >
                         환전 신청 현황
                       </NavDropdown.Item>
