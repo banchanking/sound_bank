@@ -4,8 +4,10 @@ import RefreshToken from "../../jwt/RefreshToken";
 import { Chart } from "react-google-charts";
 import styles from "../../Css/exchange/MyWallet.module.css";
 import useExchangeRates from "./useExchangeRates";
+import { useNavigate } from 'react-router-dom';
 
 const ExchangeWalletStatus = () => {
+  const navigate = useNavigate();
   const [wallet, setWallet] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -20,6 +22,21 @@ const ExchangeWalletStatus = () => {
 
   // 오늘 날짜 초기화
   useEffect(() => {
+    const id = getCustomerID();
+    if (!id) {
+      const customer_id = getCustomerID();
+          if (!customer_id) {
+            if (!customer_id) {
+              const goLogin = window.confirm(
+                "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
+              );
+              if (goLogin) {
+                navigate("/login");
+              }
+              return;      
+          }
+        }
+    }
     const today = new Date();
     const offset = today.getTimezoneOffset();
     const localDate = new Date(today.getTime() - offset * 60 * 1000);

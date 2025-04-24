@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.boot.sound.exchange.dto.ExchangeTransactionDTO;
 import com.boot.sound.exchange.dto.ExchangeWalletDTO;
 import com.boot.sound.exchange.service.AdminExchangeService;
+import com.boot.sound.exchange.service.ExchangeService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,7 +29,8 @@ public class ExchangeAdminController {
 	
 	@Autowired
 	private AdminExchangeService service;	
-	
+	@Autowired
+	private ExchangeService admin;
 	// 수수료 일괄 수정
     @PutMapping("/updateRatesFee")
     public ResponseEntity<?> updateFeeRates(@RequestBody List<Map<String, Object>> feeRateList) {
@@ -66,6 +70,7 @@ public class ExchangeAdminController {
 		
 		return ResponseEntity.ok(walletList);
     }
+    
 	// 지갑 상태 단건 또는 일괄 수정
     @PutMapping("/wallets/update")
     public ResponseEntity<?> updateWalletStatus(@RequestBody Object body) {
@@ -85,5 +90,43 @@ public class ExchangeAdminController {
             return ResponseEntity.badRequest().body("Invalid payload");
         }
     }
+    
+    // 요청목록
+    @GetMapping("/requestList")
+    public ResponseEntity<?> getRequestList(){
+    	System.out.println("controller - getRequestList");
+    	
+    	return new ResponseEntity<List<Map<String,Object>>>(service.requestList(), HttpStatus.OK);
+    }
+    
+    // 관리자 승인/거절
+    @PutMapping("/approval")
+    public ResponseEntity<?> handleApproval(@RequestBody ExchangeTransactionDTO dto) {
+
+        System.out.println("controller - handleApproval");
+        
+        try {
+        	System.out.println("dto = " + dto.getCustomer_id());
+        	admin.handleApprovalAction(dto);
+            return ResponseEntity.ok("거래 처리 완료");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    
+//    // 관리자 승인/거절
+//    @PostMapping("/requestList")
+//    public ResponseEntity<?> handleApproval(@RequestBody ExchangeTransactionDTO dto) {
+//
+//        System.out.println("controller - handleApproval");
+//        
+//        try {
+//        	System.out.println("dto = " + dto.getCustomer_id());
+//        	admin.handleApprovalAction(dto);
+//            return ResponseEntity.ok("거래 처리 완료");
+//        } catch (Exception e) {
+//            return ResponseEntity.badRequest().body(e.getMessage());
+//        }
+//    }
 }
 

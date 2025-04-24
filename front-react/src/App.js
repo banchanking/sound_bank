@@ -59,12 +59,12 @@ import Customerservice from "./customer_center/Customerservice";
 import FAQ from "./customer_center/FAQ";
 import Chatbot from "./customer_center/Chatbot";
 import Voicebot from "./customer_center/Voicebot";
-
+import ExRequestList from "./exchange/customer/ExRequestList";
 import ExRate from "./exchange/customer/ExRate";
 import ExRequest from "./exchange/customer/ExRequest";
 import ExList from "./exchange/customer/ExList";
 import ExAccountManagement from "./exchange/customer/ExAccountManagement";
-import AdminExAccountRequestList from "./exchange/admin/AdminExAccountRequestList";
+
 import AdminExMenu from "./exchange/admin/AdminExMenu";
 import LoanInsertForm from "./sound_loan/admin/LoanInsertForm";
 import LoanCalculator from "./sound_loan/customer/LoanCalculator";
@@ -195,8 +195,11 @@ function App() {
           <Route path="/ex_rate" element={<ExRate />} /> {/* 환율조회/계산기 */}
           <Route path="/ex_request" element={<ExRequest />} />{" "}
           {/* 환전신청하기 */}
-          <Route path="/exchange_list" element={<ExList />} />{" "}
+          <Route path="/exchange_list" element={<ExList />} />{" "}          
           {/* 환전내역 조회 */}
+          {/* 환전신청내역 */}
+          <Route path="/exchangeRequestList" element={<ExRequestList/>}/> {" "}
+          {/*  */}
           <Route
             path="/ex_account_management"
             element={<ExAccountManagement />}
@@ -207,11 +210,7 @@ function App() {
             element={<ExchangeWalletStatus />}
           />{" "}
           {/* 내 지갑 */}
-          <Route
-            path="/admin_ex_request_list"
-            element={<AdminExAccountRequestList />}
-          />{" "}
-          {/* 환전 신청 현황 (customer로 이동됨) */}
+
           <Route path="/admin_ex_management" element={<AdminExMenu />} />{" "}
           {/* (관리자)지갑상태변경 */}
           {/* 외환 Route 끝 */}
