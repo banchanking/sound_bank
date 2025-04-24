@@ -1,40 +1,49 @@
 package com.boot.sound.customer_center;
 
+import lombok.*;
 import javax.persistence.*;
-import lombok.Data;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "notice_tbl")
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 public class Notice {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "NOTICE_ID")
+    @Column(name = "notice_id")
     private Long id;
 
-    @Column(name = "TITLE", nullable = false)
+    @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "CONTENT", nullable = false)
+    @Column(name = "content", nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    @Column(name = "DATE")
+    @Column(name = "date")
     private LocalDateTime date;
 
-    @Column(name = "CREATED_AT")
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "UPDATED_AT")
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "CATEGORY") // 공지사항 분류 카테고리추갸
+    @Column(name = "category")
     private String category;
-    
-    public Notice() {
-        this.date = LocalDateTime.now();
-        this.createdAt = LocalDateTime.now();
+
+    @PrePersist
+    protected void onCreate() {
+        LocalDateTime now = LocalDateTime.now();
+        this.date = now;
+        this.createdAt = now;
+        this.updatedAt = now;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
 }
