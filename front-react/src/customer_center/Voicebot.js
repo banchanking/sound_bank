@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import styles from "../Css/customer_center/VoiceBot.module.css"; // 모듈화된 사뱅스타일
 
 const VoiceBot = () => {
   const [isRecording, setIsRecording] = useState(false);
@@ -8,11 +9,10 @@ const VoiceBot = () => {
   const audioChunks = useRef([]);
 
   useEffect(() => {
-    const ws = new WebSocket("ws://localhost:8000/ws"); // 서버 주소 맞게 수정
+    const ws = new WebSocket("ws://localhost:8000/ws");
     ws.onmessage = (event) => {
       setMessages((prev) => [...prev, event.data]);
       if (event.data.includes("음성 파일")) {
-        // 서버에서 오디오 파일 경로를 받으면 해당 음성 파일을 자동 재생
         const audio = new Audio("http://localhost:8000" + event.data);
         audio.play();
       }
@@ -32,11 +32,9 @@ const VoiceBot = () => {
         const blob = new Blob(audioChunks.current, { type: "audio/webm" });
         audioChunks.current = [];
 
-        // 서버로 오디오 파일 전송
         const formData = new FormData();
         formData.append("file", blob, "voice.webm");
 
-        // 서버에 오디오 파일을 업로드
         const response = await fetch("http://localhost:8000/upload-audio", {
           method: "POST",
           body: formData,
@@ -61,22 +59,40 @@ const VoiceBot = () => {
   };
 
   return (
-    <div style={{ padding: "20px", maxWidth: "500px", margin: "0 auto" }}>
-      <h3>음성봇 상담</h3>
-      <button onClick={toggleRecording}>
-        {isRecording ? " 녹음 중지" : " 음성 입력"}
-      </button>
-      <button onClick={callHumanAgent} style={{ marginLeft: "10px" }}>
-        상담원 호출
-      </button>
-      <div style={{ marginTop: "20px" }}>
-        <h5>서버 응답:</h5>
+    <div className={styles["voicebot-wrap"]}>
+    <div className={styles["voicebot-container"]}>
+      {/* 기존 클래스명: voicebot-title */}
+      <h3 className={styles["voicebot-title"]}>음성봇 상담</h3>
+
+      {/* 기존 클래스명: voicebot-button-wrap */}
+      <div className={styles["voicebot-button-wrap"]}>
+        {/* 기존 클래스명: btn-blue */}
+        <button
+          onClick={toggleRecording}
+          className={styles["btn-blue"]}
+        >
+          {isRecording ? "녹음 중지" : "음성 입력"}
+        </button>
+
+        {/* 기존 클래스명: btn-gray */}
+        <button
+          onClick={callHumanAgent}
+          className={styles["btn-gray"]}
+        >
+          상담원 호출
+        </button>
+      </div>
+
+      {/* 기존 클래스명: voicebot-response */}
+      <div className={styles["voicebot-response"]}>
+        <h5>서버 응답</h5>
         <ul>
           {messages.map((msg, i) => (
             <li key={i}>{msg}</li>
           ))}
         </ul>
       </div>
+    </div>
     </div>
   );
 };

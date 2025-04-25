@@ -1,30 +1,30 @@
 /* 전체 wrapper */
-.wrapper {
+.multiEdit-wrapper {
   min-height: 560px;
   flex-grow: 1;
   padding: 36px;
   max-width: 1600px;
   margin: 0 auto;
   background: #fff;
-  border: 1.5px solid #e2e4e7;  /* ← 추가된 부분 */
+  border: 1.5px solid #e2e4e7;
   border-radius: 24px;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.05);
-  animation: fadeIn 0.6s ease;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+  animation: multi-fadeIn 0.6s ease;
   font-family: 'Noto Sans KR', sans-serif;
 }
 
 /* 페이지 제목 */
-.title {
+.multiEdit-title {
   text-align: center;
   font-size: 26px;
   font-weight: 700;
   color: #1a1a1a;
   margin-bottom: 24px;
-  animation: fadeIn 0.6s ease;
+  animation: multi-fadeIn 0.6s ease;
 }
 
 /* 테이블 */
-.table {
+.multiEdit-table {
   width: 100%;
   border-collapse: collapse;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -32,29 +32,29 @@
   overflow: hidden;
   background-color: #fff;
   margin-top: 20px;
-  animation: fadeIn 0.6s ease;
+  animation: multi-fadeIn 0.6s ease;
 }
 
-.table th,
-.table td {
+.multiEdit-table th,
+.multiEdit-table td {
   padding: 14px;
   text-align: center;
   font-size: 14.5px;
   border-bottom: 1px solid #e5e5e5;
 }
 
-.table th {
+.multiEdit-table th {
   background-color: #efefef;
   color: #333;
   font-weight: 600;
 }
 
-.table tr:hover {
+.multiEdit-table tr:hover {
   background-color: #f5f7f9;
 }
 
 /* 일반 버튼 */
-.btnBlue {
+.multiEdit-btnBlue {
   background-color: #537697;
   color: white;
   font-weight: 600;
@@ -70,11 +70,11 @@
   transition: background-color 0.3s ease;
 }
 
-.btnBlue:hover {
+.multiEdit-btnBlue:hover {
   background-color: #6083ac;
 }
 
-.btnRed {
+.multiEdit-btnRed {
   background-color: #984949;
   color: white;
   font-weight: 600;
@@ -90,18 +90,18 @@
   transition: background-color 0.3s ease;
 }
 
-.btnRed:hover {
+.multiEdit-btnRed:hover {
   background-color: #823c3c;
 }
 
-.buttonGroup {
+.multiEdit-buttonGroup {
   display: flex;
   gap: 8px;
   justify-content: center;
 }
 
 /* 모달 오버레이 */
-.modalOverlay {
+.multiEdit-modalOverlay {
   position: fixed;
   top: 0; left: 0;
   width: 100vw;
@@ -111,28 +111,28 @@
   justify-content: center;
   align-items: center;
   z-index: 999;
-  animation: fadeIn 0.3s ease;
+  animation: multi-fadeIn 0.3s ease;
 }
 
 /* 모달 박스 */
-.modalBox {
+.multiEdit-modalBox {
   background: #fff;
   padding: 30px;
   border-radius: 16px;
   width: 440px;
   max-height: 90vh;
   box-shadow: 0 6px 30px rgba(0, 0, 0, 0.15);
-  animation: fadeInUp 0.4s ease;
+  animation: multi-fadeInUp 0.4s ease;
 }
 
-.modalBox h3 {
+.multiEdit-modalBox h3 {
   font-size: 20px;
   font-weight: 600;
   margin-bottom: 16px;
   text-align: center;
 }
 
-.modalBox label {
+.multiEdit-modalBox label {
   font-weight: 500;
   margin: 10px 0 6px;
   display: block;
@@ -141,8 +141,8 @@
 }
 
 /* 입력 필드 전체 통일 */
-.modalBox input,
-.modalBox select {
+.multiEdit-modalBox input,
+.multiEdit-modalBox select {
   width: 100%;
   padding: 10px 12px;
   font-size: 15px;
@@ -153,22 +153,22 @@
   margin-bottom: 10px;
 }
 
-.modalBox input:focus,
-.modalBox select:focus {
+.multiEdit-modalBox input:focus,
+.multiEdit-modalBox select:focus {
   border-color: #3a3a3c;
   outline: none;
   background-color: #fff;
 }
 
-/* 모달 버튼 전용 (어두운 스타일로 통일) */
-.modalButtons {
+/* 모달 버튼 전용 */
+.multiEdit-modalButtons {
   display: flex;
   justify-content: center;
   gap: 16px;
   margin-top: 24px;
 }
 
-.modalBtn {
+.multiEdit-modalBtn {
   background-color: #333;
   color: white;
   font-weight: 600;
@@ -184,17 +184,17 @@
   transition: background-color 0.3s ease;
 }
 
-.modalBtn:hover {
+.multiEdit-modalBtn:hover {
   background-color: #444;
 }
 
-/* 애니메이션 */
-@keyframes fadeIn {
+/* 애니메이션 네임스페이스 */
+@keyframes multi-fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
-@keyframes fadeInUp {
+@keyframes multi-fadeInUp {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }

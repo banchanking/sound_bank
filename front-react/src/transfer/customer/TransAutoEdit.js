@@ -15,7 +15,6 @@ function TransAutoEdit() {
       alert('로그인이 필요합니다.');
       return;
     }
-
     RefreshToken.get(`http://localhost:8081/api/transAuto/list/${id}`)
       .then(res => setList(res.data))
       .catch(err => {
@@ -27,12 +26,11 @@ function TransAutoEdit() {
   const openEditModal = (item) => {
     setEditItem(item);
     const [intPart] = String(item.amount).split('.');
-    setDisplayAmount(Number(intPart).toLocaleString("ko-KR"));
+    setDisplayAmount(Number(intPart).toLocaleString('ko-KR'));
   };
 
   const change = (e) => {
     const { name, value } = e.target;
-
     if (name === 'amount') {
       const raw = value.replace(/[^\d.]/g, '');
       const [intPart] = raw.split('.');
@@ -71,13 +69,12 @@ function TransAutoEdit() {
   };
 
   return (
-    <div className={styles.page}>
+    <div className={styles['autoEdit-page']}>
       <Sidebar />
+      <div className={styles['autoEdit-wrapper']}>
+        <h2 className={styles['autoEdit-title']}>자동이체 관리</h2>
 
-      <div className={styles.wrapper}>
-        <h2 className={styles.title}>자동이체 관리</h2>
-
-        <table className={styles.table}>
+        <table className={styles['autoEdit-table']}>
           <thead>
             <tr>
               <th>출금계좌</th>
@@ -103,8 +100,14 @@ function TransAutoEdit() {
                 </td>
                 <td>{item.memo}</td>
                 <td>
-                  <button className={styles.editBtn} onClick={() => openEditModal(item)}>수정</button>
-                  <button className={styles.deleteBtn} onClick={() => handleDelete(item.transfer_id)}>삭제</button>
+                  <button
+                    className={styles['autoEdit-editBtn']}
+                    onClick={() => openEditModal(item)}
+                  >수정</button>
+                  <button
+                    className={styles['autoEdit-deleteBtn']}
+                    onClick={() => handleDelete(item.transfer_id)}
+                  >삭제</button>
                 </td>
               </tr>
             ))}
@@ -112,8 +115,8 @@ function TransAutoEdit() {
         </table>
 
         {editItem && (
-          <div className={styles.modalOverlay}>
-            <div className={styles.modalBox}>
+          <div className={styles['autoEdit-modalOverlay']}>
+            <div className={styles['autoEdit-modalBox']}>
               <h3>자동이체 수정</h3>
 
               <label>이체금액</label>
@@ -133,7 +136,7 @@ function TransAutoEdit() {
                 <option value="day">요일 반복</option>
                 <option value="monthly">매월 지정일</option>
               </select>
-              
+
               {editItem.schedule_mode === 'day' ? (
                 <>
                   <label>매주</label>
@@ -152,14 +155,14 @@ function TransAutoEdit() {
                   </select>
                 </>
               ) : (
-                <div className={styles.monthDayWrap}>
+                <div className={styles['autoEdit-monthDayWrap']}>
                   <label>매월</label>
                   <input
                     type="number"
                     name="schedule_month_day"
                     value={editItem.schedule_month_day || ''}
                     onChange={change}
-                    className={styles.shortInput}
+                    className={styles['autoEdit-shortInput']}
                   />
                   <span>일</span>
                 </div>
@@ -181,7 +184,7 @@ function TransAutoEdit() {
                 onChange={change}
               />
 
-              <div className={styles.modalButtons}>
+              <div className={styles['autoEdit-modalButtons']}>
                 <button onClick={update}>수정</button>
                 <button onClick={() => setEditItem(null)}>취소</button>
               </div>
