@@ -73,6 +73,7 @@ public class SmsService {
 
         // ✅ 암호화된 전화번호로 검색
         String encryptedPhone = EncryptionUtils.encrypt(formatPhoneNumber(customer_phone_number));
+        System.out.println(encryptedPhone);
 
         Optional<CustomerDTO> customerOpt = customerRepository.findByCustomerPhoneNumberAndCustomerNameAndCustomerId(
             encryptedPhone, customer_name, customer_id);
