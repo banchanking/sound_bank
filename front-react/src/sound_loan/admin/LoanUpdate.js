@@ -1,23 +1,23 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import "../../Css/loan/Loan.css";
+import styles from "../../Css/loan/LoanUpdate.module.css";
+import RefreshToken from "../../jwt/RefreshToken";
 
 const LoanUpdate = () => {
   const formRef = useRef();
   const navigate = useNavigate();
   const { loan_id } = useParams();
-  const [loan, setLoan] = useState([
-    {
-      loan_id: 0,
-      loan_name: "",
-      loan_min_amount: 0, // 최소 대출 금액
-      loan_max_amount: 0, // 최대 대출 금액
-      interest_rate: 0.0,
-      loan_term: 0,
-      loan_info: "",
-      loan_type: "",
-    },
-  ]);
+  const [loan, setLoan] = useState({
+    loan_id: 0,
+    loan_name: "",
+    loan_min_amount: 0,
+    loan_max_amount: 0,
+    interest_rate: 0.0,
+    loan_term: 0,
+    loan_info: "",
+    loan_type: "",
+    prepayment_penalty: 0.0,
+  });
 
   const changeValue = (e) => {
     setLoan({
@@ -27,65 +27,44 @@ const LoanUpdate = () => {
   };
 
   useEffect(() => {
-    fetch("http://localhost:8081/api/loanDetail/" + loan_id)
-      .then((res) => res.json())
-      .then((res) => {
-        setLoan(res);
-      });
+    RefreshToken.get("/loanDetail/" + loan_id).then((res) => {
+      setLoan(res.data);
+    });
   }, [loan_id]);
 
-  // 1. 아래 url
   const updateSubmit = (e) => {
     e.preventDefault();
     const minAmount = parseInt(loan.loan_min_amount, 10);
     const maxAmount = parseInt(loan.loan_max_amount, 10);
     if (!loan.loan_name) {
       alert("대출상품명을 입력하세요.");
-      return null;
+      return;
     } else if (!loan.loan_type) {
       alert("대출 유형을 선택하세요.");
-      return null;
+      return;
     } else if (!loan.loan_min_amount) {
       alert("최소 대출금액을 입력하세요.");
-      return null;
+      return;
     } else if (!loan.loan_max_amount) {
       alert("최대 대출금액을 입력하세요.");
-      return null;
+      return;
     } else if (minAmount >= maxAmount) {
       alert("최소 대출금액은 최대 대출금액보다 작아야 합니다.");
-      return null;
+      return;
     } else if (!loan.interest_rate) {
       alert("금리를 입력하세요.");
-      return null;
+      return;
     } else if (!loan.loan_term) {
       alert("대출 기간을 입력하세요.");
-      return null;
+      return;
     } else if (!loan.loan_info) {
       alert("대출 정보를 입력하세요.");
-      return null;
+      return;
     }
-    fetch("http://localhost:8081/api/loanUpdate/" + loan_id, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json;charset=utf-8",
-      },
-      body: JSON.stringify(loan),
-    })
-      .then((res) => {
-        console.log(1, res);
-        if (res.status === 201) {
-          return res.json();
-        } else {
-          return null;
-        }
-      })
-      .then((res) => {
-        console.log("정상", res);
-        if (res != null) {
-          navigate("/loanList/");
-        } else {
-          alert("게시글 수정에 실패하였습니다.");
-        }
+    RefreshToken.put("/loanUpdate/" + loan_id, loan)
+      .then(() => {
+        alert("수정되었습니다.");
+        navigate("/loanList");
       })
       .catch((error) => {
         console.log("실패", error);
@@ -97,9 +76,9 @@ const LoanUpdate = () => {
   };
 
   return (
-    <div className="loanInsert">
+    <div className={styles.loanInsert}>
       <form onSubmit={updateSubmit} ref={formRef}>
-        <table className="insertTable">
+        <table className={styles.insertTable}>
           <thead>
             <tr>
               <th colSpan={2}>
@@ -107,7 +86,6 @@ const LoanUpdate = () => {
               </th>
             </tr>
           </thead>
-
           <tbody>
             <tr>
               <th>
@@ -118,8 +96,8 @@ const LoanUpdate = () => {
                   type="text"
                   id="loan_name"
                   name="loan_name"
-                  onChange={changeValue}
                   value={loan.loan_name}
+                  onChange={changeValue}
                 />
               </td>
             </tr>
@@ -130,29 +108,28 @@ const LoanUpdate = () => {
               <td>
                 <select
                   name="loan_type"
-                  onChange={changeValue}
                   value={loan.loan_type}
+                  onChange={changeValue}
                 >
                   <option value={null}>유형을 선택하세요</option>
-                  <option value={"신용 대출"}>신용 대출</option>
-                  <option vlaue={"담보 대출"}>담보 대출</option>
-                  <option vlaue={"전세 대출"}>전세 대출</option>
-                  <option vlaue={"자동차 대출"}>자동차 대출</option>
+                  <option value="신용 대출">신용 대출</option>
+                  <option value="담보 대출">담보 대출</option>
+                  <option value="전세 대출">전세 대출</option>
+                  <option value="자동차 대출">자동차 대출</option>
                 </select>
               </td>
             </tr>
             <tr>
               <th>
-                {" "}
                 <label htmlFor="loan_min_amount">최소 대출금액 :</label>
               </th>
               <td>
                 <input
-                  type="number"
+                  type="text"
                   id="loan_min_amount"
                   name="loan_min_amount"
-                  onChange={changeValue}
                   value={loan.loan_min_amount}
+                  onChange={changeValue}
                 />
               </td>
             </tr>
@@ -162,11 +139,11 @@ const LoanUpdate = () => {
               </th>
               <td>
                 <input
-                  type="number"
+                  type="text"
                   id="loan_max_amount"
                   name="loan_max_amount"
-                  onChange={changeValue}
                   value={loan.loan_max_amount}
+                  onChange={changeValue}
                 />
               </td>
             </tr>
@@ -176,42 +153,54 @@ const LoanUpdate = () => {
               </th>
               <td>
                 <input
-                  type="number"
+                  type="text"
                   id="interest_rate"
                   name="interest_rate"
-                  onChange={changeValue}
-                  step={0.01}
                   value={loan.interest_rate}
+                  onChange={changeValue}
                 />
               </td>
             </tr>
             <tr>
               <th>
-                <label htmlFor="loan_term">대출기간 :</label>
+                <label htmlFor="prepayment_penalty">
+                  중도상환 수수료(율) :
+                </label>
               </th>
               <td>
                 <input
-                  type="number"
-                  id="loan_term"
-                  name="loan_term"
+                  type="text"
+                  id="prepayment_penalty"
+                  name="prepayment_penalty"
+                  value={loan.prepayment_penalty}
                   onChange={changeValue}
-                  value={loan.loan_term}
                 />
               </td>
             </tr>
             <tr>
               <th>
-                {" "}
+                <label htmlFor="loan_term">대출 기간 :</label>
+              </th>
+              <td>
+                <input
+                  type="text"
+                  id="loan_term"
+                  name="loan_term"
+                  value={loan.loan_term}
+                  onChange={changeValue}
+                />
+              </td>
+            </tr>
+            <tr>
+              <th>
                 <label htmlFor="loan_info">대출 정보 :</label>
               </th>
               <td>
-                {" "}
                 <textarea
-                  type="text"
                   id="loan_info"
                   name="loan_info"
-                  onChange={changeValue}
                   value={loan.loan_info}
+                  onChange={changeValue}
                 />
               </td>
             </tr>
@@ -220,7 +209,9 @@ const LoanUpdate = () => {
             <tr>
               <td colSpan={2} align="center">
                 <button type="submit">등록</button>
-                <button onClick={resetBtn}>리셋</button>
+                <button type="button" onClick={resetBtn}>
+                  리셋
+                </button>
               </td>
             </tr>
           </tfoot>

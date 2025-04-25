@@ -19,7 +19,7 @@ public class EncryptionUtils {
 
     @PostConstruct
     public void init() {
-        // Base64 적용 안 하고, 고정 길이 키를 static에 할당
+        // Base64 적용 안 하고, 고정 길이 키를 static에 할당d
         secretKey = rawKey;
     }
 
