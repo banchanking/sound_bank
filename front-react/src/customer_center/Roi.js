@@ -53,7 +53,8 @@ function Roi() {
     formData.append("file", capturedImage);
 
     try {
-      const response = await fetch("https://ebdf-180-71-139-27.ngrok-free.app/ocr", {
+      const response = await fetch("https://06e8-180-71-139-27.ngrok-free.app/ocr", {
+
         method: "POST",
         body: formData,
       });

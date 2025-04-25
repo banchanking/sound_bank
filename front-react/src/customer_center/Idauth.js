@@ -10,29 +10,31 @@ function IdAuth() {
     const file = e.dataTransfer.files[0];
     if (file) setSelectedFile(file);
   };
-
-  const handleUpload = async () => {
-    if (!selectedFile) {
+  
+ // app_ocr/client/src/IdAuth.js
+const handleUpload = async () => {
+  if (!selectedFile) {
       setMessage("이미지를 업로드해주세요.");
       return;
-    }
-    const formData = new FormData();
-    formData.append("file", selectedFile);
-    try {
-      const response = await fetch("https://ebdf-180-71-139-27.ngrok-free.app/ocr", {
-        method: "POST",
-        body: formData,
+  }
+  const formData = new FormData();
+  formData.append("file", selectedFile);
+  try {                           // ngrok 8시간주기로 or 로컬서버(노트북을 off) 서버 꺼짐
+      const response = await fetch("https://06e8-180-71-139-27.ngrok-free.app/ocr", {   
+          method: "POST",
+          body: formData,
       });
       const result = await response.json();
-      if (response.ok && result?.status === "success") {
-        setMessage("인증 성공: " + (result.message || "성공"));
+      console.log("서버 응답:", result);
+      if (response.ok && result && result.status === "success") {
+          setMessage("인증 성공: " + (result.message || "성공"));
       } else {
-        setMessage("인증 실패: " + (result.message || "서버 응답 오류"));
+          setMessage("인증 실패: " + (result.message || "서버 응답 오류"));
       }
-    } catch (error) {
+  } catch (error) {
       setMessage("통신 실패: " + error.message);
-    }
-  };
+  }
+};
 
   return (
     // ✅ 전체 wrap (사뱅 스타일)

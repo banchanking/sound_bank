@@ -27,5 +27,11 @@
 		SET 	refresh_token = #{refresh_token}
 		WHERE	customer_id = #{customerId}
 	</update>
+	
+	<select id="getRefreshToken">
+		SELECT refresh_token
+		FROM admin_tbl
+		WHERE customer_id = #{customerId}
+	</select>
   
 </mapper>
