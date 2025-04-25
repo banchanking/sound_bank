@@ -10,7 +10,6 @@ const AdminExchangeRateManage = () => {
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    
     const today = new Date();
     const offset = today.getTimezoneOffset();
     const localDate = new Date(today.getTime() - offset * 60 * 1000);
@@ -30,6 +29,7 @@ const AdminExchangeRateManage = () => {
   };
 
   const handleSave = () => {
+    // 버튼 클릭 시 isSaving 상태는 변경하되, 텍스트는 변경하지 않음
     const parsedRates = editedRates.map(rate => ({
       base_date: date,
       currency_code: rate.currency_code,
@@ -51,6 +51,7 @@ const AdminExchangeRateManage = () => {
   };
 
   const saveRateBtn = () => {
+    // 버튼 클릭 시 isSaving 상태는 변경하되, 텍스트는 변경하지 않음
     setIsSaving(true);
     RefreshToken
       .post("http://localhost:8081/api/exchange/save")
@@ -71,9 +72,10 @@ const AdminExchangeRateManage = () => {
         <button
           onClick={saveRateBtn}
           className={styles.saveButton}
-          disabled={isSaving}
+          disabled={isSaving} // 버튼 비활성화는 유지
         >
-          {isSaving ? "환율을 저장중입니다..." : "환율 수동저장"}
+          {/* isSaving 상태에 따라 텍스트를 바꾸지 않음 */}
+          환율 수동저장
         </button>
       </div>
 
@@ -166,9 +168,10 @@ const AdminExchangeRateManage = () => {
             <button
               onClick={handleSave}
               className={styles.saveButton}
-              disabled={isSaving}
+              disabled={isSaving} // 버튼 비활성화는 유지
             >
-              {isSaving ? "저장중입니다..." : "저장"}
+              {/* isSaving 상태에 따라 텍스트를 바꾸지 않음 */}
+              저장
             </button>
           </div>
         </>
