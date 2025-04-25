@@ -1,0 +1,54 @@
+/* LoanUpdate.module.css */
+
+.loanInsert {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: white;
+  color: black;
+  border-radius: 12px;
+}
+
+.insertTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  background-color: white;
+  color: black;
+}
+
+.insertTable th,
+.insertTable td {
+  border: 1px solid #444;
+  padding: 0.6rem;
+  text-align: center;
+}
+
+.insertTable th {
+  background-color: #f5f5f5;
+  font-weight: bold;
+}
+
+.insertTable input,
+.insertTable textarea,
+.insertTable select {
+  width: 90%;
+  padding: 0.4rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+button {
+  padding: 0.5rem 1.2rem;
+  margin: 0 0.5rem;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #555;
+}
