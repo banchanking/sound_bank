@@ -135,14 +135,17 @@ const profitChartData = wallet.map(item => {
             chartType="ColumnChart"
             width="100%"
             height="300px"
-            columns={columns}
-            rows={profitChartData}
+            data={[
+              ["통화", "수익률 (%)", { role: "style" }],
+              ...profitChartData
+            ]}
             options={{
               legend: "none",
               vAxis: { title: "수익률 (%)", format: "decimal" },
               hAxis: { title: "통화" },
             }}
           />
+
         </div>
       )}
     </div>

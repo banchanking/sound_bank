@@ -207,7 +207,11 @@ const LoanUpdate = () => {
           </tbody>
           <tfoot>
             <tr>
-              <td colSpan={2} align="center">
+              <td
+                colSpan={2}
+                align="center"
+                className={styles.loanUpdateButton}
+              >
                 <button type="submit">등록</button>
                 <button type="button" onClick={resetBtn}>
                   리셋
