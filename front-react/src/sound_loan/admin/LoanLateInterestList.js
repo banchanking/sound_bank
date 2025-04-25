@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import RefreshToken from "../../jwt/RefreshToken";
+import "../../Css/loan/LoanLateInterestList.css";
 
 const LoanLateInterestList = () => {
   const [lateList, setLateList] = useState([]);
@@ -45,24 +46,22 @@ const LoanLateInterestList = () => {
   };
 
   return (
-    <div className="totalArea">
-      <h2>📄 전체 연체 이력 내역</h2>
+    <div className="lateInterestContainer">
+      <h2 className="lateInterestTitle">📄 전체 연체 이력 내역</h2>
 
-      <div style={{ marginBottom: "10px" }}>
+      <div className="lateInterestSearch">
         <input
           type="text"
           placeholder="고객ID 또는 대출ID로 검색"
           value={searchTerm}
           onChange={handleSearchChange}
         />
-        <button onClick={handleSearchClick} style={{ marginLeft: "8px" }}>
-          검색
-        </button>
+        <button onClick={handleSearchClick}>검색</button>
       </div>
 
       {currentItems.length > 0 ? (
-        <table className="tableArea">
-          <thead className="theadArea">
+        <table className="lateInterestTable">
+          <thead>
             <tr>
               <th>No</th>
               <th>연체번호</th>
@@ -73,7 +72,7 @@ const LoanLateInterestList = () => {
               <th>납부 상태</th>
             </tr>
           </thead>
-          <tbody className="tbodyArea">
+          <tbody>
             {currentItems.map((item, index) => (
               <tr key={item.latePaymentNo}>
                 <td>{indexOfFirstItem + index + 1}</td>
@@ -88,19 +87,16 @@ const LoanLateInterestList = () => {
           </tbody>
         </table>
       ) : (
-        <p>연체 이자 내역이 존재하지 않습니다.</p>
+        <p className="lateInterestEmpty">연체 이자 내역이 존재하지 않습니다.</p>
       )}
 
       {totalPages > 1 && (
-        <div style={{ marginTop: "10px" }}>
+        <div className="lateInterestPagination">
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
             <button
               key={page}
               onClick={() => handlePageChange(page)}
-              style={{
-                margin: "2px",
-                fontWeight: currentPage === page ? "bold" : "normal",
-              }}
+              className={currentPage === page ? "active" : ""}
             >
               {page}
             </button>

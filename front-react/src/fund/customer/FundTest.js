@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import styles from "../../Css/fund/FundList.module.css"; // 스타일 파일 추가
+import FundCustomer from "../admin/FundCustomer"; // 로그인 체크용 팝업 컴포넌트
 
 // 투자성향 테스트 질문과 점수 매핑
 const questions = [
@@ -90,6 +91,16 @@ const FundTest = () => {
   const navigate = useNavigate();
   const [answers, setAnswers] = useState(Array(questions.length).fill(null)); // 초기 상태는 null로 설정
   const [result, setResult] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+
+  // 로그인 체크 + 펀드 불러오기
+  useEffect(() => {
+    const token = localStorage.getItem("auth_token");
+    if (!token) {
+      setShowModal(true);
+      return;
+    }
+  }, []);
 
   // 사용자가 선택한 답변을 업데이트하는 함수
   const handleChange = (index, value) => {
@@ -97,6 +108,7 @@ const FundTest = () => {
     newAnswers[index] = value; // 선택한 답변을 업데이트
     setAnswers(newAnswers);
   };
+    
 
   // 서버로 데이터 전송 후 결과를 받아오는 함수
   const handleSubmit = async () => {
@@ -152,7 +164,20 @@ const FundTest = () => {
       });
     };
 
+  // 모달 핸들러
+  const handleConfirm = () => navigate("/login");
+  const handleCancel = () => navigate("/");
+
   return (
+    <>
+    {showModal && (
+      <FundCustomer
+        message="로그인이 필요한 서비스입니다."
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+      />
+    )}
+
     <div className={styles.fundContainer}>
       <div className={styles.fundtesttitle}>
         <h1>투자성향 분석 테스트</h1>
@@ -183,6 +208,7 @@ const FundTest = () => {
       {result !== null && <h3 className={styles.fundtestresult}>예측된 투자 성향: {result}</h3>}
     </div>
     </div>
+    </>
   );
 };
 
