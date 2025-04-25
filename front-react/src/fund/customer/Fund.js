@@ -13,10 +13,6 @@ const Fund = ({ fundId, onClose, onBuy }) => {
   const [withdrawAccountNumber, setWithdrawAccountNumber] = useState("");
   const [selectedFundAccount, setSelectedFundAccount] = useState(null);
 
-  // 🔍 진입 확인 로그
-  console.log("🔥 Fund 컴포넌트 실행됨");
-  console.log("➡️ props로 받은 fundId:", fundId);
-
   useEffect(() => {
     const fetchData = async () => {
       if (!fundId) {
@@ -24,7 +20,7 @@ const Fund = ({ fundId, onClose, onBuy }) => {
         return;
       }
       try {
-        const url = `http://localhost:8081/api/fundDetail/${fundId}`;
+        const url = `/fundDetail/${fundId}`;
         console.log("📡 API 호출 URL:", url);
         const res = await RefreshToken.get(url);
         console.log("✅ API 응답 데이터:", res.data);
@@ -40,7 +36,7 @@ const Fund = ({ fundId, onClose, onBuy }) => {
   useEffect(() => {
     const fetchFundAccounts = async () => {
       const customerId = localStorage.getItem("customerId");
-      const res = await RefreshToken.get(`http://localhost:8081/api/accounts/allAccount/fund/${customerId}`);
+      const res = await RefreshToken.get(`/accounts/allAccount/fund/${customerId}`);
       setFundAccounts(res.data);
     };
     fetchFundAccounts();
@@ -123,7 +119,7 @@ const Fund = ({ fundId, onClose, onBuy }) => {
             placeholder="예: 1,000,000"
           />
 
-          <label>매수 좌수 (선택사항)</label>
+          <label>매수 좌수</label>
           <input
             type="number"
             value={unitCount}
@@ -136,7 +132,17 @@ const Fund = ({ fundId, onClose, onBuy }) => {
         <div className={styles.fundbuttonGroup}>
           <button
             onClick={() => {
-              onBuy({ ...fundDetail, buyAmount, unitCount, fundAccountId: selectedFundAccountId, withdrawAccountNumber, fundAccountName: selectedFundAccount?.fundAccountName });
+                if (!unitCount) {
+                  alert("매수 좌수를 입력해 주세요.");
+                  return;
+                }
+              
+                onBuy({ ...fundDetail, 
+                  buyAmount, 
+                  unitCount, // 이걸 기반으로 백에서 단가 계산
+                  fundAccountId: selectedFundAccountId, 
+                  withdrawAccountNumber, 
+                  fundAccountName: selectedFundAccount?.fundAccountName });
             }}
             className={styles.fundBuyButton}
           >
@@ -148,7 +154,7 @@ const Fund = ({ fundId, onClose, onBuy }) => {
           <button onClick={() => window.location.href = "/inquireAccont"} className={styles.fundButton}>
             My계좌 이동
           </button>
-          <button onClick={() => window.location.href = "/myFund"} className={styles.fundButton}>
+          <button onClick={() => window.location.href = "/myFundInfo"} className={styles.fundButton}>
             My펀드 이동
           </button>
         </div>

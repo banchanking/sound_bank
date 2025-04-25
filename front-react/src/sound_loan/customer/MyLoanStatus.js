@@ -3,116 +3,125 @@ import RefreshToken from "../../jwt/RefreshToken";
 import "../../Css/loan/MyLoanStatus.css";
 
 const MyLoanStatus = ({ onRefresh }) => {
-  const [myLoanStatus, setMyLoanStatus] = useState([]);
-  const [isLoading, setIsLoading] = useState(true); // 로딩 상태
+  const [loanStatusList, setLoanStatusList] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const formatDate = (timestamp) => {
-    const date = new Date(timestamp);
-    return date.toISOString().split("T")[0]; // YYYY-MM-DD 형식
+    if (!timestamp) return "-";
+    return new Date(timestamp).toLocaleDateString("ko-KR", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
   };
 
-  const earlyRepayment = (my) => {
-    if (window.confirm("중도상환 하시겠습니까?")) {
-      const prepaymentRequest = {
-        loanStatusNo: my.loanStatusNo,
-        balance: my.balance,
-        loanDate: my.loanDate,
-        prepayment_penalty: my.prepayment_penalty,
-      };
-      RefreshToken.post("/calculatePrepaymentPenalty", prepaymentRequest)
-        .then((res) => {
-          alert("중도상환 처리가 완료되었습니다.");
-          onRefresh();
-        })
-        .catch((error) => {
-          console.log(error);
-          alert("중도상환 처리가 되지 않았습니다.");
-        });
-    }
+  const handlePrepayment = (loan) => {
+    if (!window.confirm("중도상환 하시겠습니까?")) return;
+
+    const payload = {
+      loanStatusNo: loan.loanStatusNo,
+      balance: loan.balance,
+      loanDate: loan.loanDate,
+      prepayment_penalty: loan.prepayment_penalty,
+    };
+
+    RefreshToken.post("/calculatePrepaymentPenalty", payload)
+      .then(() => {
+        alert("중도상환 처리가 완료되었습니다.");
+        onRefresh();
+      })
+      .catch((err) => {
+        console.error("중도상환 에러:", err);
+        alert("중도상환 처리가 되지 않았습니다.");
+      });
   };
 
   useEffect(() => {
     RefreshToken.get("/myLoanStatus", {
-      params: {
-        customerId: localStorage.getItem("customerId"),
-      },
+      params: { customerId: localStorage.getItem("customerId") },
     })
       .then((res) => {
-        setMyLoanStatus(res.data);
+        setLoanStatusList(res.data);
         setIsLoading(false);
       })
-      .catch((error) => {
-        console.error("서버 통신 에러: ", error);
-        alert("서버 통신 중 에러 발생!");
+      .catch((err) => {
+        console.error("대출 현황 조회 에러:", err);
+        alert("서버 통신 중 오류가 발생했습니다.");
         setIsLoading(false);
       });
-  }, [setMyLoanStatus]);
+  }, [onRefresh]);
 
   return (
-    <div className="totalArea">
-      {isLoading ? (
-        <div className="spinnerContainer">
-          <div className="spinner"></div>
-        </div>
-      ) : myLoanStatus.length > 0 ? (
-        <table className="tableArea">
-          <thead className="theadArea">
-            <tr>
-              <th colSpan={15}>
-                {localStorage.getItem("customerId")}님의 대출 현황
-              </th>
-            </tr>
-          </thead>
+    <div className="myLoanStatus-cardContainer">
+      <h2 className="myLoanStatus-title">
+        {localStorage.getItem("customerId")}님의 대출 현황
+      </h2>
 
-          <tbody className="tbodyArea">
-            <tr>
-              <th>no</th>
-              <th>대출 상품명</th>
-              <th>적용 금리</th>
-              <th>대출 금액</th>
-              <th>잔여 대출금</th>
-              <th>총 상환횟수</th>
-              <th>잔여 상환횟수</th>
-              <th>상환 계좌번호</th>
-              <th>대출 상환방식</th>
-              <th>대출금 상환일</th>
-              <th>대출 유형</th>
-              <th>대출 신청일</th>
-              <th>대출 진행상황</th>
-              <th>중도 상환 수수료(율)</th>
-              <th>중도 상환 신청</th>
-            </tr>
-            {myLoanStatus.map((my) => (
-              <tr key={my.no}>
-                <td>{my.no}</td>
-                <td>{my.loanName}</td>
-                <td>{my.interestRate}%</td>
-                <td>{my.loanAmount.toLocaleString("ko-KR")}원</td>
-                <td>{my.balance.toLocaleString("ko-KR")}원</td>
-                <td>{my.loanTerm}회</td>
-                <td>{my.remainingTerm}회</td>
-                <td>{my.accountNumber}</td>
-                <td>{my.repaymentMethod}</td>
-                <td>매달 {my.repaymentDate}일</td>
-                <td>{my.loanType}</td>
-                <td>{formatDate(my.loanDate)}</td>
-                <td>{my.loanProgress}</td>
-                <td>{my.prepayment_penalty}%</td>
-                {["중도상환", "만기"].includes(my.loanProgress) ? (
-                  <td>
-                    <button>상환완료</button>
-                  </td>
+      {isLoading ? (
+        <div className="myLoanStatus-spinnerContainer">
+          <div className="myLoanStatus-spinner"></div>
+        </div>
+      ) : loanStatusList.length > 0 ? (
+        <div className="myLoanStatus-cardList">
+          {loanStatusList.map((loan) => (
+            <div className="myLoanStatus-card" key={loan.no}>
+              <div>
+                <strong>상품명:</strong> {loan.loanName}
+              </div>
+              <div>
+                <strong>금리:</strong> {loan.interestRate}%
+              </div>
+              <div>
+                <strong>대출금:</strong> {loan.loanAmount.toLocaleString()}원
+              </div>
+              <div>
+                <strong>잔여금:</strong> {loan.balance.toLocaleString()}원
+              </div>
+              <div>
+                <strong>상환횟수:</strong> {loan.loanTerm}회 /{" "}
+                {loan.remainingTerm}회 남음
+              </div>
+              <div>
+                <strong>계좌번호:</strong> {loan.accountNumber}
+              </div>
+              <div>
+                <strong>방식:</strong> {loan.repaymentMethod}
+              </div>
+              <div>
+                <strong>상환일:</strong> 매달 {loan.repaymentDate}일
+              </div>
+              <div>
+                <strong>유형:</strong> {loan.loanType}
+              </div>
+              <div>
+                <strong>신청일:</strong> {formatDate(loan.loanDate)}
+              </div>
+              <div>
+                <strong>진행상황:</strong> {loan.loanProgress}
+              </div>
+              <div>
+                <strong>수수료:</strong> {loan.prepayment_penalty}%
+              </div>
+              <div>
+                {loan.loanProgress === "중도상환" ||
+                loan.loanProgress === "만기" ? (
+                  <button className="myLoanStatus-button" disabled>
+                    상환완료
+                  </button>
                 ) : (
-                  <td>
-                    <button onClick={() => earlyRepayment(my)}>중도상환</button>
-                  </td>
+                  <button
+                    className="myLoanStatus-button"
+                    onClick={() => handlePrepayment(loan)}
+                  >
+                    중도상환
+                  </button>
                 )}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+              </div>
+            </div>
+          ))}
+        </div>
       ) : (
-        <p>진행 중인 대출이 없습니다.</p>
+        <p className="myLoanStatus-empty">진행 중인 대출이 없습니다.</p>
       )}
     </div>
   );

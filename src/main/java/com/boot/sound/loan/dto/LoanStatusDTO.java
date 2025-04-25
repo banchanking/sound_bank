@@ -34,9 +34,6 @@ public class LoanStatusDTO {
     @Column(name = "interest_rate")
     private float interestRate;
 
-    @Column(name = "customer_income")
-    private int customerIncome;
-
     @Column(name = "customer_credit_score")
     private int customerCreditScore;
 
