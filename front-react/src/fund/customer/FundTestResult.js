@@ -28,7 +28,7 @@ const FundTestResult = () => {
             };
         
               // 토큰 포함된 인스턴스로 요청 보내기
-              await RefreshToken.post("http://localhost:8081/api/test-result/save", payload);
+              await RefreshToken.post("/test-result/save", payload);
               console.log("✅ 투자 성향 등록 및 업데이트 성공");
             } catch (error) {
               console.error("❌ 투자 성향 등록 및 업데이트 중 오류 발생:", error);
