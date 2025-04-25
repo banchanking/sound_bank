@@ -24,7 +24,7 @@ const AdminLogin = () => {
         setRole(res.data.role);
 
         alert(res.data.customerId + "님 환영합니다.");
-        navigate("/");
+        navigate("/adminPage");
       })
       .catch((error) => {
         console.error("로그인 실패:", error);

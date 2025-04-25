@@ -176,7 +176,7 @@ const LoanInfoApply = () => {
   return (
     <div className={styles.container}>
       <div>
-        <table>
+        <table className={styles.infoApply}>
           <thead>
             <tr>
               <th colSpan={2} className={styles.title}>
