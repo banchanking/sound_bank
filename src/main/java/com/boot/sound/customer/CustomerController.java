@@ -90,7 +90,6 @@ public class CustomerController {
         // 클라이언트에게 Access Token, Refresh Token 및 Customer ID 전달
         Map<String, String> response = new HashMap<>();
         response.put("customer_token", accessToken);
-        response.put("refresh_token", refresh_token);
         response.put("customerId", customer.getCustomerId()); // Customer ID 추가
 
         System.out.println(accessToken);

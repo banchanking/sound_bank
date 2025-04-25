@@ -60,7 +60,7 @@ import LoanCalculator from "./sound_loan/customer/LoanCalculator";
 import LoanChart from "./sound_loan/customer/LoanChart";
 import LoanCreditScore from "./sound_loan/customer/LoanCreditScore";
 import Join from "./customer/Join";
-import Login from "./customer/Login";
+import TotalLogin from "./customer/TotalLogin";
 import Authcenter from "./customer_center/Authcenter";
 import SecurityBlocker from "./Common/SecurityBlocker";
 import Charge from "./customer_center/Charge";
@@ -86,16 +86,16 @@ import DepositChange from "./deposit/customer/DepositChange";
 import DepositAutosettings from "./deposit/customer/DepositAutosettings";
 import DepositAutoManagement from "./deposit/customer/DepositAutoManagement";
 import DepositCancellation from "./deposit/customer/DepositCancellation";
-import DepositComparison from "./deposit/customer/DepositComparison"; 
+import DepositComparison from "./deposit/customer/DepositComparison";
 import DepositWithdrawal from "./deposit/customer/DepositWithdrawal";
-
-
+import Mypage from "./customer/Mypage";
 
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
-      {SecurityBlocker}{/* F12 방지 블록방지 */}{" "}
+        {SecurityBlocker}
+        {/* F12 방지 블록방지 */}{" "}
         {/* Header.js의 Link연동을 위해서 BrowserRouter추가해야됨 */}
         <Header />
         <Routes>
@@ -104,15 +104,30 @@ function App() {
           <Route path="/" element={<DepositProduct />} />
           <Route path="/depositProduct" element={<DepositProduct />} />
           <Route path="/savingsProduct" element={<SavingsProduct />} />
-          <Route path="/depositAccountInquiry" element={<DepositAccountInquiry />} />
-          <Route path="/depositTransactionDetails" element={<DepositTransactionDetails />} />
+          <Route
+            path="/depositAccountInquiry"
+            element={<DepositAccountInquiry />}
+          />
+          <Route
+            path="/depositTransactionDetails"
+            element={<DepositTransactionDetails />}
+          />
           <Route path="/depositWithdrawal" element={<DepositWithdrawal />} />
           <Route path="/depositJoin" element={<DepositJoin />} />
           <Route path="/savingsJoin" element={<SavingsJoin />} />
           <Route path="/depositChange" element={<DepositChange />} />
-          <Route path="/depositAutosettings" element={<DepositAutosettings />} />
-          <Route path="/depositAutoManagement" element={<DepositAutoManagement />} />
-          <Route path="/depositCancellation" element={<DepositCancellation />} />
+          <Route
+            path="/depositAutosettings"
+            element={<DepositAutosettings />}
+          />
+          <Route
+            path="/depositAutoManagement"
+            element={<DepositAutoManagement />}
+          />
+          <Route
+            path="/depositCancellation"
+            element={<DepositCancellation />}
+          />
           <Route path="/depositComparison" element={<DepositComparison />} />
           {/* 예금관리 Route 끝 */}
           {/* 조회 Route 시작 */}
@@ -189,10 +204,10 @@ function App() {
           <Route path="/ex_rate" element={<ExRate />} /> {/* 환율조회/계산기 */}
           <Route path="/ex_request" element={<ExRequest />} />{" "}
           {/* 환전신청하기 */}
-          <Route path="/exchange_list" element={<ExList />} />{" "}          
+          <Route path="/exchange_list" element={<ExList />} />{" "}
           {/* 환전내역 조회 */}
           {/* 환전신청내역 */}
-          <Route path="/exchangeRequestList" element={<ExRequestList/>}/> {" "}
+          <Route path="/exchangeRequestList" element={<ExRequestList />} />{" "}
           {/*  */}
           <Route
             path="/ex_account_management"
@@ -204,29 +219,35 @@ function App() {
             element={<ExchangeWalletStatus />}
           />{" "}
           {/* 내 지갑 */}
-
           <Route path="/admin_ex_management" element={<AdminExMenu />} />{" "}
           {/* (관리자)지갑상태변경 */}
           {/* 외환 Route 끝 */}
           {/* 고객센터 Route 시작 */}
-
-          <Route path="/customerservice" element={<Customerservice />} />{" "}{/* 고객센터 헤더 */}
-          <Route path="/faq" element={<FAQ />} />                       {/* 자주하는 질문  */}
-          <Route path="/chatbot" element={<Chatbot />} />{" "}          {/* 누르는 상담 (챗봇) */}
-          <Route path="/voicebot" element={<Voicebot />} />{" "}        {/* 말하는 상담 (음성봇) */}
-          <Route path="/authcenter" element={<Authcenter />} />{" "}    {/* 인증 센터  */}
-          <Route path="/roi" element={<Roi />} />                       {/* 실시간 객체인식 (ROI) */}
-          <Route path="/idauth" element={<IdAuth />} />{" "}            {/* 신분증 인증 (OCR) */}
-          <Route path="/notice" element={<Notice />} />{" "}            {/* 공지사항(고객용) */}
-          <Route path="/admin/notice" element={<AdminNotice />} />{" "} {/* 공지사항(관리자용) */}
-          <Route path="/businesshour" element={<BusinessHour />} />{" "}{/* 이용 시간 */}
-          <Route path="/charge" element={<Charge />} />                 {/* 금리 안내 */}
-          <Route path="/stopgambling" element={<Stopgambling />} />     {/* 불법 도박 계좌 신고 안내 */}
-      
+          <Route path="/customerservice" element={<Customerservice />} />{" "}
+          {/* 고객센터 헤더 */}
+          <Route path="/faq" element={<FAQ />} /> {/* 자주하는 질문  */}
+          <Route path="/chatbot" element={<Chatbot />} />{" "}
+          {/* 누르는 상담 (챗봇) */}
+          <Route path="/voicebot" element={<Voicebot />} />{" "}
+          {/* 말하는 상담 (음성봇) */}
+          <Route path="/authcenter" element={<Authcenter />} />{" "}
+          {/* 인증 센터  */}
+          <Route path="/roi" element={<Roi />} /> {/* 실시간 객체인식 (ROI) */}
+          <Route path="/idauth" element={<IdAuth />} />{" "}
+          {/* 신분증 인증 (OCR) */}
+          <Route path="/notice" element={<Notice />} /> {/* 공지사항(고객용) */}
+          <Route path="/admin/notice" element={<AdminNotice />} />{" "}
+          {/* 공지사항(관리자용) */}
+          <Route path="/businesshour" element={<BusinessHour />} />{" "}
+          {/* 이용 시간 */}
+          <Route path="/charge" element={<Charge />} /> {/* 금리 안내 */}
+          <Route path="/stopgambling" element={<Stopgambling />} />{" "}
+          {/* 불법 도박 계좌 신고 안내 */}
           {/* 고객센터 Route 끝 */}
           {/* 계좌개설 / 로그인 Route 시작 */}
           <Route path="/join" element={<Join />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<TotalLogin />} />
+          <Route path="/myPage" element={<Mypage />} />
           {/* 계좌개설 / 로그인 Route 끝 */}
         </Routes>
         <Footer />

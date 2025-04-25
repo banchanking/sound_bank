@@ -43,7 +43,7 @@ const Login = () => {
   return (
     <div className="login-wrap">
       <div className="login-container">
-        <h1>로그인</h1>
+        <h1>고객 로그인</h1>
         <form onSubmit={onLogin}>
           <div>
             <label>아이디</label>
