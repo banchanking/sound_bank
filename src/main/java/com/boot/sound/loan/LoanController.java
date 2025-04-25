@@ -41,45 +41,35 @@ import lombok.extern.slf4j.Slf4j;
 @CrossOrigin
 public class LoanController {
 
-	@Autowired
-	private LoanService service;
-	
-
-	
-	// http://localhost:8081/api
+	private final LoanService service;
 	
 	// 대출 상품 리스트 http://localhost:8081/api/loanList
 	@GetMapping("/loanList")
 	public ResponseEntity<?> loanList(){
-		System.out.println("loanList()");
 		return new ResponseEntity<>(service.loanList(),HttpStatus.OK);
 	};
 	
 	// 대출 상품 등록 및 약관등록 http://localhost:8081/api/loanInsert
 	@PostMapping("/loanInsert")
 	public ResponseEntity<?> loanInsert(@RequestBody LoanWithTermsDTO dto){
-		System.out.println("loanInsert");
 		return new ResponseEntity<>(service.loanInsert(dto),HttpStatus.CREATED);
 	};
 	
 	// 대출 상품 수정
 	@PutMapping("/loanUpdate/{loan_id}")
 	public ResponseEntity<?> loanUpdate(@PathVariable int loan_id, @RequestBody LoanDTO dto){
-		System.out.println("loanUpdate");
 		return new ResponseEntity<>(service.loanUpdate(loan_id,dto),HttpStatus.CREATED);
 	}
 	
 	// 대출 상품 삭제 http://localhost:8081/api/loanDelete
 	@DeleteMapping("/loanDelete/{loan_id}")
 	public ResponseEntity<?> loanDelete(@PathVariable int loan_id){
-		System.out.println("loanDelete");
 		return new ResponseEntity<>(service.loanDelete(loan_id),HttpStatus.OK);
 	}
 	
 	// 대출 상품 상세 http://localhost:8081/api/loanDetail/{loan_id}
 	@GetMapping("/loanDetail/{loan_id}")
 	public ResponseEntity<?> loanDetail(@PathVariable int loan_id){
-		System.out.println("loanDetail");
 		return new ResponseEntity<>(service.loanDetail(loan_id),HttpStatus.OK);
 	}
 	
@@ -88,7 +78,6 @@ public class LoanController {
 	@PostMapping("/consertInsert")
 	public ResponseEntity<?> consentInsert(@RequestBody LoanConsentDTO dto){
 		System.out.println(dto);
-		System.out.println("컨트롤 - consentInsert()");
 		return new ResponseEntity<>(service.consentInsert(dto),HttpStatus.CREATED);
 	}
 	
@@ -96,7 +85,6 @@ public class LoanController {
 	@GetMapping("/loanCustomer")
 	public ResponseEntity<?> loanCustomer(@RequestParam("customerId") String customerId,
 											@RequestParam("loan_id") String loan_id) {
-	    System.out.println("컨트롤 - loanCustomer()");
 	    
 	   
 	    return new ResponseEntity<>(service.loanCustomer(customerId,loan_id), HttpStatus.OK);
@@ -105,14 +93,12 @@ public class LoanController {
 	// 대출신청 정보 저장
 	@PostMapping("/loanApply")
 	public ResponseEntity<?> loanApply(@RequestBody LoanApplyWithTermsDTO dto) {
-	    System.out.println("컨트롤 - loanApply()");
 	    return new ResponseEntity<>(service.loanApply(dto), HttpStatus.CREATED);
 	}
 	
 	// 대출 현황 리스트
 	@GetMapping("/loanStatus")
 	public ResponseEntity<?>loanStatus(){
-		System.out.println("컨트롤 - loanStatus()");
 		System.out.println(service.loanStatus());
 		return new ResponseEntity<>(service.loanStatus(),HttpStatus.OK);
 	}
@@ -135,27 +121,23 @@ public class LoanController {
 	
 	@GetMapping("/myLoanStatus")
 	public ResponseEntity<?>myLoanStatus(@RequestParam ("customerId") String customerId){
-		System.out.println("컨트롤 - myLoanStatus()");
 		return new ResponseEntity<>(service.myLoanStatus(customerId),HttpStatus.OK);
 	}
 	
 	@GetMapping("/selectLoanTerm/{loan_id}")
 	public ResponseEntity<?>selectLoanTerm(@PathVariable int loan_id){
-		System.out.println("컨트롤 - selectLoanTerm()");
 		return new ResponseEntity<>(service.selectLoanTerm(loan_id),HttpStatus.OK);
 	}
 	
 	// 중도 상환처리 및 대출상태 변경처리
 	@PostMapping("/calculatePrepaymentPenalty")
 	public ResponseEntity<?>calculatePrepaymentPenalty(@RequestBody PrepaymentDTO dto){
-		System.out.println("컨트롤 - calculatePrepaymentPenalty()");
 		return new ResponseEntity<>(service.calculatePrepaymentPenalty(dto),HttpStatus.OK);
 	}
 	
 	// 고객별 대출이자 납부내역
 	@GetMapping("/myInterestList")
 	public ResponseEntity<?>myInterestList(@RequestParam("customerId")String customerId){
-		System.out.println("컨트롤 - myInterestList()");
 		return new ResponseEntity<>(service.myInterestList(customerId),HttpStatus.OK);
 	}
 	
@@ -178,23 +160,17 @@ public class LoanController {
 	
 	@GetMapping("/admin/loanInterestList")
 	public ResponseEntity<?> adminLoanInterestList(){
-		System.out.println("컨트롤 - adminLoanInterestList()");
 		return new ResponseEntity<>(service.adminLoanInterestList(),HttpStatus.OK);
 	}
 	
 	@GetMapping("/admin/loanLateInterestList")
 	public ResponseEntity<?>adminLoanLateInterestList(){
-		System.out.println("컨트롤 - adminLoanLateInterestList()");
 		return new ResponseEntity<>(service.adminLoanLateInterestList(),HttpStatus.OK);
 	}
 	
 	@GetMapping("/selectCreditScore/{customerId}")
 	public ResponseEntity<?> getCreditScore(@PathVariable String customerId) {
-		System.out.println("컨트롤 - selectCreditScore()");
 		return new ResponseEntity<>(service.selectCreditScore(customerId),HttpStatus.OK);
 	}
-	
-
-
 	
 }
