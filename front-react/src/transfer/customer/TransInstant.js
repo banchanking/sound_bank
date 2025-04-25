@@ -1,3 +1,5 @@
+// TransInstant.js
+
 import React, { useEffect, useState } from 'react';
 import RefreshToken from '../../jwt/RefreshToken';
 import styles from '../../Css/transfer/TransInstant.module.css';
@@ -17,7 +19,6 @@ function TransInstant() {
     memo: '',
     password: ''
   });
-
   const [displayAmount, setDisplayAmount] = useState('');
   const [accounts, setAccounts] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -25,15 +26,12 @@ function TransInstant() {
   useEffect(() => {
     const id = getCustomerID();
     const token = localStorage.getItem("auth_token");
-
     if (!id) {
       alert('로그인이 필요합니다.');
       navigate('/login');
       return;
     }
-
     setForm(prev => ({ ...prev, customer_id: id }));
-
     RefreshToken.get(`http://localhost:8081/api/accounts/allAccount/${id}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
@@ -42,15 +40,14 @@ function TransInstant() {
         setAccounts(list);
       })
       .catch(err => console.error('계좌 불러오기 실패:', err));
-  }, []);
+  }, [navigate]);
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     const { name, value } = e.target;
-
     if (name === 'amount') {
       const raw = value.replace(/[^\d.]/g, '');
       const [intPart] = raw.split('.');
-      setDisplayAmount(raw ? Number(intPart).toLocaleString() : '');
+      setDisplayAmount(raw ? Number(intPart).toLocaleString('ko-KR') : '');
       setForm(prev => ({ ...prev, amount: raw }));
     } else {
       setForm(prev => ({ ...prev, [name]: value }));
@@ -61,10 +58,9 @@ function TransInstant() {
     const token = localStorage.getItem("auth_token");
     if (!token) {
       alert("로그인이 필요합니다.");
-      navigate('/Login');
+      navigate('/login');
       return;
     }
-
     RefreshToken.post("http://localhost:8081/api/transInstant/send", form, {
       headers: { Authorization: `Bearer ${token}` }
     })
@@ -74,11 +70,10 @@ function TransInstant() {
         } else if (res.data === "이체 완료") {
           alert("이체가 정상적으로 완료되었습니다.");
           setForm({
-            customer_id: form.customer_id,
+            ...form,
             out_account_number: '',
             in_account_number: '',
             in_name: '',
-            transfer_type: '실시간',
             amount: '',
             memo: '',
             password: ''
@@ -99,14 +94,14 @@ function TransInstant() {
   return (
     <div style={{ display: 'flex' }}>
       <Sidebar />
-      <div className={styles.wrapper}>
-        <h2 className={styles.title}>실시간 이체</h2>
-        <form onSubmit={(e) => { e.preventDefault(); setShowModal(true); }}>
+      <div className={styles['instant-wrapper']}>
+        <h2 className={styles['instant-title']}>실시간 이체</h2>
+        <form onSubmit={e => { e.preventDefault(); setShowModal(true); }}>
           <select
             name="out_account_number"
             value={form.out_account_number}
             onChange={handleChange}
-            className={styles.select}
+            className={styles['instant-select']}
             required
           >
             <option value="">출금 계좌 선택</option>
@@ -120,26 +115,63 @@ function TransInstant() {
             ))}
           </select>
 
-          <input name="in_account_number" placeholder="입금 계좌" value={form.in_account_number} onChange={handleChange} className={styles.input} required />
-          <input name="in_name" placeholder="받는 사람" value={form.in_name} onChange={handleChange} className={styles.input} required />
-          <input name="amount" placeholder="금액" value={displayAmount} onChange={handleChange} className={styles.input} required />
-          <input name="memo" placeholder="메모" value={form.memo} onChange={handleChange} className={styles.input} />
-          <input type="password" name="password" placeholder="비밀번호" value={form.password} onChange={handleChange} className={styles.input} required />
-          <button type="submit" className={styles.button}>이체하기</button>
+          <input
+            name="in_account_number"
+            placeholder="입금 계좌"
+            value={form.in_account_number}
+            onChange={handleChange}
+            className={styles['instant-input']}
+            required
+          />
+          <input
+            name="in_name"
+            placeholder="받는 사람"
+            value={form.in_name}
+            onChange={handleChange}
+            className={styles['instant-input']}
+            required
+          />
+          <input
+            name="amount"
+            placeholder="금액"
+            value={displayAmount}
+            onChange={handleChange}
+            className={styles['instant-input']}
+            required
+          />
+          <input
+            name="memo"
+            placeholder="메모"
+            value={form.memo}
+            onChange={handleChange}
+            className={styles['instant-input']}
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="비밀번호"
+            value={form.password}
+            onChange={handleChange}
+            className={styles['instant-input']}
+            required
+          />
+          <button type="submit" className={styles['instant-button']}>
+            이체하기
+          </button>
         </form>
 
         {showModal && (
-          <div className={styles.modalOverlay}>
-            <div className={styles.modalContent}>
+          <div className={styles['instant-modalOverlay']}>
+            <div className={styles['instant-modalContent']}>
               <h3>이체 확인</h3>
-              <div className={styles.modalDetails}>
+              <div className={styles['instant-modalDetails']}>
                 <p><b>이체금액:</b> {Number(form.amount).toLocaleString('ko-KR')} 원</p>
                 <p><b>출금계좌:</b> {form.out_account_number}</p>
                 <p><b>입금계좌:</b> {form.in_account_number}</p>
                 <p><b>받는사람:</b> {form.in_name}</p>
                 <p><b>메모:</b> {form.memo || '-'}</p>
               </div>
-              <div className={styles.modalButtons}>
+              <div className={styles['instant-modalButtons']}>
                 <button onClick={confirmTransfer}>이체하기</button>
                 <button onClick={() => setShowModal(false)}>취소</button>
               </div>

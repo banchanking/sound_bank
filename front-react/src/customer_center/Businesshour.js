@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../Css/customer_center/BusinessHour.css';
+import styles from '../Css/customer_center/BusinessHour.module.css'; // CSS 모듈 import
 
 const tabData = {
   이용시간: [
@@ -103,14 +103,18 @@ const BusinessHour = () => {
   const [activeTab, setActiveTab] = useState('이용시간');
 
   return (
-    <div className="business-hour-container">
-      <h2 className="title">이용안내</h2>
+    // 기존 클래스명: business-hour-container
+    <div className={styles["business-hour-container"]}>
+      {/* 기존 클래스명: title */}
+      <h2 className={styles["title"]}>이용안내</h2>
 
-      <div className="tabs">
+      {/* 기존 클래스명: tabs */}
+      <div className={styles["tabs"]}>
         {Object.keys(tabData).map(tab => (
+          // 기존 클래스명: tab
           <div
             key={tab}
-            className={`tab ${activeTab === tab ? 'active' : ''}`}
+            className={`${styles["tab"]} ${activeTab === tab ? styles["active"] : ""}`}
             onClick={() => setActiveTab(tab)}
           >
             {tab} 안내
@@ -126,19 +130,26 @@ const BusinessHour = () => {
 };
 
 const Section = ({ title, rows, tab }) => (
-  <div className="section">
+  // 기존 클래스명: section
+  <div className={styles["section"]}>
     <h3>{title}</h3>
-    <div className="table">
-      <div className="row header">
-        <div className="cell">구분</div>
-        <div className="cell">
+
+    {/* 기존 클래스명: table */}
+    <div className={styles["table"]}>
+      {/* 기존 클래스명: row header */}
+      <div className={`${styles["row"]} ${styles["header"]}`}>
+        <div className={styles["cell"]}>구분</div>
+        <div className={styles["cell"]}>
           {tab === '금리' ? '금리(%)' : tab === '수수료' ? '수수료' : '이용시간'}
         </div>
       </div>
       {rows.map((row, i) => (
-        <div className="row" key={i}>
-          <div className="cell">{row.label}</div>
-          <div className="cell time">{row.time}</div>
+        // 기존 클래스명: row
+        <div className={styles["row"]} key={i}>
+          {/* 기존 클래스명: cell */}
+          <div className={styles["cell"]}>{row.label}</div>
+          {/* 기존 클래스명: time */}
+          <div className={`${styles["cell"]} ${styles["time"]}`}>{row.time}</div>
         </div>
       ))}
     </div>

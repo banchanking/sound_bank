@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Container, Form, Button } from "react-bootstrap";
+import { Form, Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import '../Css/customer_center/Notice.css';
+import styles from "../Css/customer_center/Notice.module.css"; // 모듈화된 CSS import
 
 const Notice = () => {
   const [notices, setNotices] = useState([]);
@@ -31,12 +31,12 @@ const Notice = () => {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
-    setVisibleNotices(10); // 탭 변경 시 표시 개수 초기화
+    setVisibleNotices(10);
   };
 
   const handleSearch = (e) => {
     e.preventDefault();
-    fetchNotices(activeTab); // 검색 시 목록 새로고침
+    fetchNotices(activeTab);
     const filteredNotices = notices.filter((notice) =>
       notice.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -44,14 +44,22 @@ const Notice = () => {
   };
 
   return (
-    <Container className="notice-container">
-      <h2 className="notice-title">공지사항</h2>
+    
+    <div className={styles["notice-container"]}>
+      {/* 기존 클래스명: notice-container */}
+      
+      <h2 className={styles["notice-title"]}>공지사항</h2>
+      {/* 기존 클래스명: notice-title */}
 
-      <div className="notice-tabs">
+      
+      <div className={styles["notice-tabs"]}>
+        {/* 기존 클래스명: notice-tabs */}
         {["서비스", "개정", "대출통지", "시스템 점검"].map((tab) => (
+          
           <div
             key={tab}
-            className={`notice-tab ${activeTab === tab ? "active" : ""}`}
+            className={`${styles["notice-tab"]} ${activeTab === tab ? styles.active : ""}`}
+            // 기존 클래스명: notice-tab
             onClick={() => handleTabChange(tab)}
           >
             {tab}
@@ -59,33 +67,42 @@ const Notice = () => {
         ))}
       </div>
 
-      <Form className="notice-search-box" onSubmit={handleSearch}>
+      {/* 기존 클래스명: notice-search-box */}
+      <Form className={styles["notice-search-box"]} onSubmit={handleSearch}>
+        {/* 기존 클래스명: notice-search-input */}
         <Form.Control
           type="search"
           placeholder="검색어를 입력해주세요"
-          className="notice-search-input"
+          className={styles["notice-search-input"]}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-        <Button className="notice-search-btn" type="submit">
+        {/* 기존 클래스명: notice-search-btn */}
+        <Button className={styles["notice-search-btn"]} type="submit">
           <FontAwesomeIcon icon={faMagnifyingGlass} />
         </Button>
       </Form>
 
-      <table className="notice-list">
+      {/* 기존 클래스명: notice-list */}
+      <table className={styles["notice-list"]}>
         <thead>
           <tr>
-            <th className="notice-header-title">제목</th>
-            <th className="notice-header-date">게시일자</th>
+            {/* 기존 클래스명: notice-header-title */}
+            <th className={styles["notice-header-title"]}>제목</th>
+            {/* 기존 클래스명: notice-header-date */}
+            <th className={styles["notice-header-date"]}>게시일자</th>
           </tr>
         </thead>
         <tbody>
           {notices.slice(0, visibleNotices).map((notice) => (
-            <tr key={notice.id} className="notice-item">
-              <td className="notice-item-title">
+            // 기존 클래스명: notice-item
+            <tr key={notice.id} className={styles["notice-item"]}>
+              {/* 기존 클래스명: notice-item-title */}
+              <td className={styles["notice-item-title"]}>
                 <Link to={`/notice/${notice.id}`}>{notice.title}</Link>
               </td>
-              <td className="notice-item-date">
+              {/* 기존 클래스명: notice-item-date */}
+              <td className={styles["notice-item-date"]}>
                 {new Date(notice.date).toLocaleDateString("ko-KR", {
                   year: "numeric",
                   month: "2-digit",
@@ -98,11 +115,12 @@ const Notice = () => {
       </table>
 
       {visibleNotices < notices.length && (
-        <Button className="notice-load-more" onClick={handleLoadMore}>
+        // 기존 클래스명: notice-load-more
+        <Button className={styles["notice-load-more"]} onClick={handleLoadMore}>
           더보기
         </Button>
       )}
-    </Container>
+    </div>
   );
 };
 
