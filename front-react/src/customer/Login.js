@@ -1,9 +1,5 @@
 import React, { useState } from "react";
-import {
-  setAuthToken,
-  setCustomerID,
-  setRefreshToken,
-} from "../jwt/AxiosToken";
+import { setAuthToken, setCustomerID } from "../jwt/AxiosToken";
 import "../Css/customer/Login.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";

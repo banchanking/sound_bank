@@ -27,9 +27,6 @@ import lombok.RequiredArgsConstructor;
 @Component
 public class UserAuthProvider {
 	
-	// JWT를 생성하고 읽으려면 비밀키가 필요하다.
-	// 애플리케이션 yml 파일에서 구성하고 여기에 주입한다.
-	// 그러나 JVM에서 기본값을 가질수도 있다.
 	
 	@Value("${security.jwt.token.secret-key:secret-value}")
 	private String secretKey;
@@ -37,12 +34,6 @@ public class UserAuthProvider {
 	private final CustomerService service;
 	private final CustomerMapper mapper;
 	
-//	private UserService userService;
-//	
-//	public UserAuthProvider(UserService userService) {
-//		super();
-//		this.userService = userService;
-//	}
 
 	@PostConstruct
 	protected void init() {
@@ -55,7 +46,7 @@ public class UserAuthProvider {
 		System.out.println("<<< UserAuthProvider - createToken() >>>");
 		
 		Date now = new Date();  // java.util
-		Date validity = new Date(now.getTime() + 180);   // 토큰 유효시간 1시간
+		Date validity = new Date(now.getTime() + 360000);   // 토큰 유효시간 1시간
 		
 		// JWT를 사용하려면 pom.xml에 java-jwt 추가
 		return JWT.create()
@@ -94,6 +85,22 @@ public class UserAuthProvider {
 	        throw new CustomTokenExpiredException("JWT 검증 실패");
 	    }
 	}
+	
+	// Admin Token 생성
+		public String createAdminToken(String customerId ) {
+			System.out.println("<<< UserAuthProvider - createToken() >>>");
+			
+			Date now = new Date();  // java.util
+			Date validity = new Date(now.getTime() + 360000);   // 토큰 유효시간 1시간
+			
+			// JWT를 사용하려면 pom.xml에 java-jwt 추가
+			return JWT.create()
+					.withIssuer(customerId)
+					.withClaim("role", "ADMIN")
+					.withIssuedAt(now)
+					.withExpiresAt(validity)
+					.sign(Algorithm.HMAC256(secretKey));
+		}
 	
 	 // Refresh Token 발급
     public String createRefreshToken(String customer_id) {
