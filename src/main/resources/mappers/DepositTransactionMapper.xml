@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.sound.deposit.dao.DepositTransactionDAO">
+    
+    <!-- 거래내역 조회 -->
+    <select id="findTransactionsByAccount" resultType="com.boot.sound.deposit.dto.DepositTransactionDTO">
+        SELECT 
+            transaction_id as transactionId,
+            dat_id as datId,
+            transaction_type as transactionType,
+            amount,
+            balance,
+            description,
+            branch,
+            transaction_date as transactionDate
+        FROM DEPOSIT_TRANSACTION_TBL
+        WHERE dat_id = #{datId}
+        AND transaction_date BETWEEN #{startDate} AND #{endDate}
+        ORDER BY transaction_date DESC
+    </select>
+    
+    <!-- 거래내역 생성 -->
+    <insert id="createTransaction" parameterType="com.boot.sound.deposit.dto.DepositTransactionDTO">
+        INSERT INTO DEPOSIT_TRANSACTION_TBL (
+            dat_id,
+            transaction_type,
+            amount,
+            balance,
+            description,
+            branch,
+            transaction_date
+        ) VALUES (
+            #{datId},
+            #{transactionType},
+            #{amount},
+            #{balance},
+            #{description},
+            #{branch},
+            #{transactionDate}
+        )
+    </insert>
+    
+    <!-- 계좌 잔액 업데이트 -->
+    <update id="updateAccountBalance">
+        UPDATE DEPOSIT_ACCOUNT_TBL
+        SET balance = #{balance}
+        WHERE dat_id = #{datId}
+    </update>
+</mapper> 

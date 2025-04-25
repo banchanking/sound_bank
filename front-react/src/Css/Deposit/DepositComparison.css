@@ -1,0 +1,36 @@
+.deposit-comparison-container {
+    padding: 20px;
+}
+
+.deposit-comparison-card {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.deposit-comparison-table {
+    background: white;
+    border-radius: 8px;
+}
+
+.deposit-comparison-table .ant-table-thead > tr > th {
+    background: #f0f2f5;
+    font-weight: 600;
+}
+
+.deposit-comparison-filter {
+    margin-bottom: 20px;
+}
+
+.deposit-comparison-filter .ant-select {
+    width: 200px;
+    margin-right: 16px;
+}
+
+.deposit-comparison-highlight {
+    background: #e6f7ff;
+    font-weight: 600;
+}
+
+.deposit-comparison-button {
+    margin-right: 8px;
+} 

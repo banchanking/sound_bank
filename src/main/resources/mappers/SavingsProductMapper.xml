@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.sound.deposit.dao.SavingsProductDAO">
+    
+    <!-- 
+        적금 상품 조회 결과 매핑
+        - SAVINGS_PRODUCT_TBL의 컬럼과 SavingsProductDTO의 필드를 매핑
+        - product_id는 기본키로 설정
+        - 나머지 필드들은 일반 컬럼과 매핑
+    -->
+    <resultMap id="savingsProductResultMap" type="com.boot.sound.deposit.dto.SavingsProductDTO">
+        <id property="productId" column="product_id"/>
+        <result property="productName" column="product_name"/>
+        <result property="productType" column="product_type"/>
+        <result property="interestRate" column="interest_rate"/>
+        <result property="minAmount" column="min_amount"/>
+        <result property="maxAmount" column="max_amount"/>
+        <result property="termMonths" column="term_months"/>
+        <result property="description" column="description"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <!-- 
+        모든 적금 상품 조회
+        - SAVINGS_PRODUCT_TBL의 모든 레코드를 조회
+        - product_id 기준 내림차순 정렬
+    -->
+    <select id="findAllSavingsProducts" resultMap="savingsProductResultMap">
+        SELECT * FROM SAVINGS_PRODUCT_TBL
+        ORDER BY product_id DESC
+    </select>
+
+    <!-- 
+        ID로 적금 상품 조회
+        - 특정 product_id에 해당하는 적금 상품 조회
+        - 파라미터: productId (int)
+    -->
+    <select id="findSavingsProductById" parameterType="int" resultMap="savingsProductResultMap">
+        SELECT * FROM SAVINGS_PRODUCT_TBL
+        WHERE product_id = #{productId}
+    </select>
+
+    <!-- 
+        적금 상품 생성
+        - 새로운 적금 상품을 SAVINGS_PRODUCT_TBL에 추가
+        - 파라미터: SavingsProductDTO 객체
+        - 자동 생성되는 필드(created_at, updated_at)는 제외
+    -->
+    <insert id="createSavingsProduct" parameterType="com.boot.sound.deposit.dto.SavingsProductDTO">
+        INSERT INTO SAVINGS_PRODUCT_TBL (
+            product_name,
+            product_type,
+            interest_rate,
+            min_amount,
+            max_amount,
+            term_months,
+            description
+        ) VALUES (
+            #{productName},
+            #{productType},
+            #{interestRate},
+            #{minAmount},
+            #{maxAmount},
+            #{termMonths},
+            #{description}
+        )
+    </insert>
+
+    <!-- 
+        적금 상품 수정
+        - 기존 적금 상품의 정보를 업데이트
+        - 파라미터: SavingsProductDTO 객체
+        - product_id를 기준으로 업데이트할 레코드 지정
+    -->
+    <update id="updateSavingsProduct" parameterType="com.boot.sound.deposit.dto.SavingsProductDTO">
+        UPDATE SAVINGS_PRODUCT_TBL
+        SET
+            product_name = #{productName},
+            product_type = #{productType},
+            interest_rate = #{interestRate},
+            min_amount = #{minAmount},
+            max_amount = #{maxAmount},
+            term_months = #{termMonths},
+            description = #{description}
+        WHERE product_id = #{productId}
+    </update>
+
+    <!-- 
+        적금 상품 삭제
+        - 특정 product_id에 해당하는 적금 상품 삭제
+        - 파라미터: productId (int)
+    -->
+    <delete id="deleteSavingsProduct" parameterType="int">
+        DELETE FROM SAVINGS_PRODUCT_TBL
+        WHERE product_id = #{productId}
+    </delete>
+
+    <!-- 
+        상품 타입으로 적금 상품 조회
+        - 특정 product_type에 해당하는 적금 상품들 조회
+        - 파라미터: productType (String)
+        - product_id 기준 내림차순 정렬
+    -->
+    <select id="findSavingsProductsByType" parameterType="string" resultMap="savingsProductResultMap">
+        SELECT * FROM SAVINGS_PRODUCT_TBL
+        WHERE product_type = #{productType}
+        ORDER BY product_id DESC
+    </select>
+
+</mapper> 

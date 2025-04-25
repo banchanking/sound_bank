@@ -1,31 +1,31 @@
-.deposit-change-container {
+.deposit-autosettings-container {
     padding: 20px;
 }
 
-.deposit-change-card {
+.deposit-autosettings-card {
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.deposit-change-form {
+.deposit-autosettings-form {
     max-width: 600px;
     margin: 0 auto;
 }
 
-.deposit-change-form .ant-form-item-label > label {
+.deposit-autosettings-form .ant-form-item-label > label {
     font-weight: 500;
 }
 
-.deposit-change-form .ant-input,
-.deposit-change-form .ant-select {
+.deposit-autosettings-form .ant-input,
+.deposit-autosettings-form .ant-select {
     width: 100%;
 }
 
-.deposit-change-button {
+.deposit-autosettings-button {
     margin-right: 8px;
 }
 
-.deposit-change-info {
+.deposit-autosettings-info {
     margin-bottom: 24px;
     padding: 16px;
     background: #f5f5f5;
