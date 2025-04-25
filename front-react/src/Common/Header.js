@@ -144,7 +144,7 @@ const Header = () => {
                       <NavDropdown.Item
                         className="sub-item"
                         as={Link}
-                        to="/depositInquire"
+                        to="/depositAccountInquiry"
                       >
                         계좌조회
                       </NavDropdown.Item>
@@ -153,7 +153,7 @@ const Header = () => {
                       <NavDropdown.Item
                         className="sub-item"
                         as={Link}
-                        to="/transactionHistory"
+                        to="/depositTransactionDetails"
                       >
                         거래내역
                       </NavDropdown.Item>
@@ -176,29 +176,29 @@ const Header = () => {
                       <NavDropdown.Item
                         className="sub-item"
                         as={Link}
-                        to="/fixedDeposit"
+                        to="/depositJoin"
                       >
-                        정기예금
+                        예금가입
                       </NavDropdown.Item>
                     </li>
                     <li>
                       <NavDropdown.Item
                         className="sub-item"
                         as={Link}
-                        to="/installmentSavings"
+                        to="/savingsJoin"
                       >
-                        적금
+                        적금가입
                       </NavDropdown.Item>
-                    </li>
+                    </li> 
                     <li>
                       <NavDropdown.Item
                         className="sub-item"
                         as={Link}
-                        to="/precautions"
+                        to="/depositComparison"
                       >
-                        유의사항
+                        예적금비교
                       </NavDropdown.Item>
-                    </li>
+                    </li>                      
                   </ul>
                   <ul>
                     <NavDropdown.Item as={Link} to="/depositManagement">
@@ -217,7 +217,7 @@ const Header = () => {
                       <NavDropdown.Item
                         className="sub-item"
                         as={Link}
-                        to="/autoTransferSettings"
+                        to="/depositAutosettings"
                       >
                         자동이체설정
                       </NavDropdown.Item>
@@ -226,18 +226,41 @@ const Header = () => {
                       <NavDropdown.Item
                         className="sub-item"
                         as={Link}
-                        to="/taxPreferenceManagement"
+                        to="/depositAutoManagement"
                       >
-                        세금우대관리
+                        자동이체관리
                       </NavDropdown.Item>
                     </li>
                     <li>
                       <NavDropdown.Item
                         className="sub-item"
                         as={Link}
-                        to="/depositTermination"
+                        to="/depositCancellation"
                       >
                         예금해지
+                      </NavDropdown.Item>
+                    </li>
+                  </ul>
+                  <ul>
+                    <NavDropdown.Item as={Link} to="/depositManagement">
+                      관리자
+                    </NavDropdown.Item>
+                    <li>
+                      <NavDropdown.Item
+                        className="sub-item"
+                        as={Link}
+                        to="/depositProduct"
+                      >
+                        예금상품추가
+                      </NavDropdown.Item>
+                    </li>
+                    <li>
+                      <NavDropdown.Item
+                        className="sub-item"
+                        as={Link}
+                        to="/savingsProduct"
+                      >
+                        적금상품추가
                       </NavDropdown.Item>
                     </li>
                   </ul>
