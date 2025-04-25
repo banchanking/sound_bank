@@ -1,0 +1,36 @@
+.deposit-auto-management-container {
+    padding: 20px;
+}
+
+.deposit-auto-management-card {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.deposit-auto-management-table {
+    background: white;
+    border-radius: 8px;
+}
+
+.deposit-auto-management-table .ant-table-thead > tr > th {
+    background: #f0f2f5;
+    font-weight: 600;
+}
+
+.deposit-auto-management-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.deposit-auto-management-button {
+    margin-right: 8px;
+}
+
+.deposit-auto-management-form .ant-form-item-label > label {
+    font-weight: 500;
+}
+
+.deposit-auto-management-form .ant-input,
+.deposit-auto-management-form .ant-select {
+    width: 100%;
+} 

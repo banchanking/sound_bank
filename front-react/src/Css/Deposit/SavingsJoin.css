@@ -1,48 +1,55 @@
-.deposit-join-container {
+.savings-join-container {
     padding: 20px;
 }
 
-.deposit-join-card {
+.savings-join-card {
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.deposit-join-steps {
+.savings-join-steps {
     margin-bottom: 24px;
 }
 
-.deposit-join-form {
+.savings-join-form {
     max-width: 600px;
     margin: 0 auto;
 }
 
-.deposit-join-form .ant-form-item-label > label {
+.savings-join-form .ant-form-item-label > label {
     font-weight: 500;
 }
 
-.deposit-join-form .ant-input,
-.deposit-join-form .ant-select {
+.savings-join-form .ant-input,
+.savings-join-form .ant-select {
     width: 100%;
 }
 
-.deposit-join-button {
+.savings-join-button {
     margin-right: 8px;
 }
 
-.deposit-join-info {
+.savings-join-info {
     margin-bottom: 24px;
     padding: 16px;
     background: #f5f5f5;
     border-radius: 4px;
 }
 
-.deposit-join-complete {
+.savings-join-complete {
     text-align: center;
     padding: 40px 0;
 }
 
-.deposit-join-complete-icon {
+.savings-join-complete-icon {
     font-size: 48px;
     color: #52c41a;
     margin-bottom: 16px;
+}
+
+.savings-join-payment {
+    margin-top: 16px;
+    padding: 16px;
+    background: #e6f7ff;
+    border-radius: 4px;
 } 

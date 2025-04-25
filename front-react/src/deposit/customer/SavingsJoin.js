@@ -1,10 +1,246 @@
+import React, { useState, useEffect } from 'react';
+import { Form, Input, Select, Button, Card, message, InputNumber, Modal, Steps, Descriptions, DatePicker } from 'antd';
+import { CheckCircleOutlined } from '@ant-design/icons';
+import axios from 'axios';
 import RefreshToken from "../../jwt/RefreshToken";
-import React from 'react';
+import { getCustomerID } from "../../jwt/AxiosToken";
+import { useNavigate } from 'react-router-dom';
+import '../../Css/deposit/SavingsJoin.css';
+
+const { Option } = Select;
+const { Step } = Steps;
 
 const SavingsJoin = () => {
+    const navigate = useNavigate();
+    const [form] = Form.useForm();
+    const [products, setProducts] = useState([]);
+    const [currentStep, setCurrentStep] = useState(0);
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        const customer_id = getCustomerID();
+        if (!customer_id) {
+            const goLogin = window.confirm(
+                "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
+            );
+            if (goLogin) {
+                navigate("/login");
+            }
+            return;
+        }
+        fetchProducts();
+    }, [navigate]);
+
+    const fetchProducts = async () => {
+        try {
+            const response = await RefreshToken.get('http://localhost:8081/api/savings/products');
+            setProducts(response.data);
+        } catch (error) {
+            console.error('상품 조회 실패:', error);
+            message.error('상품 정보를 불러오는데 실패했습니다.');
+        }
+    };
+
+    const handleProductSelect = (productId) => {
+        const product = products.find(p => p.id === productId);
+        setSelectedProduct(product);
+        setCurrentStep(1);
+    };
+
+    const handleJoin = async (values) => {
+        try {
+            await RefreshToken.post('http://localhost:8081/api/savings/accounts', values);
+            message.success('적금 계좌가 개설되었습니다.');
+            navigate('/savings/accounts');
+        } catch (error) {
+            console.error('계좌 개설 실패:', error);
+            message.error('계좌 개설에 실패했습니다.');
+        }
+    };
+
+    const showConfirm = () => {
+        Modal.confirm({
+            title: '적금 가입 확인',
+            content: (
+                <Descriptions column={1}>
+                    <Descriptions.Item label="상품명">{selectedProduct?.name}</Descriptions.Item>
+                    <Descriptions.Item label="이자율">{selectedProduct?.interestRate}%</Descriptions.Item>
+                    <Descriptions.Item label="월 납입액">{form.getFieldValue('monthlyPayment')?.toLocaleString()}원</Descriptions.Item>
+                    <Descriptions.Item label="만기일">{form.getFieldValue('maturityDate')?.format('YYYY-MM-DD')}</Descriptions.Item>
+                </Descriptions>
+            ),
+            okText: '확인',
+            cancelText: '취소',
+            onOk: () => form.submit()
+        });
+    };
+
+    const renderStepContent = () => {
+        switch (currentStep) {
+            case 0:
+                return (
+                    <div className="product-selection">
+                        <h3>적금 상품 선택</h3>
+                        <div className="product-list">
+                            {products.map(product => (
+                                <Card
+                                    key={product.id}
+                                    className="product-card"
+                                    onClick={() => handleProductSelect(product.id)}
+                                >
+                                    <h4>{product.name}</h4>
+                                    <p>이자율: {product.interestRate}%</p>
+                                    <p>최소월납입액: {product.minMonthlyPayment.toLocaleString()}원</p>
+                                    <p>최대월납입액: {product.maxMonthlyPayment.toLocaleString()}원</p>
+                                    <p>기간: {product.period}개월</p>
+                                </Card>
+                            ))}
+                        </div>
+                    </div>
+                );
+            case 1:
+                return (
+                    <Form
+                        form={form}
+                        layout="vertical"
+                        onFinish={handleJoin}
+                    >
+                        <Form.Item
+                            name="monthlyPayment"
+                            label="월 납입액"
+                            rules={[
+                                { required: true, message: '월 납입액을 입력해주세요' },
+                                { type: 'number', min: selectedProduct?.minMonthlyPayment, message: `최소 ${selectedProduct?.minMonthlyPayment.toLocaleString()}원 이상이어야 합니다` },
+                                { type: 'number', max: selectedProduct?.maxMonthlyPayment, message: `최대 ${selectedProduct?.maxMonthlyPayment.toLocaleString()}원 이하여야 합니다` }
+                            ]}
+                        >
+                            <InputNumber
+                                style={{ width: '100%' }}
+                                min={selectedProduct?.minMonthlyPayment}
+                                max={selectedProduct?.maxMonthlyPayment}
+                                step={10000}
+                                formatter={value => `${value.toLocaleString()}원`}
+                                parser={value => value.replace(/\원\s?|(,*)/g, '')}
+                            />
+                        </Form.Item>
+
+                        <Form.Item
+                            name="maturityDate"
+                            label="만기일"
+                            rules={[{ required: true, message: '만기일을 선택해주세요' }]}
+                        >
+                            <DatePicker
+                                style={{ width: '100%' }}
+                                disabledDate={(current) => {
+                                    const today = new Date();
+                                    const maxDate = new Date();
+                                    maxDate.setMonth(today.getMonth() + selectedProduct?.period);
+                                    return current && (current < today || current > maxDate);
+                                }}
+                            />
+                        </Form.Item>
+
+                        <Form.Item
+                            name="password"
+                            label="계좌비밀번호"
+                            rules={[
+                                { required: true, message: '계좌비밀번호를 입력해주세요' },
+                                { len: 4, message: '비밀번호는 4자리여야 합니다' }
+                            ]}
+                        >
+                            <Input.Password placeholder="계좌비밀번호 4자리" maxLength={4} />
+                        </Form.Item>
+
+                        <Form.Item
+                            name="passwordConfirm"
+                            label="계좌비밀번호 확인"
+                            rules={[
+                                { required: true, message: '비밀번호를 다시 입력해주세요' },
+                                ({ getFieldValue }) => ({
+                                    validator(_, value) {
+                                        if (!value || getFieldValue('password') === value) {
+                                            return Promise.resolve();
+                                        }
+                                        return Promise.reject(new Error('비밀번호가 일치하지 않습니다'));
+                                    },
+                                }),
+                            ]}
+                        >
+                            <Input.Password placeholder="계좌비밀번호 4자리" maxLength={4} />
+                        </Form.Item>
+
+                        <Form.Item
+                            name="autoTransfer"
+                            valuePropName="checked"
+                            label="자동이체 설정"
+                        >
+                            <Select>
+                                <Option value={false}>설정안함</Option>
+                                <Option value={true}>설정</Option>
+                            </Select>
+                        </Form.Item>
+
+                        <Form.Item
+                            noStyle
+                            shouldUpdate={(prevValues, currentValues) => prevValues.autoTransfer !== currentValues.autoTransfer}
+                        >
+                            {({ getFieldValue }) =>
+                                getFieldValue('autoTransfer') ? (
+                                    <Form.Item
+                                        name="transferAccount"
+                                        label="이체계좌"
+                                        rules={[{ required: true, message: '이체계좌를 선택해주세요' }]}
+                                    >
+                                        <Select placeholder="이체계좌 선택">
+                                            {/* 이체계좌 목록은 API로 받아와야 함 */}
+                                        </Select>
+                                    </Form.Item>
+                                ) : null
+                            }
+                        </Form.Item>
+
+                        <Form.Item>
+                            <Button
+                                type="primary"
+                                htmlType="button"
+                                onClick={showConfirm}
+                                loading={loading}
+                                style={{ width: '100%' }}
+                            >
+                                가입하기
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                );
+            case 2:
+                return (
+                    <div className="completion">
+                        <CheckCircleOutlined style={{ fontSize: '64px', color: '#52c41a' }} />
+                        <h3>적금 가입이 완료되었습니다</h3>
+                        <p>계좌번호: {form.getFieldValue('accountNumber')}</p>
+                        <Button type="primary" onClick={() => setCurrentStep(0)}>
+                            다른 상품 보기
+                        </Button>
+                    </div>
+                );
+            default:
+                return null;
+        }
+    };
+
     return (
-        <div>
-            
+        <div className="savings-join-container">
+            <Card title="적금 가입">
+                <Steps current={currentStep}>
+                    <Step title="상품선택" />
+                    <Step title="정보입력" />
+                    <Step title="가입완료" />
+                </Steps>
+                <div className="step-content">
+                    {renderStepContent()}
+                </div>
+            </Card>
         </div>
     );
 };
