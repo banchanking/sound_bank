@@ -1,0 +1,92 @@
+/* 전체 레이아웃 */
+.mypage-container {
+  display: flex;
+  height: 100vh;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* 왼쪽 사이드바 */
+.mypage-sidebar {
+  width: 240px;
+  background-color: #f5f6fa;
+  border-right: 1px solid #ddd;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.mypage-menuGroup {
+  margin-bottom: 1.5rem;
+}
+
+.mypage-menuTitle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 1rem;
+  background-color: #e9eff6;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.mypage-menuIcon {
+  margin-right: 0.6rem;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+}
+
+.mypage-menuTitle:hover {
+  background-color: #d0e3f7;
+}
+
+.mypage-subMenu {
+  margin-top: 0.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding-left: 0.5rem;
+  animation: fadeSlideDown 0.25s ease;
+}
+
+.mypage-subItem {
+  padding: 0.5rem 1rem;
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.mypage-subItem:hover {
+  background-color: #f0f6ff;
+  color: #1976d2;
+}
+
+@keyframes fadeSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-5%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 오른쪽 본문 */
+.mypage-content {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+  background-color: #ffffff;
+}
+
+/* 제목 스타일 */
+.mypage-content h2 {
+  margin-bottom: 1rem;
+  font-size: 1.4rem;
+  color: #222;
+}

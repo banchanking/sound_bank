@@ -46,6 +46,7 @@ RefreshToken.interceptors.response.use(
     }
 
     const customerId = getCustomerID();
+    const role = localStorage.getItem("role");
     if (!customerId) return Promise.reject(error);
 
     if (isRefreshing) {
@@ -61,9 +62,10 @@ RefreshToken.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      console.log("🚨 refresh-token 요청 customerId:", customerId); // 👈 바로 여기!
+      console.log("🚨 refresh-token 요청 customerId:", customerId);
       const { data } = await RefreshToken.post("/refresh-token", {
         customerId,
+        role,
       });
       const newAccessToken = data.accessToken || data;
 

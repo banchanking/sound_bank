@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import RefreshToken from "../../jwt/RefreshToken";
 import { useNavigate, useParams } from "react-router-dom";
-import "../../Css/loan/LoanInfoApply.css";
+import styles from "../../Css/loan/LoanInfoApply.module.css";
 
 const LoanInfoApply = () => {
   const { loan_id } = useParams();
@@ -11,7 +11,6 @@ const LoanInfoApply = () => {
     loan_name: "",
     loan_id: 0,
     interest_rate: 0.0,
-    customer_income: 0,
     customer_credit_score: 0,
     account_number: "",
     loan_amount: 0,
@@ -49,8 +48,7 @@ const LoanInfoApply = () => {
       loanName: loan_info.loan_name,
       loanId: loan_info.loan_id,
       interestRate: loan_info.interest_rate,
-      customerIncome: loan_info.customer_income,
-      customerCreditScore: loan_info.customer_credit_score,
+      customerCreditScore: creditScore,
       accountNumber: loan_info.account_number,
       loanAmount: loan_info.loan_amount,
       balance: loan_info.loan_amount,
@@ -176,13 +174,13 @@ const LoanInfoApply = () => {
   }, [showTermsModal]);
 
   return (
-    <div>
-      <div className="container">
-        <table>
+    <div className={styles.container}>
+      <div>
+        <table className={styles.infoApply}>
           <thead>
             <tr>
-              <th colSpan={2} style={{ textAlign: "center", fontSize: "30px" }}>
-                대출 신청정보 작성
+              <th colSpan={2} className={styles.title}>
+                📝 대출 신청정보 작성
               </th>
             </tr>
           </thead>
@@ -191,10 +189,10 @@ const LoanInfoApply = () => {
               <th>신청 고객ID</th>
               <td>
                 <input
+                  className={styles.input}
                   type="text"
                   value={loan_info.customer_id}
                   readOnly
-                  style={{ textAlign: "right" }}
                 />
               </td>
             </tr>
@@ -202,10 +200,10 @@ const LoanInfoApply = () => {
               <th>대출 상품명</th>
               <td>
                 <input
+                  className={styles.input}
                   type="text"
                   value={loan_info.loan_name}
                   readOnly
-                  style={{ textAlign: "right" }}
                 />
               </td>
             </tr>
@@ -213,10 +211,10 @@ const LoanInfoApply = () => {
               <th>대출 유형</th>
               <td>
                 <input
+                  className={styles.input}
                   type="text"
                   value={loan_info.loan_type}
                   readOnly
-                  style={{ textAlign: "right" }}
                 />
               </td>
             </tr>
@@ -224,6 +222,7 @@ const LoanInfoApply = () => {
               <th>대출한도</th>
               <td>
                 <input
+                  className={styles.input}
                   type="text"
                   readOnly
                   value={
@@ -243,7 +242,6 @@ const LoanInfoApply = () => {
                           loan_info.loan_max_amount ?? 0
                         ).toLocaleString()} 만원`)
                   }
-                  style={{ textAlign: "right" }}
                 />
               </td>
             </tr>
@@ -251,10 +249,11 @@ const LoanInfoApply = () => {
               <th>상환 기간</th>
               <td>
                 <select
+                  className={styles.input}
                   name="loan_term"
                   onChange={change_value}
-                  style={{ textAlign: "right" }}
                 >
+                  <option value="">상환 기간을 선택해주세요</option>
                   {Array.from(
                     { length: loan_info.loan_term },
                     (_, i) => i + 1
@@ -270,6 +269,7 @@ const LoanInfoApply = () => {
               <th>신청금액</th>
               <td>
                 <input
+                  className={styles.input}
                   type="text"
                   name="loan_amount"
                   value={(loan_info.loan_amount ?? 0).toLocaleString("ko-KR")}
@@ -281,7 +281,6 @@ const LoanInfoApply = () => {
                       loan_amount: isNaN(num) ? 0 : num,
                     });
                   }}
-                  style={{ textAlign: "right" }}
                 />
               </td>
             </tr>
@@ -289,41 +288,21 @@ const LoanInfoApply = () => {
               <th>적용 금리</th>
               <td>
                 <input
+                  className={styles.input}
                   type="text"
                   value={`${loan_info.interest_rate}%`}
                   readOnly
-                  style={{ textAlign: "right" }}
                 />
               </td>
             </tr>
-            <tr>
-              <th>연소득</th>
-              <td>
-                <input
-                  type="text"
-                  name="customer_income"
-                  value={(loan_info.customer_income ?? 0).toLocaleString(
-                    "ko-KR"
-                  )}
-                  onChange={(e) => {
-                    const rawValue = e.target.value.replace(/,/g, "");
-                    const num = parseInt(rawValue, 10);
-                    set_loan_info({
-                      ...loan_info,
-                      customer_income: isNaN(num) ? 0 : num,
-                    });
-                  }}
-                  style={{ textAlign: "right" }}
-                />
-              </td>
-            </tr>
+
             <tr>
               <th>신용점수</th>
               <td>
                 <input
+                  className={styles.input}
                   type="text"
                   name="customer_credit_score"
-                  style={{ textAlign: "right" }}
                   value={creditScore + "점"}
                 ></input>
               </td>
@@ -332,9 +311,9 @@ const LoanInfoApply = () => {
               <th>상환 계좌번호</th>
               <td>
                 <select
+                  className={styles.input}
                   name="account_number"
                   onChange={change_value}
-                  style={{ textAlign: "right" }}
                 >
                   <option value="">계좌를 선택해주세요</option>
                   {Array.isArray(loan_info.accountNumbers) &&
@@ -350,9 +329,9 @@ const LoanInfoApply = () => {
               <th>대출금 상환방식</th>
               <td>
                 <select
+                  className={styles.input}
                   name="repayment_method"
                   onChange={change_value}
-                  style={{ textAlign: "right" }}
                 >
                   <option value="">상환방식을 선택해주세요</option>
                   <option value="원리금균등">원리금균등상환</option>
@@ -365,9 +344,9 @@ const LoanInfoApply = () => {
               <th>상환 날짜</th>
               <td>
                 <select
+                  className={styles.input}
                   name="repayment_date"
                   onChange={change_value}
-                  style={{ textAlign: "right" }}
                 >
                   <option value="">상환날짜를 선택해주세요</option>
                   {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
@@ -382,7 +361,7 @@ const LoanInfoApply = () => {
           <tfoot>
             <tr>
               <td colSpan={2}>
-                <label>
+                <label className={styles.checkboxLabel}>
                   <input
                     type="checkbox"
                     checked={termsAgree}
@@ -393,18 +372,22 @@ const LoanInfoApply = () => {
               </td>
             </tr>
             <tr>
-              <td colSpan={2}>
-                <button onClick={loan_apply}>대출신청</button>
-                <button onClick={back_to_list}>돌아가기</button>
+              <td colSpan={2} className={styles.buttonRow}>
+                <button className={styles.button} onClick={loan_apply}>
+                  대출신청
+                </button>
+                <button className={styles.button} onClick={back_to_list}>
+                  돌아가기
+                </button>
               </td>
             </tr>
           </tfoot>
         </table>
       </div>
       {showTermsModal && (
-        <div className="modal">
-          <div className="modal-content">
-            <h3>{loanTerms.term_title}</h3>
+        <div className={styles.modal}>
+          <div className={styles.modal_content}>
+            <h3>📄{loanTerms.term_title}</h3>
             <div>{loanTerms.term_content}</div>
             <button
               onClick={() => {

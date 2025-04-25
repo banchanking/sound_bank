@@ -5,8 +5,9 @@
   margin: 0 auto;
   background-color: #ffffff;
   border-radius: 1rem;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.12);
   min-height: 680px;
+  animation: fadeIn 0.4s ease;
 }
 
 .title {
@@ -14,12 +15,16 @@
   font-weight: bold;
   margin-bottom: 1.5rem;
   text-align: center;
+  animation: fadeIn 0.4s ease;
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.95rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  animation: fadeIn 0.4s ease;
 }
 
 .thead {
@@ -105,4 +110,14 @@
   flex-wrap: nowrap;
   align-items: center;
   justify-content: center;
+}
+
+.table tr:hover {
+  background-color: #f5f7f9;
+}
+
+/* === 애니메이션 === */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

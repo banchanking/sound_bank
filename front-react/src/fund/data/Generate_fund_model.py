@@ -146,9 +146,6 @@ def predict_fund_risk_type(model_path, input_file, output_file):
 # ----------- 메인 실행 -----------
 if __name__ == "__main__":
     
-    # 라벨링 (펀드 속성 기반 투자성향 계산)
-    auto_label_risk_type("../../../public/data/fundList.csv")
-    
     # 모델 학습 결과 추가
     train_fund_model(
         "d:/DEV/workspace_springBoot_ict04/sound_bank/front-react/public/data/fundList.csv",

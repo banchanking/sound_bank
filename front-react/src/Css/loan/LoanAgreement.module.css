@@ -1,0 +1,139 @@
+/* LoanAgreement.module.css */
+
+.agreementContainer {
+  border: 1px solid #ccc;
+  padding: 2rem;
+  margin: 2rem auto;
+  max-width: 1200px;
+  background-color: white;
+  border-radius: 12px;
+}
+
+.TitleArea {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.Title {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+.textArea {
+  margin-bottom: 1.5rem;
+}
+
+.text {
+  font-size: 0.95rem;
+  color: #444;
+  line-height: 1.6;
+}
+
+.AgreementBtn {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.AgreementBtn button {
+  padding: 0.6rem 1rem;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.AgreementBtn button:hover {
+  background-color: #555;
+}
+
+.OfferTextArea {
+  background-color: #f9f9f9;
+  padding: 1.2rem;
+  margin-bottom: 1.5rem;
+  border-radius: 6px;
+}
+
+.OfferTitle {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.OfferText1,
+.OfferText2,
+.OfferText3 {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #333;
+  margin-bottom: 0.6rem;
+}
+
+.OfferArea {
+  margin-bottom: 2rem;
+}
+
+.OfferTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.OfferTable th,
+.OfferTable td {
+  border: 1px solid black; /* 셀 테두리 */
+  padding: 0.8rem;
+  text-align: left;
+  vertical-align: top;
+  background-color: #fff;
+}
+
+.OfferTable .leftth {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.purpose {
+  line-height: 1.6;
+}
+
+.FinalArea {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #f1f1f1;
+  border-radius: 8px;
+}
+
+.FinalText span {
+  display: block;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.FinalBtnArea {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.FinalBtnArea span {
+  display: block;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.FinalBtn {
+  padding: 0.6rem 1.2rem;
+  margin: 0 0.5rem;
+  background-color: #444;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.FinalBtn:hover {
+  background-color: #666;
+}

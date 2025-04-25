@@ -71,10 +71,10 @@ function CheckTx() {
   };
 
   return (
-    <div className={styles.wrapper}>
-      <h2 className={styles.title}>{customerId}님의 거래내역 조회</h2>
+    <div className={styles["transfer-wrapper"]}>
+      <h2 className={styles["transfer-title"]}>{customerId}님의 거래내역 조회</h2>
 
-      <div className={styles.inputGroup}>
+      <div className={styles["transfer-inputGroup"]}>
         <label>계좌:</label>
         <select value={selectedAccount} onChange={e => setSelectedAccount(e.target.value)}>
           {accountList.map(account => (
@@ -88,21 +88,21 @@ function CheckTx() {
         </select>
       </div>
 
-      <div className={styles.inputGroup}>
+      <div className={styles["transfer-inputGroup"]}>
         <label>기간:</label>
         <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} />
         ~
         <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} />
       </div>
 
-      <div className={styles.rangeButtons}>
+      <div className={styles["transfer-rangeButtons"]}>
         <button onClick={() => handleDateRange(1)}>당일</button>
         <button onClick={() => handleDateRange(7)}>1주일</button>
         <button onClick={() => handleDateRange(30)}>1개월</button>
         <button onClick={() => handleDateRange(180)}>6개월</button>
       </div>
 
-      <div className={styles.inputGroup}>
+      <div className={styles["transfer-inputGroup"]}>
         <label>유형:</label>
         <select value={txType} onChange={e => setTxType(e.target.value)}>
           <option>전체</option>
@@ -111,11 +111,11 @@ function CheckTx() {
         </select>
       </div>
 
-      <div className={styles.buttonArea}>
-        <button className={styles.blackButton} onClick={fetchTransactions}>조회</button>
+      <div className={styles["transfer-buttonArea"]}>
+        <button className={styles["transfer-blackButton"]} onClick={fetchTransactions}>조회</button>
       </div>
 
-      <div className={styles.resultArea}>
+      <div className={styles["transfer-resultArea"]}>
         <h3>조회 결과</h3>
         <table>
           <thead>
@@ -130,7 +130,7 @@ function CheckTx() {
           <tbody>
             {txResultList.length === 0 ? (
               <tr>
-                <td colSpan="5" className={styles.noData}>거래내역이 없습니다.</td>
+                <td colSpan="5" className={styles["transfer-noData"]}>거래내역이 없습니다.</td>
               </tr>
             ) : (
               txResultList.map(tx => (

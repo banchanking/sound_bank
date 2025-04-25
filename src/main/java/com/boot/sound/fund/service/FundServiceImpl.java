@@ -4,7 +4,9 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,10 @@ import com.boot.sound.fund.dto.FundTestDTO;
 import com.boot.sound.fund.dto.FundTransactionDTO;
 import com.boot.sound.fund.repo.FundAccountRepository;
 import com.boot.sound.fund.repo.FundRepository;
+import com.boot.sound.inquire.account.AccountDTO;
+import com.boot.sound.inquire.account.AccountRepository;
+import com.boot.sound.inquire.transfer.TransActionDTO;
+import com.boot.sound.inquire.transfer.TransActionRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,6 +34,10 @@ public class FundServiceImpl {
     private final FundAccountRepository JpaRepository; // JPA Repository
     
     private final PasswordEncoder encoder;
+    
+    private final AccountRepository accountRepository; // JPA 기반 출금 계좌 레포지토리
+    
+    private final TransActionRepository transActionRepository; // 거래 로그 저장용
 	
 	// 펀드상품 목록
 	@Transactional(readOnly=true)
@@ -133,7 +143,7 @@ public class FundServiceImpl {
 	    dto.setFundBalance(BigDecimal.ZERO);                             // 초기 잔액 0원
 	    dto.setStatus("PENDING");                                        // 관리자 승인 대기
 	    dto.setFundOpenDate(LocalDate.now());                            // 개설일자 설정
-	    dto.setFundAccountName(dto.getFundAccountName()); 									// 계좌 별칭
+	    dto.setFundAccountName(dto.getFundAccountName()); 				// 계좌 별칭
 	    // 4. JPA를 통해 저장 (fund_account_tbl에 insert)
 	    JpaRepository.save(dto);
 
@@ -215,19 +225,29 @@ public class FundServiceImpl {
     // 펀드 매수요청
     @Transactional
     public void processTransaction(FundTransactionDTO dto) {
-        // 단가 계산 = 투자금 / 좌수
-    	if (dto.getFundInvestAmount() != null && dto.getFundUnitsPurchased() != null) {
-    	    dto.setFundPricePerUnit(
-    	        dto.getFundInvestAmount().divide(dto.getFundUnitsPurchased(), 6, RoundingMode.HALF_UP)
-    	    );
-    	} else {
-    	    dto.setFundPricePerUnit(BigDecimal.ONE); // fallback
-    	}
-    	
+        // 단가 계산
+    	if (dto.getFundPricePerUnit() == null && dto.getFundInvestAmount() != null && dto.getFundUnitsPurchased() != null) {
+            dto.setFundPricePerUnit(
+                dto.getFundInvestAmount().divide(dto.getFundUnitsPurchased(), 6, RoundingMode.HALF_UP)
+            );
+        }
+    	System.out.println("💰 금액: " + dto.getFundInvestAmount());
+    	System.out.println("📈 좌수: " + dto.getFundUnitsPurchased());
+    	System.out.println("📌 계산된 단가: " + dto.getFundPricePerUnit());
+
+        // 실제 투자 금액 재계산 (단가 × 좌수) → 정확하게 보장
+        if (dto.getFundPricePerUnit() != null && dto.getFundUnitsPurchased() != null) {
+            dto.setFundInvestAmount(
+                dto.getFundPricePerUnit().multiply(dto.getFundUnitsPurchased()).setScale(2, RoundingMode.HALF_UP)
+            );
+        }
+
         dto.setFundTransactionDate(LocalDate.now());
-        dto.setStatus("PENDING");	// 관리자 승인 전
+        dto.setStatus("PENDING");
 
         fundRepository.insertFundTransaction(dto);
+        System.out.println("✅ 저장 직전 단가: " + dto.getFundPricePerUnit());
+        System.out.println("✅ 저장 직전 좌수: " + dto.getFundUnitsPurchased());
     }
 
     // 펀드 매수요청 관리자 확인
@@ -239,10 +259,87 @@ public class FundServiceImpl {
         }
         return list;
     }
-    
-    // 펀드 매수요청 관리자 승인/거절
+        
+    // 펀드 매수/환매 승인 시 계좌 잔액 업데이트
+    @Transactional
     public void updateTransactionStatus(int fundTransactionId, String status) {
+        // 1. 거래 상태 변경
         fundRepository.updateStatus(fundTransactionId, status);
+
+        if ("APPROVED".equalsIgnoreCase(status)) {
+            // 2. 거래 조회
+            FundTransactionDTO tx = fundRepository.findTransactionById(fundTransactionId);
+
+            // 3. 펀드 계좌 조회
+            FundAccountDTO fundAccount = JpaRepository.findById(tx.getFundAccountId())
+                .orElseThrow(() -> new IllegalArgumentException("펀드 계좌가 존재하지 않습니다"));
+
+            BigDecimal investAmount = tx.getFundInvestAmount();
+
+            if (tx.getFundPricePerUnit() == null && tx.getFundUnitsPurchased() != null) {
+                tx.setFundPricePerUnit(
+                    tx.getFundInvestAmount().divide(tx.getFundUnitsPurchased(), 6, RoundingMode.HALF_UP)
+                );
+            }
+
+            String linkedAccountNumber = fundAccount.getLinkedAccountNumber();
+            AccountDTO account = accountRepository.findByAccountNumber(linkedAccountNumber)
+                .orElseThrow(() -> new IllegalArgumentException("출금 계좌가 존재하지 않습니다"));
+
+            BigDecimal fundBalance = fundAccount.getFundBalance();
+
+            TransActionDTO log = new TransActionDTO();
+            log.setAccount_number(linkedAccountNumber);
+            log.setAmount(investAmount);
+            log.setCurrency("KRW");
+            log.setAccount_type("입출금");
+            log.setCustomer_name(fundAccount.getCustomerId());
+            log.setTransaction_date(new Date());
+
+            // ✅ 6. 매수 승인 처리
+            if ("BUY".equalsIgnoreCase(tx.getFundTransactionType())) {
+                if (tx.getFundPricePerUnit() == null || tx.getFundUnitsPurchased() == null) {
+                    throw new IllegalStateException("단가 또는 좌수가 누락되어 처리할 수 없습니다.");
+                }
+
+                BigDecimal realAmount = tx.getFundPricePerUnit()
+                    .multiply(tx.getFundUnitsPurchased())
+                    .setScale(2, RoundingMode.HALF_UP);
+
+                int updated = accountRepository.minusBalance(linkedAccountNumber, realAmount);
+                if (updated == 0) {
+                    throw new IllegalStateException("출금 계좌 잔액 부족");
+                }
+
+                fundAccount.setFundBalance(fundBalance.add(realAmount));
+                JpaRepository.save(fundAccount);
+
+                log.setTransaction_type("출금");
+                log.setComment("펀드 매수");
+                log.setAmount(realAmount);
+                transActionRepository.save(log);
+
+            // ✅ 7. 환매 승인 처리
+            } else if ("SELL".equalsIgnoreCase(tx.getFundTransactionType())) {
+                if (fundBalance.compareTo(investAmount) < 0) {
+                    throw new IllegalStateException("펀드 계좌 잔액 부족");
+                }
+
+                fundAccount.setFundBalance(fundBalance.subtract(investAmount));
+                JpaRepository.save(fundAccount);
+
+                accountRepository.plusBalance(linkedAccountNumber, investAmount);
+
+                log.setTransaction_type("입금");
+                log.setComment("펀드 환매");
+                transActionRepository.save(log);
+            }
+        }
+    }
+
+    // 사용자 전체 펀드 거래 내역 조회 (매수/환매 포함)
+    public List<FundTransactionDTO> getAllTransactions(String customerId) {
+        return fundRepository.findAllTransactionsByCustomer(customerId);
     }
     
     // 펀드 매수 확정
@@ -270,5 +367,56 @@ public class FundServiceImpl {
         fundRepository.insertFundTransaction(dto);
     }
     
+    // 전체 거래내역 처리 (매수/환매 통합)
+    @Transactional
+    public void processFundTrade(FundTransactionDTO tx) {
 
+        // 공통: fund_name 세팅 (BUY든 SELL이든 상관없이)
+        FundDTO fund = fundRepository.findById(Long.valueOf(tx.getFundId()));
+        if (fund != null) {
+            tx.setFund_name(fund.getFund_name());
+        }
+
+        if ("BUY".equalsIgnoreCase(tx.getFundTransactionType())) {
+
+            if (tx.getFundUnitsPurchased() == null || tx.getFundInvestAmount() == null) {
+                throw new IllegalStateException("좌수 또는 금액이 누락되어 있습니다.");
+            }
+
+            BigDecimal fundPricePerUnit = tx.getFundInvestAmount()
+                .divide(tx.getFundUnitsPurchased(), 6, RoundingMode.HALF_UP);
+
+            tx.setFundPricePerUnit(fundPricePerUnit);
+            tx.setFundTransactionDate(LocalDate.now());
+            tx.setStatus("PENDING");
+
+            fundRepository.insertFundTransaction(tx);
+
+        } else if ("SELL".equalsIgnoreCase(tx.getFundTransactionType())) {
+
+            tx.setFundTransactionDate(LocalDate.now());
+            tx.setStatus("PENDING");
+
+            if (tx.getFundInvestAmount() != null && tx.getFundUnitsPurchased() != null) {
+                tx.setFundPricePerUnit(
+                    tx.getFundInvestAmount().divide(tx.getFundUnitsPurchased(), 6, RoundingMode.HALF_UP)
+                );
+            }
+
+            fundRepository.insertFundTransaction(tx);
+
+        } else {
+            throw new IllegalArgumentException("지원하지 않는 거래 타입입니다: " + tx.getFundTransactionType());
+        }
+    }
+    
+    // 관리자: 전체 고객 펀드 거래내역 조회
+    public List<FundTransactionDTO> getAllTransactionsForAdmin() {
+        return fundRepository.findAllTransactions();
+    }
+
+
+    
+    
+    
 }

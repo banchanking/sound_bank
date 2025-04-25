@@ -1,26 +1,28 @@
-.multiWrap {
+/* 전체 wrapper */
+.multi-multiWrap {
   width: 750px;
   margin: 40px auto;
   padding: 36px;
   background: #ffffff;
   border-radius: 24px;
   border: 1.5px solid #e2e4e7;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
   font-family: 'Noto Sans KR', sans-serif;
-  animation: fadeIn 0.6s ease;
+  animation: multi-fadeIn 0.6s ease;
 }
 
-.title {
+/* 페이지 제목 */
+.multi-title {
   font-size: 26px;
   font-weight: 700;
   text-align: center;
   margin-bottom: 28px;
   color: #1a1a1a;
-  animation: fadeUp 0.6s ease;
-
+  animation: multi-fadeUp 0.6s ease;
 }
 
-.outSection label {
+/* 출금 섹션 */
+.multi-outSection label {
   font-size: 15px;
   font-weight: 500;
   color: #333;
@@ -28,7 +30,8 @@
   display: block;
 }
 
-.selectCSS {
+/* 셀렉트 스타일 */
+.multi-selectCSS {
   width: 750px;
   padding: 10px 14px;
   font-size: 15px;
@@ -38,13 +41,14 @@
   transition: all 0.3s ease;
 }
 
-.selectCSS:focus {
+.multi-selectCSS:focus {
   border-color: #3a3a3c;
   outline: none;
   background-color: #fff;
 }
 
-.inputpwd {
+/* 비밀번호 입력 */
+.multi-inputpwd {
   width: 750px !important;
   height: 40px;
   padding: 0 10px;
@@ -56,7 +60,8 @@
   box-sizing: border-box;
 }
 
-.inputShort {
+/* 짧은 입력 */
+.multi-inputShort {
   width: 150px;
   height: 40px;
   padding: 0 10px;
@@ -68,13 +73,14 @@
   box-sizing: border-box;
 }
 
-.inputShort:focus {
+.multi-inputShort:focus {
   border-color: #3a3a3c;
   outline: none;
   background-color: #fff;
 }
 
-.multiTable {
+/* 다건이체 테이블 */
+.multi-multiTable {
   width: 100%;
   border-collapse: collapse;
   margin-top: 10px;
@@ -84,27 +90,25 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-.multiTable th,
-.multiTable td {
+.multi-multiTable th,
+.multi-multiTable td {
   padding: 7px;
   text-align: center;
   font-size: 14.5px;
 }
 
-
-.multiTable th {
+.multi-multiTable th {
   background-color: #f0f0f0;
   font-weight: 600;
   color: #1a1a1a;
 }
 
-.multiTable td {
+.multi-multiTable td {
   padding: 4px;
 }
 
-
-
-.btnAdd {
+/* 추가/삭제 버튼 */
+.multi-btnAdd {
   background-color: #2a989f;
   color: white;
   font-weight: 500;
@@ -115,11 +119,11 @@
   transition: all 0.3s ease;
 }
 
-.btnAdd:hover {
+.multi-btnAdd:hover {
   background-color: #3aadb6;
 }
 
-.btnDelete {
+.multi-btnDelete {
   background-color: #bf6969;
   color: white;
   font-weight: 500;
@@ -130,25 +134,28 @@
   transition: all 0.3s ease;
 }
 
-.btnDelete:hover {
+.multi-btnDelete:hover {
   background-color: #ad4e4e;
 }
 
-.submitArea {
-  display: flexbox;
+/* 제출 영역 */
+.multi-submitArea {
+  display: flex;
   justify-content: space-between;
   align-items: center;
   margin-top: 48px;
 }
 
-.totalAmount {
+/* 총 금액 */
+.multi-totalAmount {
   margin-left: 10px;
   font-size: 16px;
   font-weight: bold;
   color: #222;
 }
 
-.btnSend {
+/* 전송 버튼 */
+.multi-btnSend {
   width: 750px;
   padding: 12px;
   font-size: 16px;
@@ -162,22 +169,29 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
 
-.btnSend:hover {
+.multi-btnSend:hover {
   filter: brightness(1.18);
 }
 
-
-.accountRow {
+/* 계좌 행 */
+.multi-accountRow {
   display: flex;
   gap: 20px;
   margin-bottom: 24px;
 }
 
-.accountRow > div {
+.multi-accountRow > div {
   display: flex;
   flex-direction: column;
 }
-@keyframes fadeIn {
+
+/* 애니메이션 네임스페이스 */
+@keyframes multi-fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+@keyframes multi-fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
