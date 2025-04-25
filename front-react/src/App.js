@@ -89,6 +89,7 @@ import DepositCancellation from "./deposit/customer/DepositCancellation";
 import DepositComparison from "./deposit/customer/DepositComparison";
 import DepositWithdrawal from "./deposit/customer/DepositWithdrawal";
 import Mypage from "./customer/Mypage";
+import AdminPage from "./Admin/AdminPage";
 
 function App() {
   return (
@@ -248,6 +249,7 @@ function App() {
           <Route path="/join" element={<Join />} />
           <Route path="/login" element={<TotalLogin />} />
           <Route path="/myPage" element={<Mypage />} />
+          <Route path="/adminPage" element={<AdminPage />} />
           {/* 계좌개설 / 로그인 Route 끝 */}
         </Routes>
         <Footer />
