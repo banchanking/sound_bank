@@ -183,6 +183,7 @@ const FundProductManage = () => {
               type="text"
               name="fund_name"
               value={formData.fund_name}
+              readOnly
               onChange={handleChange}
               required
             />
