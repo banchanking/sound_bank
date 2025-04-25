@@ -3,11 +3,9 @@ package com.boot.sound.admin.dto;
 import lombok.Data;
 
 @Data
-public class AdminDTO {
-
+public class AdminRequestDTO {
+	
 	private String customerId;
 	private String password;
-	private String name;
-	private String role;
-	private String refresh_token;
+
 }

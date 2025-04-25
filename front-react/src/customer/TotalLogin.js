@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import Login from "./Login";
-import AdminLogin from "../../Admin/AdminLogin";
+import AdminLogin from "../Admin/AdminLogin";
 
 const TotalLogin = () => {
   const [activeTab, setActiveTab] = useState("customer"); // 기본은 고객
 
   return (
-    <div style={{ textAlign: "center", padding: "30px" }}>
+    <div style={{ padding: "30px" }}>
       <h2>SoundBank 로그인</h2>
-      <div style={{ marginBottom: "20px" }}>
+      <div style={{ textAlign: "center", marginBottom: "20px" }}>
         <button onClick={() => setActiveTab("customer")}>고객 로그인</button>
         <button
           onClick={() => setActiveTab("admin")}
