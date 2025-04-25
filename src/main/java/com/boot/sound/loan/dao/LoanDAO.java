@@ -43,21 +43,6 @@ public interface LoanDAO  {
 	// 대출 상품 조회
 	public LoanDTO loanDetail(int loan_id);
 	
-	// 전체 대출 상품 갯수
-	public int loanCnt();
-	
-	
-	// 대출유형 맞춤 검사
-	public List<LoanDTO> loanTypeSearch(String loan_type);
-	
-	// 대출유형 상품별 갯수
-	public int loanTypeCnt(String loan_type);
-	
-	// 대출이름검색
-	public List<LoanDTO> loanNameSearch(String loan_name);
-	
-	// 대출이름 검색 결과 카운트
-	public int loanNameCnt(String loan_name);
 	
 	// 대출실행 필수동의내역 저장
 	public int consentInsert(LoanConsentDTO dto);
