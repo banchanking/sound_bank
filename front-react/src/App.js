@@ -87,6 +87,7 @@ import LoanInterestList from "./sound_loan/admin/LoanInterestList";
 import LoanLateInterestList from "./sound_loan/admin/LoanLateInterestList";
 import MyLoanDetail from "./sound_loan/customer/MyLoanDetail";
 import Roi from "./customer_center/Roi";
+import InstallmentSavingsJoin from "./productSubscription/installmentSavingsJoin";
 import Stopgambling from "./customer_center/Stopgambling";
 import BusinessHour from "./customer_center/Businesshour";
 
