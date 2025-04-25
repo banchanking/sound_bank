@@ -61,7 +61,7 @@ RefreshToken.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      console.log("🚨 refresh-token 요청 customerId:", customerId); // 👈 바로 여기!
+      console.log("🚨 refresh-token 요청 customerId:", customerId);
       const { data } = await RefreshToken.post("/refresh-token", {
         customerId,
       });
