@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.sound.admin.dao.AdminDAO">
+
+	<resultMap type="com.boot.sound.admin.dto.AdminDTO" id="AdminMap">
+		<result property="customerId" column="customer_id"/>
+		<result property="password" column="password"/>
+		<result property="name" column="name"/>
+		<result property="role" column="role"/>
+		<result property="refresh_token" column="refresh_token"/>
+	</resultMap>
+
+	<select id="login" resultMap="AdminMap">
+		SELECT * FROM admin_tbl
+		WHERE customer_id = #{customerId}
+	</select>
+	
+	<select id="findPassword">
+		SELECT password FROM admin_tbl
+		where customer_id = #{customerId}
+	</select>
+	
+	<update id="saveAdminRefreshToken">
+		UPDATE 	admin_tbl
+		SET 	refresh_token = #{refresh_token}
+		WHERE	customer_id = #{customerId}
+	</update>
+  
+</mapper>
