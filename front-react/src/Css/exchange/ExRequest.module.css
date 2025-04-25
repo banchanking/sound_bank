@@ -1,0 +1,129 @@
+/* 전체 컨테이너 */
+.wrapper {
+    max-width: 650px;
+    margin: 60px auto;
+    padding: 40px;
+    background-color: #ffffff;
+    border-radius: 24px;
+    border: 1.5px solid #e2e4e7;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+    font-family: 'Noto Sans KR', sans-serif;
+    animation: fadeIn 0.4s ease;
+  }
+  
+  /* 제목 */
+  .title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    text-align: center;
+    color: #222;
+  }
+  
+  /* 서브 문구 */
+  .sub {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 18px;
+  }
+  
+  /* 입력 박스 & 셀렉트 공통 */
+  .input {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 15px;
+    border: 1.5px solid #d4d6da;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    background-color: #fff;
+    box-sizing: border-box;
+  }
+  
+  /* 잔액 또는 보유 외화 표시 */
+  .balance {
+    font-size: 14px;
+    color: #222;
+    font-weight: 500;
+    margin-bottom: 14px;
+  }
+  
+  /* 환전 예상 금액 표시 */
+  .estimate {
+    font-size: 15px;
+    font-weight: 600;
+    color: #000;
+    margin-top: -8px;
+    margin-bottom: 20px;
+  }
+  
+  /* 제출 버튼 */
+  .submit {
+    width: 100%;
+    padding: 14px 0;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    background-color: #424242;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 3px 10px rgba(58, 58, 60, 0.12);
+  }
+  
+  .submit:hover {
+    background-color: #555;
+  }
+  
+  /* 거래 결과 박스 */
+  .resultBox {
+    margin-top: 32px;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 16px;
+    border: 1.5px solid #e2e4e7;
+  }
+  
+  .resultBox h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  
+  .resultBox p {
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+  
+  .goWallet {
+    margin-top: 12px;
+    background-color: #f2f3f5;
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: 1.5px solid #ccc;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+  }
+  
+  .goWallet:hover {
+    background-color: #e6e7ea;
+  }
+  
+  .goWallet a {
+    color: #222;
+    text-decoration: none;
+    display: block;
+  }
+  
+  /* 애니메이션 */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  

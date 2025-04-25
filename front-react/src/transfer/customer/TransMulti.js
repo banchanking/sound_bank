@@ -9,12 +9,10 @@ function TransMulti() {
   const navigate = useNavigate();
   const [accounts, setAccounts] = useState([]);
   const [form, setForm] = useState({ out_account_number: '', password: '', memo: '' });
-
   const [transfers, setTransfers] = useState([
     { in_account_number: '', amount: '', in_name: '', memo: '' },
     { in_account_number: '', amount: '', in_name: '', memo: '' }
   ]);
-
   const customer_id = getCustomerID();
   const token = localStorage.getItem('auth_token');
 
@@ -48,9 +46,8 @@ function TransMulti() {
     if (name === 'amount') {
       const raw = value.replace(/[^\d.]/g, '');
       const [intPart] = raw.split('.');
-      const formatted = Number(intPart || 0).toLocaleString('ko-KR');
       list[index][name] = raw;
-      e.target.value = formatted;
+      e.target.value = Number(intPart || 0).toLocaleString('ko-KR');
     } else {
       list[index][name] = value;
     }
@@ -77,12 +74,11 @@ function TransMulti() {
     }
 
     try {
-      const pwdRes = await RefreshToken.post('http://localhost:8081/api/transMulti/checkPwd', {
-        account_number: form.out_account_number,
-        password: form.password
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const pwdRes = await RefreshToken.post(
+        'http://localhost:8081/api/transMulti/checkPwd',
+        { account_number: form.out_account_number, password: form.password },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
       if (pwdRes.data !== true) {
         alert('비밀번호가 일치하지 않습니다.');
@@ -97,9 +93,11 @@ function TransMulti() {
         transfers
       };
 
-      await RefreshToken.post('http://localhost:8081/api/transMulti/add', data, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await RefreshToken.post(
+        'http://localhost:8081/api/transMulti/add',
+        data,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
       alert('다건이체 요청이 완료되었습니다.');
       setTransfers([{ in_account_number: '', amount: '', in_name: '', memo: '' }]);
@@ -114,12 +112,17 @@ function TransMulti() {
     <div style={{ display: 'flex', minHeight: '600px' }}>
       <Sidebar />
 
-      <div className={styles.multiWrap}>
-        <h2 className={styles.title}>다건이체</h2>
+      <div className={styles['multi-multiWrap']}>
+        <h2 className={styles['multi-title']}>다건이체</h2>
 
-        <div className={styles.outSection}>
+        <div className={styles['multi-outSection']}>
           <label>출금계좌</label>
-          <select className={styles.selectCSS} name="out_account_number" value={form.out_account_number} onChange={changeForm}>
+          <select
+            className={styles['multi-selectCSS']}
+            name="out_account_number"
+            value={form.out_account_number}
+            onChange={changeForm}
+          >
             <option value="">출금 계좌 선택</option>
             {accounts.map(acc => (
               <option key={acc.account_number} value={acc.account_number}>
@@ -129,12 +132,18 @@ function TransMulti() {
           </select>
 
           <label style={{ marginTop: '16px' }}>계좌 비밀번호</label>
-          <input className={styles.inputpwd} type="password" name="password" value={form.password} onChange={changeForm} />
+          <input
+            className={styles['multi-inputpwd']}
+            type="password"
+            name="password"
+            value={form.password}
+            onChange={changeForm}
+          />
         </div>
 
         <div className={styles.inSection}>
           <h4>입금 정보</h4>
-          <table className={styles.multiTable}>
+          <table className={styles['multi-multiTable']}>
             <thead>
               <tr>
                 <th>입금계좌</th>
@@ -145,23 +154,65 @@ function TransMulti() {
               </tr>
             </thead>
             <tbody>
-              {transfers.map((row, index) => (
-                <tr key={index}>
-                  <td><input className={styles.inputShort} name="in_account_number" value={row.in_account_number} onChange={(e) => changeTransfer(e, index)} /></td>
-                  <td><input className={styles.inputShort} type="text" name="amount" value={row.amount} onChange={(e) => changeTransfer(e, index)} /></td>
-                  <td><input className={styles.inputShort} name="in_name" value={row.in_name} onChange={(e) => changeTransfer(e, index)} /></td>
-                  <td><input className={styles.inputShort} name="memo" value={row.memo} onChange={(e) => changeTransfer(e, index)} /></td>
-                  <td><button onClick={() => removeRow(index)} className={styles.btnDelete}>삭제</button></td>
+              {transfers.map((row, idx) => (
+                <tr key={idx}>
+                  <td>
+                    <input
+                      className={styles['multi-inputShort']}
+                      name="in_account_number"
+                      value={row.in_account_number}
+                      onChange={e => changeTransfer(e, idx)}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      className={styles['multi-inputShort']}
+                      type="text"
+                      name="amount"
+                      value={row.amount}
+                      onChange={e => changeTransfer(e, idx)}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      className={styles['multi-inputShort']}
+                      name="in_name"
+                      value={row.in_name}
+                      onChange={e => changeTransfer(e, idx)}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      className={styles['multi-inputShort']}
+                      name="memo"
+                      value={row.memo}
+                      onChange={e => changeTransfer(e, idx)}
+                    />
+                  </td>
+                  <td>
+                    <button
+                      onClick={() => removeRow(idx)}
+                      className={styles['multi-btnDelete']}
+                    >
+                      삭제
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <button onClick={addRow} className={styles.btnAdd}>행 추가</button>
+          <button onClick={addRow} className={styles['multi-btnAdd']}>
+            행 추가
+          </button>
         </div>
 
-        <div className={styles.submitArea}>
-          <p className={styles.totalAmount}>총 이체 금액: <strong>{totalAmount.toLocaleString('ko-KR')}원</strong></p>
-          <button onClick={send} className={styles.btnSend}>다건이체 요청</button>
+        <div className={styles['multi-submitArea']}>
+          <p className={styles['multi-totalAmount']}>
+            총 이체 금액: <strong>{totalAmount.toLocaleString('ko-KR')}원</strong>
+          </p>
+          <button onClick={send} className={styles['multi-btnSend']}>
+            다건이체 요청
+          </button>
         </div>
       </div>
     </div>

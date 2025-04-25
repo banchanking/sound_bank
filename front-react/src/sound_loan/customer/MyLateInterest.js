@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import RefreshToken from "../../jwt/RefreshToken";
 import "../../Css/loan/MyLateInterest.css"; // 전용 스타일
 
-const MyLateInterest = ({ onRefresh }) => {
+const MyLateInterest = () => {
   const [lateList, setLateList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -15,7 +15,6 @@ const MyLateInterest = ({ onRefresh }) => {
       .then((res) => {
         setLateList(res.data);
         setIsLoading(false);
-        onRefresh();
       })
       .catch((error) => {
         console.error("서버 통신 오류:", error);

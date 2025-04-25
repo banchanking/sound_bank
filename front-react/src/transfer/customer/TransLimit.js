@@ -36,14 +36,13 @@ function TransLimit() {
 
     RefreshToken.get(`http://localhost:8081/api/transLimit/approvedLimit/${id}`)
       .then(res => setCurrentLimit(res.data))
-      .catch(err => console.error("기존 한도 조회 실패:", err));
+      .catch(err => console.error('기존 한도 조회 실패:', err));
   }, []);
 
   const handleLimitChange = (e) => {
-    let raw = e.target.value.replace(/[^0-9]/g, '');
-    const formatted = raw ? Number(raw).toLocaleString("ko-KR") : '';
+    const raw = e.target.value.replace(/[^0-9]/g, '');
     setRequestedLimit(raw);
-    setDisplayLimit(formatted);
+    setDisplayLimit(raw ? Number(raw).toLocaleString('ko-KR') : '');
   };
 
   const handleSubmit = (e) => {
@@ -70,8 +69,8 @@ function TransLimit() {
         navigate('/transLimitEdit');
       })
       .catch(err => {
-        if (err.response?.data === "이미 대기 중인 요청이 존재합니다.") {
-          alert("이미 대기 중인 요청이 존재합니다.");
+        if (err.response?.data === '이미 대기 중인 요청이 존재합니다.') {
+          alert('이미 대기 중인 요청이 존재합니다.');
         } else {
           console.error('신청 실패:', err);
           alert('신청 중 오류 발생');
@@ -80,15 +79,15 @@ function TransLimit() {
   };
 
   return (
-    <div className={styles.limitContainer}>
+    <div className={styles['limit-limitContainer']}>
       <Sidebar />
-      <div className={styles.formBox}>
+      <div className={styles['limit-formBox']}>
         <h2>1일 이체한도 변경신청</h2>
         <form onSubmit={handleSubmit}>
           <label>계좌선택</label>
           <select
             value={accountNumber}
-            onChange={(e) => setAccountNumber(e.target.value)}
+            onChange={e => setAccountNumber(e.target.value)}
           >
             <option value="">-- 계좌 선택 --</option>
             {accounts.map((acc, idx) => (
@@ -106,8 +105,8 @@ function TransLimit() {
             placeholder="예: 5,000,000원"
           />
           {currentLimit !== null && (
-            <p className={styles.currentLimit}>
-              현재한도: {Number(currentLimit).toLocaleString("ko-KR")}원
+            <p className={styles['limit-currentLimit']}>
+              현재한도: {Number(currentLimit).toLocaleString('ko-KR')}원
             </p>
           )}
 
@@ -118,7 +117,12 @@ function TransLimit() {
             placeholder="사유를 입력해주세요"
           />
 
-          <button type="submit" className={styles.submitButton}>신청하기</button>
+          <button
+            type="submit"
+            className={styles['limit-submitButton']}
+          >
+            신청하기
+          </button>
         </form>
       </div>
     </div>
