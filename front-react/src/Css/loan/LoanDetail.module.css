@@ -1,0 +1,63 @@
+/* LoanDetail.module.css */
+
+.loanDetailContainer {
+  padding: 2rem;
+  max-width: 400px;
+  margin: 2rem auto;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+}
+
+.loanDetailTitle {
+  text-align: center;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  color: #222;
+}
+
+.detailTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.detailTable th,
+.detailTable td {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.detailTable input,
+.detailTable textarea {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+  color: #333;
+}
+
+.detailTable input[readonly],
+.detailTable textarea[readonly] {
+  color: #666;
+}
+
+.detailButtons {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.detailButtons button {
+  padding: 0.5rem 1rem;
+  margin: 0 0.5rem;
+  border: none;
+  border-radius: 4px;
+  background-color: white;
+  color: white;
+  cursor: pointer;
+}
+
+.detailButtons button:hover {
+  background-color: #555;
+}

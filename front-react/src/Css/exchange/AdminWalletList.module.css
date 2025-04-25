@@ -1,59 +1,104 @@
 .container {
-    padding: 20px;
-    font-family: 'Pretendard', sans-serif;
-  }
-  
-  .customerListWrapper {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 20px;
-  }
-  
-  .customerButton {
-    padding: 6px 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    background-color: gray;
-    cursor: pointer;
-    transition: background-color 0.2s;
-  }
-  
-  .customerButton:hover {
-    background-color: #e0e0e0;
-  }
-  
-  .walletTable {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 16px;
-  }
-  
-  .walletTable th, .walletTable td {
-    border: 1px solid #ccc;
-    padding: 8px;
-    text-align: center;
-  }
-  
-  .readOnlyInput {
-    width: 100%;
-    border: none;
-    background-color: transparent;
-    text-align: center;
-  }
-  
-  .saveButton {
-    margin-top: 20px;
-    padding: 8px 16px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 600;
-  }
-  
-  .saveButton:hover {
-    background-color: #3b9740;
-  }
-  
+  padding: 36px;
+  font-family: 'Pretendard', sans-serif;
+  max-width: 1200px;
+  margin: 60px auto;
+  background-color: #ffffff;
+  border: 1.5px solid #e2e4e7;
+  border-radius: 24px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+  animation: fadeIn 0.4s ease;
+}
+
+.customerListWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+/* 고객 선택 버튼 */
+.customerButton {
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  background-color: #f4f4f4;
+  cursor: pointer;
+  color: #333;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.customerButton:hover {
+  background-color: #dadfe4;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* 지갑 테이블 */
+.walletTable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 24px;
+  background-color: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.walletTable th,
+.walletTable td {
+  padding: 14px;
+  font-size: 14.5px;
+  text-align: center;
+  border-bottom: 1px solid #e4e6ea;
+}
+
+.walletTable th {
+  background-color: #f9f9f9;
+  font-weight: 600;
+  color: #333;
+}
+
+.walletTable tr:hover {
+  background-color: #f7f9fb;
+  transition: background-color 0.2s ease;
+}
+
+.readOnlyInput {
+  width: 100%;
+  border: none;
+  background-color: transparent;
+  text-align: center;
+  font-size: 14px;
+  color: #444;
+}
+
+/* 저장 버튼 */
+.saveButton {
+  margin-left: 45%;
+  margin-top: 28px;
+  padding: 12px 28px;
+  font-size: 15px;
+  font-weight: 600;
+  width: 120px;
+  border: none;
+  border-radius: 10px;
+  background-color: #3a3a3c;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 3px 10px rgba(58, 58, 60, 0.12);
+}
+
+.saveButton:hover {
+  background-color: #4a4a4c;
+  box-shadow: 0 4px 14px rgba(58, 58, 60, 0.2);
+}
+
+/* 애니메이션 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}

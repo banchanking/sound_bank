@@ -33,15 +33,15 @@ function AccountCheck() {
   const Card = ({ item }) => (
     <div
       onClick={() => clickCard(item.account_number)}
-      className={`${styles.card} ${accNum === item.account_number ? styles.selected : ''}`}
+      className={`${styles["account-card"]} ${accNum === item.account_number ? styles["account-selected"] : ''}`}
     >
-      <div className={styles.cardName}><strong>{item.account_name}</strong></div>
-      <div className={styles.cardNumber}>{item.account_number}</div>
+      <div className={styles["account-cardName"]}><strong>{item.account_name}</strong></div>
+      <div className={styles["account-cardNumber"]}>{item.account_number}</div>
     </div>
   );
 
   const Detail = ({ item }) => (
-    <div className={styles.detail}>
+    <div className={styles["account-detail"]}>
       <h4>상세 정보</h4>
       <p><b>이름:</b> {item.account_name}</p>
       <p><b>번호:</b> {item.account_number}</p>
@@ -52,10 +52,10 @@ function AccountCheck() {
   );
 
   return (
-    <div className={styles.wrapper}>
-      <h2 className={styles.title}>{customer_id}님의 계좌 조회</h2>
+    <div className={styles["account-wrapper"]}>
+      <h2 className={styles["account-title"]}>{customer_id}님의 계좌 조회</h2>
 
-      <div className={styles.buttonGroup}>
+      <div className={styles["account-buttonGroup"]}>
         {['입출금', '예금', '적금'].map(t => (
           <button
             key={t}
@@ -63,7 +63,7 @@ function AccountCheck() {
               setType(t);
               setAccNum(null);
             }}
-            className={`${styles.tabButton} ${type === t ? styles.active : ''}`}
+            className={`${styles["account-tabButton"]} ${type === t ? styles["account-active"] : ''}`}
           >
             {t} ({(data[t] || []).length})
           </button>
@@ -87,8 +87,8 @@ function AccountCheck() {
         <Detail item={data[type].find(a => a.account_number === accNum)} />
       )}
 
-      <div className={styles.buttonArea}>
-        <button className={styles.transferButton} onClick={() => navigate('/transInstant')}>
+      <div className={styles["account-buttonArea"]}>
+        <button className={styles["account-transferButton"]} onClick={() => navigate('/transInstant')}>
           이체하기
         </button>
       </div>

@@ -1,4 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import styles from "../Css/customer_center/VoiceBot.module.css"; // 모듈화된 사뱅스타일
+
 
 const VoiceBot = () => {
   const [messages, setMessages] = useState([]);
@@ -8,6 +10,7 @@ const VoiceBot = () => {
 
   // WebSocket 연결 및 첫 인사
   useEffect(() => {
+
     const ws = new WebSocket("ws://localhost:8002/ws");
     console.log("웹소켓이 연결되었습니다.");
 
@@ -28,6 +31,7 @@ const VoiceBot = () => {
         setMessages((prev) => [...prev, { sender: "bot", text: data.text }]);
       } else if (data.type === "audio") {
         const audio = new Audio("http://localhost:8002" + data.audio_path);
+
         audio.play();
       }
     };
@@ -58,12 +62,14 @@ const VoiceBot = () => {
 
       mediaRecorderRef.current.onstop = async () => {
         const blob = new Blob(audioChunks.current, { type: "audio/webm" });
+
         const formData = new FormData();
         formData.append("file", blob, "voice.webm");
 
         setMessages((prev) => [...prev, { sender: "user", text: "음성 메시지 전송됨" }]);
 
         const res = await fetch("http://localhost:8002/upload-audio", {
+
           method: "POST",
           body: formData,
         });
@@ -109,6 +115,7 @@ const VoiceBot = () => {
             </div>
           </div>
         ))}
+
       </div>
       <button onClick={toggleRecording} style={{ marginTop: 15 }}>
         {isRecording ? "녹음 중지" : "음성 질문하기"}

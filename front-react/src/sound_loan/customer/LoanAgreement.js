@@ -1,39 +1,27 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import "../../Css/loan/LoanAgreement.css";
+import styles from "../../Css/loan/LoanAgreement.module.css";
 import RefreshToken from "../../jwt/RefreshToken";
 import SMSVerificationModal from "../../smsmodal/SMSVerificationModal";
 
 const LoanAgreement = () => {
   const navigate = useNavigate();
   const { loan_id } = useParams();
-  const [consent, setConsent] = useState([
-    {
-      loan_id: 0,
-      customerId: "",
-      consent_use1: "N",
-      consent_use2: "N",
-      consent_use3: "N",
-      consent_use4: "N",
-      consent_view1: "N",
-      consent_view2: "N",
-      consent_view3: "N",
-      consent_view4: "N",
-    },
-  ]);
+  const [consent, setConsent] = useState({
+    loan_id: 0,
+    customerId: "",
+    consent_use1: "N",
+    consent_use2: "N",
+    consent_use3: "N",
+    consent_use4: "N",
+    consent_view1: "N",
+    consent_view2: "N",
+    consent_view3: "N",
+    consent_view4: "N",
+  });
+
   const [showOffer, setShowOffer] = useState(true);
   const [showView, setShowView] = useState(false);
-
-  // 개인정보 제공동의 화면
-  const ShowOffer = () => {
-    setShowOffer(true);
-    setShowView(false);
-  };
-  // 개인정보 조회동의 화면
-  const ShowView = () => {
-    setShowOffer(false);
-    setShowView(true);
-  };
   const [isSMSModalOpen, setIsSMSModalOpen] = useState(false);
 
   useEffect(() => {
@@ -42,9 +30,18 @@ const LoanAgreement = () => {
       loan_id: loan_id,
       customerId: localStorage.getItem("customerId"),
     }));
-  }, [loan_id]); // loan_id 가 변경될 때만 useEffect 가 실행됩니다.
+  }, [loan_id]);
 
-  // SMS 인증 성공 시 호출되는 콜백
+  const ShowOffer = () => {
+    setShowOffer(true);
+    setShowView(false);
+  };
+
+  const ShowView = () => {
+    setShowOffer(false);
+    setShowView(true);
+  };
+
   const handleSMSVerified = () => {
     RefreshToken.post("/consertInsert", consent)
       .then((res) => {
@@ -78,7 +75,7 @@ const LoanAgreement = () => {
           "확인버튼을 누르면 인증 후 대출신청정보 작성 페이지로 이동하며 [귀 행]의 신용점수에 영향을 줄 수 있습니다. 진행 하시겠습니까?"
         )
       ) {
-        setIsSMSModalOpen(true); // ← 여기까지만
+        setIsSMSModalOpen(true);
       } else {
         navigate("/loanApply");
       }
@@ -95,28 +92,28 @@ const LoanAgreement = () => {
   };
 
   return (
-    <div>
-      <div className="TitleArea">
-        <div className="Title">개인신용정보동의</div>
+    <div className={styles.agreementContainer}>
+      <div className={styles.TitleArea}>
+        <div className={styles.Title}>개인신용정보동의</div>
       </div>
-      <div className="textArea">
-        <div className="text">
+      <div className={styles.textArea}>
+        <div className={styles.text}>
           여신거래를 위하여 다음 개인(신용)정보 이용, 제공, 조회의 반드시 동의가
           필요합니다. <br />각 탭의 내용을 확인하신 후 동의해 주시기 바랍니다.
         </div>
       </div>
-      <div className="AgreementBtn">
+      <div className={styles.AgreementBtn}>
         <button onClick={ShowOffer}>개인(신용)정보 수집 이용제공 동의서</button>
         <button onClick={ShowView}>개인(신용)정보 조회 동의서</button>
       </div>
       {/* 개인(신용)정보 수집 이용·제공 동의서 */}
       {showOffer && (
         <div>
-          <div className="OfferTextArea">
-            <div className="OfferTitle">
+          <div className={styles.OfferTextArea}>
+            <div className={styles.OfferTitle}>
               개인(신용)정보 수집 이용·제공 동의서
             </div>
-            <div className="OfferText1">
+            <div className={styles.OfferText1}>
               {" "}
               [귀 행]과의 여신(금융)거래와 관련하여 [귀 행]이 본인의
               개인(신용)정보를 수집·이용하거나, 제3자에게 제공하고자 하는
@@ -125,19 +122,19 @@ const LoanAgreement = () => {
               보호법」 제15조 제1항 제1호, 제17조 제1항 제1호, 제24조 제1항
               제1호, 제24조의2 제1항에 따라 본인의 동의가 필요합니다.
             </div>
-            <div className="OfferText2">
+            <div className={styles.OfferText2}>
               * 여신 (금융)거래라 함은 은행업무(여신), 겸영업무(파생상품매매
               등), 부수업무(보증,팩토링 등)와 관련된 거래를 의미합니다.
             </div>
-            <div className="OfferText3">
+            <div className={styles.OfferText3}>
               * 필수사항에 대한 동의만으로 계약 체결이 가능합니다.
             </div>
           </div>
-          <div className="OfferArea">
-            <table className="OfferTable">
+          <div className={styles.OfferArea}>
+            <table className={styles.OfferTable}>
               <thead>
                 <tr>
-                  <th colSpan={6} className="leftth">
+                  <th colSpan={6} className={styles.leftth}>
                     1.수집·이용에 관한 사항
                   </th>
                 </tr>
@@ -145,7 +142,7 @@ const LoanAgreement = () => {
               <tbody>
                 <tr>
                   <th style={{ width: "150px" }}>수집·이용 목적</th>
-                  <td className="purpose" colSpan={5}>
+                  <td className={styles.purpose} colSpan={5}>
                     ￭ (금융)거래관계의 설정 여부 판단 ￭ (금융)거래관계의
                     설정·유지·이행·관리 <br />￭ 금융사고 조사, 분쟁 해결, 민원
                     처리 ￭ 법령상 의무이행
@@ -241,11 +238,11 @@ const LoanAgreement = () => {
               </tfoot>
             </table>
           </div>
-          <div className="OfferArea">
-            <table className="OfferTable">
+          <div className={styles.OfferArea}>
+            <table className={styles.OfferTable}>
               <thead>
                 <tr>
-                  <th colSpan={6} className="leftth">
+                  <th colSpan={6} className={styles.leftth}>
                     2.제공에 관한 사항
                   </th>
                 </tr>
@@ -369,9 +366,9 @@ const LoanAgreement = () => {
       {/* 개인(신용)정보 조회 동의서 */}
       {showView && (
         <div>
-          <div className="OfferTextArea">
-            <div className="OfferTitle">개인(신용)정보 조회 동의서</div>
-            <div className="OfferText1">
+          <div className={styles.OfferTextArea}>
+            <div className={styles.OfferTitle}>개인(신용)정보 조회 동의서</div>
+            <div className={styles.OfferText1}>
               {" "}
               [귀 행]과의 여신(금융)거래와 관련하여 [귀 행]이 본인의
               개인(신용)정보를 조회하고자 하는 경우에는 「신용정보의 이용 및
@@ -380,11 +377,11 @@ const LoanAgreement = () => {
               제1호, 제24조의2 1항에 따라 본인의 동의가 필요합니다.
             </div>
           </div>
-          <div className="OfferArea">
-            <table className="OfferTable">
+          <div className={styles.OfferArea}>
+            <table className={styles.OfferTable}>
               <thead>
                 <tr>
-                  <th colSpan={6} className="leftth">
+                  <th colSpan={6} className={styles.leftth}>
                     1.수집·이용에 관한 사항
                   </th>
                 </tr>
@@ -392,7 +389,7 @@ const LoanAgreement = () => {
               <tbody>
                 <tr>
                   <th style={{ width: "150px" }}>수집·이용 목적</th>
-                  <td className="purpose" colSpan={5}>
+                  <td className={styles.purpose} colSpan={5}>
                     ￭ 여신(금융)거래와 관련하여 신용조회회사 또는
                     신용정보집중기관에 개인(신용)정보 조회
                   </td>
@@ -476,11 +473,11 @@ const LoanAgreement = () => {
               </tfoot>
             </table>
           </div>
-          <div className="OfferArea">
-            <table className="OfferTable">
+          <div className={styles.OfferArea}>
+            <table className={styles.OfferTable}>
               <thead>
                 <tr>
-                  <th colSpan={6} className="leftth">
+                  <th colSpan={6} className={styles.leftth}>
                     2. 제공 · 조회에 관한 사항
                   </th>
                 </tr>
@@ -606,8 +603,8 @@ const LoanAgreement = () => {
           </div>
         </div>
       )}
-      <div className="FinalArea">
-        <div className="FinalText">
+      <div className={styles.FinalArea}>
+        <div className={styles.FinalText}>
           <span>
             * 고유식별정보는 「신용정보의 이용 및 보호에 관한 법률 시행령」
             제29조 각호에 따른 <br /> [주민등록번호, 여권번호, 운전면허번호,
@@ -624,12 +621,12 @@ const LoanAgreement = () => {
             않습니다.
           </span>
         </div>
-        <div className="FinalBtnArea">
+        <div className={styles.FinalBtnArea}>
           <span>본인은 본 동의서의 내용을 이해하였으며 확인하였습니다.</span>
-          <button onClick={nextStep} className="FinalBtn">
+          <button onClick={nextStep} className={styles.FinalBtn}>
             확인
           </button>
-          <button className="FinalBtn">취소</button>
+          <button className={styles.FinalBtn}>취소</button>
         </div>
       </div>
 
