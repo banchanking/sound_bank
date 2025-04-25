@@ -110,6 +110,7 @@ const TransHistory = () => {
       <div className={styles.fundContainer}>
         <h2 className={styles.fundTitle}>My펀드 거래내역</h2>
         <div className={styles.fundTable}>
+          <br></br><br></br>
           <button className={styles.fundbuttonGroup} onClick={() => openModal("BUY")}>펀드 매수 내역</button>
           <button className={styles.fundbuttonGroup} onClick={() => openModal("SELL")}>펀드 환매 내역</button>
           <button className={styles.fundbuttonGroup} onClick={() => openModal("CLOSED")}>해지된 My펀드</button>
