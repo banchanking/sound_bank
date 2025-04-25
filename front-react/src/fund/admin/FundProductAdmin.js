@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Papa from "papaparse"; // CSV 파싱 라이브러리
 import styles from "../../Css/fund/FundList.module.css"; // 스타일 파일 추가
 import RefreshToken from "../../jwt/RefreshToken"; // RefreshToken 모듈 추가
@@ -29,7 +29,7 @@ const FundProductAdmin = () => {
       const csvText = await response.text(); // CSV 파일의 텍스트 데이터 가져오기
       
       // 2. 등록된 펀드 상품 목록 가져오기
-      const registeredFundsResponse = await RefreshToken.get("http://localhost:8081/api/registeredFunds");
+      const registeredFundsResponse = await RefreshToken.get("/registeredFunds");
       const registeredFunds = registeredFundsResponse.data;
       const registeredFundNames = registeredFunds.map((fund) => fund.fund_name);
 
@@ -68,11 +68,6 @@ const FundProductAdmin = () => {
       console.error("Error fetching CSV file:", error); // 오류 발생 시 콘솔에 출력
     }
   };
-
-  // 컴포넌트가 처음 렌더링될 때 CSV 파일에서 펀드 목록을 가져옴
-  useEffect(() => {
-    fetchFundsFromCSV()
-  }, []);
 
   // 팝업창 열기
   const handleOpenPopup = (fund) => {
@@ -121,7 +116,7 @@ const FundProductAdmin = () => {
   const saveRegisteredFunds = async (funds) => {
     try {
       await RefreshToken.post(
-        "http://localhost:8081/api/saveRegisteredFunds",
+        "/saveRegisteredFunds",
         funds // ✅ Axios는 두 번째 인자가 전송할 데이터입니다
       );
       console.log("Registered funds saved successfully");
@@ -136,7 +131,7 @@ const FundProductAdmin = () => {
       // 1. 등록된 펀드 상품 목록 가져오기     
       // Axios 인스턴스 RefreshToken 사용
       await RefreshToken.post(
-        "http://localhost:8081/api/fundSave",
+        "/fundSave",
         formData
       );
 

@@ -58,37 +58,38 @@ async def predict_user(data: InvestmentRequest):
 @app.post("/predict-fund")
 async def predict_fund():
     try:
-        input_file = "../../../public/data/fundList.csv"
-        output_file = "../../../public/data/fundList_updated.csv"
+        # 최신 펀드 목록을 DB에서 가져옴
+        response = requests.get("http://localhost:8081/api/registeredFunds")
+        response.raise_for_status()
+        df = pd.DataFrame(response.json())
 
-        if not os.path.exists(input_file):
-            raise HTTPException(status_code=404, detail="fundList.csv not found")
-
-        df = pd.read_csv(input_file)
+        # 라벨 인코딩
         from sklearn.preprocessing import LabelEncoder
-
-        # 문자열 라벨 인코딩
         le_type = LabelEncoder()
         le_company = LabelEncoder()
         df["fund_type"] = le_type.fit_transform(df["fund_type"].astype(str))
         df["fund_company"] = le_company.fit_transform(df["fund_company"].astype(str))
 
+        # 예측에 사용할 피처 정의
         features = [
             "fund_fee_rate", "fund_upfront_fee", "fund_grade",
             "return_1m", "return_3m", "return_6m", "return_12m"
         ]
-        
         X = df[features].fillna(0).astype(float)
         predictions = fund_model.predict(X)
         predicted_classes = predictions.argmax(axis=1)
         risk_types = ["안정형", "보수형", "위험중립형", "적극형", "공격형"]
         df["fund_risk_type"] = [risk_types[i] for i in predicted_classes]
 
-        # 저장
-        df.to_csv(output_file, index=False, encoding="utf-8-sig")
-        return {"message": f"Updated file saved to {output_file}", "count": df["fund_risk_type"].value_counts().to_dict()}
+        # 결과를 파일로 저장 (선택)
+        df.to_csv("../../../public/data/fundList_updated.csv", index=False, encoding="utf-8-sig")
+
+        return {
+            "message": "펀드 투자성향 예측 완료",
+            "count": df["fund_risk_type"].value_counts().to_dict()
+        }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))        
+        raise HTTPException(status_code=500, detail=str(e))   
 
 # ----------- 학습된 투자성향 예측 모델로 펀드목록 추천 -----------
 # 관리자가 등록한 펀드 데이터를 가져오는 함수
@@ -96,6 +97,7 @@ def fetch_registered_funds():
     try:
         # API 호출을 통해 관리자가 등록한 펀드 데이터를 가져옴
         response = requests.get("http://localhost:8081/api/registeredFunds")
+        df = pd.DataFrame(response.json())  # 최신 DB 기반
         response.raise_for_status()  # HTTP 오류 발생 시 예외 발생
         funds = pd.DataFrame(response.json())  # JSON 데이터를 Pandas DataFrame으로 변환
         return funds
