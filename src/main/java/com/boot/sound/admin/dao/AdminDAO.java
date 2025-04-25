@@ -13,4 +13,6 @@ public interface AdminDAO {
 	public String findPassword(String customerId);
 	
 	public void saveAdminRefreshToken(String customerId, String refresh_token);
+	
+	public String getRefreshToken(String customerId);
 }
