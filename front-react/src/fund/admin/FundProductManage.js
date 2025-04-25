@@ -1,7 +1,7 @@
 // ✅ FundProductManage.js - 원래 구조 유지 + 검색 + 페이징 + 펀드 이름 readOnly 처리 반영
 import React, { useEffect, useState } from "react";
 import RefreshToken from "../../jwt/RefreshToken";
-import styles from "../../Css/fund/FundProductManage.module.css";
+import styles from "../../Css/fund/FundAdmin.module.css";
 
 const FundProductManage = () => {
   const [fundList, setFundList] = useState([]);
