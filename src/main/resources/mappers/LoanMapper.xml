@@ -42,33 +42,11 @@
             interest_rate = #{interest_rate},
             loan_term = #{loan_term},
             loan_info = #{loan_info},
-            loan_type = #{loan_type}
+            loan_type = #{loan_type},
+            prepayment_penalty = #{prepayment_penalty}
         where loan_id = #{loan_id}
     </update>
 
-    <select id="loanCnt" resultType="int">
-        select count(*) from loan_tbl
-    </select>
-
-    <select id="loanTypeSearch" parameterType="String" resultType="com.boot.sound.loan.dto.LoanDTO">
-        select * from loan_tbl
-        where loan_type = #{loan_type}
-    </select>
-
-    <select id="loanTypeCnt" parameterType="String" resultType="int">
-        select count(*) from loan_tbl
-        where loan_type = #{loan_type}
-    </select>
-
-    <select id="loanNameSearch" parameterType="String" resultType="com.boot.sound.loan.dto.LoanDTO">
-        select * from loan_tbl
-        where loan_name like '%${loan_name}%'
-    </select>
-
-    <select id="loanNameCnt" parameterType="String" resultType="int">
-        select count(*) from loan_tbl
-        where loan_name like '%${loan_name}%'
-    </select>
 
     <insert id="consentInsert" parameterType="com.boot.sound.loan.dto.LoanConsentDTO">
         insert into loan_agree_status_tbl(loan_id, customer_id, consent_use1, consent_use2, consent_use3, consent_use4, consent_view1, consent_view2, consent_view3, consent_view4)
@@ -90,12 +68,11 @@
     </select>
 
     <insert id="loanApply" parameterType="com.boot.sound.loan.dto.LoanApplyWithTermsDTO">
-        insert into loan_status_tbl(loan_name, loan_id, interest_rate, customer_id, customer_income, customer_credit_score, loan_amount, balance, account_number, repayment_method, repayment_date, loan_type, loan_progress, loan_term, remaining_term)
+        insert into loan_status_tbl(loan_name, loan_id, interest_rate, customer_id, customer_credit_score, loan_amount, balance, account_number, repayment_method, repayment_date, loan_type, loan_progress, loan_term, remaining_term)
         values(#{loanInfo.loanName}
         , #{loanInfo.loanId}
         , #{loanInfo.interestRate}
         , #{loanInfo.customerId}
-        , #{loanInfo.customerIncome}
         , #{loanInfo.customerCreditScore}
         , #{loanInfo.loanAmount}
         , #{loanInfo.loanAmount}
@@ -115,7 +92,6 @@
             loan_id as loanId,
             loan_name as loanName,
             interest_rate as interestRate,
-            customer_income as customerIncome,
             customer_credit_score as customerCreditScore,
             loan_amount as loanAmount,
             balance,
@@ -227,23 +203,26 @@
     <update id="updateRepaymentStatus" parameterType="map">
         update loan_interest_payment_tbl
         set repayment_status = #{repaymentStatus}
+        ,	actual_repayment_date = CURDATE()
         where interest_payment_no = #{interestPaymentNo}
     </update>
 
     <insert id="insertLatePayment" parameterType="com.boot.sound.loan.dto.LoanLatePaymentDTO">
         insert into loan_late_payment_tbl (
-            loan_id, customer_id, unpaid_amount, repayment_status, overdue_interest
+            loan_id, customer_id, unpaid_amount, repayment_status, overdue_interest ,interest_payment_no
         ) values (
-            #{loanId}, #{customerId}, #{unpaidAmount}, #{repaymentStatus}, #{overdueInterest}
+            #{loanId}, #{customerId}, #{unpaidAmount}, #{repaymentStatus}, #{overdueInterest} ,#{interestPaymentNo}
         )
     </insert>
 
     <resultMap id="LatePaymentResultMap" type="com.boot.sound.loan.dto.LoanLatePaymentDTO">
+        <result property="latePaymentNo" column="late_payment_no"/>
         <result property="loanId" column="loan_id"/>
         <result property="customerId" column="customer_id"/>
         <result property="unpaidAmount" column="unpaid_amount"/>
         <result property="repaymentStatus" column="repayment_status"/>
         <result property="overdueInterest" column="overdue_interest"/>
+         <result property="interestPaymentNo" column="interest_payment_no"/>
     </resultMap>
 
     <select id="getLatePayments" resultMap="LatePaymentResultMap">
@@ -266,13 +245,14 @@
     <update id="updateLatePaymentStatusToPaid">
         update loan_late_payment_tbl
         set repayment_status = #{repaymentStatus}
-        where late_payment_no = #(latePaymentNo)
+        where late_payment_no = #{latePaymentNo}
           
     </update>
 
     <update id="updateInterestPaymentStatus">
         update loan_interest_payment_tbl
         set repayment_status = #{repaymentStatus}
+        ,	actual_repayment_date = CURDATE()
         where interest_payment_no = #{interestPaymentNo}
     </update>
 
@@ -322,7 +302,6 @@
 	    <result property="loanId" column="loan_id"/>
 	    <result property="loanName" column="loan_name"/>
 	    <result property="interestRate" column="interest_rate"/>
-	    <result property="customerIncome" column="customer_income"/>
 	    <result property="customerCreditScore" column="customer_credit_score"/>
 	    <result property="loanAmount" column="loan_amount"/>
 	    <result property="balance" column="balance"/>
@@ -344,7 +323,6 @@
 	        loan_id,
 	        interest_rate,
 	        customer_id,
-	        customer_income,
 	        customer_credit_score,
 	        loan_amount,
 	        balance,
@@ -408,15 +386,18 @@
 	</insert>
 	
 	<select id="myInterestList" parameterType="String" resultMap="LoanInterestPaymentMap">
-	    SELECT 
+		  SELECT 
 		    ROW_NUMBER() OVER (ORDER BY a.interest_payment_no) AS no,
 		    a.*,
 		    b.loan_name,
 		    b.account_number 
-		FROM loan_interest_payment_tbl a
-		JOIN loan_status_tbl b ON a.loan_id = b.loan_id
-		WHERE a.customer_id = #{customerId}
-	</select>
+		  FROM loan_interest_payment_tbl a
+		  JOIN loan_status_tbl b 
+		    ON a.loan_id = b.loan_id 
+		    AND a.customer_id = b.customer_id
+		  WHERE a.customer_id = #{customerId}
+		</select>
+
 
 	
 	<select id="selectLoanName" parameterType="int" resultType="String">

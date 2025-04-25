@@ -10,4 +10,5 @@ public class LoanLatePaymentDTO {
     private int unpaidAmount;
     private String repaymentStatus;
     private int overdueInterest;
+    private int interestPaymentNo;
 }

@@ -59,12 +59,12 @@ import Customerservice from "./customer_center/Customerservice";
 import FAQ from "./customer_center/FAQ";
 import Chatbot from "./customer_center/Chatbot";
 import Voicebot from "./customer_center/Voicebot";
-
+import ExRequestList from "./exchange/customer/ExRequestList";
 import ExRate from "./exchange/customer/ExRate";
 import ExRequest from "./exchange/customer/ExRequest";
 import ExList from "./exchange/customer/ExList";
 import ExAccountManagement from "./exchange/customer/ExAccountManagement";
-import AdminExAccountRequestList from "./exchange/admin/AdminExAccountRequestList";
+
 import AdminExMenu from "./exchange/admin/AdminExMenu";
 import LoanInsertForm from "./sound_loan/admin/LoanInsertForm";
 import LoanCalculator from "./sound_loan/customer/LoanCalculator";
@@ -87,13 +87,14 @@ import LoanInterestList from "./sound_loan/admin/LoanInterestList";
 import LoanLateInterestList from "./sound_loan/admin/LoanLateInterestList";
 import MyLoanDetail from "./sound_loan/customer/MyLoanDetail";
 import Roi from "./customer_center/Roi";
-import InstallmentSavingsJoin from "./productSubscription/installmentSavingsJoin";
+import Stopgambling from "./customer_center/Stopgambling";
+import BusinessHour from "./customer_center/Businesshour";
 
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        {/* F12 방지 블록방지 */}{" "}
+      {SecurityBlocker}{/* F12 방지 블록방지 */}{" "}
         {/* Header.js의 Link연동을 위해서 BrowserRouter추가해야됨 */}
         <Header />
         <Routes>
@@ -196,8 +197,11 @@ function App() {
           <Route path="/ex_rate" element={<ExRate />} /> {/* 환율조회/계산기 */}
           <Route path="/ex_request" element={<ExRequest />} />{" "}
           {/* 환전신청하기 */}
-          <Route path="/exchange_list" element={<ExList />} />{" "}
+          <Route path="/exchange_list" element={<ExList />} />{" "}          
           {/* 환전내역 조회 */}
+          {/* 환전신청내역 */}
+          <Route path="/exchangeRequestList" element={<ExRequestList/>}/> {" "}
+          {/*  */}
           <Route
             path="/ex_account_management"
             element={<ExAccountManagement />}
@@ -208,33 +212,25 @@ function App() {
             element={<ExchangeWalletStatus />}
           />{" "}
           {/* 내 지갑 */}
-          <Route
-            path="/admin_ex_request_list"
-            element={<AdminExAccountRequestList />}
-          />{" "}
-          {/* 환전 신청 현황 (customer로 이동됨) */}
+
           <Route path="/admin_ex_management" element={<AdminExMenu />} />{" "}
           {/* (관리자)지갑상태변경 */}
           {/* 외환 Route 끝 */}
           {/* 고객센터 Route 시작 */}
-          <Route path="/customerservice" element={<Customerservice />} />{" "}
-          {/* 고객센터 헤더 */}
-          <Route path="/faq" element={<FAQ />} /> {/* 자주하는 질문  */}
-          <Route path="/chatbot" element={<Chatbot />} />{" "}
-          {/* 누르는 상담 (챗봇) */}
-          <Route path="/voicebot" element={<Voicebot />} />{" "}
-          {/* 말하는 상담 (음성봇) */}
-          <Route path="/authcenter" element={<Authcenter />} />{" "}
-          {/* 인증 센터  */}
-          <Route path="/roi" element={<Roi />} /> {/* 실시간 객체인식 (ROI) */}
-          <Route path="/idauth" element={<IdAuth />} />{" "}
-          {/* 신분증 인증 (OCR) */}
-          <Route path="/notice" element={<Notice />} /> {/* 공지사항(고객용) */}
-          <Route path="/admin/notice" element={<AdminNotice />} />{" "}
-          {/* 공지사항(관리자용) */}
-          <Route path="/business_hour" element={<Businesshour />} />{" "}
-          {/* 이용 시간 */}
-          <Route path="/charge" element={<Charge />} /> {/* 금리 안내 */}
+
+          <Route path="/customerservice" element={<Customerservice />} />{" "}{/* 고객센터 헤더 */}
+          <Route path="/faq" element={<FAQ />} />                       {/* 자주하는 질문  */}
+          <Route path="/chatbot" element={<Chatbot />} />{" "}          {/* 누르는 상담 (챗봇) */}
+          <Route path="/voicebot" element={<Voicebot />} />{" "}        {/* 말하는 상담 (음성봇) */}
+          <Route path="/authcenter" element={<Authcenter />} />{" "}    {/* 인증 센터  */}
+          <Route path="/roi" element={<Roi />} />                       {/* 실시간 객체인식 (ROI) */}
+          <Route path="/idauth" element={<IdAuth />} />{" "}            {/* 신분증 인증 (OCR) */}
+          <Route path="/notice" element={<Notice />} />{" "}            {/* 공지사항(고객용) */}
+          <Route path="/admin/notice" element={<AdminNotice />} />{" "} {/* 공지사항(관리자용) */}
+          <Route path="/businesshour" element={<BusinessHour />} />{" "}{/* 이용 시간 */}
+          <Route path="/charge" element={<Charge />} />                 {/* 금리 안내 */}
+          <Route path="/stopgambling" element={<Stopgambling />} />     {/* 불법 도박 계좌 신고 안내 */}
+      
           {/* 고객센터 Route 끝 */}
           {/* 계좌개설 / 로그인 Route 시작 */}
           <Route path="/join" element={<Join />} />

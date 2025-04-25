@@ -19,7 +19,6 @@
 .nav-bar-main {
   background-color: rgba(0, 0, 0, 0.4) !important;
   position: fixed;
-
 }
 
 /* 다른 페이지에서는 좀 더 진하게 */
@@ -131,7 +130,6 @@
   z-index: 1200;
 }
 
-
 /* 중간 메뉴들 나열되는 컨테이너 */
 .dropdown-items-container {
   min-height: 55px;
@@ -206,7 +204,6 @@
   color: #eceff3 !important;
   text-shadow: 0 0 6px #ffffff;
   transition: all 0.1s ease-in-out;
-
 }
 
 /* ================================

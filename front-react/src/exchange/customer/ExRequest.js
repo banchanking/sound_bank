@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import { getCustomerID } from "../../jwt/AxiosToken";
 import RefreshToken from "../../jwt/RefreshToken";
 import useExchangeRates from "./useExchangeRates";
+import { useNavigate } from "react-router-dom";
 
 const ExRequest = () => {
   const customer_id = getCustomerID();
-
+  const navigate = useNavigate();
   const [selectedCurrency, setSelectedCurrency] = useState("");
   const [transactionType, setTransactionType] = useState("buy");
   const [inputAmount, setInputAmount] = useState("");
@@ -42,6 +43,21 @@ const ExRequest = () => {
   
 
   useEffect(() => {
+    const id = getCustomerID();
+        if (!id) {
+          const customer_id = getCustomerID();
+              if (!customer_id) {
+                if (!customer_id) {
+                  const goLogin = window.confirm(
+                    "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
+                  );
+                  if (goLogin) {
+                    navigate("/login");
+                  }
+                  return;      
+              }
+            }
+        }
     RefreshToken
       .get(`http://localhost:8081/api/exchange/account/${customer_id}`)
       .then((res) => setAccounts(res.data))

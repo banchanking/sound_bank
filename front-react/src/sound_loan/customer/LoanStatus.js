@@ -1,19 +1,171 @@
-import React from "react";
+import React, { useState } from "react";
+import {
+  FaUser,
+  FaPiggyBank,
+  FaExchangeAlt,
+  FaMoneyCheckAlt,
+  FaGlobe,
+  FaChartLine,
+  FaChevronDown,
+  FaChevronUp,
+} from "react-icons/fa";
+import LoanApply from "./LoanApply";
+import MyInterest from "./MyInterest";
+import MyLoanStatus from "./MyLoanStatus";
+import MyLateInterest from "./MyLateInterest";
+import "../../Css/mypage/MyPageLayout.css";
+import LoanCalculator from "./LoanCalculator";
+import MyFundInfo from "../../fund/customer/MyFundInfo";
+import OpenAccount from "../../fund/customer/OpenAccount";
+import CloseAccount from "../../fund/customer/CloseAccount";
+import TransHistory from "../../fund/customer/TransHistory";
+import ExchangeWalletStatus from "../../exchange/customer/ExchangeWalletStatus";
+import ExList from "../../exchange/customer/ExList";
+import ExAccountManagement from "../../exchange/customer/ExAccountManagement";
+import InquireAccont from "../../inquire/InquireAccont";
+import InquireTransfer from "../../inquire/InquireTransfer";
 
 const LoanStatus = () => {
+  const [activeMenuIndex, setActiveMenuIndex] = useState(null);
+  const [selectedComponent, setSelectedComponent] = useState("null");
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const refreshInterest = () => {
+    setRefreshKey((prev) => prev + 1);
+  };
+
+  const menuData = [
+    {
+      title: "마이페이지",
+      icon: <FaUser />,
+      items: [
+        { name: "내정보조회", component: "FundInfo" },
+        { name: "회원탈퇴", component: "FundInfo" },
+      ],
+    },
+    {
+      title: "예/적금",
+      icon: <FaPiggyBank />,
+      items: [{ name: "펀드조회", component: "FundInfo" }],
+    },
+    {
+      title: "조회/이체",
+      icon: <FaExchangeAlt />,
+      items: [
+        { name: "보유계좌", component: "InquireAccont" },
+        { name: "거래내역", component: "InquireTransfer" },
+      ],
+    },
+    {
+      title: "대출",
+      icon: <FaMoneyCheckAlt />,
+      items: [
+        { name: "대출신청하기", component: "LoanApply" },
+        { name: "대출현황 및 중도상환처리", component: "MyLoanStatus" },
+        { name: "이자납입내역", component: "MyInterest" },
+        { name: "연체내역", component: "MyLateInterest" },
+        { name: "대출계산기", component: "LoanCalculator" },
+      ],
+    },
+    {
+      title: "외환",
+      icon: <FaGlobe />,
+      items: [
+        { name: "My 지갑", component: "ExchangeWalletStatus" },
+        { name: "환전내역 조회", component: "ExList" },
+        { name: "외환 지갑 해지", component: "ExAccountManagement" },
+      ],
+    },
+    {
+      title: "펀드",
+      icon: <FaChartLine />,
+      items: [
+        { name: "펀드정보조회", component: "MyFundInfo" },
+        { name: "펀드계좌개설", component: "OpenAccount" },
+        { name: "펀드계좌해지", component: "CloseAccount" },
+        { name: "펀드거래내역", component: "TransHistory" },
+      ],
+    },
+  ];
+
+  const renderComponent = () => {
+    switch (selectedComponent) {
+      // 조회/이체 컴포넌트 호출 시작
+      case "InquireAccont":
+        return <InquireAccont />;
+      case "InquireTransfer":
+        return <InquireTransfer />;
+      // 조회/이체 컴포넌트 호출 종료
+      // 대출 컴포넌트 호출 시작
+      case "LoanApply":
+        return <LoanApply />;
+      case "MyLoanStatus":
+        return <MyLoanStatus key={refreshKey} onRefresh={refreshInterest} />;
+      case "MyInterest":
+        return <MyInterest key={refreshKey} onRefresh={refreshInterest} />;
+      case "MyLateInterest":
+        return <MyLateInterest key={refreshKey} onRefresh={refreshInterest} />;
+      case "LoanCalculator":
+        return <LoanCalculator />;
+      // 대출 컴포넌트 호출 종료
+      // 외환 컴포넌트 호출 시작
+      case "ExchangeWalletStatus":
+        return <ExchangeWalletStatus />;
+      case "ExList":
+        return <ExList />;
+      case "ExAccountManagement":
+        return <ExAccountManagement />;
+      // 외환 컴포넌트 호출 종료
+      // 펀드 컴포넌트 호출 시작
+      case "MyFundInfo":
+        return <MyFundInfo />;
+      case "OpenAccount":
+        return <OpenAccount />;
+      case "CloseAccount":
+        return <CloseAccount />;
+      case "TransHistory":
+        return <TransHistory />;
+      // 펀드 컴포넌트 호출 종료
+      default:
+        return <div className="mypage-placeholder">메뉴를 선택해주세요.</div>;
+    }
+  };
+
   return (
-    <div style={{ minHeight: 600 }}>
-      <img
-        src="/Images/loan/LoanStatus.png"
-        alt="벤치마킹화면"
-        style={{
-          display: "block",
-          margin: "100px auto",
-          width: "600px",
-          height: "auto",
-          border: "1px solid black",
-        }}
-      />
+    <div className="mypage-container">
+      <aside className="mypage-sidebar">
+        {menuData.map((menu, idx) => (
+          <div key={idx} className="mypage-menuGroup">
+            <div
+              className="mypage-menuTitle"
+              onClick={() =>
+                setActiveMenuIndex(activeMenuIndex === idx ? null : idx)
+              }
+            >
+              <span className="mypage-menuIcon">{menu.icon}</span>
+              <span>{menu.title}</span>
+              {activeMenuIndex === idx ? <FaChevronUp /> : <FaChevronDown />}
+            </div>
+            {activeMenuIndex === idx && (
+              <div className="mypage-subMenu">
+                {menu.items.map((item, subIdx) => (
+                  <div
+                    key={subIdx}
+                    className={`mypage-subItem ${
+                      selectedComponent === item.component ? "active" : ""
+                    }`}
+                    onClick={() => setSelectedComponent(item.component)}
+                  >
+                    {item.name}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </aside>
+
+      <main className="mypage-content">{renderComponent()}</main>
     </div>
   );
 };

@@ -60,26 +60,3 @@ button {
 .sideTable li {
   list-style: none;
 }
-
-.loanList {
-  display: grid;
-  min-height: 650px;
-  align-content: center;
-  justify-content: center;
-  background-color: black;
-}
-
-.listTable {
-  background-color: black;
-}
-
-.listTable tr,
-.listTable th,
-.listTable td {
-  border-style: solid;
-  border-width: 1px;
-  border-color: white;
-  padding: 5px;
-  text-align: right;
-  color: white;
-}
