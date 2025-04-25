@@ -3,7 +3,7 @@ import { getCustomerID } from "../../jwt/AxiosToken";
 import RefreshToken from "../../jwt/RefreshToken";
 import useExchangeRates from "./useExchangeRates";
 import { useNavigate } from "react-router-dom";
-
+import styles from "../../Css/exchange/ExRequest.module.css"; 
 const ExRequest = () => {
   const customer_id = getCustomerID();
   const navigate = useNavigate();
@@ -19,8 +19,6 @@ const ExRequest = () => {
 
   const today = new Date().toISOString().split("T")[0];
   const { rates } = useExchangeRates(today);
-
-
 
   // 입력 시 처리
   const handleInputChange = (e) => {
@@ -40,7 +38,6 @@ const ExRequest = () => {
       setInputAmount("");
     }
   };
-  
 
   useEffect(() => {
     const id = getCustomerID();
@@ -140,17 +137,17 @@ const ExRequest = () => {
   };
 
   return (
-    <div style={{ maxWidth: "650px", margin: "40px auto", fontFamily: "sans-serif", minHeight: "570px" }}>
-      <h2>💱 외환 거래</h2>
+    <div className={styles.wrapper}> {/* 기존 인라인 스타일 제거 후 wrapper 적용 */}
+      <h2 className={styles.title}>💱 외환 거래</h2>
       <ul>
-        <li>100만원 이상의 구매거래는 관리자의 승인이 필요합니다.</li>
+        <li className={styles.sub}>100만원 이상의 구매거래는 관리자의 승인이 필요합니다.</li>
       </ul>
 
       <label>거래 유형</label>
       <select
         value={transactionType}
         onChange={(e) => setTransactionType(e.target.value)}
-        style={{ display: "block", marginBottom: "1rem", padding: "0.5rem", width: "100%" }}
+        className={styles.input}
       >
         <option value="buy">외화 구매 (KRW → 외화)</option>
         <option value="sell">외화 판매 (외화 → KRW)</option>
@@ -162,7 +159,7 @@ const ExRequest = () => {
           const acc = accounts.find((a) => a.account_number === e.target.value);
           setSelectedAccount(acc);
         }}
-        style={{ display: "block", marginBottom: "1rem", padding: "0.5rem", width: "100%" }}
+        className={styles.input}
       >
         <option value="">-- 계좌 선택 --</option>
         {accounts.map((acc) => (
@@ -173,7 +170,7 @@ const ExRequest = () => {
       </select>
 
       {selectedAccount && (
-        <p style={{ marginBottom: "1rem" }}>
+        <p className={styles.balance}>
           <strong>잔액: ₩{Number(selectedAccount.balance).toLocaleString()}</strong>
         </p>
       )}
@@ -182,7 +179,7 @@ const ExRequest = () => {
       <select
         value={selectedCurrency}
         onChange={(e) => setSelectedCurrency(e.target.value)}
-        style={{ display: "block", marginBottom: "1rem", padding: "0.5rem", width: "100%" }}
+        className={styles.input}
       >
         <option value="">-- 통화 선택 --</option>
         {(transactionType === "buy" ? rates : rates.filter((r) =>
@@ -195,7 +192,7 @@ const ExRequest = () => {
       </select>
 
       {transactionType === "sell" && selectedCurrency && (
-        <p style={{ marginBottom: "1rem" }}>
+        <p className={styles.balance}>
           <strong>보유 {selectedCurrency}: {walletBalance ?? 0}</strong>
         </p>
       )}
@@ -208,11 +205,11 @@ const ExRequest = () => {
         placeholder={transactionType === "buy" ? "예: 100000" : "예: 100.12"}
         value={inputAmount}
         onChange={handleInputChange}
-        style={{ display: "block", marginBottom: "1rem", padding: "0.5rem", width: "100%" }}
+        className={styles.input}
       />
 
       {exchangedAmount && (
-        <p>
+        <p className={styles.estimate}>
           예상 환전 결과: <strong>{transactionType === "buy"
             ? `${exchangedAmount} ${selectedCurrency}`
             : `${parseInt(exchangedAmount).toLocaleString()} KRW`}</strong>
@@ -221,24 +218,16 @@ const ExRequest = () => {
 
       <button
         onClick={handleSubmit}
-        style={{
-          backgroundColor: "#4CAF50",
-          color: "white",
-          padding: "0.75rem 1.5rem",
-          border: "none",
-          borderRadius: "4px",
-          cursor: "pointer",
-          marginTop: "1rem",
-        }}
+        className={styles.submit}
         disabled={!selectedAccount || !selectedCurrency || !inputAmount}
       >
         {transactionType === "buy" ? "환전 신청" : "외화 판매"}
       </button>
-      <p style={{ fontSize: "0.9rem", color: "#888" }}>
-            ※ 위 환전 금액은 수수료가 포함된 환율 기준으로 계산되었습니다.
+      <p className={styles.sub}>
+        ※ 위 환전 금액은 수수료가 포함된 환율 기준으로 계산되었습니다.
       </p>
       {result && (
-        <div style={{ marginTop: "2rem", backgroundColor: "#f9f9f9", padding: "1rem", borderRadius: "8px" }}>
+        <div className={styles.resultBox}> {/* 기존 인라인 스타일 제거 */}
           <h3>거래 요청 완료</h3>
           <p>
             {result.request_amount.toLocaleString()} {transactionType === "buy" ? "KRW" : selectedCurrency}
@@ -246,18 +235,13 @@ const ExRequest = () => {
             {result.exchanged_amount.toLocaleString()} {transactionType === "buy" ? selectedCurrency : "KRW"}
           </p>
           <p>
-            거래 시간:{" "}
-            {result.exchange_transaction_date
-              ? result.exchange_transaction_date.replace("T", " ")
-              : "시간 정보 없음"}
+            거래 시간: {result.exchange_transaction_date ? result.exchange_transaction_date.replace("T", " ") : "시간 정보 없음"}
           </p>
-          <button>
+          <button className={styles.goWallet}>
             <a href="/exchange_wallet_status" style={{ textDecoration: "none", color: "inherit" }}>
               지갑으로 이동
             </a>
           </button>
-          
-
         </div>
       )}
     </div>
