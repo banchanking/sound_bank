@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import { Container, Tabs, Tab, Accordion, Form, Button } from "react-bootstrap";
+import { Form, Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
-import "../Css/customer_center/FAQ.css";
+import styles from "../Css/customer_center/FAQ.module.css";
 
 const FAQ = () => {
-  // FAQ 데이터 (카테고리별로 분류, 나중에 API로 대체 가능)
   const faqData = {
     all: [
       { question: "계좌 개설은 어떻게 하나요?", answer: "홈페이지 우측 상단의 '계좌개설' 버튼을 클릭하여 진행할 수 있습니다." },
@@ -26,83 +25,90 @@ const FAQ = () => {
     forex: [
       { question: "환전 수수료는 얼마인가요?", answer: "환전 수수료는 통화와 금액에 따라 다르며, '외환' 메뉴에서 확인 가능합니다." },
     ],
-    fund:[
-      {question: "펀드 해지 시 수수료는 어떻게 되나요?" ,answer:"연금저축신탁 해지 시 기타소득세가 부과될 수 있으며, 소득공제 여부에 따라 세율이 달라집니다. 영업점에서 상담 후 처리하세요."}
+    fund: [
+      { question: "펀드 해지 시 수수료는 어떻게 되나요?", answer: "연금저축신탁 해지 시 기타소득세가 부과될 수 있으며, 소득공제 여부에 따라 세율이 달라집니다. 영업점에서 상담 후 처리하세요." }
     ],
   };
 
-  // 검색어 상태
   const [searchTerm, setSearchTerm] = useState("");
-  // 선택된 탭 상태
   const [activeTab, setActiveTab] = useState("all");
+  const [openIndex, setOpenIndex] = useState(null); // 열리는 질문 상태
 
-  // 검색어와 탭에 따라 FAQ 필터링
   const filteredFAQs = faqData[activeTab].filter(
     (faq) =>
       faq.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
       faq.answer.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  return (
-    <Container fluid className="faq-container">
-      {/* 제목 */}
-      <h2 className="faq-title">자주하는 질문</h2>
+  const tabList = [
+    { key: "all", label: "전체" },
+    { key: "account", label: "계좌" },
+    { key: "transfer", label: "이체" },
+    { key: "loan", label: "대출" },
+    { key: "forex", label: "외환" },
+    { key: "fund", label: "펀드" },
+  ];
 
-      {/* 검색창 */}
-      <div className="faq-search-box">
-        <Form className="faq-search-form">
+  return (
+    <div className={styles["faq-container"]}>
+      <h2 className={styles["faq-title"]}>자주하는 질문</h2>
+
+      <div className={styles["faq-search-box"]}>
+        <Form className={styles["faq-search-form"]}>
           <Form.Control
             type="search"
             placeholder="궁금한 점을 검색해 보세요"
-            className="faq-search-input"
+            className={styles["faq-search-input"]}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <Button className="faq-search-btn">
+          <Button className={styles["faq-search-btn"]}>
             <FontAwesomeIcon icon={faMagnifyingGlass} />
           </Button>
         </Form>
       </div>
 
-      {/* 추천 검색어 (태그) */}
-      <div className="faq-tags">
-        <span className="faq-tag">계좌 개설</span>
-        <span className="faq-tag">비밀번호</span>
-        <span className="faq-tag">환전</span>
-        <span className="faq-tag">펀드</span>
-        <span className="faq-tag">대출</span>
+      <div className={styles["faq-tags"]}>
+        <span className={styles["faq-tag"]}>계좌 개설</span>
+        <span className={styles["faq-tag"]}>비밀번호</span>
+        <span className={styles["faq-tag"]}>환전</span>
+        <span className={styles["faq-tag"]}>펀드</span>
+        <span className={styles["faq-tag"]}>대출</span>
       </div>
 
-      {/* 카테고리 탭 */}
-      <Tabs
-        activeKey={activeTab}
-        onSelect={(k) => setActiveTab(k)}
-        className="faq-tabs"
-      >
-        <Tab eventKey="all" title="전체" />
-        <Tab eventKey="account" title="계좌" />
-        <Tab eventKey="transfer" title="이체" />
-        <Tab eventKey="loan" title="대출" />
-        <Tab eventKey="forex" title="외환" />
-        <Tab eventKey="fund" title="펀드" />
-      </Tabs>
-
-      {/* FAQ 목록 */}
-      <div className="faq-list">
-        <Accordion>
-          {filteredFAQs.length > 0 ? (
-            filteredFAQs.map((faq, index) => (
-              <Accordion.Item eventKey={index.toString()} key={index} className="faq-item">
-                <Accordion.Header>{faq.question}</Accordion.Header>
-                <Accordion.Body>{faq.answer}</Accordion.Body>
-              </Accordion.Item>
-            ))
-          ) : (
-            <p className="faq-no-results">검색 결과가 없습니다.</p>
-          )}
-        </Accordion>
+      <div className={styles["faq-tabs"]}>
+        {tabList.map((tab) => (
+          <button
+            key={tab.key}
+            className={`${styles["faq-tab"]} ${activeTab === tab.key ? styles["active"] : ""}`}
+            onClick={() => setActiveTab(tab.key)}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
-    </Container>
+
+      <div className={styles["faq-list"]}>
+        {filteredFAQs.length > 0 ? (
+          filteredFAQs.map((faq, index) => (
+            <div
+              key={index}
+              className={styles["faq-item"]}
+              onClick={() => setOpenIndex(openIndex === index ? null : index)}
+            >
+              <div className={styles["faq-question"]}>{faq.question}</div>
+              <div
+                className={`${styles["faq-answer-wrapper"]} ${openIndex === index ? styles["open"] : ""}`}
+              >
+                <div className={styles["faq-answer"]}>{faq.answer}</div>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className={styles["faq-no-results"]}>검색 결과가 없습니다.</p>
+        )}
+      </div>
+    </div>
   );
 };
 
