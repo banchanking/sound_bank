@@ -1,8 +1,8 @@
-.page {
+.auto-page {
   display: flex;
 }
 
-.wrapper {
+.auto-wrapper {
   max-width: 600px;
   width: 100%;
   margin: 50px auto;
@@ -10,63 +10,72 @@
   background: #ffffff;
   border-radius: 24px;
   border: 1.5px solid #e2e4e7;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
   font-family: 'Noto Sans KR', sans-serif;
-  animation: fadeIn 0.4s ease;
+  animation: auto-fadeIn 0.4s ease;
 }
 
-.title {
+.auto-title {
   font-size: 26px;
   font-weight: 700;
   text-align: center;
   color: #1a1a1a;
   margin-bottom: 32px;
-  animation: fadeUp 0.6s ease;
+  animation: auto-fadeUp 0.6s ease;
 }
 
-.form {
+.auto-form {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  animation: fadeIn 0.4s ease;
+  animation: auto-fadeIn 0.4s ease;
 }
 
-input,
-select {
+.auto-input,
+.auto-select {
   padding: 12px;
   border: 1px solid #ccc;
   border-radius: 10px;
   font-size: 15px;
   background-color: #f8f8f8;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.3s;
 }
 
-.radioRow {
+.auto-input:focus,
+.auto-select:focus {
+  border-color: #3a3a3c;
+  outline: none;
+}
+
+.auto-radioRow {
   display: flex;
   gap: 16px;
   margin-top: 6px;
 }
 
-.radioRow label {
+.auto-radioRow label {
   display: flex;
   align-items: center;
   font-size: 14px;
   gap: 6px;
 }
 
-.monthly {
+.auto-monthly {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.terms {
+.auto-terms {
   display: flex;
   align-items: center;
   gap: 8px;
   font-size: 14px;
 }
 
-.terms button {
+.auto-terms button {
   font-size: 12px;
   border: none;
   background: transparent;
@@ -74,7 +83,7 @@ select {
   cursor: pointer;
 }
 
-.submitButton {
+.auto-submitButton {
   width: 100%;
   padding: 14px;
   background: linear-gradient(to right, #3a3a3c, #2c2c2e);
@@ -86,20 +95,19 @@ select {
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  animation: fadeInUp 0.5s ease; /* 버튼만 0.5초 유지 허용 */
+  animation: auto-fadeInUp 0.5s ease;
 }
 
-.submitButton:hover {
+.auto-submitButton:hover {
   filter: brightness(1.07);
 }
 
-.submitButton:disabled {
+.auto-submitButton:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }
 
-/* 모달 */
-.modalOverlay {
+.auto-modalOverlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -112,28 +120,28 @@ select {
   align-items: center;
 }
 
-.modalBox {
+.auto-modalBox {
   background: #fff;
   padding: 30px;
   border-radius: 16px;
   max-width: 500px;
   width: 90%;
   box-shadow: 0 6px 30px rgba(0, 0, 0, 0.15);
-  animation: fadeInUp 0.4s ease;
+  animation: auto-fadeInUp 0.4s ease;
 }
 
-.modalBox h3 {
+.auto-modalBox h3 {
   font-size: 20px;
   margin-bottom: 16px;
 }
 
-.modalBox p {
+.auto-modalBox p {
   font-size: 14px;
   line-height: 1.6;
   color: #333;
 }
 
-.modalBox button {
+.auto-modalBox button {
   margin-top: 20px;
   padding: 10px 20px;
   background: #444;
@@ -143,17 +151,16 @@ select {
   cursor: pointer;
 }
 
-.modalBox button:hover {
+.auto-modalBox button:hover {
   background: #2c2c2c;
 }
 
-/* 애니메이션 (사뱅스타일 기준 반영) */
-@keyframes fadeIn {
+@keyframes auto-fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
-@keyframes fadeInUp {
+@keyframes auto-fadeInUp {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }

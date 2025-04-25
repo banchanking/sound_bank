@@ -1,9 +1,5 @@
 import React, { useState } from "react";
-import {
-  setAuthToken,
-  setCustomerID,
-  setRefreshToken,
-} from "../jwt/AxiosToken";
+import { setAuthToken, setCustomerID } from "../jwt/AxiosToken";
 import "../Css/customer/Login.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -47,7 +43,7 @@ const Login = () => {
   return (
     <div className="login-wrap">
       <div className="login-container">
-        <h1>로그인</h1>
+        <h1>고객 로그인</h1>
         <form onSubmit={onLogin}>
           <div>
             <label>아이디</label>

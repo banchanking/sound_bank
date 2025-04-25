@@ -77,10 +77,10 @@ function TransMultiApprove() {
   };
 
   return (
-    <div className={styles.approveWrap}>
+    <div className={styles['multiAdmin-approveWrap']}>
       <h2>다건이체 승인 관리</h2>
 
-      <table className={styles.table}>
+      <table className={styles['multiAdmin-table']}>
         <thead>
           <tr>
             <th>고객ID</th>
@@ -105,9 +105,24 @@ function TransMultiApprove() {
                 <td>
                   {group.status === '대기' ? (
                     <>
-                      <button onClick={() => setSelectedKey(group.key)} className={styles.btnDetail}>상세</button>
-                      <button onClick={() => handleApprove(group)} className={styles.btnApprove}>승인</button>
-                      <button onClick={() => handleReject(group)} className={styles.btnReject}>반려</button>
+                      <button
+                        onClick={() => setSelectedKey(group.key)}
+                        className={styles['multiAdmin-btnDetail']}
+                      >
+                        상세
+                      </button>
+                      <button
+                        onClick={() => handleApprove(group)}
+                        className={styles['multiAdmin-btnApprove']}
+                      >
+                        승인
+                      </button>
+                      <button
+                        onClick={() => handleReject(group)}
+                        className={styles['multiAdmin-btnReject']}
+                      >
+                        반려
+                      </button>
                     </>
                   ) : group.status === '승인' ? (
                     <div>
@@ -132,7 +147,7 @@ function TransMultiApprove() {
               {selectedKey === group.key && (
                 <tr>
                   <td colSpan="5">
-                    <table className={styles.detailTable}>
+                    <table className={styles['multiAdmin-detailTable']}>
                       <thead>
                         <tr>
                           <th>입금계좌</th>
@@ -160,7 +175,7 @@ function TransMultiApprove() {
         </tbody>
       </table>
 
-      {loading && <div className={styles.loading}>처리중...</div>}
+      {loading && <div className={styles['multiAdmin-loading']}>처리중...</div>}
     </div>
   );
 }

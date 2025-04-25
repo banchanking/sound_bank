@@ -51,10 +51,18 @@
 
 /* 로고 스타일 */
 .logo {
-  font-size: 24px;
-  font-weight: bold;
-  color: #fff !important;
+  width: 120px;
+  height: auto;
   margin-right: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.logo img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
 }
 
 /* 메뉴 목록 전체 */
@@ -98,7 +106,7 @@
   width: 100vw !important;
   position: fixed !important;
   left: 0 !important;
-  top: 66px !important;
+  top: 60px !important;
   margin: 0 !important;
   border: none;
   border-radius: 0;
@@ -304,8 +312,7 @@
   }
 
   .logo {
-    margin-right: 0;
-    margin-bottom: 10px;
+    width: 100px;
   }
 
   .menu {

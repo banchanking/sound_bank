@@ -67,10 +67,10 @@ function TransMultiEdit() {
     <div style={{ display: 'flex', minHeight: '560px' }}>
       <Sidebar />
 
-      <div className={styles.wrapper}>
-        <h2 className={styles.title}>다건이체 관리</h2>
+      <div className={styles["multiEdit-wrapper"]}>
+        <h2 className={styles["multiEdit-title"]}>다건이체 관리</h2>
 
-        <table className={styles.table}>
+        <table className={styles["multiEdit-table"]}>
           <thead>
             <tr>
               <th>요청일</th>
@@ -103,9 +103,9 @@ function TransMultiEdit() {
                 <td>{item.status === '거절' ? (item.reject_reason || '-') : '-'}</td>
                 <td>
                   {item.status === '대기' ? (
-                    <div className={styles.buttonGroup}>
-                      <button onClick={() => setEditItem(item)} className={styles.btnBlue}>수정</button>
-                      <button onClick={() => deleteRow(item.transfer_id)} className={styles.btnRed}>삭제</button>
+                    <div className={styles["multiEdit-buttonGroup"]}>
+                      <button onClick={() => setEditItem(item)} className={styles["multiEdit-btnBlue"]}>수정</button>
+                      <button onClick={() => deleteRow(item.transfer_id)} className={styles["multiEdit-btnRed"]}>삭제</button>
                     </div>
                   ) : (
                     item.approval_date ? new Date(item.approval_date).toLocaleString() : '-'
@@ -117,17 +117,17 @@ function TransMultiEdit() {
         </table>
 
         {editItem && (
-          <div className={styles.modalOverlay}>
-            <div className={styles.modalBox}>
+          <div className={styles["multiEdit-modalOverlay"]}>
+            <div className={styles["multiEdit-modalBox"]}>
               <h3>다건이체 수정</h3>
               <label>이체 금액</label>
               <input type="number" name="amount" value={editItem.amount} onChange={change} />
               <label>메모</label>
               <input type="text" name="memo" value={editItem.memo || ''} onChange={change} />
 
-              <div className={styles.modalButtons}>
-                <button onClick={update} className={styles.modalBtn}>수정</button>
-                <button onClick={() => setEditItem(null)} className={styles.modalBtn}>취소</button>
+              <div className={styles["multiEdit-modalButtons"]}>
+                <button onClick={update} className={styles["multiEdit-modalBtn"]}>수정</button>
+                <button onClick={() => setEditItem(null)} className={styles["multiEdit-modalBtn"]}>취소</button>
               </div>
             </div>
           </div>
