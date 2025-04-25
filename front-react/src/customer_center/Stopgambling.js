@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styles from "../Css/customer_center/StopGambling.module.css"; // 기존 클래스명: report 스타일 모듈화
+import styles from "../Css/customer_center/StopGambling.module.css";
 
 const Stopgambling = () => {
   const [site, setSite] = useState("");
@@ -14,13 +14,9 @@ const Stopgambling = () => {
   };
 
   return (
-    
-    // 전체 wrap (사뱅스타일)
     <div className={styles["report-wrap"]}>
-    <h2 className={styles["report-page-title"]}>청소년을 지키기 위한 첫걸음: 불법도박 제재 신고</h2>
-    {/* 기존 클래스명: report-container */}
-    <div className={styles["report-container"]}>
-
+      <h2 className={styles["report-page-title"]}>청소년을 지키기 위한 첫걸음: 불법도박 제재 신고</h2>
+      <div className={styles["report-container"]}>
         <p className={styles["report-desc"]}>
           도박 환경 위실 제한과 도박 사이트에 중요을 위해 하응하는 <span className={styles["highlight"]}>Sound_Bank 제재</span>
         </p>
@@ -34,7 +30,6 @@ const Stopgambling = () => {
         </p>
 
         <form onSubmit={handleSubmit}>
-          {/* 기존 클래스명: report-label */}
           <label className={styles["report-label"]}>신고할 불법도박 사이트 *</label>
           <input
             type="text"
@@ -55,7 +50,7 @@ const Stopgambling = () => {
             required
           />
           <p className={styles["report-subtext"]}>
-            불법도박 사이트에서 이용되고 있는 토스뱅크 계좌번호를 입력해주세요.
+            불법도박 사이트에서 이용되고 있는 Sound_Bank 계좌번호를 입력해주세요.
           </p>
 
           <label className={styles["report-label"]}>신고 내용 *</label>
@@ -67,7 +62,7 @@ const Stopgambling = () => {
           ></textarea>
 
           <p className={styles["report-subtext"]}>
-            가입, 이용 불법 도박 사이트에서 Sound_Bank 계좌로 받겼하느지 첨부하세요.
+            가입, 이용 불법 도박 사이트에서 Sound_Bank 계좌를 첨부하세요.
           </p>
 
           <label className={styles["report-label"]}>첨부파일 *</label>
@@ -78,7 +73,7 @@ const Stopgambling = () => {
             required
           />
           <p className={styles["report-subtext"]}>
-            Sound_Bank 계좌가 노출된 불법 도박 사이트 화면 캡쳐 이미지로 첨을해주세요.
+            Sound_Bank 계좌가 노출된 불법 도박 사이트 화면 캡쳐 이미지를 첨부해주세요.
           </p>
 
           <button type="submit" className={styles["report-button"]}>
