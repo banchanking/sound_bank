@@ -182,21 +182,23 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<!-- 펀드 매수 확정 -->
 	<select id="findApprovedBuys" resultMap="fundTransactionMap">
 	  SELECT
-	    FUND_TRANSACTION_ID,
-	    CUSTOMER_ID,
-	    FUND_ACCOUNT_ID,
-	    FUND_ID,
-	    FUND_TRANSACTION_TYPE,
-	    FUND_INVEST_AMOUNT,
-	    FUND_UNITS_PURCHASED,
-	    FUND_PRICE_PER_UNIT,
-	    FUND_TRANSACTION_DATE,
-	    STATUS,
-	    WITHDRAW_ACCOUNT_NUMBER
-	  FROM fund_transaction_tbl
-	  WHERE CUSTOMER_ID = #{customer_id}
-	    AND FUND_TRANSACTION_TYPE = 'BUY'
-	    AND STATUS = 'APPROVED'
+	    ft.FUND_TRANSACTION_ID,
+	    ft.CUSTOMER_ID,
+	    ft.FUND_ACCOUNT_ID,
+	    ft.FUND_ID,
+	    ft.FUND_TRANSACTION_TYPE,
+	    ft.FUND_INVEST_AMOUNT,
+	    ft.FUND_UNITS_PURCHASED,
+	    ft.FUND_PRICE_PER_UNIT,
+	    ft.FUND_TRANSACTION_DATE,
+	    ft.STATUS,
+	    ft.WITHDRAW_ACCOUNT_NUMBER,
+	    f.FUND_NAME AS FUND_NAME
+	  FROM fund_transaction_tbl ft
+	  JOIN fund_tbl f ON ft.FUND_ID = f.FUND_ID
+	  WHERE ft.CUSTOMER_ID = #{customer_id}
+	    AND ft.FUND_TRANSACTION_TYPE = 'BUY'
+	    AND ft.STATUS = 'APPROVED'
 	</select>
 	
 	<!-- 사용자 전체 펀드 거래 내역 조회 (매수/환매 포함) -->
