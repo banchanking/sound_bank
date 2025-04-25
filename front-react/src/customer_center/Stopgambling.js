@@ -58,7 +58,7 @@ const Stopgambling = () => {
           required
         />
         <p className="report-subtext">
-          불법도박 사이트에서 이용되고 있는 토스뱅크 계좌번호를 입력해주세요.
+          불법도박 사이트에서 이용되고 있는 Sound_Bank 계좌번호를 입력해주세요.
         </p>
 
         <label className="report-label">신고 내용 *</label>
@@ -71,7 +71,7 @@ const Stopgambling = () => {
         ></textarea>
 
         <p className="report-subtext">
-          가입, 이용 불법 도박 사이트에서 Sound_Bank 계좌로 받겼하느지 첨부하세요.
+          가입, 이용 불법 도박 사이트에서 Sound_Bank 계좌를 첨부하세요.
         </p>
 
         <label className="report-label">첨부파일 *</label>
@@ -82,7 +82,7 @@ const Stopgambling = () => {
           required
         />
         <p className="report-subtext">
-        Sound_Bank 계좌가 노출된 불법 도박 사이트 화면 캡쳐 이미지로 첨을해주세요.
+        Sound_Bank 계좌가 노출된 불법 도박 사이트 화면, 캡쳐 이미지를 첨가 해주세요.
         </p>
 
         <button type="submit" className="report-button">

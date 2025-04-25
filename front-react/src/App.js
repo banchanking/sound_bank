@@ -72,11 +72,8 @@ import LoanChart from "./sound_loan/customer/LoanChart";
 import LoanCreditScore from "./sound_loan/customer/LoanCreditScore";
 import Join from "./customer/Join";
 import Login from "./customer/Login";
-import Authcenter from "./customer_center/Authcenter";
 import SecurityBlocker from "./Common/SecurityBlocker";
 import Charge from "./customer_center/Charge";
-import Businesshour from "./customer_center/Businesshour";
-import AdminNotice from "./customer_center/AdminNotice";
 import Notice from "./customer_center/Notice";
 import IdAuth from "./customer_center/Idauth";
 import DepositJoin from "./productSubscription/DepositJoin";
@@ -222,11 +219,9 @@ function App() {
           <Route path="/faq" element={<FAQ />} />                       {/* 자주하는 질문  */}
           <Route path="/chatbot" element={<Chatbot />} />{" "}          {/* 누르는 상담 (챗봇) */}
           <Route path="/voicebot" element={<Voicebot />} />{" "}        {/* 말하는 상담 (음성봇) */}
-          <Route path="/authcenter" element={<Authcenter />} />{" "}    {/* 인증 센터  */}
           <Route path="/roi" element={<Roi />} />                       {/* 실시간 객체인식 (ROI) */}
           <Route path="/idauth" element={<IdAuth />} />{" "}            {/* 신분증 인증 (OCR) */}
           <Route path="/notice" element={<Notice />} />{" "}            {/* 공지사항(고객용) */}
-          <Route path="/admin/notice" element={<AdminNotice />} />{" "} {/* 공지사항(관리자용) */}
           <Route path="/businesshour" element={<BusinessHour />} />{" "}{/* 이용 시간 */}
           <Route path="/charge" element={<Charge />} />                 {/* 금리 안내 */}
           <Route path="/stopgambling" element={<Stopgambling />} />     {/* 불법 도박 계좌 신고 안내 */}
