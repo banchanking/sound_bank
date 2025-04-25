@@ -1,53 +1,52 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import "../../Css/loan/Loan.css";
+import styles from "../../Css/loan/LoanDetail.module.css";
+import RefreshToken from "../../jwt/RefreshToken";
 
-const LoanDetail = (props) => {
+const LoanDetail = () => {
   const { loan_id } = useParams();
   const navigate = useNavigate();
 
-  const [loan, setLoan] = useState([
-    {
-      loan_id: 0,
-      loan_name: "",
-      loan_amount: 0,
-      interest_rate: 0.0,
-      loan_term: 0,
-      loan_info: "",
-    },
-  ]);
+  const [loan, setLoan] = useState({
+    loan_id: 0,
+    loan_name: "",
+    loan_type: "",
+    loan_min_amount: 0,
+    loan_max_amount: 0,
+    interest_rate: 0.0,
+    prepayment_penalty: 0.0,
+    loan_term: 0,
+    loan_info: "",
+  });
 
   useEffect(() => {
-    fetch("http://localhost:8081/api/loanDetail/" + loan_id)
-      .then((res) => res.json())
-      .then((res) => {
-        setLoan(res);
-      });
+    RefreshToken.get("/loanDetail/" + loan_id).then((res) => {
+      setLoan(res.data);
+    });
   }, [loan_id]);
 
   const updateForm = () => {
     navigate("/loanUpdate/" + loan_id);
   };
 
+  const termsUpdateForm = () => {
+    // 구현 예정
+  };
+
   const deleteForm = () => {
-    fetch("http://localhost:8081/api/loanDelete/" + loan_id, {
-      method: "DELETE",
-    })
-      .then((res) => res.text())
-      .then((res) => {
-        if (res === "ok") {
-          alert("삭제 되었습니다.");
-          navigate("/loanList");
-        } else {
-          alert("삭제 실패");
-          navigate("/loanList");
-        }
+    RefreshToken.delete("/api/loanDelete/" + loan_id)
+      .then(() => {
+        alert("삭제 되었습니다.");
+        navigate("/loanList");
+      })
+      .catch((err) => {
+        alert(err);
       });
   };
 
   return (
-    <div className="loanInsert">
-      <table className="insertTable">
+    <div className={styles.loanDetailContainer}>
+      <table className={styles.loanDetailTable}>
         <thead>
           <tr>
             <th colSpan={2}>
@@ -55,72 +54,61 @@ const LoanDetail = (props) => {
             </th>
           </tr>
         </thead>
-
         <tbody>
           <tr>
-            <th>
-              <label htmlFor="loan_name">대출 상품명 :</label>
-            </th>
+            <th>대출 상품명</th>
             <td>
               <input type="text" value={loan.loan_name} readOnly />
             </td>
           </tr>
           <tr>
-            <th>
-              <label htmlFor="loan_type">대출 유형 :</label>
-            </th>
+            <th>대출 유형</th>
             <td>
-              <input value={loan.loan_type} readOnly />
+              <input type="text" value={loan.loan_type} readOnly />
             </td>
           </tr>
           <tr>
-            <th>
-              {" "}
-              <label htmlFor="loan_min_amount">최소 대출금액 :</label>
-            </th>
+            <th>최소 대출금액</th>
             <td>
-              <input value={loan.loan_min_amount} readOnly />
+              <input type="text" value={loan.loan_min_amount} readOnly />
             </td>
           </tr>
           <tr>
-            <th>
-              <label htmlFor="loan_max_amount">최대 대출금액 :</label>
-            </th>
+            <th>최대 대출금액</th>
             <td>
-              <input type="number" value={loan.loan_max_amount} readOnly />
+              <input type="text" value={loan.loan_max_amount} readOnly />
             </td>
           </tr>
           <tr>
-            <th>
-              <label htmlFor="interest_rate">대출 금리 :</label>
-            </th>
+            <th>대출 금리</th>
             <td>
               <input type="text" value={loan.interest_rate} readOnly />
             </td>
           </tr>
           <tr>
-            <th>
-              <label htmlFor="loan_term">대출기간 :</label>
-            </th>
+            <th>중도상환 수수료(율)</th>
+            <td>
+              <input type="text" value={loan.prepayment_penalty} readOnly />
+            </td>
+          </tr>
+          <tr>
+            <th>대출기간</th>
             <td>
               <input type="text" value={loan.loan_term} readOnly />
             </td>
           </tr>
           <tr>
-            <th>
-              {" "}
-              <label htmlFor="loan_info">대출 정보 :</label>
-            </th>
+            <th>대출 정보</th>
             <td>
-              {" "}
-              <textarea type="textarea" value={loan.loan_info} readOnly />
+              <textarea value={loan.loan_info} readOnly />
             </td>
           </tr>
         </tbody>
         <tfoot>
           <tr>
-            <td colSpan={2} align="center">
-              <button onClick={updateForm}>수정하기</button>
+            <td colSpan={2} className={styles.buttonGroup}>
+              <button onClick={updateForm}>정보수정</button>
+              <button onClick={termsUpdateForm}>약관수정</button>
               <button onClick={deleteForm}>삭제하기</button>
             </td>
           </tr>

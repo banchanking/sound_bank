@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import RefreshToken from '../../jwt/RefreshToken'; 
-import Sidebar from './Sidebar';                 
-import '../../Css/transfer/TransAutoEdit.css';   
-import { getCustomerID } from '../../jwt/AxiosToken'; 
+import RefreshToken from '../../jwt/RefreshToken';
+import styles from '../../Css/transfer/TransAutoEdit.module.css';
+import Sidebar from './Sidebar';
+import { getCustomerID } from '../../jwt/AxiosToken';
 
 function TransAutoEdit() {
   const [list, setList] = useState([]);
-  const [editItem, setEditItem] = useState(null);        // 수정 대상 객체
-  const [displayAmount, setDisplayAmount] = useState(''); // 쉼표 표시용
+  const [editItem, setEditItem] = useState(null);
+  const [displayAmount, setDisplayAmount] = useState('');
 
-  // 페이지 마운트 시 자동이체 목록 불러오기
   useEffect(() => {
     const id = getCustomerID();
     if (!id) {
@@ -25,39 +24,25 @@ function TransAutoEdit() {
       });
   }, []);
 
-  // 수정 모달 열기 (금액 표시용 상태 설정 포함)
   const openEditModal = (item) => {
     setEditItem(item);
-    const [intPart] = String(item.amount).split('.')
-    const formatted = Number(intPart).toLocaleString("ko-KR");
-    setDisplayAmount(formatted);
+    const [intPart] = String(item.amount).split('.');
+    setDisplayAmount(Number(intPart).toLocaleString("ko-KR"));
   };
 
-  // 입력값 변경 처리
   const change = (e) => {
     const { name, value } = e.target;
 
     if (name === 'amount') {
-      let raw = value.replace(/[^\d.]/g, '');
-
-      if (!raw) {
-        setDisplayAmount('');
-        setEditItem(prev => ({ ...prev, amount: '' }));
-        return;
-      }
-
-      const [intPart] = raw.split('.')
-      const formatted = Number(intPart).toLocaleString('ko-KR');
-
-      setDisplayAmount(formatted);
+      const raw = value.replace(/[^\d.]/g, '');
+      const [intPart] = raw.split('.');
+      setDisplayAmount(raw ? Number(intPart).toLocaleString('ko-KR') : '');
       setEditItem(prev => ({ ...prev, amount: raw }));
-      return;
+    } else {
+      setEditItem(prev => ({ ...prev, [name]: value }));
     }
-
-    setEditItem(prev => ({ ...prev, [name]: value }));
   };
 
-  // 수정 요청
   const update = () => {
     RefreshToken.put('http://localhost:8081/api/transAuto/update', editItem)
       .then(() => {
@@ -71,7 +56,6 @@ function TransAutoEdit() {
       });
   };
 
-  // 삭제 요청
   const handleDelete = (id) => {
     if (window.confirm('정말 삭제하시겠습니까?')) {
       RefreshToken.delete(`http://localhost:8081/api/transAuto/delete/${id}`)
@@ -86,36 +70,21 @@ function TransAutoEdit() {
     }
   };
 
-  // 모달 내 삭제 처리
-  const remove = () => {
-    if (!window.confirm('정말 삭제하시겠습니까?')) return;
-    RefreshToken.delete(`http://localhost:8081/api/transAuto/delete/${editItem.transfer_id}`)
-      .then(() => {
-        alert('삭제 완료');
-        setEditItem(null);
-        window.location.reload();
-      })
-      .catch(err => {
-        console.error('삭제 실패:', err);
-        alert('삭제 실패');
-      });
-  };
-
   return (
-    <div style={{ display: 'flex', minHeight: '600px' }}>
+    <div className={styles.page}>
       <Sidebar />
 
-      <div className="auto-edit-wrap">
-        <h2>자동이체 관리</h2>
+      <div className={styles.wrapper}>
+        <h2 className={styles.title}>자동이체 관리</h2>
 
-        <table className="edit-table">
+        <table className={styles.table}>
           <thead>
             <tr>
               <th>출금계좌</th>
               <th>입금계좌</th>
               <th>수취인</th>
-              <th>이체금액</th>
-              <th>이체방식</th>
+              <th>금액</th>
+              <th>방식</th>
               <th>메모</th>
               <th>관리</th>
             </tr>
@@ -126,16 +95,16 @@ function TransAutoEdit() {
                 <td>{item.out_account_number}</td>
                 <td>{item.in_account_number}</td>
                 <td>{item.in_name}</td>
-                <td>{Number(item.amount).toLocaleString('ko-KR')}원</td>
+                <td>{Number(item.amount).toLocaleString()}원</td>
                 <td>
                   {item.schedule_mode === 'day'
-                    ? `매주 ${['월','화','수','목','금','토','일'][item.schedule_day - 1]}요일 ${item.schedule_time}분 이체실행`
-                    : `매월 ${item.schedule_month_day}일 ${item.schedule_time}분 이체실행`}
+                    ? `매주 ${['월','화','수','목','금','토','일'][item.schedule_day - 1]}요일 ${item.schedule_time}`
+                    : `매월 ${item.schedule_month_day}일 ${item.schedule_time}`}
                 </td>
                 <td>{item.memo}</td>
                 <td>
-                  <button className="edit-btn" onClick={() => openEditModal(item)}>수정</button>
-                  <button className="delete-btn" onClick={() => handleDelete(item.transfer_id)}>삭제</button>
+                  <button className={styles.editBtn} onClick={() => openEditModal(item)}>수정</button>
+                  <button className={styles.deleteBtn} onClick={() => handleDelete(item.transfer_id)}>삭제</button>
                 </td>
               </tr>
             ))}
@@ -143,23 +112,36 @@ function TransAutoEdit() {
         </table>
 
         {editItem && (
-          <div className="edit-modal-overlay">
-            <div className="edit-modal-box">
+          <div className={styles.modalOverlay}>
+            <div className={styles.modalBox}>
               <h3>자동이체 수정</h3>
 
               <label>이체금액</label>
-              <input className="input" type="text" name="amount" value={displayAmount} onChange={change} /> 원
+              <input
+                type="text"
+                name="amount"
+                value={displayAmount}
+                onChange={change}
+              />
 
               <label>이체방식</label>
-              <select name="schedule_mode" value={editItem.schedule_mode} onChange={change}>
+              <select
+                name="schedule_mode"
+                value={editItem.schedule_mode}
+                onChange={change}
+              >
                 <option value="day">요일 반복</option>
                 <option value="monthly">매월 지정일</option>
               </select>
-
-              {editItem.schedule_mode === 'day' && (
+              
+              {editItem.schedule_mode === 'day' ? (
                 <>
                   <label>매주</label>
-                  <select name="schedule_day" value={editItem.schedule_day} onChange={change}>
+                  <select
+                    name="schedule_day"
+                    value={editItem.schedule_day}
+                    onChange={change}
+                  >
                     <option value="1">월요일</option>
                     <option value="2">화요일</option>
                     <option value="3">수요일</option>
@@ -169,23 +151,39 @@ function TransAutoEdit() {
                     <option value="7">일요일</option>
                   </select>
                 </>
-              )}
-
-              {editItem.schedule_mode === 'monthly' && (
-                <>
-                  매월 <input className="short-input" type="number" name="schedule_month_day" value={editItem.schedule_month_day || ''} onChange={change} /> 일
-                </>
+              ) : (
+                <div className={styles.monthDayWrap}>
+                  <label>매월</label>
+                  <input
+                    type="number"
+                    name="schedule_month_day"
+                    value={editItem.schedule_month_day || ''}
+                    onChange={change}
+                    className={styles.shortInput}
+                  />
+                  <span>일</span>
+                </div>
               )}
 
               <label>이체시간</label>
-              <input className="input" type="time" name="schedule_time" value={editItem.schedule_time} onChange={change} />
+              <input
+                type="time"
+                name="schedule_time"
+                value={editItem.schedule_time}
+                onChange={change}
+              />
 
-              <label>이체메모</label>
-              <input type="text" name="memo" value={editItem.memo || ''} onChange={change} />
+              <label>메모</label>
+              <input
+                type="text"
+                name="memo"
+                value={editItem.memo || ''}
+                onChange={change}
+              />
 
-              <div className="modal-buttons">
-                <button onClick={update}>수정하기</button>
-                <button onClick={() => setEditItem(null)} style={{ backgroundColor: '#bbb' }}>취소</button>
+              <div className={styles.modalButtons}>
+                <button onClick={update}>수정</button>
+                <button onClick={() => setEditItem(null)}>취소</button>
               </div>
             </div>
           </div>

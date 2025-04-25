@@ -3,20 +3,19 @@ import RefreshToken from '../../jwt/RefreshToken';
 import Sidebar from './Sidebar';
 import { getCustomerID } from '../../jwt/AxiosToken';
 import { useNavigate } from 'react-router-dom';
-import '../../Css/transfer/TransLimit.css';
+import styles from '../../Css/transfer/TransLimit.module.css';
 
 function TransLimit() {
   const navigate = useNavigate();
 
   const [accounts, setAccounts] = useState([]);
   const [accountNumber, setAccountNumber] = useState('');
-  const [requestedLimit, setRequestedLimit] = useState(''); // 실제 전송 값
-  const [displayLimit, setDisplayLimit] = useState('');     // 표시용 쉼표포함
+  const [requestedLimit, setRequestedLimit] = useState('');
+  const [displayLimit, setDisplayLimit] = useState('');
   const [reason, setReason] = useState('');
   const [customerId, setCustomerId] = useState('');
-  const [currentLimit, setCurrentLimit] = useState(null); // 기존 승인된 한도
+  const [currentLimit, setCurrentLimit] = useState(null);
 
-  // 고객 ID 설정 및 계좌 목록 조회
   useEffect(() => {
     const id = getCustomerID();
     if (!id) {
@@ -27,7 +26,6 @@ function TransLimit() {
 
     setCustomerId(id);
 
-    // 계좌 목록 조회
     RefreshToken.get(`http://localhost:8081/api/accounts/allAccount/${id}`)
       .then(res => {
         const raw = res.data;
@@ -36,13 +34,11 @@ function TransLimit() {
       })
       .catch(err => console.error('계좌 불러오기 실패:', err));
 
-    // 기존 승인 한도 조회
     RefreshToken.get(`http://localhost:8081/api/transLimit/approvedLimit/${id}`)
       .then(res => setCurrentLimit(res.data))
       .catch(err => console.error("기존 한도 조회 실패:", err));
   }, []);
 
-  // 입력값 변경 시 쉼표 포함 표시 처리
   const handleLimitChange = (e) => {
     let raw = e.target.value.replace(/[^0-9]/g, '');
     const formatted = raw ? Number(raw).toLocaleString("ko-KR") : '';
@@ -50,7 +46,6 @@ function TransLimit() {
     setDisplayLimit(formatted);
   };
 
-  // 신청 등록
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!accountNumber || !requestedLimit || !reason) {
@@ -85,10 +80,9 @@ function TransLimit() {
   };
 
   return (
-    <div className="limit-container">
+    <div className={styles.limitContainer}>
       <Sidebar />
-
-      <div className="limit-form-box">
+      <div className={styles.formBox}>
         <h2>1일 이체한도 변경신청</h2>
         <form onSubmit={handleSubmit}>
           <label>계좌선택</label>
@@ -111,10 +105,8 @@ function TransLimit() {
             onChange={handleLimitChange}
             placeholder="예: 5,000,000원"
           />
-
-          {/* 기존한도 표시 */}
           {currentLimit !== null && (
-            <p style={{ marginTop: '5px', color: 'gray' }}>
+            <p className={styles.currentLimit}>
               현재한도: {Number(currentLimit).toLocaleString("ko-KR")}원
             </p>
           )}
@@ -126,7 +118,7 @@ function TransLimit() {
             placeholder="사유를 입력해주세요"
           />
 
-          <button type="submit">신청하기</button>
+          <button type="submit" className={styles.submitButton}>신청하기</button>
         </form>
       </div>
     </div>

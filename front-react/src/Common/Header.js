@@ -697,7 +697,7 @@ const Header = () => {
                       <NavDropdown.Item
                         className="sub-item"
                         as={Link}
-                        to="/admin_ex_request_list"
+                        to="/exchangeRequestList"
                       >
                         환전 신청 현황
                       </NavDropdown.Item>
@@ -894,15 +894,6 @@ const Header = () => {
                         신분증 인증
                       </NavDropdown.Item>
                     </li>
-                    <li>
-                      <NavDropdown.Item
-                        className="sub-item"
-                        as={Link}
-                        to="/bankauth"
-                      >
-                        통장 인증
-                      </NavDropdown.Item>
-                    </li>
                   </ul>
 
                   {/* 문의 */}
@@ -911,12 +902,7 @@ const Header = () => {
                       문의
                     </NavDropdown.Item>
                     <li>
-                      <NavDropdown.Item className="sub-item" as={Link} to="#">
-                        사업 제휴
-                      </NavDropdown.Item>
-                    </li>
-                    <li>
-                      <NavDropdown.Item className="sub-item" as={Link} to="#">
+                      <NavDropdown.Item className="sub-item" as={Link} to="/Stopgambling">
                         불법도박 계좌 신고
                       </NavDropdown.Item>
                     </li>

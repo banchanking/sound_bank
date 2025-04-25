@@ -1,0 +1,87 @@
+/* 전체 레이아웃 */
+.loanCalc-container {
+  max-width: 700px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  background-color: #fff;
+  font-family: "Noto Sans KR", sans-serif;
+}
+
+.loanCalc-title {
+  text-align: center;
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+/* 입력 필드 스타일 */
+.loanCalc-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.loanCalc-inputs label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.loanCalc-inputs input,
+.loanCalc-inputs select {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-top: 0.3rem;
+}
+
+.loanCalc-inputs button {
+  align-self: flex-start;
+  padding: 0.6rem 1.4rem;
+  font-weight: 500;
+  background-color: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.loanCalc-inputs button:hover {
+  background-color: #145ea8;
+}
+
+/* 결과 영역 */
+.loanCalc-results {
+  border-top: 1px solid #ddd;
+  padding-top: 1.5rem;
+}
+
+.loanCalc-results h3,
+.loanCalc-results h4 {
+  margin-bottom: 0.8rem;
+  font-weight: 600;
+}
+
+.loanCalc-results ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem 0;
+}
+
+.loanCalc-results li {
+  padding: 0.4rem 0;
+  border-bottom: 1px dashed #ccc;
+  font-size: 0.95rem;
+}
+
+.loanCalc-results p {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-top: 0.4rem;
+}
