@@ -1,21 +1,22 @@
 import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../../Css/loan/Loan.css";
+import RefreshToken from "../../jwt/RefreshToken";
+import "../../Css/loan/LoanInsert.css";
 
-const LoanInsertForm = (props) => {
+const LoanInsertForm = () => {
   const navigate = useNavigate();
   const formRef = useRef();
   const [loan, setLoan] = useState({
-    loan_name: "", // 대출 상품명
-    loan_min_amount: 0, // 최소 대출 금액
-    loan_max_amount: 0, // 최대 대출 금액
-    interest_rate: 0.0, // 연 이자율
-    prepayment_penalty: 0.0,
-    loan_term: 0, // 최대 대출 기간
-    loan_info: "", // 대출 정보
-    loan_type: "", // 대출 유형
-    term_title: "", // 약관 제목
-    term_content: "", // 약관 내용
+    loan_name: "",
+    loan_min_amount: null,
+    loan_max_amount: null,
+    interest_rate: null,
+    prepayment_penalty: null,
+    loan_term: null,
+    loan_info: "",
+    loan_type: "",
+    term_title: "",
+    term_content: "",
   });
 
   const changeValue = (e) => {
@@ -33,53 +34,20 @@ const LoanInsertForm = (props) => {
     e.preventDefault();
     const minAmount = parseInt(loan.loan_min_amount, 10);
     const maxAmount = parseInt(loan.loan_max_amount, 10);
-    if (!loan.loan_name) {
-      alert("대출상품명을 입력하세요.");
-      return null;
-    } else if (!loan.loan_type) {
-      alert("대출 유형을 선택하세요.");
-      return null;
-    } else if (!loan.loan_min_amount) {
-      alert("최소 대출금액을 입력하세요.");
-      return null;
-    } else if (!loan.loan_max_amount) {
-      alert("최대 대출금액을 입력하세요.");
-      return null;
-    } else if (minAmount >= maxAmount) {
-      alert("최소 대출금액은 최대 대출금액보다 작아야 합니다.");
-      return null;
-    } else if (!loan.interest_rate) {
-      alert("금리를 입력하세요.");
-      return null;
-    } else if (!loan.loan_term) {
-      alert("대출 기간을 입력하세요.");
-      return null;
-    } else if (!loan.loan_info) {
-      alert("대출 정보를 입력하세요.");
-      return null;
-    }
-    fetch("http://localhost:8081/api/loanInsert", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json;charset=utf-8",
-      },
-      body: JSON.stringify(loan),
-    })
-      .then((res) => {
-        if (res.status === 201) {
-          return res.json();
-        } else {
-          return null;
-        }
-      })
-      .then((res) => {
-        if (res != null) {
-          alert("상품이 등록되었습니다.");
-          navigate("/loanList");
-        } else {
-          alert("실패");
-          navigate("/loanInsertForm");
-        }
+    if (!loan.loan_name) return alert("대출상품명을 입력하세요.");
+    if (!loan.loan_type) return alert("대출 유형을 선택하세요.");
+    if (!loan.loan_min_amount) return alert("최소 대출금액을 입력하세요.");
+    if (!loan.loan_max_amount) return alert("최대 대출금액을 입력하세요.");
+    if (minAmount >= maxAmount)
+      return alert("최소 대출금액은 최대 대출금액보다 작아야 합니다.");
+    if (!loan.interest_rate) return alert("금리를 입력하세요.");
+    if (!loan.loan_term) return alert("대출 기간을 입력하세요.");
+    if (!loan.loan_info) return alert("대출 정보를 입력하세요.");
+
+    RefreshToken.post("/loanInsert", loan)
+      .then(() => {
+        alert("상품이 등록되었습니다.");
+        navigate("/loanList");
       })
       .catch((err) => {
         console.error("Fetch error:", err);
@@ -88,17 +56,10 @@ const LoanInsertForm = (props) => {
   };
 
   return (
-    <div className="loanInsert">
-      <form ref={formRef}>
-        <table className="insertTable">
-          <thead>
-            <tr>
-              <th colSpan={2}>
-                <h2>대출 상품 등록</h2>
-              </th>
-            </tr>
-          </thead>
-
+    <div className="loanInsertContainer">
+      <h2 className="loanInsertTitle">대출 상품 등록</h2>
+      <form ref={formRef} onSubmit={submitLoan} className="loanInsertForm">
+        <table className="loanInsertTable">
           <tbody>
             <tr>
               <th>
@@ -118,27 +79,32 @@ const LoanInsertForm = (props) => {
                 <label htmlFor="loan_type">대출 유형 :</label>
               </th>
               <td>
-                <select name="loan_type" onChange={changeValue}>
-                  <option value={null}>유형을 선택하세요</option>
-                  <option value={"신용 대출"}>신용 대출</option>
-                  <option vlaue={"담보 대출"}>담보 대출</option>
-                  <option vlaue={"전세 대출"}>전세 대출</option>
-                  <option vlaue={"자동차 대출"}>자동차 대출</option>
-                  <option vlaue={"정책자금 대출"}>정책자금 대출</option>
+                <select name="loan_type" onChange={changeValue} defaultValue="">
+                  <option value="">유형을 선택하세요</option>
+                  <option value="신용 대출">신용 대출</option>
+                  <option value="담보 대출">담보 대출</option>
+                  <option value="전세 대출">전세 대출</option>
+                  <option value="자동차 대출">자동차 대출</option>
+                  <option value="정책자금 대출">정책자금 대출</option>
                 </select>
               </td>
             </tr>
             <tr>
               <th>
-                {" "}
                 <label htmlFor="loan_min_amount">최소 대출금액 :</label>
               </th>
               <td>
                 <input
-                  type="number"
+                  type="text"
                   id="loan_min_amount"
                   name="loan_min_amount"
-                  onChange={changeValue}
+                  value={loan.loan_min_amount || ""}
+                  onChange={(e) =>
+                    setLoan({
+                      ...loan,
+                      loan_min_amount: e.target.value.replace(/[^0-9]/g, ""),
+                    })
+                  }
                 />
               </td>
             </tr>
@@ -148,10 +114,16 @@ const LoanInsertForm = (props) => {
               </th>
               <td>
                 <input
-                  type="number"
+                  type="text"
                   id="loan_max_amount"
                   name="loan_max_amount"
-                  onChange={changeValue}
+                  value={loan.loan_max_amount || ""}
+                  onChange={(e) =>
+                    setLoan({
+                      ...loan,
+                      loan_max_amount: e.target.value.replace(/[^0-9]/g, ""),
+                    })
+                  }
                 />
               </td>
             </tr>
@@ -161,11 +133,16 @@ const LoanInsertForm = (props) => {
               </th>
               <td>
                 <input
-                  type="number"
+                  type="text"
                   id="interest_rate"
                   name="interest_rate"
-                  onChange={changeValue}
-                  step={0.01}
+                  value={loan.interest_rate || ""}
+                  onChange={(e) =>
+                    setLoan({
+                      ...loan,
+                      interest_rate: e.target.value.replace(/[^0-9.]/g, ""),
+                    })
+                  }
                 />
               </td>
             </tr>
@@ -177,11 +154,19 @@ const LoanInsertForm = (props) => {
               </th>
               <td>
                 <input
-                  type="number"
+                  type="text"
                   id="prepayment_penalty"
                   name="prepayment_penalty"
-                  onChange={changeValue}
-                  step={0.01}
+                  value={loan.prepayment_penalty || ""}
+                  onChange={(e) =>
+                    setLoan({
+                      ...loan,
+                      prepayment_penalty: e.target.value.replace(
+                        /[^0-9.]/g,
+                        ""
+                      ),
+                    })
+                  }
                 />
               </td>
             </tr>
@@ -191,22 +176,25 @@ const LoanInsertForm = (props) => {
               </th>
               <td>
                 <input
-                  type="number"
+                  type="text"
                   id="loan_term"
                   name="loan_term"
-                  onChange={changeValue}
+                  value={loan.loan_term || ""}
+                  onChange={(e) =>
+                    setLoan({
+                      ...loan,
+                      loan_term: e.target.value.replace(/[^0-9]/g, ""),
+                    })
+                  }
                 />
               </td>
             </tr>
             <tr>
               <th>
-                {" "}
                 <label htmlFor="loan_info">대출 정보 :</label>
               </th>
               <td>
-                {" "}
                 <textarea
-                  type="text"
                   id="loan_info"
                   name="loan_info"
                   onChange={changeValue}
@@ -231,9 +219,7 @@ const LoanInsertForm = (props) => {
                 <label htmlFor="term_content">약관 내용 :</label>
               </th>
               <td>
-                {" "}
                 <textarea
-                  type="text"
                   id="term_content"
                   name="term_content"
                   onChange={changeValue}
@@ -244,8 +230,10 @@ const LoanInsertForm = (props) => {
           <tfoot>
             <tr>
               <td colSpan={2} align="center">
-                <button onClick={submitLoan}>등록</button>
-                <button onClick={resetBtn}>리셋</button>
+                <button type="submit">등록</button>
+                <button type="button" onClick={resetBtn}>
+                  리셋
+                </button>
               </td>
             </tr>
           </tfoot>
