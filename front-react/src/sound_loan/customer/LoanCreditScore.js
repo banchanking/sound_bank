@@ -3,18 +3,18 @@ import { Doughnut } from "react-chartjs-2";
 import RefreshToken from "../../jwt/RefreshToken";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { useNavigate, useParams } from "react-router-dom";
-
-ChartJS.register(ArcElement, Tooltip, Legend);
+import styles from "../../Css/loan/LoanCreditScore.module.css"; // CSS 모듈 import
 
 const LoanCreditScore = () => {
   const { loan_id } = useParams();
   const navigate = useNavigate();
   const [score, setScore] = useState(null);
   const customerId = localStorage.getItem("customerId");
+
   useEffect(() => {
     if (customerId) {
       RefreshToken.post("/credit-score-request", {
-        customerId: localStorage.getItem("customerId"),
+        customerId,
       })
         .then((res) => {
           setScore(res.data.creditScore);
@@ -24,17 +24,49 @@ const LoanCreditScore = () => {
           alert("신용점수 조회 중 오류가 발생했습니다.");
         });
     }
-  }, []);
+  }, [customerId]);
 
   const chartData = {
     labels: ["신용점수", "잔여 구간"],
     datasets: [
       {
         data: [score || 0, score ? 990 - score : 990],
-        backgroundColor: ["#4caf50", "#e0e0e0"],
+        backgroundColor: ["#1976d2", "#e0e0e0"],
         borderWidth: 1,
       },
     ],
+  };
+
+  const centerTextPlugin = {
+    id: "centerText",
+    beforeDraw: (chart) => {
+      const { width, height, ctx } = chart;
+      ctx.restore();
+      const fontSize = (height / 150).toFixed(2);
+      ctx.font = `${fontSize}em sans-serif`;
+      ctx.textBaseline = "middle";
+      const text = getCreditRank(chart.config.data.datasets[0].data[0]); // score 대신 chart에서 직접 가져옴
+      const textX = Math.round((width - ctx.measureText(text).width) / 2);
+      const textY = height / 2;
+      ctx.fillText(text, textX, textY);
+      ctx.save();
+    },
+  };
+
+  const chartOptions = {
+    plugins: {
+      tooltip: { enabled: true },
+      legend: { display: false },
+    },
+    cutout: "70%",
+  };
+
+  const getCreditRank = (score) => {
+    if (score >= 900) return "1등급";
+    if (score >= 800) return "2등급";
+    if (score >= 700) return "3등급";
+    if (score >= 600) return "4등급";
+    return "5등급";
   };
 
   const requestBtn = () => {
@@ -51,26 +83,33 @@ const LoanCreditScore = () => {
     }
   };
 
+  ChartJS.register(ArcElement, Tooltip, Legend, centerTextPlugin);
+
   return (
-    <div style={{ textAlign: "center", padding: "30px" }}>
-      <h2>📊 신용점수 결과</h2>
+    <div className={styles.container}>
+      <h2 className={styles.title}>📊 신용점수 결과</h2>
       {score !== null ? (
         <>
-          <h3 style={{ marginTop: "20px" }}>
+          <h3 className={styles.scoreText}>
             {customerId}님의 신용점수는 <strong>{score}점</strong>입니다.
           </h3>
-          <div style={{ width: "300px", margin: "auto" }}>
-            <Doughnut data={chartData} />
+          <div className={styles.chartWrapper}>
+            <Doughnut data={chartData} options={chartOptions} />
           </div>
         </>
       ) : (
-        <p>점수를 불러오는 중입니다...</p>
+        <p className={styles.loading}>점수를 불러오는 중입니다...</p>
       )}
-      <div>
-        <button onClick={() => requestBtn()}>대출 진행</button>
-        <button onClick={() => resetBtn()}>신청 취소</button>
+      <div className={styles.buttonGroup}>
+        <button className={styles.btn} onClick={requestBtn}>
+          대출 진행
+        </button>
+        <button className={styles.btn} onClick={resetBtn}>
+          신청 취소
+        </button>
       </div>
     </div>
   );
 };
+
 export default LoanCreditScore;

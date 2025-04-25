@@ -34,8 +34,6 @@ public class SecurityConfig {
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)  // stateless 애플리케이션임을 스프링에게 전달하면 스프링에서 세션과 쿠키를 생성하지 않는다.
 			.and()
 			.authorizeHttpRequests((requests) -> requests
-					.antMatchers(HttpMethod.GET, "/api/loanList","/api/loanCnt","/api/*","/api/exchange/*"
-							,"/api/loanTypeSearch/","/api/loanTypeCnt/","/api/loanNameSearch/","/api/loanNameCnt/","/api/loanDetail/").permitAll() 
 					.antMatchers(HttpMethod.POST, "/api/login.do",
 							"/api/refresh-token",
 							"/api/joinAction.do",

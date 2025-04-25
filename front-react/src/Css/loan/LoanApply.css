@@ -1,88 +1,118 @@
-/* 전체 div */
-.box {
-  width: 800px;
-  margin-left: 30%;
-  text-align: center;
+/* LoanApply.module.css */
+
+.loanApplyContainer {
+  min-height: 600px;
+  background-color: #f8f9fa;
+  padding: 2rem;
 }
 
-/* 상품유형 검색 버튼 영역 */
-.TypeBtn {
-  display: flex;
-  height: 50px;
-  width: 800px;
-  margin-top: 10%;
+.loanApplyBox {
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
-/* 상품유형 검색 버튼 */
-.TypeBtn button {
-  height: 50px;
-  width: 150px;
-}
-/* 상품 검색 영역 */
-.LoanSearch {
-  width: 600px;
-}
-/* 상품목록 출력 영역 */
-.container {
-  padding: 20px;
-  font-family: sans-serif;
-  width: 800px;
-  margin: 10px;
-}
-/* 대출상품 정보 영역 */
-.InfoArea {
-  text-align: left;
-  margin-bottom: 10px;
-  flex-basis: 60%;
-}
-/* 대출 한도 출력 영역 */
-.AmontArea {
-  text-align: right;
-  color: black;
-  font-size: 15px;
-  font-weight: bold;
-  margin-top: 10%;
-  margin-left: 20%;
-  margin-bottom: 10px;
-}
-/* 신청하기 버튼 영역 */
-.ButtonArea {
-  text-align: right;
-  margin-top: 20%;
-  margin-left: -20%;
-}
-/* 상품유형 검색 영역 */
-.BtnSearch {
-  display: flex;
-}
-/* 전체 버튼 css 통일 */
 
-.TextSearch button,
-.BtnSearch button {
+.loanApplySearch {
+  margin-bottom: 2rem;
+}
+
+.loanApplyTextSearch input {
+  width: 350px;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #aaa;
+  border-radius: 6px;
+}
+
+.loanApplyTypeButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.loanApplyTypeButtons button {
+  padding: 0.5rem 1rem;
+  border: 1px solid #666;
+  border-radius: 6px;
+  background-color: #0056b3;
   cursor: pointer;
-  padding: 10px 20px;
-  margin-left: 50px;
-  background-color: black;
 }
 
-.ButtonArea button:hover,
-.TextSearch button:hover,
-.BtnSearch button:hover {
-  color: black;
-  background-color: skyblue;
+.loanApplyTypeButtons button:hover {
+  background-color: #eaeaea;
 }
 
-.LoanDisplay {
-  display: flex;
+.activeTypeButton {
+  background-color: #333;
+  color: white;
+  font-weight: bold;
 }
-.link {
+
+.loanApplyResult h2 {
+  margin-bottom: 1rem;
+}
+
+.loanApplyItem {
+  margin-bottom: 2rem;
+}
+
+.loanApplyInfo {
   display: flex;
-  padding: 5px 10px;
-  background-color: black;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.loanApplyInfoText {
+  flex: 1 1 50%;
+}
+
+.loanApplyLimit {
+  flex: 1 1 30%;
+  font-weight: bold;
+}
+
+.loanApplyButton {
+  flex: 1 1 15%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.applyLink {
+  padding: 0.5rem 1rem;
+  background-color: #007bff;
   color: white;
   text-decoration: none;
-  border-radius: 5px;
-  border-style: solid;
-  border-color: black;
-  cursor: "pointer";
-  margin-left: 50px;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.applyLink:hover {
+  background-color: #0056b3;
+}
+
+.loanApplyPagination {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.loanApplyPagination button {
+  padding: 0.4rem 0.8rem;
+  background-color: #444;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.loanApplyPagination button.active-page,
+.loanApplyPagination button:hover {
+  background-color: #666;
 }
