@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Select, Button, Card, message, InputNumber, Modal, Descriptions, DatePicker } from 'antd';
+import { Form, Input, Select, Button, Card, InputNumber, Modal, Descriptions, DatePicker } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCustomerID } from "../../jwt/AxiosToken";
 import RefreshToken from "../../jwt/RefreshToken";
@@ -83,12 +83,12 @@ const DepositAutosettings = () => {
                 autoTransferAmount: values.amount,
                 autoTransferDay: values.day
             });
-            message.success('자동이체가 설정되었습니다.');
+            console.success('자동이체가 설정되었습니다.');
             form.resetFields();
             fetchAccounts();
         } catch (error) {
             console.error('자동이체 설정 에러:', error);
-            message.error('자동이체 설정에 실패했습니다.');
+            console.error('자동이체 설정에 실패했습니다.');
         }
     };
 

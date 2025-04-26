@@ -22,7 +22,7 @@ const SavingsProduct = () => {
     const fetchSavingsProducts = async () => {
         try {
             setLoading(true);
-            const response = await RefreshToken.get('/api/deposit/products/savings');
+            const response = await RefreshToken.get('/deposit/products/savings');
             setSavingsProducts(response.data);
         } catch (error) {
             console.error('상품 조회 에러:', error);
@@ -53,10 +53,10 @@ const SavingsProduct = () => {
         try {
             const values = await form.validateFields();
             if (editingId) {
-                await RefreshToken.put(`/api/deposit/products/savings/${editingId}`, values);
+                await RefreshToken.put(`/deposit/products/savings/${editingId}`, values);
                 message.success('적금 상품이 수정되었습니다.');
             } else {
-                await RefreshToken.post('/api/deposit/products/savings', values);
+                await RefreshToken.post('/deposit/products/savings', values);
                 message.success('적금 상품이 추가되었습니다.');
             }
             fetchSavingsProducts();
@@ -69,7 +69,7 @@ const SavingsProduct = () => {
 
     const handleDelete = async (id) => {
         try {
-            await RefreshToken.delete(`/api/deposit/products/savings/${id}`);
+            await RefreshToken.delete(`/deposit/products/savings/${id}`);
             message.success('적금 상품이 삭제되었습니다.');
             fetchSavingsProducts();
         } catch (error) {

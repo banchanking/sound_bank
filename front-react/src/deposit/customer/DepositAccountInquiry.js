@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Tabs, Card, Button, Tag, message } from 'antd';
+import { Table, Tabs, Card, Button, Tag} from 'antd';
 import RefreshToken from "../../jwt/RefreshToken";
 import { getCustomerID } from "../../jwt/AxiosToken";
 import { useNavigate } from 'react-router-dom';

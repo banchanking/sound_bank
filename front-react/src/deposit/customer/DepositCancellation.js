@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Select, Button, Card, message, Modal, Descriptions, InputNumber } from 'antd';
+import { Form, Input, Select, Button, Card, Modal, Descriptions, InputNumber } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCustomerID } from "../../jwt/AxiosToken";
 import RefreshToken from "../../jwt/RefreshToken";
@@ -62,7 +62,7 @@ const DepositCancellation = () => {
             setLoading(false);
         } catch (error) {
             console.error('계좌 정보 조회 에러:', error);
-            message.error('계좌 정보를 불러오는데 실패했습니다.');
+            console.error('계좌 정보를 불러오는데 실패했습니다.');
             setLoading(false);
         }
     };
@@ -86,12 +86,12 @@ const DepositCancellation = () => {
                 ...values,
                 customerId
             });
-            message.success('예금 계좌 해지가 완료되었습니다.');
+            console.success('예금 계좌 해지가 완료되었습니다.');
             form.resetFields();
             navigate('/deposit/accounts');
         } catch (error) {
             console.error('계좌 해지 에러:', error);
-            message.error('계좌 해지에 실패했습니다.');
+            console.error('계좌 해지에 실패했습니다.');
         } finally {
             setLoading(false);
         }
@@ -115,17 +115,20 @@ const DepositCancellation = () => {
                     accountPassword: values.password
                 }
             });
-            message.success('예금 계좌가 해지되었습니다.');
+            console.success('예금 계좌가 해지되었습니다.');
             navigate('/deposit/accounts');
         } catch (error) {
             console.error('계좌 해지 에러:', error);
-            message.error('계좌 해지에 실패했습니다.');
+            console.error('계좌 해지에 실패했습니다.');
         }
     };
 
     return (
-        <div className="deposit-cancellation-container">
-            <Card title="예금 계좌 해지">
+        <div className="depositContainer">
+            <Card>
+                <div className="depositProductHeader">
+                    <h2>예금 계좌 해지</h2>
+                </div>
                 <Form
                     form={form}
                     layout="vertical"
@@ -191,7 +194,7 @@ const DepositCancellation = () => {
                                 <Button
                                     type="primary"
                                     danger
-                                    htmlType="button"
+                                    htmlType="submit"
                                     loading={loading}
                                     style={{ width: '100%' }}
                                 >

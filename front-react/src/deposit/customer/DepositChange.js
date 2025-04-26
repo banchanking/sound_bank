@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Select, Button, Card, message, InputNumber, Modal, Descriptions } from 'antd';
+import { Form, Input, Select, Button, Card, InputNumber, Modal, Descriptions } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCustomerID } from "../../jwt/AxiosToken";
 import RefreshToken from "../../jwt/RefreshToken";
@@ -55,11 +55,11 @@ const DepositChange = () => {
             await RefreshToken.put(`/deposit/accounts/deposit/${selectedAccount}/password`, {
                 accountPassword: values.newPassword
             });
-            message.success('비밀번호가 변경되었습니다.');
+            console.success('비밀번호가 변경되었습니다.');
             form.resetFields();
         } catch (error) {
             console.error('비밀번호 변경 에러:', error);
-            message.error('비밀번호 변경에 실패했습니다.');
+            console.error('비밀번호 변경에 실패했습니다.');
         }
     };
 

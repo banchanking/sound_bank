@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Table, Select, Input, Button, Space, Typography, message, Tabs } from 'antd';
+import { Card, Table, Select, Input, Button, Space, Typography, Tabs } from 'antd';
 import { SearchOutlined, ReloadOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getCustomerID } from "../../jwt/AxiosToken";
@@ -43,7 +43,7 @@ const DepositComparison = () => {
             setProducts([...depositResponse.data, ...savingsResponse.data]);
         } catch (error) {
             console.error('상품 조회 에러:', error);
-            message.error('상품 정보를 불러오는데 실패했습니다.');
+            console.error('상품 정보를 불러오는데 실패했습니다.');
         } finally {
             setLoading(false);
         }
@@ -56,7 +56,7 @@ const DepositComparison = () => {
             if (selectedProducts.length < 3) {
                 setSelectedProducts([...selectedProducts, productId]);
             } else {
-                message.warning('최대 3개의 상품만 비교할 수 있습니다.');
+                 console.warning('최대 3개의 상품만 비교할 수 있습니다.');
             }
         }
     };
@@ -217,7 +217,7 @@ const DepositComparison = () => {
             setComparisonResult(response.data);
         } catch (error) {
             console.error('상품 비교 에러:', error);
-            message.error('상품 비교에 실패했습니다.');
+            console.error('상품 비교에 실패했습니다.');
         }
     };
     return (

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Checkbox, Button, Steps, message } from 'antd';
+import { Card, Checkbox, Button, Steps } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { getCustomerID } from "../../jwt/AxiosToken";
 import RefreshToken from "../../jwt/RefreshToken";
@@ -95,15 +95,15 @@ const SavingsAgreement = () => {
 
     const next = () => {
         if (current === 0 && !agreements.termsOfService) {
-            message.error('적금 상품 약관에 동의해주세요.');
+            console.error('적금 상품 약관에 동의해주세요.');
             return;
         }
         if (current === 1 && !agreements.privacyPolicy) {
-            message.error('개인정보 수집 및 이용에 동의해주세요.');
+            console.error('개인정보 수집 및 이용에 동의해주세요.');
             return;
         }
         if (current === 2 && !agreements.financialTerms) {
-            message.error('적금 상품 특약에 동의해주세요.');
+            console.error('적금 상품 특약에 동의해주세요.');
             return;
         }
         setCurrent(current + 1);
@@ -119,7 +119,7 @@ const SavingsAgreement = () => {
             setAgreement(response.data);
         } catch (error) {
             console.error('약관 조회 에러:', error);
-            message.error('약관 정보를 불러오는데 실패했습니다.');
+            console.error('약관 정보를 불러오는데 실패했습니다.');
         }
     };
 
@@ -128,11 +128,11 @@ const SavingsAgreement = () => {
             await RefreshToken.post('/savings/agreement/agree', {
                 customerId: getCustomerID()
             });
-            message.success('약관 동의가 완료되었습니다.');
+            console.success('약관 동의가 완료되었습니다.');
             navigate('/savings/join');
         } catch (error) {
             console.error('약관 동의 에러:', error);
-            message.error('약관 동의에 실패했습니다.');
+            console.error('약관 동의에 실패했습니다.');
         }
     };
 
