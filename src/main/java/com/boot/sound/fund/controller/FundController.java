@@ -195,11 +195,17 @@ public class FundController {
         return ResponseEntity.ok(service.getFundAccounts(customerId));
     }
     
-    // 펀드 거래(매수)
-    @PostMapping("/fundTrade/buy")
-    public ResponseEntity<String> tradeFund(@RequestBody FundTransactionDTO dto) {
-        service.processTransaction(dto);
-        return ResponseEntity.ok("거래 완료");
+    // 사용자 전체 펀드 거래 등록 (매수/환매 포함)
+    @PostMapping("/fundTrade")
+    public ResponseEntity<String> processTrade(@RequestBody FundTransactionDTO tx) {
+        try {
+            System.out.println("요청받은 거래:" + tx);
+            service.processFundTrade(tx); // 매수 또는 환매
+            return ResponseEntity.ok("펀드 거래 요청 처리 완료");
+        } catch (Exception e) {
+        	System.out.println("거래 요청 처리 실패" + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("펀드 거래 요청 실패");
+        }
     }
     
     // 펀드 매수요청 관리자 확인
@@ -208,39 +214,45 @@ public class FundController {
         return service.getPendingTransactions();
     }
     
-    // 펀드 매수요청 관리자 승인
+    // 고객의 매수 승인된 거래 조회
+    @GetMapping("/fundTrade/buy-approve/{customer_id}")
+    public ResponseEntity<List<FundTransactionDTO>> getApprovedBuys(@PathVariable String customer_id) {
+        return ResponseEntity.ok(service.getApprovedBuys(customer_id));
+    }
+    
+    // 펀드 거래 승인 및 계좌 반영 처리 API (관리자용)
     @PutMapping("/fundTrade/{fund_transaction_id}/{status}")
     public ResponseEntity<String> approveTransaction(
-    		@PathVariable("fund_transaction_id") int fundTransactionId,
-    		@PathVariable("status") String status)	{
-    	
-        service.updateTransactionStatus(fundTransactionId, status.toUpperCase());
-        String message = switch (status.toUpperCase()) {
-        case "APPROVED" -> "거래 승인 완료";
-        case "REJECTED" -> "거래 거절 완료";
-        default -> "처리 완료";
-        };
-        return ResponseEntity.ok(message);
+            @PathVariable("fund_transaction_id") int fundTransactionId,
+            @PathVariable("status") String status) {
+
+        try {
+            // 거래 상태 처리 (APPROVED or REJECTED)
+            service.updateTransactionStatus(fundTransactionId, status.toUpperCase());
+
+            String message = switch (status.toUpperCase()) {
+                case "APPROVED" -> "거래 승인 완료 (잔액 반영 포함)";
+                case "REJECTED" -> "거래 거절 완료";
+                default -> "처리 완료";
+            };
+
+            return ResponseEntity.ok(message);
+        } catch (Exception e) {
+            logger.error("거래 승인 처리 중 오류 발생", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("처리 실패: " + e.getMessage());
+        }
+    }
+
+    // 사용자 전체 펀드 거래 내역 조회 (전체 매수/환매 포함)
+    @GetMapping("/fundTrade/all/{customer_id}")
+    public ResponseEntity<List<FundTransactionDTO>> getAllTransactions(@PathVariable("customer_id") String customerId) {
+        return ResponseEntity.ok(service.getAllTransactions(customerId));
     }
     
-    // 펀드 매수 확정
-    @GetMapping("/fundTrade/buy-approve/{customer_id}")
-    public List<FundTransactionDTO> getApprovedBuy(@PathVariable("customer_id") String customerId) {
-        return service.getApprovedBuys(customerId);
-    }
-    
-    // 펀드 매수요청 관리자 거절
-    @PutMapping("/fundTrade/{fund_transaction_id}/rejected")
-    public ResponseEntity<String> rejectTransaction(@PathVariable("fund_transaction_id") int fundTransactionId) {
-        service.updateTransactionStatus(fundTransactionId, "REJECTED");
-        return ResponseEntity.ok("거절 완료");
-    }
-    
-    // 펀드 거래(환매)
-    @PostMapping("/fundTrade/sell")
-    public ResponseEntity<String> sellFund(@RequestBody FundTransactionDTO dto) {
-        service.processSellTransaction(dto);
-        return ResponseEntity.ok("환매 신청 완료");
+    // 관리자: 전체 고객 펀드 거래내역 조회
+    @GetMapping("/admin/fundTrade/all")
+    public ResponseEntity<List<FundTransactionDTO>> getAllTransactionsForAdmin() {
+        return ResponseEntity.ok(service.getAllTransactionsForAdmin());
     }
     
 

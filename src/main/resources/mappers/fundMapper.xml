@@ -129,7 +129,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<!-- PENDING 상태인 해지 요청 목록 조회 -->
 	<select id="findDeactiveAccounts"  resultMap="fundAccountMap">
-	  SELECT * FROM fund_account_tbl WHERE status = 'PENDING'
+	  SELECT * FROM fund_account_tbl WHERE status = 'DEACTIVE'
 	</select>
 	
 	<!-- 해지 완료된 계좌 목록 조회 (고객용) -->
@@ -145,11 +145,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	  INSERT INTO fund_transaction_tbl (
 	    CUSTOMER_ID, FUND_ACCOUNT_ID, WITHDRAW_ACCOUNT_NUMBER, FUND_ID, FUND_TRANSACTION_TYPE,
 	    FUND_INVEST_AMOUNT, FUND_UNITS_PURCHASED, FUND_PRICE_PER_UNIT,
-	    FUND_TRANSACTION_DATE, STATUS
+	    FUND_TRANSACTION_DATE, FUND_CURRENT_VALUE, STATUS, FUND_NAME
 	  ) VALUES (
 	    #{customerId}, #{fundAccountId}, #{withdrawAccountNumber}, #{fundId}, #{fundTransactionType},
 	    #{fundInvestAmount}, #{fundUnitsPurchased}, #{fundPricePerUnit},
-	    #{fundTransactionDate}, #{status}
+	    #{fundTransactionDate}, #{fundCurrentValue}, #{status}, #{fund_name}
 	  )
 	</insert>
 	
@@ -182,22 +182,49 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<!-- 펀드 매수 확정 -->
 	<select id="findApprovedBuys" resultMap="fundTransactionMap">
 	  SELECT
-	    FUND_TRANSACTION_ID,
-	    CUSTOMER_ID,
-	    FUND_ACCOUNT_ID,
-	    FUND_ID,
-	    FUND_TRANSACTION_TYPE,
-	    FUND_INVEST_AMOUNT,
-	    FUND_UNITS_PURCHASED,
-	    FUND_PRICE_PER_UNIT,
-	    FUND_TRANSACTION_DATE,
-	    STATUS,
-	    WITHDRAW_ACCOUNT_NUMBER
-	  FROM fund_transaction_tbl
-	  WHERE CUSTOMER_ID = #{customer_id}
-	    AND FUND_TRANSACTION_TYPE = 'BUY'
-	    AND STATUS = 'APPROVED'
+	    ft.FUND_TRANSACTION_ID,
+	    ft.CUSTOMER_ID,
+	    ft.FUND_ACCOUNT_ID,
+	    ft.FUND_ID,
+	    ft.FUND_TRANSACTION_TYPE,
+	    ft.FUND_INVEST_AMOUNT,
+	    ft.FUND_UNITS_PURCHASED,
+	    ft.FUND_PRICE_PER_UNIT,
+	    ft.FUND_TRANSACTION_DATE,
+	    ft.STATUS,
+	    ft.WITHDRAW_ACCOUNT_NUMBER,
+	    f.FUND_NAME AS FUND_NAME
+	  FROM fund_transaction_tbl ft
+	  JOIN fund_tbl f ON ft.FUND_ID = f.FUND_ID
+	  WHERE ft.CUSTOMER_ID = #{customer_id}
+	    AND ft.FUND_TRANSACTION_TYPE = 'BUY'
+	    AND ft.STATUS = 'APPROVED'
 	</select>
+	
+	<!-- 사용자 전체 펀드 거래 내역 조회 (매수/환매 포함) -->
+	<select id="findAllTransactionsByCustomer" parameterType="String" resultMap="fundTransactionMap">
+	    SELECT *
+	    FROM fund_transaction_tbl
+	    WHERE CUSTOMER_ID = #{customer_id}
+	    ORDER BY FUND_TRANSACTION_DATE DESC
+	</select>
+	
+	<!-- 펀드 매수시 계좌 잔액 업데이트 -->
+	<select id="findTransactionById" resultMap="fundTransactionMap">
+	    SELECT *
+	    FROM fund_transaction_tbl
+	    WHERE FUND_TRANSACTION_ID = #{fundTransactionId}
+	</select>
+	
+	<!-- 관리자: 전체 고객의 펀드 거래내역 조회 -->
+	<select id="findAllTransactions" resultMap="fundTransactionMap">
+	    SELECT *
+	    FROM fund_transaction_tbl
+	    ORDER BY FUND_TRANSACTION_DATE DESC
+	</select>
+
+
+
 	
 	<resultMap id="fundTransactionMap" type="com.boot.sound.fund.dto.FundTransactionDTO">
 	  <id property="fundTransactionId" column="FUND_TRANSACTION_ID" />
@@ -212,6 +239,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	  <result property="fundPricePerUnit" column="FUND_PRICE_PER_UNIT" />
 	  <result property="status" column="STATUS" />
 	  <result property="withdrawAccountNumber" column="WITHDRAW_ACCOUNT_NUMBER" />
+	  <result property="fund_name" column="FUND_NAME"/>
 	</resultMap>
 	
 	<resultMap id="fundAccountMap" type="com.boot.sound.fund.dto.FundAccountDTO">

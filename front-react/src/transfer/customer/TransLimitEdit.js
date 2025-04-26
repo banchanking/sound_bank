@@ -17,7 +17,6 @@ function TransLimitEdit() {
       alert('로그인이 필요합니다');
       return;
     }
-
     RefreshToken.get(`http://localhost:8081/api/transLimit/list/${customer_id}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -30,14 +29,10 @@ function TransLimitEdit() {
 
   const deleteRow = (id) => {
     if (!window.confirm('정말 삭제하시겠습니까?')) return;
-
     RefreshToken.delete(`http://localhost:8081/api/transLimit/delete/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
-      .then(() => {
-        alert('삭제 완료');
-        setList(prev => prev.filter(item => item.transfer_id !== id));
-      })
+      .then(() => setList(prev => prev.filter(item => item.transfer_id !== id)))
       .catch(err => {
         console.error('삭제 실패:', err);
         alert('삭제 실패');
@@ -48,9 +43,8 @@ function TransLimitEdit() {
     const { name, value } = e.target;
     if (name === 'requested_limit') {
       const raw = value.replace(/[^0-9]/g, '');
-      const formatted = raw ? Number(raw).toLocaleString('ko-KR') : '';
       setEditItem(prev => ({ ...prev, requested_limit: raw }));
-      setDisplayLimit(formatted);
+      setDisplayLimit(raw ? Number(raw).toLocaleString('ko-KR') : '');
     } else {
       setEditItem(prev => ({ ...prev, [name]: value }));
     }
@@ -74,9 +68,9 @@ function TransLimitEdit() {
   return (
     <div style={{ display: 'flex', minHeight: '600px' }}>
       <Sidebar />
-      <div className={styles.limitEditContent}>
+      <div className={styles['limitEdit-limitEditContent']}>
         <h2>1일한도 변경 신청내역</h2>
-        <table className={styles.limitTable}>
+        <table className={styles['limitEdit-limitTable']}>
           <thead>
             <tr>
               <th>계좌번호</th>
@@ -97,19 +91,19 @@ function TransLimitEdit() {
                 <td>{item.status === '거절' ? item.reject_reason : '-'}</td>
                 <td>
                   {(!item.status || item.status.trim() === '대기') && (
-                    <div className={styles.buttonGroup}>
+                    <div className={styles['limitEdit-buttonGroup']}>
                       <button
                         onClick={() => {
                           setEditItem(item);
                           setDisplayLimit(Number(item.requested_limit).toLocaleString('ko-KR'));
                         }}
-                        className={styles.btnBlue}
+                        className={styles['limitEdit-btnBlue']}
                       >
                         수정
                       </button>
                       <button
                         onClick={() => deleteRow(item.transfer_id)}
-                        className={styles.btnRed}
+                        className={styles['limitEdit-btnRed']}
                       >
                         삭제
                       </button>
@@ -122,8 +116,8 @@ function TransLimitEdit() {
         </table>
 
         {editItem && (
-          <div className={styles.editModalOverlay}>
-            <div className={styles.editModalBox}>
+          <div className={styles['limitEdit-editModalOverlay']}>
+            <div className={styles['limitEdit-editModalBox']}>
               <h3>이체한도 수정</h3>
               <label>요청금액</label>
               <input
@@ -138,9 +132,9 @@ function TransLimitEdit() {
                 value={editItem.reason || ''}
                 onChange={handleChange}
               />
-              <div className={styles.modalButtons}>
-                <button onClick={handleUpdate} className={styles.modalBtn}>수정</button>
-                <button onClick={() => setEditItem(null)} className={styles.modalBtn}>취소</button>
+              <div className={styles['limitEdit-modalButtons']}>
+                <button onClick={handleUpdate} className={styles['limitEdit-modalBtn']}>수정</button>
+                <button onClick={() => setEditItem(null)} className={styles['limitEdit-modalBtn']}>취소</button>
               </div>
             </div>
           </div>

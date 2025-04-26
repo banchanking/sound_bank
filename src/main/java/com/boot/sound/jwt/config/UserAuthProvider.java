@@ -3,10 +3,12 @@ package com.boot.sound.jwt.config;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Value;  // 경로주의(롬복 아님)
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;  // 경로주의
 import org.springframework.stereotype.Component;
@@ -15,9 +17,12 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier; // 경로주의
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.boot.sound.admin.dao.AdminDAO;
 import com.boot.sound.customer.CustomerDTO;
 import com.boot.sound.customer.CustomerService;
+import com.boot.sound.jwt.exception.AppException;
 import com.boot.sound.jwt.exception.CustomTokenExpiredException;
 import com.boot.sound.jwt.mappers.CustomerMapper;
 
@@ -27,22 +32,14 @@ import lombok.RequiredArgsConstructor;
 @Component
 public class UserAuthProvider {
 	
-	// JWT를 생성하고 읽으려면 비밀키가 필요하다.
-	// 애플리케이션 yml 파일에서 구성하고 여기에 주입한다.
-	// 그러나 JVM에서 기본값을 가질수도 있다.
 	
 	@Value("${security.jwt.token.secret-key:secret-value}")
 	private String secretKey;
 	
 	private final CustomerService service;
 	private final CustomerMapper mapper;
+	private final AdminDAO adminDAO;
 	
-//	private UserService userService;
-//	
-//	public UserAuthProvider(UserService userService) {
-//		super();
-//		this.userService = userService;
-//	}
 
 	@PostConstruct
 	protected void init() {
@@ -55,11 +52,12 @@ public class UserAuthProvider {
 		System.out.println("<<< UserAuthProvider - createToken() >>>");
 		
 		Date now = new Date();  // java.util
-		Date validity = new Date(now.getTime() + 180);   // 토큰 유효시간 1시간
+		Date validity = new Date(now.getTime() + 360000);   // 토큰 유효시간 1시간
 		
 		// JWT를 사용하려면 pom.xml에 java-jwt 추가
 		return JWT.create()
 				.withIssuer(customerId)
+				.withClaim("role", "CUSTOMER")
 				.withIssuedAt(now)
 				.withExpiresAt(validity)
 				.sign(Algorithm.HMAC256(secretKey));
@@ -68,32 +66,56 @@ public class UserAuthProvider {
 	// Auth Token 검증
 	public Authentication validationToken(String token) {
 	    System.out.println("<<< UserAuthProvider - validationToken() >>>");
-	    System.out.println("<<< UserAuthProvider - token >>>" + token);
+	    System.out.println("<<< token: " + token + " >>>");
 
 	    try {
+	        // JWT 디코딩
 	        JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secretKey)).build();
+	        DecodedJWT decoded = verifier.verify(token); // 만료되면 여기서 예외
 
-	        System.out.println("<<< UserAuthProvider - validationToken() 1 >>>");
+	        String customerId = decoded.getIssuer(); // 토큰 발급자 = 로그인 ID
+	        String role = decoded.getClaim("role").asString(); // role 클레임
 
-	        DecodedJWT decoded = verifier.verify(token); // ⛔ 만료되면 여기서 예외 발생
+	        System.out.println("✅ issuer (customerId): " + customerId);
+	        System.out.println("✅ role: " + role);
 
-	        System.out.println("<<< UserAuthProvider - validationToken() 2 >>>");
-	        String issuer = decoded.getIssuer();
-	        System.out.println("✅ issuer(customerId): " + issuer);
-	       
-	        CustomerDTO user = service.findById(decoded.getIssuer());
+	        Object user;
+
+	        if ("ADMIN".equalsIgnoreCase(role)) {
+	            user = Optional.ofNullable(adminDAO.login(customerId))
+	                .orElseThrow(() -> new AppException("Unknown admin", HttpStatus.NOT_FOUND));
+	        } else {
+	            user = Optional.ofNullable(service.findById(customerId))
+	                .orElseThrow(() -> new AppException("Unknown customer", HttpStatus.NOT_FOUND));
+	        }
 
 	        return new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList());
 
-	    } catch (com.auth0.jwt.exceptions.TokenExpiredException e) {
+	    } catch (TokenExpiredException e) {
 	        System.out.println("⚠️ TokenExpiredException 발생: " + e.getMessage());
 	        throw new CustomTokenExpiredException("토큰이 만료되었습니다.");
-	    }
-	    catch (com.auth0.jwt.exceptions.JWTVerificationException e) {
+	    } catch (JWTVerificationException e) {
 	        System.out.println("❗ JWTVerificationException 발생: " + e.getMessage());
 	        throw new CustomTokenExpiredException("JWT 검증 실패");
 	    }
 	}
+
+	
+	// Admin Token 생성
+		public String createAdminToken(String customerId ) {
+			System.out.println("<<< UserAuthProvider - createToken() >>>");
+			
+			Date now = new Date();  // java.util
+			Date validity = new Date(now.getTime() + 360);   // 토큰 유효시간 1시간
+			
+			// JWT를 사용하려면 pom.xml에 java-jwt 추가
+			return JWT.create()
+					.withIssuer(customerId)
+					.withClaim("role", "ADMIN")
+					.withIssuedAt(now)
+					.withExpiresAt(validity)
+					.sign(Algorithm.HMAC256(secretKey));
+		}
 	
 	 // Refresh Token 발급
     public String createRefreshToken(String customer_id) {
@@ -108,6 +130,7 @@ public class UserAuthProvider {
                 .sign(Algorithm.HMAC256(secretKey));
     }
 
+    // 고객 Refresh Token 검증
     public String validateRefreshToken(String customerId) {
         String refreshToken = mapper.selectRefreshToken(customerId);  // DB에서 꺼냄
 
@@ -123,6 +146,13 @@ public class UserAuthProvider {
         } catch (JWTVerificationException e) {
             throw new RuntimeException("Refresh Token 유효하지 않음", e);
         }
+    }
+    
+    // 관리자 Refresh Token 검증
+    public String validateAdminRefreshToken(String customerId) {
+        String savedToken = adminDAO.getRefreshToken(customerId);
+        if (savedToken == null) throw new RuntimeException("No refresh token found");
+        return customerId;
     }
 
 

@@ -520,4 +520,30 @@
         AND account_password = #{oldPassword}
         AND account_status = 'ACTIVE'
     </update>
+    
+    <!-- 예금 상품 추가  -->
+    <insert id="addDepositProduct" parameterType="com.boot.sound.deposit.dto.DepositDTO">
+    INSERT INTO DEPOSIT_PRODUCT_TBL
+    (product_name, product_type, interest_rate, min_amount, max_amount, term_months, description, created_at, updated_at)
+    VALUES
+    (#{productName}, #{productType}, #{interestRate}, #{minAmount}, #{maxAmount}, #{termMonths}, #{productDescription}, NOW(), NOW())
+</insert>
+    <!-- 예금 상품 수정  -->
+    <update id="updateDepositProduct" parameterType="map">
+    UPDATE DEPOSIT_PRODUCT_TBL
+    SET
+        product_name = #{product.productName},
+        product_type = #{product.productType},
+        interest_rate = #{product.interestRate},
+        min_amount = #{product.minAmount},
+        max_amount = #{product.maxAmount},
+        term_months = #{product.termMonths},
+        description = #{product.productDescription},
+        updated_at = NOW()
+    WHERE product_id = #{productId}
+</update>
+    <!-- 예금 상품 삭제  -->
+    <delete id="deleteDepositProduct" parameterType="int">
+    DELETE FROM DEPOSIT_PRODUCT_TBL WHERE product_id = #{productId}
+</delete>
 </mapper> 

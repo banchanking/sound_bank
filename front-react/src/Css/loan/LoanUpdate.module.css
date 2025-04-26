@@ -39,7 +39,7 @@
   border-radius: 6px;
 }
 
-button {
+.loanUpdateButton button {
   padding: 0.5rem 1.2rem;
   margin: 0 0.5rem;
   background-color: #333;
@@ -49,6 +49,6 @@ button {
   cursor: pointer;
 }
 
-button:hover {
+.loanUpdateButton button:hover {
   background-color: #555;
 }

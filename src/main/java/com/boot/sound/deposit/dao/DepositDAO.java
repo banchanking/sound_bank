@@ -62,4 +62,16 @@ public interface DepositDAO {
     BigDecimal getSavingsAccountBalance(@Param("accountId") int accountId);
     int changeDepositAccountPassword(@Param("accountId") int accountId, @Param("oldPassword") String oldPassword, @Param("newPassword") String newPassword);
     int changeSavingsAccountPassword(@Param("accountId") int accountId, @Param("oldPassword") String oldPassword, @Param("newPassword") String newPassword);
+    
+    // 예금 상품 추가
+    int addDepositProduct(DepositDTO product);
+    
+    // 적금 상품 추가
+    int addSavingsProduct(DepositDTO product);
+
+    // 예금 상품 수정
+    int updateDepositProduct(@Param("productId") int productId, @Param("product") DepositDTO product);
+    
+    // 예금 상품 삭제 
+    int deleteDepositProduct(@Param("productId") int productId);
 } 
