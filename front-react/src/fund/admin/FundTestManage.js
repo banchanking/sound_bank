@@ -89,14 +89,14 @@ const FundTestManage = () => {
         />
       )}
 
-      <div className={styles.fundContainer}>
-        <h2 className={styles.fundTitle}>투자성향분석 AI 관리</h2>
-        <div className={styles.fundTable}> 
+      <div className={styles.aiManagementContainer}>
+        <h2 className={styles.aiManagementTitle}>투자성향분석 AI 관리</h2>
+        <div className={styles.aiButtonGroup}> 
           {/* 버튼 3개 */}
           <br /><br /><br />
-          <button className={styles.fundButton} onClick={handleRetrain}>🔄 AI모델 재학습</button>
-          <button className={styles.fundButton} onClick={handlePredictFund}>🤖 펀드 투자성향 예측</button>
-          <button className={styles.fundButton} onClick={updateRiskTypesToDB}>💾 펀드성향 데이터 업데이트</button>
+          <button className={styles.aiButton} onClick={handleRetrain}>🔄 AI모델 재학습</button>
+          <button className={styles.aiButton} onClick={handlePredictFund}>🤖 펀드 투자성향 예측</button>
+          <button className={styles.aiButton} onClick={updateRiskTypesToDB}>💾 펀드성향 데이터 업데이트</button>
           {loading && <p style={{ color: "#2563eb", fontWeight: "bold" }}>⏳ 진행 중입니다...</p>}
           {message && <p style={{ color: "#333", marginTop: "10px" }}>{message}</p>}
         </div>

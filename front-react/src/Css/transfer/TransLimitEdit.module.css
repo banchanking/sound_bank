@@ -1,4 +1,5 @@
 .limitEdit-limitEditContent {
+  min-height: 650px;
   flex: 1;
   padding: 36px;
   font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
