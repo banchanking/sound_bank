@@ -198,29 +198,57 @@ const DepositAccountInquiry = () => {
 
     return (
         <div className="depositContainer">
-            <h2 className="depositTitle">예적금 계좌조회</h2>
-            <Card>
-                <Tabs defaultActiveKey="1">
-                    <TabPane tab="예금 계좌" key="1">
-                        <Table
-                            columns={depositColumns}
-                            dataSource={depositAccounts}
-                            rowKey="accountNumber"
-                            loading={loading}
-                            pagination={{ pageSize: 10 }}
-                        />
-                    </TabPane>
-                    <TabPane tab="적금 계좌" key="2">
-                        <Table
-                            columns={savingsColumns}
-                            dataSource={savingsAccounts}
-                            rowKey="accountNumber"
-                            loading={loading}
-                            pagination={{ pageSize: 10 }}
-                        />
-                    </TabPane>
-                </Tabs>
-            </Card>
+            <div className="depositProductHeader">
+                <h2>예적금 계좌조회</h2>
+            </div>
+            <div className="depositCard">
+                <div className="depositTabs">
+                    <div className="depositTabHeader">
+                        <button className="depositTabButton active">예금 계좌</button>
+                        <button className="depositTabButton">적금 계좌</button>
+                    </div>
+                    <div className="depositTabContent">
+                        <table className="depositTable">
+                            <thead>
+                                <tr>
+                                    {depositColumns.map(column => (
+                                        <th key={column.key}>{column.title}</th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {depositAccounts.map(account => (
+                                    <tr key={account.accountNumber}>
+                                        <td>{account.accountNumber}</td>
+                                        <td>{account.productName}</td>
+                                        <td>{account.balance.toLocaleString()}원</td>
+                                        <td>{account.interestRate}%</td>
+                                        <td>
+                                            <span className={`depositTag ${account.status === 'ACTIVE' ? 'active' : 'inactive'}`}>
+                                                {account.status === 'ACTIVE' ? '활성' : '비활성'}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <button className="depositButton primary" onClick={() => handleAccountDetail(account.accountNumber, 'deposit')}>
+                                                상세보기
+                                            </button>
+                                            <button className="depositButton primary" onClick={() => handleViewHistory(account)}>
+                                                거래내역
+                                            </button>
+                                            <button className="depositButton primary" onClick={() => handleAutoTransfer(account)}>
+                                                자동이체
+                                            </button>
+                                            <button className="depositButton danger" onClick={() => handleCloseAccount(account)}>
+                                                해지
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };
