@@ -1,4 +1,4 @@
-.wrapper {
+.account-wrapper {
   max-width: 1200px;
   min-height: 560px;
   margin: 60px auto 80px;
@@ -7,26 +7,26 @@
   border-radius: 24px;
   font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
   border: 1.5px solid #e2e4e7;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.05);
-  animation: fadeIn 0.4s ease;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+  animation: account-fadeIn 0.4s ease;
 }
 
-.title {
+.account-title {
   font-size: 26px;
   font-weight: 700;
   text-align: center;
   color: #1a1a1a;
   margin-bottom: 28px;
-  animation: fadeInUp 0.4s ease;
+  animation: account-fadeInUp 0.4s ease;
 }
 
-.buttonGroup {
+.account-buttonGroup {
   display: flex;
   gap: 12px;
   margin-bottom: 24px;
 }
 
-.tabButton {
+.account-tabButton {
   flex: 1;
   padding: 12px 0;
   border: 1px solid #dcdcdc;
@@ -39,19 +39,19 @@
   transition: background-color 0.25s ease, box-shadow 0.25s ease;
 }
 
-.tabButton:hover {
+.account-tabButton:hover {
   background-color: #eceff2;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
-.active {
+.account-active {
   background-color: #e6e7ea;
   border: 0.5px solid #3a3a3c;
   color: #222;
   cursor: default;
 }
 
-.card {
+.account-card {
   background-color: #f5f9fd;
   border: 0.5px solid #e0dede;
   border-radius: 16px;
@@ -60,60 +60,60 @@
   cursor: pointer;
   transition: box-shadow 0.25s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-  animation: fadeInUp 0.4s ease;
+  animation: account-fadeInUp 0.4s ease;
 }
 
-.card:hover {
+.account-card:hover {
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
 }
 
-.selected {
+.account-selected {
   background-color: #eef3f8;
   border: 0.5px solid #e0dede;
   box-shadow: 0 2px 6px rgba(155, 155, 155, 0.1);
 }
 
-.cardName {
+.account-cardName {
   font-size: 16px;
   font-weight: 600;
   color: #111;
   margin-bottom: 4px;
 }
 
-.cardNumber {
+.account-cardNumber {
   font-size: 18px;
   color: #5e5d5d;
 }
 
-.detail {
+.account-detail {
   background: #f9fafb;
   border-radius: 16px;
   padding: 24px;
   margin-top: 28px;
   box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.04);
   border: 1px solid rgba(0, 0, 0, 0.05);
-  animation: fadeIn 0.4s ease;
+  animation: account-fadeIn 0.4s ease;
 }
 
-.detail h4 {
+.account-detail h4 {
   font-size: 17px;
   font-weight: 700;
   margin-bottom: 12px;
   color: #1c1c1e;
 }
 
-.detail p {
+.account-detail p {
   margin: 8px 0;
   font-size: 15px;
   color: #333;
   line-height: 1.6;
 }
 
-.buttonArea {
+.account-buttonArea {
   margin-top: 36px;
 }
 
-.transferButton {
+.account-transferButton {
   width: 100%;
   padding: 12px 0;
   font-size: 15px;
@@ -125,25 +125,25 @@
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  animation: fadeInUp 0.5s ease;
+  animation: account-fadeInUp 0.5s ease;
 }
 
-.transferButton:hover {
+.account-transferButton:hover {
   filter: brightness(1.07);
 }
 
-.transferButton:active {
+.account-transferButton:active {
   transform: scale(0.98);
   box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.2);
 }
 
-
-@keyframes fadeIn {
+/* 애니메이션 키프레임도 account 전용으로 네임스페이스 부여 */
+@keyframes account-fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
-@keyframes fadeInUp {
+@keyframes account-fadeInUp {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }

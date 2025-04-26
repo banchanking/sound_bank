@@ -1,11 +1,13 @@
-.limitContainer {
+/* 컨테이너 전체 */
+.limit-limitContainer {
   display: flex;
   min-height: 560px;
   padding: 20px;
   font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
 }
 
-.formBox {
+/* 신청 폼 박스 */
+.limit-formBox {
   width: 100%;
   max-width: 600px;
   margin: auto;
@@ -13,20 +15,20 @@
   background: #ffffff;
   border-radius: 24px;
   border: 1.5px solid #e2e4e7;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.05);
-  animation: fadeIn 0.4s ease;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+  animation: limit-fadeIn 0.4s ease;
 }
 
-.formBox h2 {
+.limit-formBox h2 {
   font-size: 24px;
   font-weight: 700;
   text-align: center;
   margin-bottom: 24px;
   color: #1a1a1a;
-  animation: fadeInUp 0.4s ease;
+  animation: limit-fadeInUp 0.4s ease;
 }
 
-.formBox label {
+.limit-formBox label {
   display: block;
   font-size: 15px;
   font-weight: 500;
@@ -34,9 +36,9 @@
   color: #333;
 }
 
-.formBox select,
-.formBox input,
-.formBox textarea {
+.limit-formBox select,
+.limit-formBox input,
+.limit-formBox textarea {
   display: block;
   width: 100%;
   padding: 12px;
@@ -50,21 +52,23 @@
   transition: border-color 0.3s ease;
 }
 
-.formBox select:focus,
-.formBox input:focus,
-.formBox textarea:focus {
+.limit-formBox select:focus,
+.limit-formBox input:focus,
+.limit-formBox textarea:focus {
   border-color: #3a3a3c;
   background-color: #fff;
   outline: none;
 }
 
-.currentLimit {
+/* 현재 한도 텍스트 */
+.limit-currentLimit {
   font-size: 14px;
   color: #666;
   margin-top: 5px;
 }
 
-.submitButton {
+/* 제출 버튼 */
+.limit-submitButton {
   margin-top: 24px;
   padding: 14px;
   width: 100%;
@@ -77,25 +81,25 @@
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  animation: fadeInUp 0.5s ease;
+  animation: limit-fadeInUp 0.5s ease;
 }
 
-.submitButton:hover {
+.limit-submitButton:hover {
   filter: brightness(1.07);
 }
 
-.submitButton:disabled {
+.limit-submitButton:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }
 
-/* 애니메이션 */
-@keyframes fadeIn {
+/* 애니메이션 네임스페이스 */
+@keyframes limit-fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
-@keyframes fadeInUp {
+@keyframes limit-fadeInUp {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
