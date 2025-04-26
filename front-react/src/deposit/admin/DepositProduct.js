@@ -198,6 +198,7 @@ const DepositProduct = () => {
                             label="이자율"
                             rules={[{ required: true, message: '이자율을 입력해주세요' }]}
                         >
+
                             <InputNumber
                                 min={0}
                                 max={100}
@@ -219,7 +220,6 @@ const DepositProduct = () => {
                                 parser={value => value.replace(/\원\s?|(,*)/g, '')}
                             />
                         </Form.Item>
-
                         <Form.Item
                             name="maxAmount"
                             label="최대금액"
@@ -235,6 +235,7 @@ const DepositProduct = () => {
 
                         <Form.Item
                             name="termMonths"
+
                             label="기간(개월)"
                             rules={[{ required: true, message: '기간을 입력해주세요' }]}
                         >
