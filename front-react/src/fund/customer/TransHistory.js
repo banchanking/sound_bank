@@ -144,7 +144,7 @@ const TransHistory = () => {
           return (
             <div className={styles.fundmodalOverlay}>
               <div className={styles.fundmodalContent}>
-                <button className={styles.modalCloseBtn} onClick={closeModal}>X</button>
+                <button className={styles.fundmodalCloseBtn} onClick={closeModal}>X</button>
                 <h3>{selectedTx.fund_name} 정산 요약</h3>
                 <Chart
                   chartType="ColumnChart"
@@ -165,14 +165,34 @@ const TransHistory = () => {
                 <p style={{ marginTop: "10px", fontWeight: "bold" }}>
                   현재 평가 금액: {formatCurrency(currentValue)}
                 </p>
-                <div style={{ marginTop: "20px" }}>
+                <div style={{ marginTop: "20px", display: "flex", flexDirection: "column", alignItems: "center" }}>
                   <input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="펀드 계좌 비밀번호"
+                    style={{
+                      padding: "10px",
+                      fontSize: "1rem",
+                      marginBottom: "10px",
+                      width: "300px",
+                      textAlign: "center",
+                    }}
                   />
-                  <button onClick={handleSellConfirm}>환매 신청</button>
+                  <button
+                    onClick={handleSellConfirm}
+                    style={{
+                      padding: "10px 20px",
+                      fontSize: "1rem",
+                      backgroundColor: "#2d8cf0",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "5px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    환매 신청
+                  </button>
                 </div>
               </div>
             </div>

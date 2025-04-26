@@ -169,4 +169,25 @@
     float: right;
     margin-bottom: 10px;
   }
+
+  .modalHeader {
+    display: flex;
+    justify-content: space-between; /* 제목과 닫기 버튼을 양쪽 끝으로 배치 */
+    align-items: center;
+    margin-bottom: 20px; /* 제목과 테이블 사이 간격 */
+  }
+  
+  .modalTitle {
+    margin: 0;
+    font-size: 1.5rem; /* 제목 크기 조정 */
+    text-align: center; /* 제목을 중간에 배치 */
+  }
+  
+  .modalClose {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    color: #333;
+  }
   

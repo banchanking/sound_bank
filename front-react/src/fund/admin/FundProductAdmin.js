@@ -1,7 +1,7 @@
-// ✅ 필터 제거된 FundProductAdmin.js (전체 펀드 목록 표시)
 import React, { useState, useEffect } from "react";
 import Papa from "papaparse";
-import styles from "../../Css/fund/FundList.module.css";
+import styles from "../../Css/fund/FundAdmin.module.css";
+import style from "../../Css/exchange/ExList.module.css"; // 새로운 스타일 파일
 import RefreshToken from "../../jwt/RefreshToken";
 
 const FundProductAdmin = () => {
@@ -20,6 +20,8 @@ const FundProductAdmin = () => {
     fund_risk_type: "",
   });
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태
+  const itemsPerPage = 10; // 페이지당 표시할 항목 수
 
   const fetchFundsFromCSV = async () => {
     try {
@@ -30,7 +32,7 @@ const FundProductAdmin = () => {
         header: true,
         skipEmptyLines: true,
         complete: (results) => {
-          console.log("📄 CSV 전체 펀드:", results.data.map(f => f.fund_name));
+          console.log("📄 CSV 전체 펀드:", results.data.map((f) => f.fund_name));
           const cleanedFunds = results.data.map((fund) => ({
             return_12m: fund.return_12m,
             return_1m: fund.return_1m,
@@ -120,10 +122,14 @@ const FundProductAdmin = () => {
     }
   };
 
+  // 현재 페이지에 표시할 데이터 계산
+  const indexOfLastItem = currentPage * itemsPerPage; // 현재 페이지의 마지막 항목 인덱스
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage; // 현재 페이지의 첫 번째 항목 인덱스
+  const currentFunds = funds.slice(indexOfFirstItem, indexOfLastItem); // 현재 페이지에 표시할 데이터
+
   return (
     <div className={styles.fundContainer}>
-      <h2>펀드 상품 등록</h2>
-      <button onClick={saveRegisteredFunds}>펀드 저장</button>
+      <h2 className={styles.fundTitle}>펀드 상품 등록</h2>
       <table className={styles.fundTable}>
         <thead>
           <tr>
@@ -140,8 +146,8 @@ const FundProductAdmin = () => {
             <th>선택</th>
           </tr>
         </thead>
-        <tbody>
-          {funds.map((fund, index) => (
+        <tbody className={styles.fundTable}>
+          {currentFunds.map((fund, index) => (
             <tr key={`${fund.fund_name}-${index}`}>
               <td>{fund.fund_name}</td>
               <td>{fund.fund_company}</td>
@@ -154,12 +160,31 @@ const FundProductAdmin = () => {
               <td>{fund.return_6m}</td>
               <td>{fund.return_12m}</td>
               <td>
-                <button onClick={() => handleOpenPopup(fund)}>등록</button>
+                <button  className={styles.fundButton} onClick={() => handleOpenPopup(fund)}>등록</button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      {/* 페이지네이션 */}
+      <div className={style.pagination} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', marginTop: '20px' }}>
+        <button
+          className={style.exListBtn}
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} // 이전 페이지로 이동
+          disabled={currentPage === 1}
+        >
+          ◀ 이전
+        </button>
+        <span>{currentPage} / {Math.ceil(funds.length / itemsPerPage)}</span> {/* 현재 페이지 / 총 페이지 */}
+        <button
+          className={style.exListBtn}
+          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, Math.ceil(funds.length / itemsPerPage)))} // 다음 페이지로 이동
+          disabled={currentPage === Math.ceil(funds.length / itemsPerPage)}
+        >
+          다음 ▶
+        </button>
+      </div>
 
       {isPopupOpen && (
         <div className={styles.popupOverlay}>

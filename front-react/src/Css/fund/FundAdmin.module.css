@@ -94,6 +94,10 @@
   transition: background-color 0.3s ease; /* 배경색 전환 효과 */
 }
 
+.fundButton td {
+  min-width: 20;
+}
+
 .fundButton:hover {
   background-color: #555; /* 호버 시 버튼 배경색 변경 */
 }
