@@ -1,0 +1,123 @@
+.wrap {
+    max-width: 1200px;
+    min-height: 410px;
+    margin: 60px auto;
+    padding: 36px;
+    border: 1.5px solid #e2e4e7;
+    border-radius: 24px;
+    background-color: #ffffff;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+    animation: fadeIn 0.4s ease;
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+  
+  /* 기존 클래스명: roi-container */
+  .roi-container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  /* 기존 클래스명: roi-title */
+  .roi-title {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  
+  /* 기존 클래스명: dropzone */
+  .dropzone {
+    border: 2px dashed #b2bec3;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    color: #333;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+  
+  .dropzone:hover {
+    background-color: #f1f3f5;
+    border-color: #537697;
+  }
+  
+  /* 기존 클래스명: dropzone-text */
+  .dropzone-text {
+    margin: 0;
+  }
+  
+  /* 기존 클래스명: file-name */
+  .file-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #2d3436;
+  }
+  
+  /* 기존 클래스명: hidden */
+  .hidden {
+    display: none;
+  }
+  
+  /* 기존 클래스명: bottom-area (미리보기 + 버튼 아래 고정) */
+  .bottom-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    margin-top: 24px;
+  }
+  
+  /* 기존 클래스명: preview-container */
+  .preview-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+  
+  /* 기존 클래스명: preview-img */
+  .preview-img {
+    width: 395px;
+    height: 277px;
+    object-fit: contain;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+  
+  /* 기존 클래스명: btn-blue */
+  .btn-blue {
+    width: 100%;
+    background-color: #383838;
+    color: white;
+    border: none;
+    padding: 12px 16px;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 10px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 3px 10px rgba(58, 58, 60, 0.12);
+  }
+  
+  .btn-blue:hover {
+    background-color: #494949;
+  }
+  
+  /* 기존 클래스명: message-box */
+  .message-box {
+    margin-top: 16px;
+    padding: 12px;
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #444;
+  }
+  
+  /* 사뱅 애니메이션 */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  

@@ -23,6 +23,10 @@ export const setRefreshToken = (refresh_token) => {
   window.localStorage.setItem("refresh_token", refresh_token);
 };
 
+export const setRole = (role) => {
+  window.localStorage.setItem("role", role);
+};
+
 export const request = (method, url, data) => {
   let headers = {};
   // if (getAuthToken() != null && getAuthToken() !== "undefined") {

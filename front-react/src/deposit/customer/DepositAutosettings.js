@@ -39,7 +39,7 @@ const DepositAutosettings = () => {
             setAccounts(response.data);
         } catch (error) {
             console.error('계좌 조회 에러:', error);
-            message.error('계좌 정보를 불러오는데 실패했습니다.');
+            console.error('계좌 정보를 불러오는데 실패했습니다.');
         }
     };
 
@@ -51,7 +51,7 @@ const DepositAutosettings = () => {
             setTransferAccounts(response.data);
         } catch (error) {
             console.error('이체 계좌 조회 에러:', error);
-            message.error('이체계좌 정보를 불러오는데 실패했습니다.');
+            console.error('이체계좌 정보를 불러오는데 실패했습니다.');
         }
     };
 
@@ -61,7 +61,7 @@ const DepositAutosettings = () => {
             setAutoSettings(response.data);
         } catch (error) {
             console.error('자동이체 설정 조회 에러:', error);
-            message.error('자동이체 설정을 불러오는데 실패했습니다.');
+            console.error('자동이체 설정을 불러오는데 실패했습니다.');
         }
     };
 
@@ -76,14 +76,19 @@ const DepositAutosettings = () => {
         });
     };
 
-    const handleUpdateAutoSettings = async (values) => {
+    const handleAutoTransfer = async (values) => {
         try {
-            await RefreshToken.put(`/api/deposit/accounts/${selectedAccount}/auto-transfer`, values);
-            message.success('자동이체 설정이 수정되었습니다.');
-            fetchAutoSettings();
+            await RefreshToken.put(`/api/deposit/accounts/deposit/${selectedAccount}/auto-transfer`, {
+                autoTransferEnabled: true,
+                autoTransferAmount: values.amount,
+                autoTransferDay: values.day
+            });
+            message.success('자동이체가 설정되었습니다.');
+            form.resetFields();
+            fetchAccounts();
         } catch (error) {
-            console.error('자동이체 설정 수정 에러:', error);
-            message.error('자동이체 설정 수정에 실패했습니다.');
+            console.error('자동이체 설정 에러:', error);
+            message.error('자동이체 설정에 실패했습니다.');
         }
     };
 
@@ -94,11 +99,11 @@ const DepositAutosettings = () => {
                 ...values,
                 customerId
             });
-            message.success('자동이체 설정이 완료되었습니다.');
+            console.success('자동이체 설정이 완료되었습니다.');
             form.resetFields();
         } catch (error) {
             console.error('자동이체 설정 에러:', error);
-            message.error('자동이체 설정에 실패했습니다.');
+            console.error('자동이체 설정에 실패했습니다.');
         } finally {
             setLoading(false);
         }

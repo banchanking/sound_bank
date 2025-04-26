@@ -68,10 +68,10 @@ function AdminLimit() {
   }, []);
 
   return (
-    <div className={styles.container}>
-      <div className={styles.content}>
+    <div className={styles['limitAdmin-container']}>
+      <div className={styles['limitAdmin-content']}>
         <h2>이체한도 변경 요청 목록 (관리자)</h2>
-        <table className={styles.table}>
+        <table className={styles['limitAdmin-table']}>
           <thead>
             <tr>
               <th>신청자</th>
@@ -95,13 +95,13 @@ function AdminLimit() {
                     <>
                       <button
                         onClick={() => handleAction(item, 'approve')}
-                        className={`${styles.btn} ${styles.btnApprove}`}
+                        className={`${styles['limitAdmin-btn']} ${styles['limitAdmin-btnApprove']}`}
                       >
                         승인
                       </button>
                       <button
                         onClick={() => handleAction(item, 'reject')}
-                        className={`${styles.btn} ${styles.btnReject}`}
+                        className={`${styles['limitAdmin-btn']} ${styles['limitAdmin-btnReject']}`}
                       >
                         반려
                       </button>
@@ -118,7 +118,9 @@ function AdminLimit() {
                       반려일: {item.approval_date ? new Date(item.approval_date).toLocaleString() : '-'}<br />
                       사유: {item.reject_reason || '-'}
                     </div>
-                  ) : '-'}
+                  ) : (
+                    '-'
+                  )}
                 </td>
               </tr>
             ))}

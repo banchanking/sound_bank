@@ -7,13 +7,13 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-table {
+.infoApply {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0 12px; /* 줄 사이 여백 */
 }
 
-th {
+.infoApply th {
   text-align: left;
   width: 35%;
   font-weight: 600;
@@ -22,7 +22,7 @@ th {
   white-space: nowrap;
 }
 
-td {
+.infoApply td {
   width: 65%;
 }
 

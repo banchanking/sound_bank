@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Select, Button, Card, message, InputNumber, Modal } from 'antd';
-import { ArrowRightOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCustomerID } from "../../jwt/AxiosToken";
 import RefreshToken from "../../jwt/RefreshToken";
@@ -17,6 +16,7 @@ const DepositWithdrawal = () => {
     const [accountBalance, setAccountBalance] = useState(0);
     const [loading, setLoading] = useState(true);
     const customerId = getCustomerID();
+    const [accountType, setAccountType] = useState('deposit');
 
     useEffect(() => {
         if (!customerId) {
@@ -47,6 +47,7 @@ const DepositWithdrawal = () => {
             const response = await RefreshToken.get(`/api/deposit/accounts/${accountNumber}`);
             setAccountBalance(response.data.balance);
             form.setFieldsValue({ balance: response.data.balance });
+            setAccountType(response.data.productType);
         } catch (error) {
             console.error('계좌 잔액 조회 에러:', error);
             message.error('계좌 잔액을 불러오는데 실패했습니다.');
@@ -55,8 +56,17 @@ const DepositWithdrawal = () => {
 
     const handleWithdrawal = async (values) => {
         try {
-            await RefreshToken.post(`/api/deposit/accounts/${selectedAccount}/withdraw`, values);
+            const endpoint = accountType === 'deposit'
+                ? `/api/deposit/accounts/deposit/${selectedAccount}/withdraw`
+                : `/api/deposit/accounts/savings/${selectedAccount}/withdraw`;
+            
+            await RefreshToken.post(endpoint, {
+                transactionAmount: values.amount,
+                accountPassword: values.password
+            });
+            
             message.success('출금이 완료되었습니다.');
+            form.resetFields();
             fetchAccounts();
         } catch (error) {
             console.error('출금 에러:', error);
@@ -163,7 +173,6 @@ const DepositWithdrawal = () => {
                             htmlType="button"
                             onClick={showConfirm}
                             loading={loading}
-                            icon={<ArrowRightOutlined />}
                             style={{ width: '100%' }}
                         >
                             출금하기
