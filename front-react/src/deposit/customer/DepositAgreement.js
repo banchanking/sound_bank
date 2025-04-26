@@ -3,7 +3,7 @@ import { Card, Checkbox, Button, Steps, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { getCustomerID } from "../../jwt/AxiosToken";
 import RefreshToken from "../../jwt/RefreshToken";
-import '../../Css/deposit/DepositAgreement.css';
+import '../../Css/depositcss/DepositAgreement.css';
 
 const { Step } = Steps;
 

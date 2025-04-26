@@ -4,7 +4,7 @@ import { getCustomerID } from "../../jwt/AxiosToken";
 import { Card, Table, Button, Modal, Form, Input, InputNumber, Select, Space } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import axios from 'axios';
-import '../../Css/deposit/DepositProduct.css';
+import '../../Css/depositcss/DepositProduct.css';
 import RefreshToken from '../../jwt/RefreshToken';
 
 const { Option } = Select;

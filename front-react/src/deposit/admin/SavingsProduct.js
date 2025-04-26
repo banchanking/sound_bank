@@ -4,7 +4,7 @@ import { getCustomerID } from "../../jwt/AxiosToken";
 import axios from 'axios';
 import { Table, Card, Button, Modal, Form, Input, InputNumber, DatePicker, Select, message } from 'antd';
 import RefreshToken from "../../jwt/RefreshToken";
-import '../../Css/deposit/SavingsProduct.css';
+import '../../Css/depositcss/SavingsProduct.css';
 
 const { Option } = Select;
 
