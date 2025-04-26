@@ -132,8 +132,8 @@ const SavingsProduct = () => {
     ];
 
     return (
-        <div className="savings-product-container">
-            <div className="savings-product-header">
+        <div className="depositContainer">
+            <div className="depositProductHeader">
                 <h2>적금 상품 관리</h2>
                 <Button type="primary" onClick={() => showModal()}>
                     <PlusOutlined /> 새 상품 추가

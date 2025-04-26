@@ -148,9 +148,9 @@ const DepositProduct = () => {
     ];
 
     return (
-        <div className="deposit-product-container">
+        <div className="depositContainer">
             <Card>
-                <div className="deposit-product-header">
+                <div className="depositProductHeader">
                     <h2>예금 상품 관리</h2>
                     <Button
                         type="primary"
