@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCustomerID } from "../../jwt/AxiosToken";
-import { Card, Table, Button, Modal, Form, Input, InputNumber, Select, message, Space } from 'antd';
+import { Card, Table, Button, Modal, Form, Input, InputNumber, Select, Space } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import '../../Css/deposit/DepositProduct.css';
@@ -23,11 +23,11 @@ const DepositProduct = () => {
     const fetchProducts = async () => {
         try {
             setLoading(true);
-            const response = await RefreshToken.get('/api/deposit/products');
+            const response = await RefreshToken.get('/api/deposit/products/deposit');
             setProducts(response.data);
         } catch (error) {
             console.error('상품 조회 에러:', error);
-            message.error('상품 정보를 불러오는데 실패했습니다.');
+            alert('상품 정보를 불러오는데 실패했습니다.');
         } finally {
             setLoading(false);
         }
@@ -47,12 +47,12 @@ const DepositProduct = () => {
 
     const handleDeleteProduct = async (productId) => {
         try {
-            await RefreshToken.delete(`/api/deposit/products/${productId}`);
-            message.success('상품이 삭제되었습니다.');
+            await RefreshToken.delete(`/api/deposit/products/deposit/${productId}`);
+            alert('상품이 삭제되었습니다.');
             fetchProducts();
         } catch (error) {
             console.error('상품 삭제 에러:', error);
-            message.error('상품 삭제에 실패했습니다.');
+            alert('상품 삭제에 실패했습니다.');
         }
     };
 
@@ -60,30 +60,31 @@ const DepositProduct = () => {
         try {
             const values = await form.validateFields();
             if (editingProduct) {
-                await RefreshToken.put(`/api/deposit/products/${editingProduct.id}`, values);
-                message.success('상품이 수정되었습니다.');
+                await RefreshToken.put(`/api/deposit/products/deposit/${editingProduct.id}`, values);
+                alert('상품이 수정되었습니다.');
             } else {
-                await RefreshToken.post('/api/deposit/products', values);
-                message.success('상품이 추가되었습니다.');
+                await RefreshToken.post('/api/deposit/products/deposit', values);
+                alert('상품이 추가되었습니다.');
             }
             setIsModalVisible(false);
             fetchProducts();
         } catch (error) {
             console.error('상품 저장 에러:', error);
-            message.error('상품 저장에 실패했습니다.');
+            alert('상품 저장에 실패했습니다.');
+
         }
     };
 
     const columns = [
         {
             title: '상품명',
-            dataIndex: 'name',
-            key: 'name',
+            dataIndex: 'productName',
+            key: 'productName',
         },
         {
             title: '상품유형',
-            dataIndex: 'type',
-            key: 'type',
+            dataIndex: 'productType',
+            key: 'productType',
             render: (type) => {
                 const typeMap = {
                     REGULAR: '일반예금',
@@ -94,33 +95,27 @@ const DepositProduct = () => {
             }
         },
         {
-            title: '기본이율',
-            dataIndex: 'baseRate',
-            key: 'baseRate',
-            render: (rate) => `${rate}%`
-        },
-        {
-            title: '우대이율',
-            dataIndex: 'preferentialRate',
-            key: 'preferentialRate',
+            title: '이자율',
+            dataIndex: 'interestRate',
+            key: 'interestRate',
             render: (rate) => `${rate}%`
         },
         {
             title: '최소금액',
             dataIndex: 'minAmount',
             key: 'minAmount',
-            render: (amount) => `${amount.toLocaleString()}원`
+            render: (amount) => `${Number(amount).toLocaleString()}원`
         },
         {
             title: '최대금액',
             dataIndex: 'maxAmount',
             key: 'maxAmount',
-            render: (amount) => `${amount.toLocaleString()}원`
+            render: (amount) => `${Number(amount).toLocaleString()}원`
         },
         {
             title: '기간',
-            dataIndex: 'term',
-            key: 'term',
+            dataIndex: 'termMonths',
+            key: 'termMonths',
             render: (term) => `${term}개월`
         },
         {
@@ -180,7 +175,7 @@ const DepositProduct = () => {
                         layout="vertical"
                     >
                         <Form.Item
-                            name="name"
+                            name="productName"
                             label="상품명"
                             rules={[{ required: true, message: '상품명을 입력해주세요' }]}
                         >
@@ -188,7 +183,7 @@ const DepositProduct = () => {
                         </Form.Item>
 
                         <Form.Item
-                            name="type"
+                            name="productType"
                             label="상품유형"
                             rules={[{ required: true, message: '상품유형을 선택해주세요' }]}
                         >
@@ -200,24 +195,9 @@ const DepositProduct = () => {
                         </Form.Item>
 
                         <Form.Item
-                            name="baseRate"
-                            label="기본이율"
-                            rules={[{ required: true, message: '기본이율을 입력해주세요' }]}
-                        >
-                            <InputNumber
-                                min={0}
-                                max={100}
-                                step={0.01}
-                                formatter={value => `${value}%`}
-                                parser={value => value.replace('%', '')}
-                            />
-                        </Form.Item>
-
-                        <Form.Item
-                            name="preferentialRate"
-                            label="우대이율"
-                            rules={[{ required: true, message: '우대이율을 입력해주세요' }]}
-                        >
+                            name="interestRate"
+                            label="이자율"
+                            rules={[{ required: true, message: '이자율을 입력해주세요' }]}
                             <InputNumber
                                 min={0}
                                 max={100}
@@ -230,8 +210,7 @@ const DepositProduct = () => {
                         <Form.Item
                             name="minAmount"
                             label="최소금액"
-                            rules={[{ required: true, message: '최소금액을 입력해주세요' }]}
-                        >
+                            rules={[{ required: true, message: '최소금액을 입력해주세요' }]}                       
                             <InputNumber
                                 min={0}
                                 step={10000}
@@ -239,12 +218,11 @@ const DepositProduct = () => {
                                 parser={value => value.replace(/\원\s?|(,*)/g, '')}
                             />
                         </Form.Item>
-
+                        
                         <Form.Item
                             name="maxAmount"
                             label="최대금액"
                             rules={[{ required: true, message: '최대금액을 입력해주세요' }]}
-                        >
                             <InputNumber
                                 min={0}
                                 step={10000}
@@ -254,15 +232,14 @@ const DepositProduct = () => {
                         </Form.Item>
 
                         <Form.Item
-                            name="term"
+                            name="termMonths"
+
                             label="기간(개월)"
                             rules={[{ required: true, message: '기간을 입력해주세요' }]}
-                        >
                             <InputNumber
                                 min={1}
-                                max={36}
-                                formatter={value => `${value}개월`}
-                                parser={value => value.replace('개월', '')}
+                                max={60}
+
                             />
                         </Form.Item>
                     </Form>
