@@ -3,7 +3,7 @@ import { Form, Input, Select, Button, Card, message, Modal, Descriptions, InputN
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCustomerID } from "../../jwt/AxiosToken";
 import RefreshToken from "../../jwt/RefreshToken";
-import '../../Css/deposit/DepositCancellation.css';
+import '../../Css/depositcss/DepositCancellation.css';
 
 const { Option } = Select;
 
@@ -39,7 +39,7 @@ const DepositCancellation = () => {
             setAccounts(response.data);
         } catch (error) {
             console.error('계좌 조회 에러:', error);
-            message.error('계좌 정보를 불러오는데 실패했습니다.');
+            console.error('계좌 정보를 불러오는데 실패했습니다.');
         }
     };
 
@@ -48,7 +48,7 @@ const DepositCancellation = () => {
             const response = await RefreshToken.get('/api/transfer-accounts');
             setTransferAccounts(response.data);
         } catch (error) {
-            message.error('이체계좌 정보를 불러오는데 실패했습니다.');
+            console.error('이체계좌 정보를 불러오는데 실패했습니다.');
         }
     };
 
@@ -108,11 +108,15 @@ const DepositCancellation = () => {
         });
     };
 
-    const handleCancellation = async (accountId) => {
+    const handleCancellation = async (values) => {
         try {
-            await RefreshToken.delete(`/api/deposit/accounts/${accountId}`);
-            message.success('계좌가 해지되었습니다.');
-            fetchAccounts();
+            await RefreshToken.delete(`/api/deposit/accounts/deposit/${selectedAccount}`, {
+                data: {
+                    accountPassword: values.password
+                }
+            });
+            message.success('예금 계좌가 해지되었습니다.');
+            navigate('/deposit/accounts');
         } catch (error) {
             console.error('계좌 해지 에러:', error);
             message.error('계좌 해지에 실패했습니다.');

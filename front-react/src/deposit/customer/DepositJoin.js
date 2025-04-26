@@ -5,7 +5,7 @@ import axios from 'axios';
 import RefreshToken from "../../jwt/RefreshToken";
 import { getCustomerID } from "../../jwt/AxiosToken";
 import { useNavigate } from 'react-router-dom';
-import '../../Css/deposit/DepositJoin.css';
+import '../../Css/depositcss/DepositJoin.css';
 
 const { Option } = Select;
 const { Step } = Steps;
@@ -34,11 +34,11 @@ const DepositJoin = () => {
 
     const fetchProducts = async () => {
         try {
-            const response = await RefreshToken.get('http://localhost:8081/api/deposit/products');
+            const response = await RefreshToken.get(`/api/deposit/accounts/deposit/${getCustomerID()}`);
             setProducts(response.data);
         } catch (error) {
             console.error('상품 조회 실패:', error);
-            message.error('상품 정보를 불러오는데 실패했습니다.');
+            console.error('상품 정보를 불러오는데 실패했습니다.');
         }
     };
 
@@ -50,7 +50,7 @@ const DepositJoin = () => {
 
     const handleJoin = async (values) => {
         try {
-            await RefreshToken.post('/api/deposit/accounts', {
+            await RefreshToken.post('/api/deposit/accounts/deposit', {
                 ...values,
                 customerId: getCustomerID()
             });
@@ -67,9 +67,9 @@ const DepositJoin = () => {
             title: '예금 가입 확인',
             content: (
                 <Descriptions column={1}>
-                    <Descriptions.Item label="상품명">{selectedProduct?.name}</Descriptions.Item>
-                    <Descriptions.Item label="이자율">{selectedProduct?.interestRate}%</Descriptions.Item>
-                    <Descriptions.Item label="가입금액">{form.getFieldValue('amount')?.toLocaleString()}원</Descriptions.Item>
+                    <Descriptions.Item label="상품명">{selectedProduct?.name || '선택된 상품 없음'}</Descriptions.Item>
+                    <Descriptions.Item label="이자율">{selectedProduct?.interestRate || 0}%</Descriptions.Item>
+                    <Descriptions.Item label="가입금액">{form.getFieldValue('amount')?.toLocaleString() || '0'}원</Descriptions.Item>
                 </Descriptions>
             ),
             okText: '확인',
@@ -85,18 +85,22 @@ const DepositJoin = () => {
                     <div className="depositProductSelection">
                         <h3>예금 상품 선택</h3>
                         <div className="depositProductList">
-                            {products.map(product => (
-                                <Card
-                                    key={product.id}
-                                    className="depositProductCard"
-                                    onClick={() => handleProductSelect(product.id)}
-                                >
-                                    <h4>{product.name}</h4>
-                                    <p>이자율: {product.interestRate}%</p>
-                                    <p>최소금액: {product.minAmount.toLocaleString()}원</p>
-                                    <p>최대금액: {product.maxAmount.toLocaleString()}원</p>
-                                </Card>
-                            ))}
+                            {products && products.length > 0 ? (
+                                products.map(product => (
+                                    <Card
+                                        key={product.id}
+                                        className="depositProductCard"
+                                        onClick={() => handleProductSelect(product.id)}
+                                    >
+                                        <h4>{product.name}</h4>
+                                        <p>이자율: {product.interestRate}%</p>
+                                        <p>최소금액: {product.minAmount?.toLocaleString() || '0'}원</p>
+                                        <p>최대금액: {product.maxAmount?.toLocaleString() || '0'}원</p>
+                                    </Card>
+                                ))
+                            ) : (
+                                <p>등록된 예금 상품이 없습니다.</p>
+                            )}
                         </div>
                     </div>
                 );
@@ -112,16 +116,16 @@ const DepositJoin = () => {
                             label="가입금액"
                             rules={[
                                 { required: true, message: '가입금액을 입력해주세요' },
-                                { type: 'number', min: selectedProduct?.minAmount, message: `최소 ${selectedProduct?.minAmount.toLocaleString()}원 이상이어야 합니다` },
-                                { type: 'number', max: selectedProduct?.maxAmount, message: `최대 ${selectedProduct?.maxAmount.toLocaleString()}원 이하여야 합니다` }
+                                { type: 'number', min: selectedProduct?.minAmount || 0, message: `최소 ${(selectedProduct?.minAmount || 0).toLocaleString()}원 이상이어야 합니다` },
+                                { type: 'number', max: selectedProduct?.maxAmount || 0, message: `최대 ${(selectedProduct?.maxAmount || 0).toLocaleString()}원 이하여야 합니다` }
                             ]}
                         >
                             <InputNumber
                                 style={{ width: '100%' }}
-                                min={selectedProduct?.minAmount}
-                                max={selectedProduct?.maxAmount}
+                                min={selectedProduct?.minAmount || 0}
+                                max={selectedProduct?.maxAmount || 0}
                                 step={10000}
-                                formatter={value => `${value.toLocaleString()}원`}
+                                formatter={value => `${value?.toLocaleString() || '0'}원`}
                                 parser={value => value.replace(/\원\s?|(,*)/g, '')}
                             />
                         </Form.Item>
