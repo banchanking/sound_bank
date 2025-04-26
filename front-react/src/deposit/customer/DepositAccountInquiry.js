@@ -3,7 +3,7 @@ import { Table, Tabs, Card, Button, Tag, message } from 'antd';
 import RefreshToken from "../../jwt/RefreshToken";
 import { getCustomerID } from "../../jwt/AxiosToken";
 import { useNavigate } from 'react-router-dom';
-import '../../Css/deposit/DepositAccountInquiry.css';
+import '../../Css/depositcss/DepositAccountInquiry.css';
 
 const { TabPane } = Tabs;
 

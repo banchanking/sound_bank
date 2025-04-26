@@ -5,7 +5,7 @@ import axios from 'axios';
 import RefreshToken from "../../jwt/RefreshToken";
 import { getCustomerID } from "../../jwt/AxiosToken";
 import { useNavigate } from 'react-router-dom';
-import '../../Css/deposit/DepositJoin.css';
+import '../../Css/depositcss/DepositJoin.css';
 
 const { Option } = Select;
 const { Step } = Steps;
