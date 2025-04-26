@@ -17,6 +17,7 @@ const DepositTransactionDetails = () => {
     const [loading, setLoading] = useState(true);
     const [accountType, setAccountType] = useState('deposit');
 
+
     useEffect(() => {
         const customer_id = getCustomerID();
         if (!customer_id) {

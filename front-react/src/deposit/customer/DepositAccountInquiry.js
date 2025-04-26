@@ -15,6 +15,7 @@ const DepositAccountInquiry = () => {
     const [selectedAccount, setSelectedAccount] = useState(null);
     const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
 
+
     useEffect(() => {
         const customer_id = getCustomerID();
         if (!customer_id) {

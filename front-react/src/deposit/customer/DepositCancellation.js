@@ -40,6 +40,7 @@ const DepositCancellation = () => {
         } catch (error) {
             console.error('계좌 조회 에러:', error);
             console.error('계좌 정보를 불러오는데 실패했습니다.');
+
         }
     };
 
@@ -49,6 +50,7 @@ const DepositCancellation = () => {
             setTransferAccounts(response.data);
         } catch (error) {
             console.error('이체계좌 정보를 불러오는데 실패했습니다.');
+
         }
     };
 

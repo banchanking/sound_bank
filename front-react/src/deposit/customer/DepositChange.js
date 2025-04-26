@@ -36,6 +36,7 @@ const DepositChange = () => {
         } catch (error) {
             console.error('계좌 조회 에러:', error);
             console.error('계좌 정보를 불러오는데 실패했습니다.');
+
         }
     };
 
@@ -60,6 +61,7 @@ const DepositChange = () => {
         } catch (error) {
             console.error('비밀번호 변경 에러:', error);
             message.error('비밀번호 변경에 실패했습니다.');
+
         }
     };
 
