@@ -1,9 +1,8 @@
 import axios from "axios";
-import { getAuthToken, getCustomerID, setAuthToken, refreshAccessToken } from "./AxiosToken";
-import { message } from 'antd';
+import { getAuthToken, getCustomerID, setAuthToken } from "./AxiosToken";
 
 const RefreshToken = axios.create({
-  baseURL: "http://localhost:8081",
+  baseURL: "http://localhost:8081/api",
   headers: {
     "Content-Type": "application/json;charset=utf-8",
   },
@@ -46,6 +45,10 @@ RefreshToken.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    const customerId = getCustomerID();
+    const role = localStorage.getItem("role");
+    if (!customerId) return Promise.reject(error);
+
     if (isRefreshing) {
       return new Promise((resolve) => {
         addRefreshSubscriber((newToken) => {
@@ -59,10 +62,12 @@ RefreshToken.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      const newAccessToken = await refreshAccessToken();
-      if (!newAccessToken) {
-        throw new Error("토큰 재발급 실패");
-      }
+      console.log("🚨 refresh-token 요청 customerId:", customerId);
+      const { data } = await RefreshToken.post("/refresh-token", {
+        customerId,
+        role,
+      });
+      const newAccessToken = data.accessToken || data;
 
       setAuthToken(newAccessToken);
       onRefreshed(newAccessToken);
@@ -71,9 +76,6 @@ RefreshToken.interceptors.response.use(
       return RefreshToken(originalRequest);
     } catch (refreshError) {
       console.error("❌ 토큰 재발급 실패", refreshError);
-      message.error('세션이 만료되었습니다. 다시 로그인해주세요.');
-      localStorage.clear();
-      window.location.href = '/login';
       return Promise.reject(refreshError);
     } finally {
       isRefreshing = false;

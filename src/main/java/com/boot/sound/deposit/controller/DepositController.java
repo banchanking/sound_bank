@@ -78,15 +78,15 @@ public class DepositController {
 
     // 예금 계좌 생성
     @PostMapping("/accounts/deposit")
-    public ResponseEntity<?> createDepositAccount(@RequestBody DepositDTO account) {
-        depositService.createDepositAccount(account);
+    public ResponseEntity<?> createDepositAccount(@RequestBody DepositDTO dto) {
+        depositService.createDepositAccount(dto);
         return ResponseEntity.ok().body("예금 계좌가 성공적으로 개설되었습니다.");
     }
 
     // 적금 계좌 생성
     @PostMapping("/accounts/savings")
-    public ResponseEntity<?> createSavingsAccount(@RequestBody DepositDTO account) {
-        depositService.createSavingsAccount(account);
+    public ResponseEntity<?> createSavingsAccount(@RequestBody DepositDTO dto) {
+        depositService.createSavingsAccount(dto);
         return ResponseEntity.ok().body("적금 계좌가 성공적으로 개설되었습니다.");
     }
 

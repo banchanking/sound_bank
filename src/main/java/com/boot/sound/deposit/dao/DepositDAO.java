@@ -25,8 +25,8 @@ public interface DepositDAO {
     DepositDTO getSavingsAccountDetail(@Param("accountId") int accountId);
 
     // 계좌 생성/해지
-    int createDepositAccount(@Param("account") DepositDTO account);
-    int createSavingsAccount(@Param("account") DepositDTO account);
+    int createDepositAccount(DepositDTO dto);
+    int createSavingsAccount(DepositDTO dto);
     int closeDepositAccount(@Param("accountId") int accountId, @Param("accountPassword") String accountPassword);
     int closeSavingsAccount(@Param("accountId") int accountId, @Param("accountPassword") String accountPassword);
 
@@ -64,14 +64,14 @@ public interface DepositDAO {
     int changeSavingsAccountPassword(@Param("accountId") int accountId, @Param("oldPassword") String oldPassword, @Param("newPassword") String newPassword);
     
     // 예금 상품 추가
-    int addDepositProduct(DepositDTO product);
+    int addDepositProduct(DepositDTO dto);
     
     // 적금 상품 추가
-    int addSavingsProduct(DepositDTO product);
+    int addSavingsProduct(DepositDTO dto);
 
     // 예금 상품 수정
-    int updateDepositProduct(@Param("productId") int productId, @Param("product") DepositDTO product);
+    int updateDepositProduct(int productId, DepositDTO dto);
     
     // 예금 상품 삭제 
-    int deleteDepositProduct(@Param("productId") int productId);
+    int deleteDepositProduct(int productId);
 } 
