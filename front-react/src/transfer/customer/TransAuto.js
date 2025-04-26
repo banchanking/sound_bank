@@ -40,14 +40,13 @@ function TransAuto() {
         setAccounts(list);
       })
       .catch(err => console.error('계좌 불러오기 실패:', err));
-  }, []);
+  }, [navigate]);
 
   const handleChange = e => {
     const { name, value } = e.target;
     if (name === 'amount') {
       const raw = value.replace(/[^0-9]/g, '');
-      const formatted = raw ? Number(raw).toLocaleString('ko-KR') : '';
-      setDisplayAmount(formatted);
+      setDisplayAmount(raw ? Number(raw).toLocaleString('ko-KR') : '');
       setForm(prev => ({ ...prev, amount: raw }));
     } else {
       setForm(prev => ({ ...prev, [name]: value }));
@@ -90,12 +89,14 @@ function TransAuto() {
   };
 
   return (
-    <div className={styles.page}>
+    <div className={styles['auto-page']}>
       <Sidebar />
-      <div className={styles.wrapper}>
-        <h2 className={`${styles.title} ${styles.fadeInUp}`}>자동이체 등록</h2>
-        <form className={`${styles.form}`} onSubmit={send}>
-          <select name="out_account_number" value={form.out_account_number} onChange={change} required>
+      <div className={styles['auto-wrapper']}>
+        <h2 className={`${styles['auto-title']} ${styles['auto-fadeInUp']}`}>
+          자동이체 등록
+        </h2>
+        <form className={styles['auto-form']} onSubmit={send}>
+          <select name="out_account_number" value={form.out_account_number} onChange={change} required className={styles['auto-select']}>
             <option value="">출금 계좌 선택</option>
             {accounts.map(acc => (
               <option key={acc.account_number} value={acc.account_number}>
@@ -104,19 +105,67 @@ function TransAuto() {
             ))}
           </select>
 
-          <input name="in_account_number" placeholder="받는 사람 계좌번호" value={form.in_account_number} onChange={change} required />
-          <input name="in_name" placeholder="받는 사람 이름" value={form.in_name} onChange={change} required />
-          <input name="amount" placeholder="금액" value={displayAmount} onChange={handleChange} required />
-          <input name="memo" placeholder="메모 (선택사항)" value={form.memo} onChange={change} className={styles.fullRow} />
+          <input
+            name="in_account_number"
+            placeholder="받는 사람 계좌번호"
+            value={form.in_account_number}
+            onChange={change}
+            required
+            className={styles['auto-input']}
+          />
+          <input
+            name="in_name"
+            placeholder="받는 사람 이름"
+            value={form.in_name}
+            onChange={change}
+            required
+            className={styles['auto-input']}
+          />
+          <input
+            name="amount"
+            placeholder="금액"
+            value={displayAmount}
+            onChange={handleChange}
+            required
+            className={styles['auto-input']}
+          />
+          <input
+            name="memo"
+            placeholder="메모 (선택사항)"
+            value={form.memo}
+            onChange={change}
+            className={styles['auto-input']}
+          />
 
-          <div className={styles.radioRow}>
-            <label><input type="radio" name="schedule_mode" value="day" checked={form.schedule_mode === 'day'} onChange={change} /> 요일 반복</label>
-            <label><input type="radio" name="schedule_mode" value="monthly" checked={form.schedule_mode === 'monthly'} onChange={change} /> 매월 지정일</label>
+          <div className={styles['auto-radioRow']}>
+            <label>
+              <input
+                type="radio"
+                name="schedule_mode"
+                value="day"
+                checked={form.schedule_mode === 'day'}
+                onChange={change}
+              /> 요일 반복
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="schedule_mode"
+                value="monthly"
+                checked={form.schedule_mode === 'monthly'}
+                onChange={change}
+              /> 매월 지정일
+            </label>
           </div>
-          <span style={{marginTop:"-20px", marginBottom:"-10px", marginLeft:"6px"}}>매주</span>
+
           {form.schedule_mode === 'day' ? (
-            <select name="schedule_day" value={form.schedule_day} onChange={change} required>
-              
+            <select
+              name="schedule_day"
+              value={form.schedule_day}
+              onChange={change}
+              required
+              className={styles['auto-select']}
+            >
               <option value="1">월요일</option>
               <option value="2">화요일</option>
               <option value="3">수요일</option>
@@ -126,25 +175,49 @@ function TransAuto() {
               <option value="7">일요일</option>
             </select>
           ) : (
-            <div className={styles.monthly}>
+            <div className={styles['auto-monthly']}>
               <span>매월</span>
-              <input type="number" name="schedule_month_day" value={form.schedule_month_day} onChange={change} min="1" max="31" required />
+              <input
+                type="number"
+                name="schedule_month_day"
+                value={form.schedule_month_day}
+                onChange={change}
+                min="1"
+                max="31"
+                required
+                className={styles['auto-input']}
+              />
               <span>일</span>
             </div>
           )}
 
-          <input type="time" name="schedule_time" value={form.schedule_time} onChange={change} required />
-          <input type="password" name="password" placeholder="계좌 비밀번호" value={form.password} onChange={change} required />
+          <input
+            type="time"
+            name="schedule_time"
+            value={form.schedule_time}
+            onChange={change}
+            required
+            className={styles['auto-input']}
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="계좌 비밀번호"
+            value={form.password}
+            onChange={change}
+            required
+            className={styles['auto-input']}
+          />
 
-          <div className={styles.terms}>
+          <div className={styles['auto-terms']}>
             <input type="checkbox" checked={agree} onChange={() => setAgree(!agree)} />
             <label>자동이체 약관에 동의합니다.</label>
-            <button type="button" onClick={() => setShowTerms(true)}>[보기]</button>
+            <button type="button" onClick={() => setShowTerms(true)}>보기</button>
           </div>
 
           {showTerms && (
-            <div className={styles.modalOverlay}>
-              <div className={styles.modalBox}>
+            <div className={styles['auto-modalOverlay']}>
+              <div className={styles['auto-modalBox']}>
                 <h3>자동이체 약관</h3>
                 <p>
                   - 자동이체는 사용자가 등록한 일정에 따라 이체됩니다.<br />
@@ -156,7 +229,13 @@ function TransAuto() {
             </div>
           )}
 
-          <button type="submit" className={styles.submitButton} disabled={!agree}>등록</button>
+          <button
+            type="submit"
+            className={styles['auto-submitButton']}
+            disabled={!agree}
+          >
+            등록
+          </button>
         </form>
       </div>
     </div>
