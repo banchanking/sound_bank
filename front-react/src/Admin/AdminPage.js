@@ -15,6 +15,12 @@ import LoanList from "../sound_loan/admin/LoanList";
 import LoanInterestList from "../sound_loan/admin/LoanInterestList";
 import LoanLateInterestList from "../sound_loan/admin/LoanLateInterestList";
 import LoanCustomerList from "../sound_loan/admin/LoanCustomerList";
+import FundProductManage from "../fund/admin/FundProductManage";
+import FundTestManage from "../fund/admin/FundTestManage";
+import FindFundCustomer from "../fund/admin/FindFundCustomer";
+import OpenApplyList from "../fund/admin/OpenApplyList";
+import CloseApplyList from "../fund/admin/CloseApplyList";
+import CustomerTransHistory from "../fund/admin/CustomerTransHistory";
 
 const AdminPage = () => {
   const [activeMenuIndex, setActiveMenuIndex] = useState(null);
@@ -75,10 +81,12 @@ const AdminPage = () => {
       title: "펀드",
       icon: <FaChartLine />,
       items: [
-        { name: "펀드정보조회", component: "MyFundInfo" },
-        { name: "펀드계좌개설", component: "OpenAccount" },
-        { name: "펀드계좌해지", component: "CloseAccount" },
-        { name: "펀드거래내역", component: "TransHistory" },
+        { name: "펀드상품관리", component: "FundProductManage" },
+        { name: "투자성향분석 테스트관리", component: "FundTestManage" },
+        { name: "고객펀드조회", component: "FindFundCustomer" },
+        { name: "계좌개선신청목록", component: "OpenApplyList" },
+        { name: "계좌해지신청목록", component: "CloseApplyList" },
+        { name: "회원거래내역조회", component: "CustomerTransHistory" },
       ],
     },
   ];
@@ -97,6 +105,21 @@ const AdminPage = () => {
       case "LoanLateInterestList":
         return <LoanLateInterestList />;
       // 대출 컴포넌트 호출 종료
+
+      // 펀드 컴포넌트 호출 시작
+      case "FundProductManage":
+        return <FundProductManage />;
+      case "FundTestManage":
+        return <FundTestManage />;
+      case "FindFundCustomer":
+        return <FindFundCustomer />;
+      case "OpenApplyList":
+        return <OpenApplyList />;
+      case "CloseApplyList":
+        return <CloseApplyList />;
+      case "CustomerTransHistory":
+        return <CustomerTransHistory />;
+      // 펀드 컴포넌트 호출 종료
       default:
         return (
           <div className="adminPage-placeholder">메뉴를 선택해주세요.</div>
