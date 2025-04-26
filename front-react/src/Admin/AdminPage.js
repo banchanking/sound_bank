@@ -28,6 +28,7 @@ import DepositProduct from "../deposit/admin/DepositProduct";
 import SavingsProduct from "../deposit/admin/SavingsProduct";
 import MultiAdmin from "../transfer/admin/MultiAdmin";
 import LimitAdmin from "../transfer/admin/LimitAdmin";
+import FundProductAdmin from "../fund/admin/FundProductAdmin";
 
 const AdminPage = () => {
   const [activeMenuIndex, setActiveMenuIndex] = useState(null);
@@ -87,10 +88,11 @@ const AdminPage = () => {
       title: "펀드",
       icon: <FaChartLine />,
       items: [
+        { name: "펀드상품등록", component: "FundProductAdmin" },
         { name: "펀드상품관리", component: "FundProductManage" },
         { name: "투자성향분석 테스트관리", component: "FundTestManage" },
         { name: "고객펀드조회", component: "FindFundCustomer" },
-        { name: "계좌개선신청목록", component: "OpenApplyList" },
+        { name: "계좌개설신청목록", component: "OpenApplyList" },
         { name: "계좌해지신청목록", component: "CloseApplyList" },
         { name: "회원거래내역조회", component: "CustomerTransHistory" },
       ],
@@ -125,6 +127,8 @@ const AdminPage = () => {
       // 대출 컴포넌트 호출 종료
 
       // 펀드 컴포넌트 호출 시작
+      case "FundProductAdmin":
+        return <FundProductAdmin />;
       case "FundProductManage":
         return <FundProductManage />;
       case "FundTestManage":
