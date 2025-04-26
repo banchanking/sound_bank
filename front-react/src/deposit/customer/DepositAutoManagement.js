@@ -14,7 +14,6 @@ const DepositAutoManagement = () => {
     const [selectedAccount, setSelectedAccount] = useState(null);
     const [form] = Form.useForm();
 
-
     useEffect(() => {
         const customer_id = getCustomerID();
         if (!customer_id) {
@@ -37,7 +36,6 @@ const DepositAutoManagement = () => {
             setLoading(false);
         } catch (error) {
             console.error('자동이체 조회 에러:', error);
-
             console.error('자동이체 정보를 불러오는데 실패했습니다.');
             setLoading(false);
         }
@@ -141,7 +139,6 @@ const DepositAutoManagement = () => {
                 <span>
                     <Button
                         type="link"
-
                         onClick={() => handleEdit(record)}
                     >
                         수정
@@ -149,7 +146,6 @@ const DepositAutoManagement = () => {
                     <Button
                         type="link"
                         danger
-
                         onClick={() => handleDelete(record)}
                     >
                         해지

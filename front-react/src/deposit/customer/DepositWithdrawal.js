@@ -48,7 +48,6 @@ const DepositWithdrawal = () => {
             setAccountBalance(response.data.balance);
             form.setFieldsValue({ balance: response.data.balance });
             setAccountType(response.data.productType);
-
         } catch (error) {
             console.error('계좌 잔액 조회 에러:', error);
             message.error('계좌 잔액을 불러오는데 실패했습니다.');

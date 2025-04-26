@@ -62,7 +62,6 @@ const DepositAutosettings = () => {
         } catch (error) {
             console.error('자동이체 설정 조회 에러:', error);
             console.error('자동이체 설정을 불러오는데 실패했습니다.');
-
         }
     };
 
@@ -90,7 +89,6 @@ const DepositAutosettings = () => {
         } catch (error) {
             console.error('자동이체 설정 에러:', error);
             message.error('자동이체 설정에 실패했습니다.');
-
         }
     };
 
