@@ -17,8 +17,11 @@ const MyFund = ({ type, onClose, transactions, closedAccounts, onSellRequest }) 
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
-        <h3>{titleMap[type]}</h3>
-        <button onClick={onClose} className={styles.modalClose}>닫기</button>
+        {/* 제목과 닫기 버튼을 같은 행에 배치 */}
+        <div className={styles.modalHeader}>
+          <h3 className={styles.modalTitle}>{titleMap[type]}</h3>
+          <button onClick={onClose} className={styles.modalClose}>닫기</button>
+        </div>
         <table className={styles.fundTable}>
           <thead>
             <tr>
