@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getCustomerID } from "../../jwt/AxiosToken";
 import RefreshToken from "../../jwt/RefreshToken";
 import axios from 'axios';
-import '../../Css/deposit/DepositAutoManagement.css';
+import '../../Css/depositcss/DepositAutoManagement.css';
 
 const DepositAutoManagement = () => {
     const navigate = useNavigate();

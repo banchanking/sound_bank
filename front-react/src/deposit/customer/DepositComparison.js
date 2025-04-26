@@ -4,7 +4,7 @@ import { SearchOutlined, ReloadOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getCustomerID } from "../../jwt/AxiosToken";
 import RefreshToken from "../../jwt/RefreshToken";
-import '../../Css/deposit/DepositComparison.css';
+import '../../Css/depositcss/DepositComparison.css';
 
 const { Title } = Typography;
 const { Option } = Select;

@@ -3,7 +3,7 @@ import { Form, Input, Select, Button, Card, message, InputNumber, Modal } from '
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCustomerID } from "../../jwt/AxiosToken";
 import RefreshToken from "../../jwt/RefreshToken";
-import '../../Css/deposit/DepositWithdrawal.css';
+import '../../Css/depositcss/DepositWithdrawal.css';
 
 const { Option } = Select;
 
