@@ -115,21 +115,23 @@ const SavingsAgreement = () => {
 
     const fetchAgreement = async () => {
         try {
-            const response = await RefreshToken.get('http://localhost:8081/api/savings/agreement');
+            const response = await RefreshToken.get('/api/savings/agreement');
             setAgreement(response.data);
         } catch (error) {
-            console.error('약관 조회 실패:', error);
-            message.error('약관을 불러오는데 실패했습니다.');
+            console.error('약관 조회 에러:', error);
+            message.error('약관 정보를 불러오는데 실패했습니다.');
         }
     };
 
     const handleAgree = async () => {
         try {
-            await RefreshToken.post('http://localhost:8081/api/savings/agreement/agree');
-            message.success('약관에 동의했습니다.');
+            await RefreshToken.post('/api/savings/agreement/agree', {
+                customerId: getCustomerID()
+            });
+            message.success('약관 동의가 완료되었습니다.');
             navigate('/savings/join');
         } catch (error) {
-            console.error('약관 동의 실패:', error);
+            console.error('약관 동의 에러:', error);
             message.error('약관 동의에 실패했습니다.');
         }
     };

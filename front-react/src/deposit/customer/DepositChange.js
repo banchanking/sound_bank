@@ -31,10 +31,10 @@ const DepositChange = () => {
 
     const fetchAccounts = async () => {
         try {
-            const response = await RefreshToken.get(`http://localhost:8081/api/deposit/accounts/customer/${customerId}`);
+            const response = await RefreshToken.get(`/api/deposit/accounts/customer/${customerId}`);
             setAccounts(response.data);
         } catch (error) {
-            console.error('계좌 조회 실패:', error);
+            console.error('계좌 조회 에러:', error);
             message.error('계좌 정보를 불러오는데 실패했습니다.');
         }
     };
@@ -52,11 +52,11 @@ const DepositChange = () => {
 
     const handleChange = async (values) => {
         try {
-            await RefreshToken.put(`http://localhost:8081/api/deposit/accounts/${selectedAccount}`, values);
+            await RefreshToken.put(`/api/deposit/accounts/${selectedAccount}`, values);
             message.success('계좌 정보가 수정되었습니다.');
             fetchAccounts();
         } catch (error) {
-            console.error('계좌 정보 수정 실패:', error);
+            console.error('계좌 정보 수정 에러:', error);
             message.error('계좌 정보 수정에 실패했습니다.');
         }
     };
@@ -80,8 +80,9 @@ const DepositChange = () => {
     };
 
     return (
-        <div className="deposit-change-container">
-            <Card title="예금 계좌 정보 변경">
+        <div className="depositContainer">
+            <h2 className="depositTitle">예금 계좌 정보 변경</h2>
+            <Card>
                 <Form
                     form={form}
                     layout="vertical"

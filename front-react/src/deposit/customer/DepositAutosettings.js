@@ -57,10 +57,10 @@ const DepositAutosettings = () => {
 
     const fetchAutoSettings = async () => {
         try {
-            const response = await RefreshToken.get(`http://localhost:8081/api/deposit/accounts/auto/${customerId}`);
+            const response = await RefreshToken.get(`/api/deposit/accounts/${selectedAccount}/auto-transfer`);
             setAutoSettings(response.data);
         } catch (error) {
-            console.error('자동이체 설정 조회 실패:', error);
+            console.error('자동이체 설정 조회 에러:', error);
             message.error('자동이체 설정을 불러오는데 실패했습니다.');
         }
     };
@@ -78,11 +78,11 @@ const DepositAutosettings = () => {
 
     const handleUpdateAutoSettings = async (values) => {
         try {
-            await RefreshToken.put(`http://localhost:8081/api/deposit/accounts/auto/${customerId}`, values);
+            await RefreshToken.put(`/api/deposit/accounts/${selectedAccount}/auto-transfer`, values);
             message.success('자동이체 설정이 수정되었습니다.');
             fetchAutoSettings();
         } catch (error) {
-            console.error('자동이체 설정 수정 실패:', error);
+            console.error('자동이체 설정 수정 에러:', error);
             message.error('자동이체 설정 수정에 실패했습니다.');
         }
     };
@@ -122,7 +122,7 @@ const DepositAutosettings = () => {
     };
 
     return (
-        <div className="deposit-autosettings-container">
+        <div className="depositContainer">
             <Card title="자동이체 설정">
                 <Form
                     form={form}

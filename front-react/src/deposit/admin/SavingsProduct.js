@@ -21,9 +21,10 @@ const SavingsProduct = () => {
 
     const fetchSavingsProducts = async () => {
         try {
-            const response = await axios.get('/api/savings/products');
+            const response = await RefreshToken.get('/api/savings/products');
             setSavingsProducts(response.data);
         } catch (error) {
+            console.error('적금 상품 조회 에러:', error);
             message.error('적금 상품 목록을 불러오는데 실패했습니다.');
         }
     };
@@ -49,25 +50,27 @@ const SavingsProduct = () => {
         try {
             const values = await form.validateFields();
             if (editingId) {
-                await axios.put(`/api/savings/products/${editingId}`, values);
+                await RefreshToken.put(`/api/savings/products/${editingId}`, values);
                 message.success('적금 상품이 수정되었습니다.');
             } else {
-                await axios.post('/api/savings/products', values);
+                await RefreshToken.post('/api/savings/products', values);
                 message.success('적금 상품이 추가되었습니다.');
             }
             fetchSavingsProducts();
             handleCancel();
         } catch (error) {
+            console.error('적금 상품 저장 에러:', error);
             message.error('적금 상품 저장에 실패했습니다.');
         }
     };
 
     const handleDelete = async (id) => {
         try {
-            await axios.delete(`/api/savings/products/${id}`);
+            await RefreshToken.delete(`/api/savings/products/${id}`);
             message.success('적금 상품이 삭제되었습니다.');
             fetchSavingsProducts();
         } catch (error) {
+            console.error('적금 상품 삭제 에러:', error);
             message.error('적금 상품 삭제에 실패했습니다.');
         }
     };

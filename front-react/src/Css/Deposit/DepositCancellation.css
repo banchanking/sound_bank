@@ -1,3 +1,53 @@
+.depositContainer {
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 16px;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.06);
+}
+
+.depositTitle {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #111;
+    text-align: center;
+}
+
+.depositForm {
+    max-width: 400px;
+    margin: 0 auto;
+    background: #fafafa;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 0 8px rgba(0,0,0,0.04);
+}
+
+.depositForm label {
+    font-weight: 500;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.depositForm input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+.depositBtn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    background-color: #000;
+    color: #fff;
+    transition: all 0.2s ease;
+}
+
 .deposit-cancellation-container {
     padding: 20px;
 }

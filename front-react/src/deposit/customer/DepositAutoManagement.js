@@ -136,7 +136,7 @@ const DepositAutoManagement = () => {
     ];
 
     return (
-        <div className="deposit-auto-management-container">
+        <div className="depositContainer">
             <Card title="자동이체 관리">
                 <Table
                     columns={columns}

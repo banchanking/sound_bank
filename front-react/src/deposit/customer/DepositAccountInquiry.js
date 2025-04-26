@@ -181,8 +181,9 @@ const DepositAccountInquiry = () => {
     };
 
     return (
-        <div className="account-inquiry-container">
-            <Card title="예적금 계좌조회">
+        <div className="depositContainer">
+            <h2 className="depositTitle">예적금 계좌조회</h2>
+            <Card>
                 <Tabs defaultActiveKey="1">
                     <TabPane tab="예금 계좌" key="1">
                         <Table

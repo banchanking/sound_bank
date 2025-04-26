@@ -215,9 +215,9 @@ const DepositComparison = () => {
     };
 
     return (
-        <div className="deposit-comparison-container">
+        <div className="depositContainer">
             <Card>
-                <div className="deposit-comparison-header">
+                <div className="depositComparisonHeader">
                     <Title level={3}>예금 상품 비교</Title>
                     <Space>
                         <Select
@@ -246,7 +246,7 @@ const DepositComparison = () => {
                     </Space>
                 </div>
 
-                <div className="deposit-comparison-content">
+                <div className="depositComparisonContent">
                     <Table
                         columns={columns}
                         dataSource={filteredProducts}
@@ -256,7 +256,7 @@ const DepositComparison = () => {
                     />
 
                     {selectedProducts.length > 0 && (
-                        <div className="comparison-table">
+                        <div className="depositComparisonTable">
                             <Title level={4}>선택한 상품 비교</Title>
                             <Table
                                 columns={comparisonColumns}

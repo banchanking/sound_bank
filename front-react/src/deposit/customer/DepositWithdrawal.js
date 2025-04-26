@@ -33,10 +33,10 @@ const DepositWithdrawal = () => {
 
     const fetchAccounts = async () => {
         try {
-            const response = await RefreshToken.get(`http://localhost:8081/api/deposit/accounts/customer/${customerId}`);
+            const response = await RefreshToken.get(`/api/deposit/accounts/customer/${customerId}`);
             setAccounts(response.data);
         } catch (error) {
-            console.error('계좌 조회 실패:', error);
+            console.error('계좌 조회 에러:', error);
             message.error('계좌 정보를 불러오는데 실패했습니다.');
         }
     };
@@ -44,9 +44,7 @@ const DepositWithdrawal = () => {
     const handleAccountChange = async (accountNumber) => {
         setSelectedAccount(accountNumber);
         try {
-            const response = await RefreshToken.get(`/api/deposit-accounts/${accountNumber}`, {
-                params: { customerId }
-            });
+            const response = await RefreshToken.get(`/api/deposit/accounts/${accountNumber}`);
             setAccountBalance(response.data.balance);
             form.setFieldsValue({ balance: response.data.balance });
         } catch (error) {
@@ -57,11 +55,11 @@ const DepositWithdrawal = () => {
 
     const handleWithdrawal = async (values) => {
         try {
-            await RefreshToken.post(`http://localhost:8081/api/deposit/accounts/${selectedAccount}/withdrawal`, values);
+            await RefreshToken.post(`/api/deposit/accounts/${selectedAccount}/withdraw`, values);
             message.success('출금이 완료되었습니다.');
             fetchAccounts();
         } catch (error) {
-            console.error('출금 실패:', error);
+            console.error('출금 에러:', error);
             message.error('출금에 실패했습니다.');
         }
     };
@@ -91,8 +89,9 @@ const DepositWithdrawal = () => {
     };
 
     return (
-        <div className="withdrawal-container">
-            <Card title="예금 출금">
+        <div className="depositContainer">
+            <h2 className="depositTitle">예금 출금</h2>
+            <Card>
                 <Form
                     form={form}
                     layout="vertical"
