@@ -60,7 +60,7 @@ const CustomerTransHistory = () => {
     }
   
     // 12개월 수익률 기준으로 현재가 계산
-    const rate = parseFloat((fund.return_12m / 100).toFixed(2)); // 소수점 둘째자리로 반올림
+    const rate = parseFloat((fund.return_12m / 100).toFixed(4)); // 소수점 둘째자리로 반올림
     const currentValue = units * price * (1 + rate);
     console.log("현재가 계산:", { fundName, units, price, rate, currentValue });
     return currentValue;
@@ -74,7 +74,7 @@ const CustomerTransHistory = () => {
     }
     const rate = ((current - price) / price) * 100;
     console.log("수익률 계산:", { price, current, rate });
-    return rate.toFixed(2) + "%"; // 소수점 2자리까지 표시
+    return rate.toFixed(4) + "%"; // 소수점 2자리까지 표시
   };
 
   // 검색 필터링
