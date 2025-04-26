@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCustomerID } from "../../jwt/AxiosToken";
 import axios from 'axios';
-import { Table, Button, Modal, Form, Input, InputNumber, DatePicker, Select, message } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Table, Card, Button, Modal, Form, Input, InputNumber, DatePicker, Select, message } from 'antd';
 import RefreshToken from "../../jwt/RefreshToken";
 import '../../Css/deposit/SavingsProduct.css';
 
@@ -14,6 +13,7 @@ const SavingsProduct = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [form] = Form.useForm();
     const [editingId, setEditingId] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         fetchSavingsProducts();
@@ -21,11 +21,14 @@ const SavingsProduct = () => {
 
     const fetchSavingsProducts = async () => {
         try {
-            const response = await RefreshToken.get('/api/savings/products');
+            setLoading(true);
+            const response = await RefreshToken.get('/api/deposit/products/savings');
             setSavingsProducts(response.data);
         } catch (error) {
-            console.error('적금 상품 조회 에러:', error);
-            message.error('적금 상품 목록을 불러오는데 실패했습니다.');
+            console.error('상품 조회 에러:', error);
+            alert('상품 정보를 불러오는데 실패했습니다.');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -50,10 +53,10 @@ const SavingsProduct = () => {
         try {
             const values = await form.validateFields();
             if (editingId) {
-                await RefreshToken.put(`/api/savings/products/${editingId}`, values);
+                await RefreshToken.put(`/api/deposit/products/savings/${editingId}`, values);
                 message.success('적금 상품이 수정되었습니다.');
             } else {
-                await RefreshToken.post('/api/savings/products', values);
+                await RefreshToken.post('/api/deposit/products/savings', values);
                 message.success('적금 상품이 추가되었습니다.');
             }
             fetchSavingsProducts();
@@ -66,7 +69,8 @@ const SavingsProduct = () => {
 
     const handleDelete = async (id) => {
         try {
-            await RefreshToken.delete(`/api/savings/products/${id}`);
+            await RefreshToken.delete(`/api/deposit/products/savings/${id}`);
+
             message.success('적금 상품이 삭제되었습니다.');
             fetchSavingsProducts();
         } catch (error) {
@@ -121,10 +125,10 @@ const SavingsProduct = () => {
             render: (_, record) => (
                 <span>
                     <Button type="link" onClick={() => showModal(record)}>
-                        <EditOutlined /> 수정
+                        수정
                     </Button>
                     <Button type="link" danger onClick={() => handleDelete(record.id)}>
-                        <DeleteOutlined /> 삭제
+                        삭제
                     </Button>
                 </span>
             ),
@@ -136,7 +140,8 @@ const SavingsProduct = () => {
             <div className="depositProductHeader">
                 <h2>적금 상품 관리</h2>
                 <Button type="primary" onClick={() => showModal()}>
-                    <PlusOutlined /> 새 상품 추가
+
+                    새 상품 추가
                 </Button>
             </div>
 

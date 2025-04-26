@@ -271,4 +271,39 @@ public class DepositController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    // 예금 상품 추가
+    @PostMapping("/products/deposit")
+    public ResponseEntity<?> createDepositProduct(@RequestBody DepositDTO product) {
+        try {
+            depositService.addDepositProduct(product);
+            return ResponseEntity.ok().body("예금 상품이 성공적으로 추가되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // 예금 상품 수정
+    @PutMapping("/products/deposit/{productId}")
+    public ResponseEntity<?> updateDepositProduct(
+            @PathVariable int productId,
+            @RequestBody DepositDTO product) {
+        try {
+            depositService.updateDepositProduct(productId, product);
+            return ResponseEntity.ok().body("예금 상품이 성공적으로 수정되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // 예금 상품 삭제
+    @DeleteMapping("/products/deposit/{productId}")
+    public ResponseEntity<?> deleteDepositProduct(@PathVariable int productId) {
+        try {
+            depositService.deleteDepositProduct(productId);
+            return ResponseEntity.ok().body("예금 상품이 성공적으로 삭제되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 } 

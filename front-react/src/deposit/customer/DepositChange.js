@@ -35,7 +35,8 @@ const DepositChange = () => {
             setAccounts(response.data);
         } catch (error) {
             console.error('계좌 조회 에러:', error);
-            message.error('계좌 정보를 불러오는데 실패했습니다.');
+            console.error('계좌 정보를 불러오는데 실패했습니다.');
+
         }
     };
 
@@ -52,12 +53,15 @@ const DepositChange = () => {
 
     const handleChange = async (values) => {
         try {
-            await RefreshToken.put(`/api/deposit/accounts/${selectedAccount}`, values);
-            message.success('계좌 정보가 수정되었습니다.');
-            fetchAccounts();
+            await RefreshToken.put(`/api/deposit/accounts/deposit/${selectedAccount}/password`, {
+                accountPassword: values.newPassword
+            });
+            message.success('비밀번호가 변경되었습니다.');
+            form.resetFields();
         } catch (error) {
-            console.error('계좌 정보 수정 에러:', error);
-            message.error('계좌 정보 수정에 실패했습니다.');
+            console.error('비밀번호 변경 에러:', error);
+            message.error('비밀번호 변경에 실패했습니다.');
+
         }
     };
 

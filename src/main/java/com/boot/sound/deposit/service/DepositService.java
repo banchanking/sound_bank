@@ -289,4 +289,34 @@ public class DepositService {
         
         return interest.setScale(0, RoundingMode.DOWN);
     }
+
+    // 예금 상품 추가
+    @Transactional
+    public void addDepositProduct(DepositDTO product) {
+        if (depositDAO.addDepositProduct(product) != 1) {
+            throw new RuntimeException("예금 상품 추가에 실패했습니다.");
+        }
+    }
+
+    // 적금 상품 추가
+    @Transactional
+    public void addSavingsProduct(DepositDTO product) {
+        if (depositDAO.addSavingsProduct(product) != 1) {
+            throw new RuntimeException("적금 상품 추가에 실패했습니다.");
+        }
+    }
+
+    @Transactional
+    public void updateDepositProduct(int productId, DepositDTO product) {
+        if (depositDAO.updateDepositProduct(productId, product) != 1) {
+            throw new RuntimeException("예금 상품 수정에 실패했습니다.");
+        }
+    }
+
+    @Transactional
+    public void deleteDepositProduct(int productId) {
+        if (depositDAO.deleteDepositProduct(productId) != 1) {
+            throw new RuntimeException("예금 상품 삭제에 실패했습니다.");
+        }
+    }
 } 
