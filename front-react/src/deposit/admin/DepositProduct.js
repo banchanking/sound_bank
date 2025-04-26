@@ -71,7 +71,6 @@ const DepositProduct = () => {
         } catch (error) {
             console.error('상품 저장 에러:', error);
             alert('상품 저장에 실패했습니다.');
-
         }
     };
 
@@ -198,6 +197,8 @@ const DepositProduct = () => {
                             name="interestRate"
                             label="이자율"
                             rules={[{ required: true, message: '이자율을 입력해주세요' }]}
+                        >
+
                             <InputNumber
                                 min={0}
                                 max={100}
@@ -210,7 +211,8 @@ const DepositProduct = () => {
                         <Form.Item
                             name="minAmount"
                             label="최소금액"
-                            rules={[{ required: true, message: '최소금액을 입력해주세요' }]}                       
+                            rules={[{ required: true, message: '최소금액을 입력해주세요' }]}
+                        >
                             <InputNumber
                                 min={0}
                                 step={10000}
@@ -218,11 +220,11 @@ const DepositProduct = () => {
                                 parser={value => value.replace(/\원\s?|(,*)/g, '')}
                             />
                         </Form.Item>
-                        
                         <Form.Item
                             name="maxAmount"
                             label="최대금액"
                             rules={[{ required: true, message: '최대금액을 입력해주세요' }]}
+                        >
                             <InputNumber
                                 min={0}
                                 step={10000}
@@ -236,10 +238,10 @@ const DepositProduct = () => {
 
                             label="기간(개월)"
                             rules={[{ required: true, message: '기간을 입력해주세요' }]}
+                        >
                             <InputNumber
                                 min={1}
                                 max={60}
-
                             />
                         </Form.Item>
                     </Form>
