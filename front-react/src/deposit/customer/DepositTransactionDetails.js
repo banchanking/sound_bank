@@ -45,8 +45,8 @@ const DepositTransactionDetails = () => {
             }
 
             const [depositResponse, savingsResponse] = await Promise.all([
-                RefreshToken.get(`/api/deposit/accounts/customer/${customerId}`),
-                RefreshToken.get(`/api/savings/accounts/customer/${customerId}`)
+                RefreshToken.get(`/deposit/accounts/customer/${customerId}`),
+                RefreshToken.get(`/savings/accounts/customer/${customerId}`)
             ]);
             const allAccounts = [
                 ...depositResponse.data.map(acc => ({ ...acc, type: '예금' })),
@@ -74,8 +74,8 @@ const DepositTransactionDetails = () => {
         try {
             setLoading(true);
             const endpoint = accountType === 'deposit'
-                ? `/api/deposit/accounts/deposit/${accountId}/transactions`
-                : `/api/deposit/accounts/savings/${accountId}/transactions`;
+                ? `/deposit/accounts/deposit/${accountId}/transactions`
+                : `/deposit/accounts/savings/${accountId}/transactions`;
             
             const response = await RefreshToken.get(endpoint, {
                 params: {
