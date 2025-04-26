@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Table, Card, Select, DatePicker, Button, Tag, message } from 'antd';
 import { SearchOutlined, DownloadOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getCustomerID } from "../../jwt/AxiosToken";
+import { getCustomerID, refreshAccessToken, setAuthToken } from "../../jwt/AxiosToken";
 import RefreshToken from "../../jwt/RefreshToken";
 import '../../Css/deposit/DepositTransactionDetails.css';
 
@@ -29,44 +29,127 @@ const DepositTransactionDetails = () => {
             return;
         }
         fetchAccounts();
-    }, [navigate, accountId]);
+    }, [navigate]);
 
     const fetchAccounts = async () => {
         try {
+            const customerId = getCustomerID();
+            if (!customerId) {
+                const goLogin = window.confirm(
+                    "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
+                );
+                if (goLogin) {
+                    navigate("/login");
+                }
+                return;
+            }
+
             const [depositResponse, savingsResponse] = await Promise.all([
-                RefreshToken.get('/api/deposit-accounts'),
-                RefreshToken.get('/api/savings-accounts')
+                RefreshToken.get(`/api/deposit/accounts/customer/${customerId}`),
+                RefreshToken.get(`/api/savings/accounts/customer/${customerId}`)
             ]);
             const allAccounts = [
                 ...depositResponse.data.map(acc => ({ ...acc, type: '예금' })),
                 ...savingsResponse.data.map(acc => ({ ...acc, type: '적금' }))
             ];
             setAccounts(allAccounts);
+            setLoading(false);
         } catch (error) {
-            message.error('계좌 정보를 불러오는데 실패했습니다.');
+            console.error('계좌 조회 에러:', error);
+            if (error.response?.status === 401) {
+                const goLogin = window.confirm(
+                    "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
+                );
+                if (goLogin) {
+                    navigate("/login");
+                }
+            } else {
+                message.error('계좌 정보를 불러오는데 실패했습니다.');
+            }
+            setLoading(false);
         }
     };
 
     const fetchTransactions = async () => {
+        if (!selectedAccount || !dateRange || dateRange.length !== 2) {
+            console.log('필수 조건 확인:', {
+                selectedAccount,
+                dateRange,
+                dateRangeLength: dateRange?.length
+            });
+            message.error('계좌와 날짜 범위를 모두 선택해주세요.');
+            return;
+        }
+
+        setLoading(true);
         try {
-            const response = await RefreshToken.get(`http://localhost:8081/api/deposit/accounts/${selectedAccount}/transactions`);
+            const selectedAccountData = accounts.find(acc => acc.accountNumber === selectedAccount);
+            if (!selectedAccountData) {
+                message.error('선택한 계좌를 찾을 수 없습니다.');
+                return;
+            }
+
+            console.log('선택된 계좌 데이터:', selectedAccountData);
+
+            let response;
+            if (selectedAccountData.type === '예금') {
+                response = await RefreshToken.get(`/api/deposit/transactions/account/${selectedAccountData.datId}`, {
+                    params: {
+                        startDate: dateRange[0].format('YYYY-MM-DD'),
+                        endDate: dateRange[1].format('YYYY-MM-DD')
+                    }
+                });
+            } else if (selectedAccountData.type === '적금') {
+                response = await RefreshToken.get(`/api/deposit/transactions/account/${selectedAccountData.satId}`, {
+                    params: {
+                        startDate: dateRange[0].format('YYYY-MM-DD'),
+                        endDate: dateRange[1].format('YYYY-MM-DD')
+                    }
+                });
+            }
+            
+            console.log('API 응답:', response.data);
             setTransactions(response.data);
         } catch (error) {
-            console.error('거래내역 조회 실패:', error);
-            message.error('거래내역을 불러오는데 실패했습니다.');
+            console.error('거래내역 조회 에러:', error);
+            if (error.response?.status === 401) {
+                const goLogin = window.confirm(
+                    "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
+                );
+                if (goLogin) {
+                    navigate("/login");
+                }
+            } else if (error.response?.status === 400) {
+                message.error(`잘못된 요청입니다: ${error.response.data?.message || '알 수 없는 오류'}`);
+            } else if (error.response?.status === 404) {
+                message.error('적금 거래내역 API가 구현되지 않았습니다.');
+            } else {
+                message.error('거래내역을 불러오는데 실패했습니다.');
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
-    const handleAccountChange = async (accountId) => {
-        setSelectedAccount(accountId);
-        fetchTransactions();
+    const handleAccountChange = (value) => {
+        console.log('선택된 계좌:', value);
+        setSelectedAccount(value);
     };
 
     const handleDateChange = (dates) => {
+        console.log('선택된 날짜 범위:', dates);
         setDateRange(dates);
     };
 
     const handleSearch = () => {
+        if (!selectedAccount) {
+            message.error('계좌를 선택해주세요.');
+            return;
+        }
+        if (!dateRange || dateRange.length !== 2) {
+            message.error('날짜 범위를 선택해주세요.');
+            return;
+        }
         fetchTransactions();
     };
 
@@ -116,14 +199,16 @@ const DepositTransactionDetails = () => {
     ];
 
     return (
-        <div className="transaction-details-container">
-            <Card title="예적금 거래내역">
-                <div className="search-section">
+        <div className="depositContainer">
+            <h2 className="depositTitle">예적금 거래내역</h2>
+            <Card>
+                <div className="depositTransactionTable">
                     <Select
                         style={{ width: 300, marginRight: 16 }}
                         placeholder="계좌 선택"
                         onChange={handleAccountChange}
                         value={selectedAccount}
+                        loading={loading}
                     >
                         {accounts.map(account => (
                             <Select.Option key={account.accountNumber} value={account.accountNumber}>

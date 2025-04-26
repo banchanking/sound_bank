@@ -34,10 +34,10 @@ const SavingsJoin = () => {
 
     const fetchProducts = async () => {
         try {
-            const response = await RefreshToken.get('http://localhost:8081/api/savings/products');
+            const response = await RefreshToken.get('/api/savings/products');
             setProducts(response.data);
         } catch (error) {
-            console.error('상품 조회 실패:', error);
+            console.error('상품 조회 에러:', error);
             message.error('상품 정보를 불러오는데 실패했습니다.');
         }
     };
@@ -50,11 +50,14 @@ const SavingsJoin = () => {
 
     const handleJoin = async (values) => {
         try {
-            await RefreshToken.post('http://localhost:8081/api/savings/accounts', values);
+            await RefreshToken.post('/api/savings/accounts', {
+                ...values,
+                customerId: getCustomerID()
+            });
             message.success('적금 계좌가 개설되었습니다.');
             navigate('/savings/accounts');
         } catch (error) {
-            console.error('계좌 개설 실패:', error);
+            console.error('계좌 개설 에러:', error);
             message.error('계좌 개설에 실패했습니다.');
         }
     };
@@ -230,14 +233,15 @@ const SavingsJoin = () => {
     };
 
     return (
-        <div className="savings-join-container">
-            <Card title="적금 가입">
+        <div className="depositContainer">
+            <h2 className="depositTitle">적금 가입</h2>
+            <Card>
                 <Steps current={currentStep}>
                     <Step title="상품선택" />
                     <Step title="정보입력" />
                     <Step title="가입완료" />
                 </Steps>
-                <div className="step-content">
+                <div className="depositForm">
                     {renderStepContent()}
                 </div>
             </Card>

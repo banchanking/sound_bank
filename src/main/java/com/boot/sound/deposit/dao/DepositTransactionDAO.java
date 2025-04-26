@@ -1,30 +1,43 @@
 package com.boot.sound.deposit.dao;
 
-import com.boot.sound.deposit.dto.DepositTransactionDTO;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.springframework.stereotype.Repository;
-
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import com.boot.sound.deposit.dto.DepositTransactionDTO;
+
 @Mapper
-@Repository
 public interface DepositTransactionDAO {
-    // 거래내역 조회
-    List<DepositTransactionDTO> findTransactionsByAccount(
-        @Param("datId") int datId,
-        @Param("startDate") Date startDate,
-        @Param("endDate") Date endDate
-    );
     
-    // 거래내역 생성
-    int createTransaction(DepositTransactionDTO transaction);
+    // 예금 거래 내역 조회
+    List<DepositTransactionDTO> getDepositTransactions(@Param("accountNumber") String accountNumber, 
+                                                     @Param("startDate") String startDate, 
+                                                     @Param("endDate") String endDate);
     
-    // 계좌 잔액 업데이트
-    int updateAccountBalance(
-        @Param("datId") int datId,
-        @Param("balance") BigDecimal balance
-    );
+    // 적금 거래 내역 조회
+    List<DepositTransactionDTO> getSavingsTransactions(@Param("accountNumber") String accountNumber, 
+                                                     @Param("startDate") String startDate, 
+                                                     @Param("endDate") String endDate);
+    
+    // 예금 거래 내역 상세 조회
+    DepositTransactionDTO getDepositTransactionDetail(int transactionId);
+    
+    // 적금 거래 내역 상세 조회
+    DepositTransactionDTO getSavingsTransactionDetail(int transactionId);
+
+    // 예금 거래 내역 생성
+    int createDepositTransaction(DepositTransactionDTO transaction);
+
+    // 적금 거래 내역 생성
+    int createSavingsTransaction(DepositTransactionDTO transaction);
+
+    // 예금 계좌 잔액 업데이트
+    int updateDepositAccountBalance(@Param("accountNumber") String accountNumber, 
+                                  @Param("balance") BigDecimal balance);
+
+    // 적금 계좌 잔액 업데이트
+    int updateSavingsAccountBalance(@Param("accountNumber") String accountNumber, 
+                                  @Param("balance") BigDecimal balance);
 } 

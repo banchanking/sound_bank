@@ -82,7 +82,7 @@ const DepositCancellation = () => {
         setLoading(true);
         try {
             const customerId = getCustomerID();
-            await RefreshToken.post('/api/deposit/accounts/cancel', {
+            await RefreshToken.post(`/api/deposit/accounts/${values.accountId}/cancel`, {
                 ...values,
                 customerId
             });
@@ -110,11 +110,11 @@ const DepositCancellation = () => {
 
     const handleCancellation = async (accountId) => {
         try {
-            await RefreshToken.delete(`http://localhost:8081/api/deposit/accounts/${accountId}`);
+            await RefreshToken.delete(`/api/deposit/accounts/${accountId}`);
             message.success('계좌가 해지되었습니다.');
             fetchAccounts();
         } catch (error) {
-            console.error('계좌 해지 실패:', error);
+            console.error('계좌 해지 에러:', error);
             message.error('계좌 해지에 실패했습니다.');
         }
     };

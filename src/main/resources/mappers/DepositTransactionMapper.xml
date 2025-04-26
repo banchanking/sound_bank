@@ -2,48 +2,149 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.boot.sound.deposit.dao.DepositTransactionDAO">
     
-    <!-- 거래내역 조회 -->
-    <select id="findTransactionsByAccount" resultType="com.boot.sound.deposit.dto.DepositTransactionDTO">
+    <!-- 예금 거래 내역 조회 -->
+    <select id="getDepositTransactions" resultType="com.boot.sound.deposit.dto.DepositTransactionDTO">
         SELECT 
             transaction_id as transactionId,
-            dat_id as datId,
+            account_number as accountNumber,
             transaction_type as transactionType,
             amount,
             balance,
             description,
-            branch,
-            transaction_date as transactionDate
+            transaction_date as transactionDate,
+            transaction_status as transactionStatus,
+            reference_number as referenceNumber,
+            created_at as createdAt,
+            updated_at as updatedAt
         FROM DEPOSIT_TRANSACTION_TBL
-        WHERE dat_id = #{datId}
+        WHERE account_number = #{accountNumber}
         AND transaction_date BETWEEN #{startDate} AND #{endDate}
         ORDER BY transaction_date DESC
     </select>
     
-    <!-- 거래내역 생성 -->
-    <insert id="createTransaction" parameterType="com.boot.sound.deposit.dto.DepositTransactionDTO">
+    <!-- 적금 거래 내역 조회 -->
+    <select id="getSavingsTransactions" resultType="com.boot.sound.deposit.dto.DepositTransactionDTO">
+        SELECT 
+            transaction_id as transactionId,
+            account_number as accountNumber,
+            transaction_type as transactionType,
+            amount,
+            balance,
+            description,
+            transaction_date as transactionDate,
+            transaction_status as transactionStatus,
+            reference_number as referenceNumber,
+            created_at as createdAt,
+            updated_at as updatedAt
+        FROM SAVINGS_TRANSACTION_TBL
+        WHERE account_number = #{accountNumber}
+        AND transaction_date BETWEEN #{startDate} AND #{endDate}
+        ORDER BY transaction_date DESC
+    </select>
+    
+    <!-- 예금 거래 내역 상세 조회 -->
+    <select id="getDepositTransactionDetail" resultType="com.boot.sound.deposit.dto.DepositTransactionDTO">
+        SELECT 
+            transaction_id as transactionId,
+            account_number as accountNumber,
+            transaction_type as transactionType,
+            amount,
+            balance,
+            description,
+            transaction_date as transactionDate,
+            transaction_status as transactionStatus,
+            reference_number as referenceNumber,
+            created_at as createdAt,
+            updated_at as updatedAt
+        FROM DEPOSIT_TRANSACTION_TBL
+        WHERE transaction_id = #{transactionId}
+    </select>
+    
+    <!-- 적금 거래 내역 상세 조회 -->
+    <select id="getSavingsTransactionDetail" resultType="com.boot.sound.deposit.dto.DepositTransactionDTO">
+        SELECT 
+            transaction_id as transactionId,
+            account_number as accountNumber,
+            transaction_type as transactionType,
+            amount,
+            balance,
+            description,
+            transaction_date as transactionDate,
+            transaction_status as transactionStatus,
+            reference_number as referenceNumber,
+            created_at as createdAt,
+            updated_at as updatedAt
+        FROM SAVINGS_TRANSACTION_TBL
+        WHERE transaction_id = #{transactionId}
+    </select>
+    
+    <!-- 예금 거래 내역 생성 -->
+    <insert id="createDepositTransaction" parameterType="com.boot.sound.deposit.dto.DepositTransactionDTO">
         INSERT INTO DEPOSIT_TRANSACTION_TBL (
-            dat_id,
+            account_number,
             transaction_type,
             amount,
             balance,
             description,
-            branch,
-            transaction_date
+            transaction_date,
+            transaction_status,
+            reference_number,
+            created_at,
+            updated_at
         ) VALUES (
-            #{datId},
+            #{accountNumber},
             #{transactionType},
             #{amount},
             #{balance},
             #{description},
-            #{branch},
-            #{transactionDate}
+            #{transactionDate},
+            #{transactionStatus},
+            #{referenceNumber},
+            NOW(),
+            NOW()
         )
     </insert>
     
-    <!-- 계좌 잔액 업데이트 -->
-    <update id="updateAccountBalance">
+    <!-- 적금 거래 내역 생성 -->
+    <insert id="createSavingsTransaction" parameterType="com.boot.sound.deposit.dto.DepositTransactionDTO">
+        INSERT INTO SAVINGS_TRANSACTION_TBL (
+            account_number,
+            transaction_type,
+            amount,
+            balance,
+            description,
+            transaction_date,
+            transaction_status,
+            reference_number,
+            created_at,
+            updated_at
+        ) VALUES (
+            #{accountNumber},
+            #{transactionType},
+            #{amount},
+            #{balance},
+            #{description},
+            #{transactionDate},
+            #{transactionStatus},
+            #{referenceNumber},
+            NOW(),
+            NOW()
+        )
+    </insert>
+    
+    <!-- 예금 계좌 잔액 업데이트 -->
+    <update id="updateDepositAccountBalance">
         UPDATE DEPOSIT_ACCOUNT_TBL
-        SET balance = #{balance}
-        WHERE dat_id = #{datId}
+        SET balance = #{balance},
+            updated_at = NOW()
+        WHERE account_number = #{accountNumber}
+    </update>
+    
+    <!-- 적금 계좌 잔액 업데이트 -->
+    <update id="updateSavingsAccountBalance">
+        UPDATE SAVINGS_ACCOUNT_TBL
+        SET balance = #{balance},
+            updated_at = NOW()
+        WHERE account_number = #{accountNumber}
     </update>
 </mapper> 

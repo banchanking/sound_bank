@@ -50,11 +50,14 @@ const DepositJoin = () => {
 
     const handleJoin = async (values) => {
         try {
-            await RefreshToken.post('http://localhost:8081/api/deposit/accounts', values);
+            await RefreshToken.post('/api/deposit/accounts', {
+                ...values,
+                customerId: getCustomerID()
+            });
             message.success('예금 계좌가 개설되었습니다.');
             navigate('/deposit/accounts');
         } catch (error) {
-            console.error('계좌 개설 실패:', error);
+            console.error('계좌 개설 에러:', error);
             message.error('계좌 개설에 실패했습니다.');
         }
     };
@@ -79,13 +82,13 @@ const DepositJoin = () => {
         switch (currentStep) {
             case 0:
                 return (
-                    <div className="product-selection">
+                    <div className="depositProductSelection">
                         <h3>예금 상품 선택</h3>
-                        <div className="product-list">
+                        <div className="depositProductList">
                             {products.map(product => (
                                 <Card
                                     key={product.id}
-                                    className="product-card"
+                                    className="depositProductCard"
                                     onClick={() => handleProductSelect(product.id)}
                                 >
                                     <h4>{product.name}</h4>
@@ -197,7 +200,7 @@ const DepositJoin = () => {
                 );
             case 2:
                 return (
-                    <div className="completion">
+                    <div className="depositCompletion">
                         <CheckCircleOutlined style={{ fontSize: '64px', color: '#52c41a' }} />
                         <h3>예금 가입이 완료되었습니다</h3>
                         <p>계좌번호: {form.getFieldValue('accountNumber')}</p>
@@ -212,14 +215,15 @@ const DepositJoin = () => {
     };
 
     return (
-        <div className="deposit-join-container">
-            <Card title="예금 가입">
+        <div className="depositContainer">
+            <h2 className="depositTitle">예금 가입</h2>
+            <Card>
                 <Steps current={currentStep}>
                     <Step title="상품선택" />
                     <Step title="정보입력" />
                     <Step title="가입완료" />
                 </Steps>
-                <div className="step-content">
+                <div className="depositForm">
                     {renderStepContent()}
                 </div>
             </Card>

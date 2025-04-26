@@ -5,6 +5,7 @@ import { Card, Table, Button, Modal, Form, Input, InputNumber, Select, message, 
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import '../../Css/deposit/DepositProduct.css';
+import RefreshToken from '../../jwt/RefreshToken';
 
 const { Option } = Select;
 
@@ -22,9 +23,10 @@ const DepositProduct = () => {
     const fetchProducts = async () => {
         try {
             setLoading(true);
-            const response = await axios.get('/api/deposit/products');
+            const response = await RefreshToken.get('/api/deposit/products');
             setProducts(response.data);
         } catch (error) {
+            console.error('상품 조회 에러:', error);
             message.error('상품 정보를 불러오는데 실패했습니다.');
         } finally {
             setLoading(false);
@@ -45,10 +47,11 @@ const DepositProduct = () => {
 
     const handleDeleteProduct = async (productId) => {
         try {
-            await axios.delete(`/api/deposit/products/${productId}`);
+            await RefreshToken.delete(`/api/deposit/products/${productId}`);
             message.success('상품이 삭제되었습니다.');
             fetchProducts();
         } catch (error) {
+            console.error('상품 삭제 에러:', error);
             message.error('상품 삭제에 실패했습니다.');
         }
     };
@@ -57,15 +60,16 @@ const DepositProduct = () => {
         try {
             const values = await form.validateFields();
             if (editingProduct) {
-                await axios.put(`/api/deposit/products/${editingProduct.id}`, values);
+                await RefreshToken.put(`/api/deposit/products/${editingProduct.id}`, values);
                 message.success('상품이 수정되었습니다.');
             } else {
-                await axios.post('/api/deposit/products', values);
+                await RefreshToken.post('/api/deposit/products', values);
                 message.success('상품이 추가되었습니다.');
             }
             setIsModalVisible(false);
             fetchProducts();
         } catch (error) {
+            console.error('상품 저장 에러:', error);
             message.error('상품 저장에 실패했습니다.');
         }
     };
