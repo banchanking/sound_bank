@@ -33,7 +33,7 @@ const DepositWithdrawal = () => {
 
     const fetchAccounts = async () => {
         try {
-            const response = await RefreshToken.get(`/api/deposit/accounts/customer/${customerId}`);
+            const response = await RefreshToken.get(`/deposit/accounts/customer/${customerId}`);
             setAccounts(response.data);
         } catch (error) {
             console.error('계좌 조회 에러:', error);
@@ -44,7 +44,7 @@ const DepositWithdrawal = () => {
     const handleAccountChange = async (accountNumber) => {
         setSelectedAccount(accountNumber);
         try {
-            const response = await RefreshToken.get(`/api/deposit/accounts/${accountNumber}`);
+            const response = await RefreshToken.get(`/deposit/accounts/${accountNumber}`);
             setAccountBalance(response.data.balance);
             form.setFieldsValue({ balance: response.data.balance });
             setAccountType(response.data.productType);
@@ -57,8 +57,8 @@ const DepositWithdrawal = () => {
     const handleWithdrawal = async (values) => {
         try {
             const endpoint = accountType === 'deposit'
-                ? `/api/deposit/accounts/deposit/${selectedAccount}/withdraw`
-                : `/api/deposit/accounts/savings/${selectedAccount}/withdraw`;
+                ? `/deposit/accounts/deposit/${selectedAccount}/withdraw`
+                : `/deposit/accounts/savings/${selectedAccount}/withdraw`;
             
             await RefreshToken.post(endpoint, {
                 transactionAmount: values.amount,

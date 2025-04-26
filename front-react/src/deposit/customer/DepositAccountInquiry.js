@@ -34,8 +34,8 @@ const DepositAccountInquiry = () => {
             setLoading(true);
             const customerId = getCustomerID();
             const [depositResponse, savingsResponse] = await Promise.all([
-                RefreshToken.get(`/api/deposit/accounts/deposit/${customerId}`),
-                RefreshToken.get(`/api/deposit/accounts/savings/${customerId}`)
+                RefreshToken.get(`/deposit/accounts/deposit/${customerId}`),
+                RefreshToken.get(`/deposit/accounts/savings/${customerId}`)
             ]);
             setDepositAccounts(depositResponse.data);
             setSavingsAccounts(savingsResponse.data);
@@ -50,8 +50,8 @@ const DepositAccountInquiry = () => {
     const handleAccountDetail = async (accountId, type) => {
         try {
             const endpoint = type === 'deposit' 
-                ? `/api/deposit/accounts/deposit/detail/${accountId}`
-                : `/api/deposit/accounts/savings/detail/${accountId}`;
+                ? `/deposit/accounts/deposit/detail/${accountId}`
+                : `/deposit/accounts/savings/detail/${accountId}`;
             const response = await RefreshToken.get(endpoint);
             setSelectedAccount(response.data);
             setIsDetailModalVisible(true);

@@ -31,7 +31,7 @@ const DepositAutoManagement = () => {
     const fetchAutoTransfers = async () => {
         try {
             const customerId = getCustomerID();
-            const response = await RefreshToken.get(`/api/deposit/auto-transfers/customer/${customerId}`);
+            const response = await RefreshToken.get(`/deposit/auto-transfers/customer/${customerId}`);
             setAutoTransfers(response.data);
             setLoading(false);
         } catch (error) {
@@ -62,7 +62,7 @@ const DepositAutoManagement = () => {
             cancelText: '취소',
             onOk: async () => {
                 try {
-                    await axios.delete(`/api/auto-transfers/${record.id}`);
+                    await axios.delete(`/auto-transfers/${record.id}`);
                     message.success('자동이체가 해지되었습니다.');
                     fetchAutoTransfers();
                 } catch (error) {
@@ -79,7 +79,7 @@ const DepositAutoManagement = () => {
         }
 
         try {
-            await RefreshToken.put(`/api/deposit/accounts/deposit/${selectedAccount}/auto-transfer`, {
+            await RefreshToken.put(`/deposit/accounts/deposit/${selectedAccount}/auto-transfer`, {
                 autoTransferEnabled: values.enabled,
                 autoTransferAmount: values.amount,
                 autoTransferDay: values.day

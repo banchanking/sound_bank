@@ -35,7 +35,7 @@ const DepositCancellation = () => {
     const fetchAccounts = async () => {
         try {
             const customerId = getCustomerID();
-            const response = await RefreshToken.get(`/api/deposit/accounts/customer/${customerId}`);
+            const response = await RefreshToken.get(`/deposit/accounts/customer/${customerId}`);
             setAccounts(response.data);
         } catch (error) {
             console.error('계좌 조회 에러:', error);
@@ -45,7 +45,7 @@ const DepositCancellation = () => {
 
     const fetchTransferAccounts = async () => {
         try {
-            const response = await RefreshToken.get('/api/transfer-accounts');
+            const response = await RefreshToken.get('/transfer-accounts');
             setTransferAccounts(response.data);
         } catch (error) {
             console.error('이체계좌 정보를 불러오는데 실패했습니다.');
@@ -55,7 +55,7 @@ const DepositCancellation = () => {
     const fetchAccountDetails = async () => {
         try {
             const customerId = getCustomerID();
-            const response = await RefreshToken.get(`/api/deposit/accounts/${accountId}`, {
+            const response = await RefreshToken.get(`/deposit/accounts/${accountId}`, {
                 params: { customerId }
             });
             setSelectedAccount(response.data);
@@ -82,7 +82,7 @@ const DepositCancellation = () => {
         setLoading(true);
         try {
             const customerId = getCustomerID();
-            await RefreshToken.post(`/api/deposit/accounts/${values.accountId}/cancel`, {
+            await RefreshToken.post(`/deposit/accounts/${values.accountId}/cancel`, {
                 ...values,
                 customerId
             });
@@ -110,7 +110,7 @@ const DepositCancellation = () => {
 
     const handleCancellation = async (values) => {
         try {
-            await RefreshToken.delete(`/api/deposit/accounts/deposit/${selectedAccount}`, {
+            await RefreshToken.delete(`/deposit/accounts/deposit/${selectedAccount}`, {
                 data: {
                     accountPassword: values.password
                 }
