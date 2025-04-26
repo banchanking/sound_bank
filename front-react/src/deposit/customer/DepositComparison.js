@@ -65,6 +65,7 @@ const DepositComparison = () => {
         const productName = product?.name || '';
         const matchesSearch = productName.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesType = productType === 'ALL' || product?.type === productType;
+
         return matchesSearch && matchesType;
     });
 
@@ -102,12 +103,14 @@ const DepositComparison = () => {
             dataIndex: 'baseRate',
             key: 'baseRate',
             render: (rate) => `${rate || 0}%`
+
         },
         {
             title: '우대이율',
             dataIndex: 'preferentialRate',
             key: 'preferentialRate',
             render: (rate) => `${rate || 0}%`
+
         },
         {
             title: '최소금액',
@@ -120,12 +123,14 @@ const DepositComparison = () => {
             dataIndex: 'maxAmount',
             key: 'maxAmount',
             render: (amount) => `${(amount || 0).toLocaleString()}원`
+
         },
         {
             title: '기간',
             dataIndex: 'term',
             key: 'term',
             render: (term) => `${term || 0}개월`
+
         }
     ];
 
@@ -220,7 +225,6 @@ const DepositComparison = () => {
             message.error('상품 비교에 실패했습니다.');
         }
     };
-
     return (
         <div className="depositContainer">
             <Card>
@@ -245,6 +249,7 @@ const DepositComparison = () => {
                             prefix={<SearchOutlined />}
                         />
                         <Button
+
                             onClick={fetchProducts}
                         >
                             새로고침

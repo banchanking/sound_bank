@@ -101,6 +101,7 @@ const DepositJoin = () => {
                             ) : (
                                 <p>등록된 예금 상품이 없습니다.</p>
                             )}
+
                         </div>
                     </div>
                 );
@@ -118,6 +119,7 @@ const DepositJoin = () => {
                                 { required: true, message: '가입금액을 입력해주세요' },
                                 { type: 'number', min: selectedProduct?.minAmount || 0, message: `최소 ${(selectedProduct?.minAmount || 0).toLocaleString()}원 이상이어야 합니다` },
                                 { type: 'number', max: selectedProduct?.maxAmount || 0, message: `최대 ${(selectedProduct?.maxAmount || 0).toLocaleString()}원 이하여야 합니다` }
+
                             ]}
                         >
                             <InputNumber

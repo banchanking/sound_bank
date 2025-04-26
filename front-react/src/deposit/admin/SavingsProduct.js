@@ -70,6 +70,7 @@ const SavingsProduct = () => {
     const handleDelete = async (id) => {
         try {
             await RefreshToken.delete(`/api/deposit/products/savings/${id}`);
+
             message.success('적금 상품이 삭제되었습니다.');
             fetchSavingsProducts();
         } catch (error) {
@@ -139,6 +140,7 @@ const SavingsProduct = () => {
             <div className="depositProductHeader">
                 <h2>적금 상품 관리</h2>
                 <Button type="primary" onClick={() => showModal()}>
+
                     새 상품 추가
                 </Button>
             </div>
