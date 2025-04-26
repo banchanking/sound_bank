@@ -1,11 +1,11 @@
-.limitEditContent {
+.limitEdit-limitEditContent {
   flex: 1;
   padding: 36px;
   font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
   animation: fadeIn 0.4s ease;
 }
 
-.limitEditContent h2 {
+.limitEdit-limitEditContent h2 {
   font-size: 24px;
   font-weight: 700;
   text-align: center;
@@ -14,35 +14,35 @@
   animation: fadeInUp 0.4s ease;
 }
 
-.limitTable {
+.limitEdit-limitTable {
   width: 100%;
   border-collapse: collapse;
   margin-top: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   border-radius: 12px;
   overflow: hidden;
 }
 
-.limitTable th,
-.limitTable td {
+.limitEdit-imitTable th,
+.limitEdit-limitTable td {
   border: 1px solid #e5e5e5;
   padding: 12px;
   text-align: center;
   font-size: 14.5px;
 }
 
-.limitTable th {
+.limitEdit-limitTable th {
   background-color: #efefef;
   color: #333;
   font-weight: 600;
 }
 
-.limitTable tr:hover {
+.limitEdit-limitTable tr:hover {
   background-color: #f5f7f9;
 }
 
 /* 수정 버튼 */
-.btnBlue {
+.limitEdit-btnBlue {
   background-color: #537697;
   color: white;
   font-weight: 600;
@@ -58,12 +58,12 @@
   transition: background-color 0.3s ease;
 }
 
-.btnBlue:hover {
+.limitEdit-btnBlue:hover {
   background-color: #6083ac;
 }
 
 /* 삭제 버튼 */
-.btnRed {
+.limitEdit-btnRed {
   background-color: #984949;
   color: white;
   font-weight: 600;
@@ -79,11 +79,11 @@
   transition: background-color 0.3s ease;
 }
 
-.btnRed:hover {
+.limitEdit-btnRed:hover {
   background-color: #823c3c;
 }
 
-.buttonGroup {
+.limitEdit-buttonGroup {
   display: flex;
   gap: 8px;
   justify-content: center;
@@ -91,7 +91,7 @@
 }
 
 /* 모달 */
-.editModalOverlay {
+.limitEdit-editModalOverlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -104,7 +104,7 @@
   z-index: 1000;
 }
 
-.editModalBox {
+.limitEdit-editModalBox {
   background: #fff;
   padding: 30px;
   width: 420px;
@@ -113,14 +113,14 @@
   animation: fadeInUp 0.4s ease;
 }
 
-.editModalBox h3 {
+.limitEdit-editModalBox h3 {
   font-size: 20px;
   margin-bottom: 16px;
   text-align: center;
   color: #1a1a1a;
 }
 
-.editModalBox label {
+.limitEdit-editModalBox label {
   font-size: 15px;
   font-weight: 500;
   margin-top: 12px;
@@ -128,8 +128,8 @@
   color: #333;
 }
 
-.editModalBox input,
-.editModalBox textarea {
+.limitEdit-editModalBox input,
+.limitEdit-editModalBox textarea {
   width: 100%;
   margin-top: 8px;
   margin-bottom: 14px;
@@ -142,21 +142,21 @@
   transition: border-color 0.3s ease;
 }
 
-.editModalBox input:focus,
-.editModalBox textarea:focus {
+.limitEdit-editModalBox input:focus,
+.limitEdit-editModalBox textarea:focus {
   border-color: #3a3a3c;
   background: #fff;
   outline: none;
 }
 
-.modalButtons {
+.limitEdit-modalButtons {
   display: flex;
   justify-content: center;
   gap: 12px;
   margin-top: 12px;
 }
 
-.modalBtn {
+.limitEdit-modalBtn {
   background-color: #333;
   color: white;
   font-weight: 600;
@@ -171,7 +171,7 @@
   align-items: center;
   transition: background-color 0.3s ease;
 }
-.modalBtn:hover {
+.limitEdit-modalBtn:hover {
   background-color: #444;
 }
 

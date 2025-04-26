@@ -1,0 +1,145 @@
+/* 전체 감싸는 박스 */
+.roi-container {
+  max-width: 600px;
+  margin: 60px auto;
+  padding: 40px;
+  background-color: #ffffff;
+  border-radius: 24px;
+  border: 1.5px solid #e2e4e7;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  font-family: 'Noto Sans KR', sans-serif;
+  animation: fadeIn 0.4s ease;
+}
+
+/* 제목 */
+.roi-title {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+/* 영상과 미리보기 wrap */
+.webcam-wrap {
+  margin-top: 50px;
+  height: 450px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+/* 비디오 담는 박스 */
+.webcam-box {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* 비디오 */
+.webcam {
+  width: 99%;
+  height: 295px;
+  border-radius: 16px;
+  border: 1.5px solid #ccc;
+}
+
+/* ROI 사각형 */
+.roi-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 70%;
+  aspect-ratio: 1000 / 700;
+  transform: translate(-50%, -50%);
+  border: 2px dashed #ff0000;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+/* 캔버스 숨김 */
+.hidden {
+  display: none;
+}
+
+/* 캡처 이미지 미리보기 */
+.preview-container {
+  margin-top: 20px;
+}
+
+.preview-img {
+  width: 160px;
+  height: 112px;
+  object-fit: contain;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* 버튼 공통 */
+.btn-green, .btn-blue {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 15px;
+  font-weight: bold;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* 캡처 버튼 */
+.btn-green {
+  background-color: #537697;
+  color: #fff;
+  border: none;
+}
+.btn-green:hover {
+  background-color: #6083ac;
+}
+
+/* 업로드 버튼 */
+.btn-blue {
+  background-color: #3d3d3d;
+  color: #fff;
+  border: none;
+}
+.btn-blue:hover {
+  background-color: #555;
+}
+
+/* 메시지 */
+.message-box {
+  margin-top: 10px;
+  padding: 12px;
+  background-color: #f4f4f4;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #444;
+}
+
+.roi-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 70%;
+  aspect-ratio: 1000 / 700;
+  transform: translate(-50%, -50%);
+  border: 2px dashed #c03838; /* 세련된 네이비 계열 색상 */
+  pointer-events: none;
+  box-sizing: border-box;
+  border-radius: 8px;
+
+  /* 은은한 빛 효과 */
+  box-shadow: 0 0 12px rgba(83, 118, 151, 0.2);
+  background-color: rgba(255, 255, 255, 0.03); /* 살짝 투명감 추가 */
+  transition: all 0.3s ease;
+}
+
+/* 애니메이션 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

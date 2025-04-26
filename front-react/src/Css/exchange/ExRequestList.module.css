@@ -1,63 +1,97 @@
 .container {
-  padding: 2rem;
-  min-height: 650px;
-  max-width: 1000px;
-  width: 90%;
-  margin: 0 auto; /* 가운데 정렬 핵심 */
+  padding: 36px;
+  min-height: 560px;
+  max-width: 1200px;
+  margin: 60px auto;
   background-color: #ffffff;
-  border-radius: 1rem;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.05);
+  border-radius: 24px;
+  border: 1.5px solid #e2e4e7;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+  font-family: 'Noto Sans KR', sans-serif;
+  animation: fadeIn 0.4s ease;
 }
-  
-  .title {
-    font-size: 1.6rem;
-    font-weight: bold;
-    margin-bottom: 1.5rem;
-    text-align: center;
-  }
-  
-  .table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .table thead {
-    background-color: #f2f2f2;
-  }
-  
-  .table th,
-  .table td {
-    padding: 0.75rem;
-    border: 1px solid #ddd;
-    text-align: center;
-    font-size: 0.95rem;
-  }
-  
-  .actions button {
-    margin: 0 4px;
-    padding: 0.4rem 0.8rem;
-    font-size: 0.85rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-  
-  .actions button:first-child {
-    background-color: #4ade80; /* 승인: 연두색 */
-    color: white;
-  }
-  
-  .actions button:last-child {
-    background-color: #f87171; /* 거절: 빨간색 */
-    color: white;
-  }
-  
-  .actions button:hover:first-child {
-    background-color: #22c55e;
-  }
-  
-  .actions button:hover:last-child {
-    background-color: #ef4444;
-  }
-  
+
+.title {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 28px;
+  text-align: center;
+  color: #1a1a1a;
+  animation: fadeIn 0.4s ease;
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 20px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.4s ease;
+}
+
+.table thead {
+  background-color: #f9f9f9;
+}
+
+.table th {
+  padding: 14px;
+  font-weight: 600;
+  font-size: 14.5px;
+  text-align: center;
+  color: #333;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.table td {
+  padding: 14px;
+  font-size: 14.5px;
+  text-align: center;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.table tr:hover {
+  background-color: #f7f9fb;
+}
+
+/* 버튼은 기존 스타일 유지 */
+.actions button {
+  margin: 0 4px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.actions button:first-child {
+  background-color: #429556;
+  color: white;
+}
+
+.actions button:last-child {
+  background-color: #ab4f4f;
+  color: white;
+}
+
+.actions button:hover:first-child {
+  background-color: #3eb059;
+}
+
+.actions button:hover:last-child {
+  background-color: #c54c4c;
+}
+
+
+/* 애니메이션 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
