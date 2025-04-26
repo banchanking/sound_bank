@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Checkbox, Button, Steps, message } from 'antd';
+import { Card, Checkbox, Button, Steps } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { getCustomerID } from "../../jwt/AxiosToken";
 import RefreshToken from "../../jwt/RefreshToken";
@@ -120,15 +120,15 @@ const DepositAgreement = () => {
 
     const next = () => {
         if (current === 0 && !agreements.termsOfService) {
-            message.error('예금 상품 약관에 동의해주세요.');
+            console.error('예금 상품 약관에 동의해주세요.');
             return;
         }
         if (current === 1 && !agreements.privacyPolicy) {
-            message.error('개인정보 수집 및 이용에 동의해주세요.');
+            console.error('개인정보 수집 및 이용에 동의해주세요.');
             return;
         }
         if (current === 2 && !agreements.financialTerms) {
-            message.error('예금 상품 특약에 동의해주세요.');
+            console.error('예금 상품 특약에 동의해주세요.');
             return;
         }
         setCurrent(current + 1);
@@ -151,7 +151,7 @@ const DepositAgreement = () => {
     const handleAgree = async () => {
         try {
             await RefreshToken.post('/deposit/accounts/deposit');
-            message.success('약관에 동의했습니다.');
+            console.success('약관에 동의했습니다.');
             navigate('/deposit/join');
         } catch (error) {
             console.error('약관 동의 실패:', error);

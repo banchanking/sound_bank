@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Select, Button, Card, message, InputNumber, Modal, Steps, Descriptions, DatePicker } from 'antd';
+import { Form, Input, Select, Button, Card, InputNumber, Modal, Steps, Descriptions, DatePicker } from 'antd';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import RefreshToken from "../../jwt/RefreshToken";
@@ -39,7 +39,7 @@ const SavingsJoin = () => {
             setProducts(response.data);
         } catch (error) {
             console.error('상품 조회 에러:', error);
-            message.error('상품 정보를 불러오는데 실패했습니다.');
+            console.error('상품 정보를 불러오는데 실패했습니다.');
         }
     };
 
@@ -60,11 +60,11 @@ const SavingsJoin = () => {
                 maturityDate: values.maturityDate,
                 accountPassword: values.accountPassword
             });
-            message.success('적금 계좌가 개설되었습니다.');
+            console.success('적금 계좌가 개설되었습니다.');
             navigate('/deposit/accounts');
         } catch (error) {
             console.error('계좌 개설 에러:', error);
-            message.error('계좌 개설에 실패했습니다.');
+            console.error('계좌 개설에 실패했습니다.');
         }
     };
 

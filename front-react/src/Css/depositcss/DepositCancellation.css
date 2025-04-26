@@ -1,8 +1,52 @@
 .depositContainer {
-    padding: 2rem;
-    background-color: #fff;
-    border-radius: 16px;
-    box-shadow: 0 0 12px rgba(0, 0, 0, 0.06);
+    padding: 20px;
+}
+
+.depositProductHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.depositProductHeader h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.ant-form-item {
+    margin-bottom: 24px;
+}
+
+.ant-input-number {
+    width: 100%;
+}
+
+.ant-btn {
+    height: 40px;
+    font-size: 16px;
+    border-radius: 8px;
+}
+
+.ant-btn-primary {
+    background-color: #1890ff;
+    border-color: #1890ff;
+}
+
+.ant-btn-primary:hover {
+    background-color: #40a9ff;
+    border-color: #40a9ff;
+}
+
+.ant-btn-danger {
+    background-color: #ff4d4f;
+    border-color: #ff4d4f;
+}
+
+.ant-btn-danger:hover {
+    background-color: #ff7875;
+    border-color: #ff7875;
 }
 
 .depositTitle {

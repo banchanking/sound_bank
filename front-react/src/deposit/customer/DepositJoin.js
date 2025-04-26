@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Select, Button, Card, message, InputNumber, Modal, Steps, Descriptions } from 'antd';
+import { Form, Input, Select, Button, Card, InputNumber, Modal, Steps, Descriptions } from 'antd';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import RefreshToken from "../../jwt/RefreshToken";
@@ -57,11 +57,11 @@ const DepositJoin = () => {
                 productId: selectedProduct.id,
                 interestRate: selectedProduct.interestRate
             });
-            message.success('예금 계좌가 개설되었습니다.');
+             console.success('예금 계좌가 개설되었습니다.');
             navigate('/deposit/accounts');
         } catch (error) {
             console.error('계좌 개설 에러:', error);
-            message.error('계좌 개설에 실패했습니다.');
+            console.error('계좌 개설에 실패했습니다.');
         }
     };
 

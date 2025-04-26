@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Card, Select, DatePicker, Button, Tag, message } from 'antd';
+import { Table, Card, Select, DatePicker, Button, Tag } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCustomerID, refreshAccessToken, setAuthToken } from "../../jwt/AxiosToken";
 import RefreshToken from "../../jwt/RefreshToken";
@@ -64,7 +64,7 @@ const DepositTransactionDetails = () => {
                     navigate("/login");
                 }
             } else {
-                message.error('계좌 정보를 불러오는데 실패했습니다.');
+                console.error('계좌 정보를 불러오는데 실패했습니다.');
             }
             setLoading(false);
         }
@@ -104,11 +104,11 @@ const DepositTransactionDetails = () => {
 
     const handleSearch = () => {
         if (!selectedAccount) {
-            message.error('계좌를 선택해주세요.');
+            console.error('계좌를 선택해주세요.');
             return;
         }
         if (!dateRange || dateRange.length !== 2) {
-            message.error('날짜 범위를 선택해주세요.');
+            console.error('날짜 범위를 선택해주세요.');
             return;
         }
         fetchTransactions();

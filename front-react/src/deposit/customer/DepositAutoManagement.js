@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Card, Button, Modal, message, Tag, Form } from 'antd';
+import { Table, Card, Button, Modal, Tag, Form } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCustomerID } from "../../jwt/AxiosToken";
 import RefreshToken from "../../jwt/RefreshToken";
@@ -63,7 +63,7 @@ const DepositAutoManagement = () => {
             onOk: async () => {
                 try {
                     await axios.delete(`/auto-transfers/${record.id}`);
-                    message.success('자동이체가 해지되었습니다.');
+                    console.success('자동이체가 해지되었습니다.');
                     fetchAutoTransfers();
                 } catch (error) {
                     console.error('자동이체 해지 중 오류가 발생했습니다.');
@@ -74,7 +74,7 @@ const DepositAutoManagement = () => {
 
     const handleUpdateAutoTransfer = async (values) => {
         if (!selectedAccount) {
-            message.error('계좌를 선택해주세요.');
+            console.error('계좌를 선택해주세요.');
             return;
         }
 
@@ -84,12 +84,12 @@ const DepositAutoManagement = () => {
                 autoTransferAmount: values.amount,
                 autoTransferDay: values.day
             });
-            message.success('자동이체 설정이 수정되었습니다.');
+            console.success('자동이체 설정이 수정되었습니다.');
             form.resetFields();
             fetchAutoTransfers();
         } catch (error) {
             console.error('자동이체 수정 에러:', error);
-            message.error('자동이체 수정에 실패했습니다.');
+            console.error('자동이체 수정에 실패했습니다.');
         }
     };
 

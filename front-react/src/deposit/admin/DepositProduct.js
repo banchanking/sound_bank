@@ -23,7 +23,7 @@ const DepositProduct = () => {
     const fetchProducts = async () => {
         try {
             setLoading(true);
-            const response = await RefreshToken.get('/api/deposit/products/deposit');
+            const response = await RefreshToken.get('/deposit/products/deposit');
             setProducts(response.data);
         } catch (error) {
             console.error('상품 조회 에러:', error);

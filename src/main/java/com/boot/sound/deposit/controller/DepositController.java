@@ -22,76 +22,76 @@ import com.boot.sound.deposit.service.DepositService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/deposit")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class DepositController {
     
     private final DepositService depositService;
 
     // 예금 상품 목록 조회
-    @GetMapping("/products/deposit")
+    @GetMapping("/deposit/products/deposit")
     public List<DepositDTO> getDepositProducts() {
         return depositService.getDepositProducts();
     }
 
     // 적금 상품 목록 조회
-    @GetMapping("/products/savings")
+    @GetMapping("/deposit/products/savings")
     public List<DepositDTO> getSavingsProducts() {
         return depositService.getSavingsProducts();
     }
 
     // 예금 계좌 목록 조회
-    @GetMapping("/accounts/deposit/{customerId}")
+    @GetMapping("/deposit/accounts/deposit/{customerId}")
     public List<DepositDTO> getDepositAccounts(@PathVariable String customerId) {
         return depositService.getDepositAccounts(customerId);
     }
 
     // 적금 계좌 목록 조회
-    @GetMapping("/accounts/savings/{customerId}")
+    @GetMapping("/deposit/accounts/savings/{customerId}")
     public List<DepositDTO> getSavingsAccounts(@PathVariable String customerId) {
         return depositService.getSavingsAccounts(customerId);
     }
 
     // 예금 상품 상세 조회
-    @GetMapping("/products/deposit/{productId}")
+    @GetMapping("/deposit/products/deposit/{productId}")
     public DepositDTO getDepositProductDetail(@PathVariable int productId) {
         return depositService.getDepositProductDetail(productId);
     }
 
     // 적금 상품 상세 조회
-    @GetMapping("/products/savings/{productId}")
+    @GetMapping("/deposit/products/savings/{productId}")
     public DepositDTO getSavingsProductDetail(@PathVariable int productId) {
         return depositService.getSavingsProductDetail(productId);
     }
 
     // 예금 계좌 상세 조회
-    @GetMapping("/accounts/deposit/detail/{accountId}")
+    @GetMapping("/deposit/accounts/deposit/detail/{accountId}")
     public DepositDTO getDepositAccountDetail(@PathVariable int accountId) {
         return depositService.getDepositAccountDetail(accountId);
     }
 
     // 적금 계좌 상세 조회
-    @GetMapping("/accounts/savings/detail/{accountId}")
+    @GetMapping("/deposit/accounts/savings/detail/{accountId}")
     public DepositDTO getSavingsAccountDetail(@PathVariable int accountId) {
         return depositService.getSavingsAccountDetail(accountId);
     }
 
     // 예금 계좌 생성
-    @PostMapping("/accounts/deposit")
+    @PostMapping("/deposit/accounts/deposit")
     public ResponseEntity<?> createDepositAccount(@RequestBody DepositDTO dto) {
         depositService.createDepositAccount(dto);
         return ResponseEntity.ok().body("예금 계좌가 성공적으로 개설되었습니다.");
     }
 
     // 적금 계좌 생성
-    @PostMapping("/accounts/savings")
+    @PostMapping("/deposit/accounts/savings")
     public ResponseEntity<?> createSavingsAccount(@RequestBody DepositDTO dto) {
         depositService.createSavingsAccount(dto);
         return ResponseEntity.ok().body("적금 계좌가 성공적으로 개설되었습니다.");
     }
 
     // 예금 계좌 해지
-    @DeleteMapping("/accounts/deposit/{accountId}")
+    @DeleteMapping("/deposit/accounts/deposit/{accountId}")
     public ResponseEntity<?> closeDepositAccount(
             @PathVariable int accountId,
             @RequestBody DepositDTO request) {
@@ -104,7 +104,7 @@ public class DepositController {
     }
 
     // 적금 계좌 해지
-    @DeleteMapping("/accounts/savings/{accountId}")
+    @DeleteMapping("/deposit/accounts/savings/{accountId}")
     public ResponseEntity<?> closeSavingsAccount(
             @PathVariable int accountId,
             @RequestBody DepositDTO request) {
@@ -117,7 +117,7 @@ public class DepositController {
     }
 
     // 예금 계좌 입금
-    @PostMapping("/accounts/deposit/{accountId}/deposit")
+    @PostMapping("/deposit/accounts/deposit/{accountId}/deposit")
     public ResponseEntity<?> deposit(
             @PathVariable int accountId,
             @RequestBody DepositDTO request) {
@@ -130,7 +130,7 @@ public class DepositController {
     }
 
     // 예금 계좌 출금
-    @PostMapping("/accounts/deposit/{accountId}/withdraw")
+    @PostMapping("/deposit/accounts/deposit/{accountId}/withdraw")
     public ResponseEntity<?> withdraw(
             @PathVariable int accountId,
             @RequestBody DepositDTO request) {
@@ -143,7 +143,7 @@ public class DepositController {
     }
 
     // 적금 계좌 입금
-    @PostMapping("/accounts/savings/{accountId}/deposit")
+    @PostMapping("/deposit/accounts/savings/{accountId}/deposit")
     public ResponseEntity<?> depositSavings(
             @PathVariable int accountId,
             @RequestBody DepositDTO request) {
@@ -156,7 +156,7 @@ public class DepositController {
     }
 
     // 적금 계좌 출금
-    @PostMapping("/accounts/savings/{accountId}/withdraw")
+    @PostMapping("/deposit/accounts/savings/{accountId}/withdraw")
     public ResponseEntity<?> withdrawSavings(
             @PathVariable int accountId,
             @RequestBody DepositDTO request) {
@@ -169,7 +169,7 @@ public class DepositController {
     }
 
     // 예금 계좌 거래 내역 조회
-    @GetMapping("/accounts/deposit/{accountId}/transactions")
+    @GetMapping("/deposit/accounts/deposit/{accountId}/transactions")
     public ResponseEntity<?> getDepositTransactions(
             @PathVariable int accountId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
@@ -183,7 +183,7 @@ public class DepositController {
     }
 
     // 적금 계좌 거래 내역 조회
-    @GetMapping("/accounts/savings/{accountId}/transactions")
+    @GetMapping("/deposit/accounts/savings/{accountId}/transactions")
     public ResponseEntity<?> getSavingsTransactions(
             @PathVariable int accountId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
@@ -197,7 +197,7 @@ public class DepositController {
     }
 
     // 예금 계좌 자동이체 설정
-    @PutMapping("/accounts/deposit/{accountId}/auto-transfer")
+    @PutMapping("/deposit/accounts/deposit/{accountId}/auto-transfer")
     public ResponseEntity<?> setAutoTransfer(
             @PathVariable int accountId,
             @RequestBody DepositDTO request) {
@@ -214,7 +214,7 @@ public class DepositController {
     }
 
     // 자동이체 처리 (스케줄러용)
-    @PostMapping("/auto-transfer/process")
+    @PostMapping("/deposit/auto-transfer/process")
     public ResponseEntity<?> processAutoTransfers() {
         try {
             depositService.processAutoTransfers();
@@ -225,7 +225,7 @@ public class DepositController {
     }
 
     // 적금 만기 처리 (스케줄러용)
-    @PostMapping("/savings/maturity/process")
+    @PostMapping("/deposit/savings/maturity/process")
     public ResponseEntity<?> processMaturity() {
         try {
             depositService.processMaturity();
@@ -236,7 +236,7 @@ public class DepositController {
     }
 
     // 이자 계산 및 지급 (스케줄러용)
-    @PostMapping("/interest/payment")
+    @PostMapping("/deposit/interest/payment")
     public ResponseEntity<?> payInterest() {
         try {
             depositService.payInterest();
@@ -247,7 +247,7 @@ public class DepositController {
     }
 
     // 예금 계좌 비밀번호 변경
-    @PutMapping("/accounts/deposit/{accountId}/password")
+    @PutMapping("/deposit/accounts/deposit/{accountId}/password")
     public ResponseEntity<?> changeDepositAccountPassword(
             @PathVariable int accountId,
             @RequestBody DepositDTO request) {
@@ -260,7 +260,7 @@ public class DepositController {
     }
 
     // 적금 계좌 비밀번호 변경
-    @PutMapping("/accounts/savings/{accountId}/password")
+    @PutMapping("/deposit/accounts/savings/{accountId}/password")
     public ResponseEntity<?> changeSavingsAccountPassword(
             @PathVariable int accountId,
             @RequestBody DepositDTO request) {
@@ -273,7 +273,7 @@ public class DepositController {
     }
 
     // 예금 상품 추가
-    @PostMapping("/products/deposit")
+    @PostMapping("/deposit/products/deposit")
     public ResponseEntity<?> createDepositProduct(@RequestBody DepositDTO product) {
         try {
             depositService.addDepositProduct(product);
@@ -284,7 +284,7 @@ public class DepositController {
     }
 
     // 예금 상품 수정
-    @PutMapping("/products/deposit/{productId}")
+    @PutMapping("/deposit/products/deposit/{productId}")
     public ResponseEntity<?> updateDepositProduct(
             @PathVariable int productId,
             @RequestBody DepositDTO product) {
@@ -297,7 +297,7 @@ public class DepositController {
     }
 
     // 예금 상품 삭제
-    @DeleteMapping("/products/deposit/{productId}")
+    @DeleteMapping("/deposit/products/deposit/{productId}")
     public ResponseEntity<?> deleteDepositProduct(@PathVariable int productId) {
         try {
             depositService.deleteDepositProduct(productId);

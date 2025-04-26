@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Select, Button, Card, message, InputNumber, Modal } from 'antd';
+import { Form, Input, Select, Button, Card, InputNumber, Modal } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCustomerID } from "../../jwt/AxiosToken";
 import RefreshToken from "../../jwt/RefreshToken";
@@ -37,7 +37,7 @@ const DepositWithdrawal = () => {
             setAccounts(response.data);
         } catch (error) {
             console.error('계좌 조회 에러:', error);
-            message.error('계좌 정보를 불러오는데 실패했습니다.');
+            console.error('계좌 정보를 불러오는데 실패했습니다.');
         }
     };
 
@@ -50,7 +50,7 @@ const DepositWithdrawal = () => {
             setAccountType(response.data.productType);
         } catch (error) {
             console.error('계좌 잔액 조회 에러:', error);
-            message.error('계좌 잔액을 불러오는데 실패했습니다.');
+            console.error('계좌 잔액을 불러오는데 실패했습니다.');
         }
     };
 
@@ -65,18 +65,18 @@ const DepositWithdrawal = () => {
                 accountPassword: values.password
             });
             
-            message.success('출금이 완료되었습니다.');
+            console.success('출금이 완료되었습니다.');
             form.resetFields();
             fetchAccounts();
         } catch (error) {
             console.error('출금 에러:', error);
-            message.error('출금에 실패했습니다.');
+            console.error('출금에 실패했습니다.');
         }
     };
 
     const handleSubmit = async (values) => {
         if (values.amount > accountBalance) {
-            message.error('출금 금액이 잔액보다 큽니다.');
+            console.error('출금 금액이 잔액보다 큽니다.');
             return;
         }
 
