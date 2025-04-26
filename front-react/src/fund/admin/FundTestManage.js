@@ -1,3 +1,4 @@
+// ✅ 수정된 FundTestManage.js 전체 통합본 (버튼 클릭시 로딩 표시 추가)
 import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import FundCustomer from "./FundCustomer";  // 로그인 체크용 팝업 컴포넌트
@@ -9,6 +10,7 @@ const FundTestManage = () => {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false); // ✅ 로딩 상태 추가
 
   // 로그인 체크
   useEffect(() => {
@@ -22,38 +24,46 @@ const FundTestManage = () => {
   // 모델 재학습 트리거
   const handleRetrain = async () => {
     try {
+      setLoading(true);
       const response = await RefreshToken.post("http://127.0.0.1:8000/retrain");
       setMessage(response.data.message);
     } catch (error) {
       console.error("AI모델 재학습 요청 실패:", error);
       setMessage("AI모델 재학습 중 오류 발생");
+    } finally {
+      setLoading(false);
     }
   };
 
-  // [2] 펀드 성향 예측 (fundList.csv ➝ fundList_updated.csv)
+  // 펀드 성향 예측
   const handlePredictFund = async () => {
     try {
+      setLoading(true);
       const response = await RefreshToken.post("http://127.0.0.1:8000/predict-fund");
       console.log("예측 결과:", response.data);
       alert("펀드 성향 예측 완료!");
     } catch (error) {
       console.error("펀드 성향 예측 실패:", error);
       alert("예측 실패!");
+    } finally {
+      setLoading(false);
     }
   };
 
   // 펀드 성향 DB 업데이트
   const updateRiskTypesToDB = async () => {
     try {
+      setLoading(true);
       const response = await fetch("/data/fundList_updated.csv");
       const text = await response.text();
       const rows = Papa.parse(text, { header: true }).data;
-  
       await RefreshToken.post("/updateRiskTypes", rows);
       alert("데이터 업데이트 완료!");
     } catch (error) {
       console.error("데이터 업데이트 실패:", error);
       alert("데이터 업데이트 실패!");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -71,12 +81,15 @@ const FundTestManage = () => {
     )}
 
     <div className={styles.fundContainer}>
-    <h2 className={styles.fundTitle}>투자성향분석 AI 관리</h2>
-    <br></br>
+      <h2 className={styles.fundTitle}>투자성향분석 AI 관리</h2>
       <div className={styles.fundTable}> 
+        {/* 🔥 버튼 3개 */}
         <button className={styles.fundButton} onClick={handleRetrain}>🔄 AI모델 재학습</button>
         <button className={styles.fundButton} onClick={handlePredictFund}>🤖 펀드 투자성향 예측</button>
         <button className={styles.fundButton} onClick={updateRiskTypesToDB}>💾 펀드성향 데이터 업데이트</button>
+        {/* ✅ 로딩 중 메시지 */}
+        {loading && <p style={{ color: "#2563eb", fontWeight: "bold" }}>⏳ 진행 중입니다...</p>}
+        {/* ✅ API 결과 메시지 */}
         {message && <p>{message}</p>}
       </div>
     </div>
