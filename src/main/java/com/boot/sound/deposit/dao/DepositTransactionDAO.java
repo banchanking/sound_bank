@@ -28,10 +28,10 @@ public interface DepositTransactionDAO {
     DepositTransactionDTO getSavingsTransactionDetail(int transactionId);
 
     // 예금 거래 내역 생성
-    int createDepositTransaction(DepositTransactionDTO transaction);
+    int createDepositTransaction(DepositTransactionDTO dto);
 
     // 적금 거래 내역 생성
-    int createSavingsTransaction(DepositTransactionDTO transaction);
+    int createSavingsTransaction(DepositTransactionDTO dto);
 
     // 예금 계좌 잔액 업데이트
     int updateDepositAccountBalance(@Param("accountNumber") String accountNumber, 
