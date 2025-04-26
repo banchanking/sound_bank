@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import RefreshToken from "../../jwt/RefreshToken";
+import Papa from "papaparse"; // CSV 파싱 라이브러리
 import styles from "../../Css/fund/FundAdmin.module.css";
 
 const CustomerTransHistory = () => {
   const [transactions, setTransactions] = useState([]); // 전체 거래 내역 상태
+  const [fundRates, setFundRates] = useState({}); // 펀드 수익률 데이터
   const [search, setSearch] = useState(""); // 검색어 상태
   const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태
   const itemsPerPage = 10; // 페이지당 표시할 항목 수
@@ -21,11 +23,58 @@ const CustomerTransHistory = () => {
     fetchData();
   }, []);
 
+  // 펀드 수익률 데이터 가져오기
+  useEffect(() => {
+    Papa.parse("/data/fundList_updated.csv", {
+      header: true,
+      download: true,
+      complete: (results) => {
+        const map = {};
+        results.data.forEach((row) => {
+          const name = row.fund_name?.trim();
+          if (name) {
+            map[name] = {
+              return_1m: parseFloat(row.return_1m || 0), // 그대로 사용
+              return_3m: parseFloat(row.return_3m || 0), // 그대로 사용
+              return_6m: parseFloat(row.return_6m || 0), // 그대로 사용
+              return_12m: parseFloat(row.return_12m || 0), // 그대로 사용
+            };
+          }
+        });
+        setFundRates(map);
+      },
+    });
+  }, []);
+
+  // 현재가 계산 함수
+  const calculateCurrentValue = (fundName, units, price) => {
+    if (!fundName || !units || !price) {
+      console.error("Invalid input for calculateCurrentValue:", { fundName, units, price });
+      return 0;
+    }
+  
+    const fund = fundRates[fundName?.trim()];
+    if (!fund) {
+      console.error("No fund data found for:", fundName);
+      return 0;
+    }
+  
+    // 12개월 수익률 기준으로 현재가 계산
+    const rate = parseFloat((fund.return_12m / 100).toFixed(2)); // 소수점 둘째자리로 반올림
+    const currentValue = units * price * (1 + rate);
+    console.log("현재가 계산:", { fundName, units, price, rate, currentValue });
+    return currentValue;
+  };
+
   // 수익률 계산 함수
   const calculateReturnRate = (price, current) => {
-    if (!price || !current) return "-";
+    if (!price || !current || price <= 0) {
+      console.error("Invalid input for calculateReturnRate:", { price, current });
+      return "-"; // 값이 없거나 단가가 0 이하인 경우
+    }
     const rate = ((current - price) / price) * 100;
-    return rate.toFixed(2) + "%";
+    console.log("수익률 계산:", { price, current, rate });
+    return rate.toFixed(2) + "%"; // 소수점 2자리까지 표시
   };
 
   // 검색 필터링
@@ -75,20 +124,37 @@ const CustomerTransHistory = () => {
           </tr>
         </thead>
         <tbody>
-          {currentTransactions.map((tx) => (
-            <tr key={tx.fundTransactionId}>
-              <td>{tx.customerId}</td>
-              <td>{tx.fund_name}</td>
-              <td>{tx.fundTransactionDate}</td>
-              <td>{tx.fundTransactionType}</td>
-              <td>{tx.fundInvestAmount?.toLocaleString()}</td>
-              <td>{tx.fundPricePerUnit}</td>
-              <td>{tx.fundUnitsPurchased}</td>
-              <td>{tx.fundCurrentValue}</td>
-              <td>{calculateReturnRate(tx.fundPricePerUnit, tx.fundCurrentValue)}</td>
-              <td>{tx.status}</td>
-            </tr>
-          ))}
+          {currentTransactions.map((tx) => {
+            const currentValue = calculateCurrentValue(
+              tx.fund_name,
+              tx.fundUnitsPurchased,
+              tx.fundPricePerUnit
+            );
+            const returnRate = calculateReturnRate(tx.fundPricePerUnit, currentValue);
+
+            console.log("거래 데이터:", {
+              fund_name: tx.fund_name,
+              units: tx.fundUnitsPurchased,
+              price: tx.fundPricePerUnit,
+              currentValue,
+              returnRate,
+            });
+
+            return (
+              <tr key={tx.fundTransactionId}>
+                <td>{tx.customerId}</td>
+                <td>{tx.fund_name}</td>
+                <td>{tx.fundTransactionDate}</td>
+                <td>{tx.fundTransactionType}</td>
+                <td>{tx.fundInvestAmount?.toLocaleString()}</td>
+                <td>{tx.fundPricePerUnit?.toLocaleString()}</td>
+                <td>{tx.fundUnitsPurchased}</td>
+                <td>{currentValue?.toLocaleString()}</td> {/* 현재가 */}
+                <td>{returnRate}</td> {/* 수익률 */}
+                <td>{tx.status}</td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
 
