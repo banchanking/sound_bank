@@ -37,8 +37,8 @@ const DepositComparison = () => {
         try {
             setLoading(true);
             const [depositResponse, savingsResponse] = await Promise.all([
-                RefreshToken.get('/api/deposit/products/deposit'),
-                RefreshToken.get('/api/deposit/products/savings')
+                RefreshToken.get('/deposit/products/deposit'),
+                RefreshToken.get('/deposit/products/savings')
             ]);
             setProducts([...depositResponse.data, ...savingsResponse.data]);
         } catch (error) {
@@ -211,7 +211,7 @@ const DepositComparison = () => {
 
     const handleCompare = async () => {
         try {
-            const response = await RefreshToken.post('/api/deposit/products/compare', {
+            const response = await RefreshToken.post('/deposit/products/compare', {
                 productIds: selectedProducts
             });
             setComparisonResult(response.data);

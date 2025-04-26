@@ -140,7 +140,7 @@ const DepositAgreement = () => {
 
     const fetchAgreement = async () => {
         try {
-            const response = await RefreshToken.get('/api/deposit/agreement');
+            const response = await RefreshToken.get('/deposit/agreement');
             setAgreement(response.data);
         } catch (error) {
             console.error('약관 조회 실패:', error);
@@ -150,7 +150,7 @@ const DepositAgreement = () => {
 
     const handleAgree = async () => {
         try {
-            await RefreshToken.post('/api/deposit/accounts/deposit');
+            await RefreshToken.post('/deposit/accounts/deposit');
             message.success('약관에 동의했습니다.');
             navigate('/deposit/join');
         } catch (error) {
