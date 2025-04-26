@@ -34,9 +34,9 @@ const SavingsAgreement = () => {
         {
             title: '약관동의',
             content: (
-                <div className="agreement-content">
+                <div className="depositAgreementContent">
                     <h3>적금 상품 가입 약관</h3>
-                    <div className="agreement-text">
+                    <div className="depositAgreementText">
                         <p>1. 적금 상품 가입 시 제공하신 개인정보는 적금 상품 가입 및 관리 목적으로만 사용됩니다.</p>
                         <p>2. 적금 상품의 이자율은 시장 상황에 따라 변동될 수 있습니다.</p>
                         <p>3. 적금 상품 해지 시 이자율이 적용된 잔액이 지급됩니다.</p>
@@ -54,9 +54,9 @@ const SavingsAgreement = () => {
         {
             title: '개인정보 수집 및 이용 동의',
             content: (
-                <div className="agreement-content">
+                <div className="depositAgreementContent">
                     <h3>개인정보 수집 및 이용 동의</h3>
-                    <div className="agreement-text">
+                    <div className="depositAgreementText">
                         <p>1. 수집항목: 성명, 주민등록번호, 연락처, 주소</p>
                         <p>2. 이용목적: 적금 상품 가입 및 관리, 이자 지급</p>
                         <p>3. 보유기간: 적금 상품 해지 후 5년</p>
@@ -74,9 +74,9 @@ const SavingsAgreement = () => {
         {
             title: '적금 상품 특약 동의',
             content: (
-                <div className="agreement-content">
+                <div className="depositAgreementContent">
                     <h3>적금 상품 특약</h3>
-                    <div className="agreement-text">
+                    <div className="depositAgreementText">
                         <p>1. 적금 상품의 이자율은 가입 시점의 기준금리에 따라 결정됩니다.</p>
                         <p>2. 적금 상품 해지 시 이자율이 적용된 잔액이 지급됩니다.</p>
                         <p>3. 적금 상품 가입 후 1개월 이내 해지 시 이자가 지급되지 않습니다.</p>
@@ -137,15 +137,15 @@ const SavingsAgreement = () => {
     };
 
     return (
-        <div className="savings-agreement-container">
+        <div className="depositContainer">
             <Card>
                 <Steps current={current}>
                     {steps.map(item => (
                         <Step key={item.title} title={item.title} />
                     ))}
                 </Steps>
-                <div className="steps-content">{steps[current].content}</div>
-                <div className="steps-action">
+                <div className="depositStepsContent">{steps[current].content}</div>
+                <div className="depositStepsAction">
                     {current > 0 && (
                         <Button style={{ margin: '0 8px' }} onClick={() => prev()}>
                             이전

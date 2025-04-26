@@ -83,13 +83,13 @@ const SavingsJoin = () => {
         switch (currentStep) {
             case 0:
                 return (
-                    <div className="product-selection">
+                    <div className="depositProductSelection">
                         <h3>적금 상품 선택</h3>
-                        <div className="product-list">
+                        <div className="depositProductList">
                             {products.map(product => (
                                 <Card
                                     key={product.id}
-                                    className="product-card"
+                                    className="depositProductCard"
                                     onClick={() => handleProductSelect(product.id)}
                                 >
                                     <h4>{product.name}</h4>
@@ -218,7 +218,7 @@ const SavingsJoin = () => {
                 );
             case 2:
                 return (
-                    <div className="completion">
+                    <div className="depositCompletion">
                         <CheckCircleOutlined style={{ fontSize: '64px', color: '#52c41a' }} />
                         <h3>적금 가입이 완료되었습니다</h3>
                         <p>계좌번호: {form.getFieldValue('accountNumber')}</p>

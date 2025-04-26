@@ -49,36 +49,3 @@
     transition: all 0.2s ease;
 }
 
-.deposit-autosettings-container {
-    padding: 20px;
-}
-
-.deposit-autosettings-card {
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.deposit-autosettings-form {
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-.deposit-autosettings-form .ant-form-item-label > label {
-    font-weight: 500;
-}
-
-.deposit-autosettings-form .ant-input,
-.deposit-autosettings-form .ant-select {
-    width: 100%;
-}
-
-.deposit-autosettings-button {
-    margin-right: 8px;
-}
-
-.deposit-autosettings-info {
-    margin-bottom: 24px;
-    padding: 16px;
-    background: #f5f5f5;
-    border-radius: 4px;
-} 
