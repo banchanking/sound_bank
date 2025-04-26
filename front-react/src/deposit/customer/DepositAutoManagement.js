@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Card, Button, Modal, message, Tag } from 'antd';
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Table, Card, Button, Modal, message, Tag, Form } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCustomerID } from "../../jwt/AxiosToken";
 import RefreshToken from "../../jwt/RefreshToken";
 import axios from 'axios';
-import '../../Css/deposit/DepositAutoManagement.css';
+import '../../Css/depositcss/DepositAutoManagement.css';
 
 const DepositAutoManagement = () => {
     const navigate = useNavigate();
     const { accountId } = useParams();
     const [autoTransfers, setAutoTransfers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [selectedAccount, setSelectedAccount] = useState(null);
+    const [form] = Form.useForm();
 
     useEffect(() => {
         const customer_id = getCustomerID();
@@ -35,7 +36,7 @@ const DepositAutoManagement = () => {
             setLoading(false);
         } catch (error) {
             console.error('자동이체 조회 에러:', error);
-            message.error('자동이체 정보를 불러오는데 실패했습니다.');
+            console.error('자동이체 정보를 불러오는데 실패했습니다.');
             setLoading(false);
         }
     };
@@ -65,10 +66,31 @@ const DepositAutoManagement = () => {
                     message.success('자동이체가 해지되었습니다.');
                     fetchAutoTransfers();
                 } catch (error) {
-                    message.error('자동이체 해지 중 오류가 발생했습니다.');
+                    console.error('자동이체 해지 중 오류가 발생했습니다.');
                 }
             }
         });
+    };
+
+    const handleUpdateAutoTransfer = async (values) => {
+        if (!selectedAccount) {
+            message.error('계좌를 선택해주세요.');
+            return;
+        }
+
+        try {
+            await RefreshToken.put(`/api/deposit/accounts/deposit/${selectedAccount}/auto-transfer`, {
+                autoTransferEnabled: values.enabled,
+                autoTransferAmount: values.amount,
+                autoTransferDay: values.day
+            });
+            message.success('자동이체 설정이 수정되었습니다.');
+            form.resetFields();
+            fetchAutoTransfers();
+        } catch (error) {
+            console.error('자동이체 수정 에러:', error);
+            message.error('자동이체 수정에 실패했습니다.');
+        }
     };
 
     const columns = [
@@ -117,7 +139,6 @@ const DepositAutoManagement = () => {
                 <span>
                     <Button
                         type="link"
-                        icon={<EditOutlined />}
                         onClick={() => handleEdit(record)}
                     >
                         수정
@@ -125,7 +146,6 @@ const DepositAutoManagement = () => {
                     <Button
                         type="link"
                         danger
-                        icon={<DeleteOutlined />}
                         onClick={() => handleDelete(record)}
                     >
                         해지

@@ -5,7 +5,7 @@ import axios from 'axios';
 import RefreshToken from "../../jwt/RefreshToken";
 import { getCustomerID } from "../../jwt/AxiosToken";
 import { useNavigate } from 'react-router-dom';
-import '../../Css/deposit/SavingsJoin.css';
+import '../../Css/depositcss/SavingsJoin.css';
 
 const { Option } = Select;
 const { Step } = Steps;
@@ -50,12 +50,12 @@ const SavingsJoin = () => {
 
     const handleJoin = async (values) => {
         try {
-            await RefreshToken.post('/api/savings/accounts', {
+            await RefreshToken.post('/api/deposit/accounts/savings', {
                 ...values,
                 customerId: getCustomerID()
             });
             message.success('적금 계좌가 개설되었습니다.');
-            navigate('/savings/accounts');
+            navigate('/deposit/accounts');
         } catch (error) {
             console.error('계좌 개설 에러:', error);
             message.error('계좌 개설에 실패했습니다.');
