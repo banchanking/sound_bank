@@ -35,7 +35,7 @@ const SavingsJoin = () => {
 
     const fetchProducts = async () => {
         try {
-            const response = await RefreshToken.get('/api/deposit/products/savings');
+            const response = await RefreshToken.get('/deposit/products/savings');
             setProducts(response.data);
         } catch (error) {
             console.error('상품 조회 에러:', error);
@@ -51,7 +51,7 @@ const SavingsJoin = () => {
 
     const handleJoin = async (values) => {
         try {
-            await RefreshToken.post('/api/deposit/accounts/savings', {
+            await RefreshToken.post('/deposit/accounts/savings', {
                 ...values,
                 customerId: getCustomerID(),
                 productId: selectedProduct.id,
