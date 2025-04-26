@@ -1,15 +1,16 @@
-/* 공통 스타일 */
+/* 공통 컨테이너 (board 스타일 수정) */
 .fundContainer {
   min-height: 600px;
   max-width: 1000px;
   margin: 3rem auto;
   padding: 2rem;
   background-color: #fff;
-  border: 2px solid #222;
-  border-radius: 16px;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.06);
+  border: 1.5px solid #e2e4e7; /* 더 부드럽게 */
+  border-radius: 24px; /* 더 둥글게 */
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.2); /* 그림자 부드럽게 */
+  font-family: 'Pretendard', sans-serif;
+  animation: fadeIn 0.4s ease;
 }
-
 .fundTitle {
   text-align: center;
   font-size: 1.8rem;
@@ -89,11 +90,12 @@
 .testcard {
   background-color: #fff;
   padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  border-radius: 20px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06); /* 그림자 부드럽게 */
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  animation: fadeInUp 0.4s ease;
 }
 
 .testquestiontitle {
@@ -114,14 +116,18 @@
 
 /* 셀렉트박스 */
 .categorySelect {
-  background-color: #fff;
-  color: #000;
-  border: 1px solid #000;
-  border-radius: 8px;
-  padding: 10px;
-  margin: 10px 0;
-  font-size: 16px;
-  cursor: pointer;
+  width: 80%;
+  margin: 20px auto 0 auto;
+  margin-top: 20px;
+  padding: 24px;
+  background-color: #ffffff;
+  border: 1.5px solid #e2e4e7;
+  border-radius: 20px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeIn 0.4s ease;
 }
 
 /* 테이블 */
@@ -132,7 +138,10 @@
   justify-content: center;
   padding: 3rem 1rem;
   background-color: #fff;
+  border-radius: 20px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
   font-family: 'Pretendard', sans-serif;
+  animation: fadeIn 0.4s ease;
 }
 
 .fundtesttitle {
@@ -233,6 +242,19 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
+.popupChart,
+.popupModal {
+  background: #ffffff;
+  max-height: 875px;
+  padding: 2rem;
+  border-radius: 20px;
+  width: 60%;
+  max-width: 700px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  position: relative;
+  animation: fadeInUp 0.4s ease;
+}
+
 /* 액션 버튼 영역 */
 .actionbuttons {
   display: flex;
@@ -288,4 +310,210 @@
 }
 .fundButton:hover {
   background-color: #555;
+}
+
+
+/* 상품 선택 후 나타나는 영역 애니메이션 */
+.categorySelect {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+  animation: fadeIn 0.4s ease;
+}
+
+.fundTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  animation: fadeIn 0.4s ease;
+}
+
+.fundTable button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 36px;
+  margin: 0 auto;
+  background: linear-gradient(to right, #537697, #537697); /* 부드러운 파란 그라데이션 */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+}
+
+.fundTable button:hover {
+  background: linear-gradient(to right, #6083ac, #6083ac);
+}
+
+/* 팝업 닫기버튼 (X) 수정 */
+.closeButton {
+  all: unset;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 1.8rem;
+  color: #666;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.closeButton:hover {
+  background-color: #ffffff; /* 연한 회색 배경 */
+}
+
+/* 매수하기 버튼 수정 */
+.fundBuyButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 150px;
+  height: 44px;
+  margin: 0 auto;
+  margin-top: 20px;
+  margin-bottom: -20px;
+  background-color: #537697; 
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.fundBuyButton:hover {
+  background-color: #6083ac; /* hover 시 살짝 밝아짐 */
+}
+
+
+/* 질문 하나 끝날 때마다 그어지는 구분선 */
+.testquestion {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #ddd;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.03); 
+}
+
+.byInput{
+  margin-bottom: 10px;
+  width: 680px;
+  padding: 10px;
+  font-size: 15px;
+  border: 1.5px solid #ccc;
+  border-radius: 10px;
+  background-color: #fff;
+  transition: border-color 0.3s ease;
+}
+
+/* 검색창 수정 */
+.searchInput {
+  width: 80%;
+  max-width: 600px;
+  padding: 14px 18px;
+  margin: 20px auto;
+  display: block;
+  border: 1.5px solid #ccc;
+  border-radius: 14px;
+  background-color: #fff;
+  font-size: 16px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04); 
+}
+
+.searchInput::placeholder {
+  color: #999;
+}
+
+.searchInput:hover,
+.searchInput:focus {
+  border-color: #537697; 
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); 
+  outline: none;
+}
+
+
+/* 전체 감싸는 박스 */
+.aiManagementContainer {
+  max-width: 800px;
+  margin: 4rem auto;
+  height: 450px;
+  padding: 3rem 2rem;
+  background-color: #ffffff;
+  border: 1.5px solid #e2e4e7;
+  border-radius: 24px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  animation: fadeIn 0.4s ease;
+}
+
+/* 제목 */
+.aiManagementTitle {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 2.5rem;
+}
+
+/* 버튼 그룹 */
+.aiButtonGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  align-items: center;
+}
+
+/* 버튼 하나하나 */
+.aiButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 240px;
+  height: 50px;
+  margin-bottom: 10px;
+  background: linear-gradient(to right, #d88390, #c46d7c); 
+  color: #ffffff;
+  border: none;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+/* 버튼 hover */
+.aiButton:hover {
+  background: linear-gradient(to right, #c46d7c, #b85e6f);
+  transform: translateY(-2px); 
+}
+
+
+/* 애니메이션 추가 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

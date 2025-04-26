@@ -1,7 +1,7 @@
 .footer {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px); /* Safari 호환 */
-  padding: 2rem;
+  height: 200px;
   position: relative;
   bottom: 0;
   width: 100%;
@@ -36,19 +36,21 @@
 }
 
 .footer-logo {
+  margin-top: 60px !important;
   font-size: 1.5rem;
   color: #fff;
   margin-bottom: 0.5rem;
 }
 
 .footer-desc {
+  
   color: #fff;
   font-size: 0.9rem;
   line-height: 1.5;
 }
 
 .footer-links {
-  
+  margin-top: 20px !important;
   display: flex;
   gap: 3rem;
   flex: 2;

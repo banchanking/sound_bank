@@ -202,15 +202,15 @@ const FundProductManage = () => {
               </div>
               <div>
                 <label>총보수 (%):</label>
-                <input type="number" name="fund_fee_rate" value={formData.fund_fee_rate || ""} onChange={handleChange} step="0.01" />
+                <input className={styles.rateInput} type="number" name="fund_fee_rate" value={formData.fund_fee_rate || ""} onChange={handleChange} step="0.01" />
               </div>
               <div>
                 <label>선취수수료 (%):</label>
-                <input type="number" name="fund_upfront_fee" value={formData.fund_upfront_fee || ""} onChange={handleChange} step="0.01" />
+                <input className={styles.feeInput} ype="number" name="fund_upfront_fee" value={formData.fund_upfront_fee || ""} onChange={handleChange} step="0.01" />
               </div>
               <div style={{ marginTop: '15px', textAlign: 'center' }}>
-                <button type="submit" className={styles.fundButton}>저장</button>
-                <button type="button" onClick={handleClosePopup} className={styles.fundButton}>닫기</button>
+                <button type="submit" className={styles.manageEditButton}>저장</button>
+                <button type="button" onClick={handleClosePopup} className={styles.manageEditButton2}>닫기</button>
               </div>
             </form>
           </div>
