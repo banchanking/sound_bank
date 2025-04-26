@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Tabs, Card, Button, Tag, message } from 'antd';
-import { EyeOutlined, HistoryOutlined, SettingOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import RefreshToken from "../../jwt/RefreshToken";
 import { getCustomerID } from "../../jwt/AxiosToken";
 import { useNavigate } from 'react-router-dom';
@@ -13,6 +12,8 @@ const DepositAccountInquiry = () => {
     const [depositAccounts, setDepositAccounts] = useState([]);
     const [savingsAccounts, setSavingsAccounts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [selectedAccount, setSelectedAccount] = useState(null);
+    const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
 
     useEffect(() => {
         const customer_id = getCustomerID();
@@ -30,18 +31,33 @@ const DepositAccountInquiry = () => {
 
     const fetchAccounts = async () => {
         try {
+            setLoading(true);
             const customerId = getCustomerID();
             const [depositResponse, savingsResponse] = await Promise.all([
-                RefreshToken.get(`/api/deposit/accounts/customer/${customerId}`),
-                RefreshToken.get(`/api/savings/accounts/customer/${customerId}`)
+                RefreshToken.get(`/api/deposit/accounts/deposit/${customerId}`),
+                RefreshToken.get(`/api/deposit/accounts/savings/${customerId}`)
             ]);
             setDepositAccounts(depositResponse.data);
             setSavingsAccounts(savingsResponse.data);
-            setLoading(false);
         } catch (error) {
             console.error('계좌 조회 에러:', error);
-            message.error('계좌 정보를 불러오는데 실패했습니다.');
+            alert('계좌 정보를 불러오는데 실패했습니다.');
+        } finally {
             setLoading(false);
+        }
+    };
+
+    const handleAccountDetail = async (accountId, type) => {
+        try {
+            const endpoint = type === 'deposit' 
+                ? `/api/deposit/accounts/deposit/detail/${accountId}`
+                : `/api/deposit/accounts/savings/detail/${accountId}`;
+            const response = await RefreshToken.get(endpoint);
+            setSelectedAccount(response.data);
+            setIsDetailModalVisible(true);
+        } catch (error) {
+            console.error('계좌 상세 조회 에러:', error);
+            alert('계좌 상세 정보를 불러오는데 실패했습니다.');
         }
     };
 
@@ -83,16 +99,16 @@ const DepositAccountInquiry = () => {
             key: 'action',
             render: (_, record) => (
                 <span>
-                    <Button type="link" icon={<EyeOutlined />} onClick={() => handleViewDetails(record)}>
+                    <Button type="link" onClick={() => handleAccountDetail(record.accountNumber, 'deposit')}>
                         상세보기
                     </Button>
-                    <Button type="link" icon={<HistoryOutlined />} onClick={() => handleViewHistory(record)}>
+                    <Button type="link" onClick={() => handleViewHistory(record)}>
                         거래내역
                     </Button>
-                    <Button type="link" icon={<SettingOutlined />} onClick={() => handleAutoTransfer(record)}>
+                    <Button type="link" onClick={() => handleAutoTransfer(record)}>
                         자동이체
                     </Button>
-                    <Button type="link" danger icon={<CloseCircleOutlined />} onClick={() => handleCloseAccount(record)}>
+                    <Button type="link" danger onClick={() => handleCloseAccount(record)}>
                         해지
                     </Button>
                 </span>
@@ -143,16 +159,16 @@ const DepositAccountInquiry = () => {
             key: 'action',
             render: (_, record) => (
                 <span>
-                    <Button type="link" icon={<EyeOutlined />} onClick={() => handleViewDetails(record)}>
+                    <Button type="link" onClick={() => handleAccountDetail(record.accountNumber, 'savings')}>
                         상세보기
                     </Button>
-                    <Button type="link" icon={<HistoryOutlined />} onClick={() => handleViewHistory(record)}>
+                    <Button type="link" onClick={() => handleViewHistory(record)}>
                         거래내역
                     </Button>
-                    <Button type="link" icon={<SettingOutlined />} onClick={() => handleAutoTransfer(record)}>
+                    <Button type="link" onClick={() => handleAutoTransfer(record)}>
                         자동이체
                     </Button>
-                    <Button type="link" danger icon={<CloseCircleOutlined />} onClick={() => handleCloseAccount(record)}>
+                    <Button type="link" danger onClick={() => handleCloseAccount(record)}>
                         해지
                     </Button>
                 </span>

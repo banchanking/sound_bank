@@ -1,0 +1,88 @@
+.voicebot-wrap {
+    min-height: 540px;
+}
+
+.voicebot-container {
+    max-width: 600px;
+    margin: 60px auto;
+    padding: 40px;
+    background-color: #ffffff;
+    border-radius: 24px;
+    border: 1.5px solid #e2e4e7;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+    font-family: 'Noto Sans KR', sans-serif;
+    animation: fadeIn 0.4s ease;
+  }
+  
+  /* voicebot-title */
+  .voicebot-title {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+    animation: fadeUp 0.4s ease;
+  }
+  
+  /* voicebot-button-wrap */
+  .voicebot-button-wrap {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  
+  /* 공통 버튼 */
+  .btn-blue {
+    padding: 12px 20px;
+    background-color: #537697;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .btn-blue:hover {
+    background-color: #6083ac;
+  }
+  
+  .btn-gray {
+    padding: 12px 20px;
+    background-color: #444444;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .btn-gray:hover {
+    background-color: #555;
+  }
+  
+  /* voicebot-response */
+  .voicebot-response {
+    background-color: #f5f7f9;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 14px;
+    color: #333;
+  }
+  .voicebot-response ul {
+    margin-top: 10px;
+    padding-left: 18px;
+  }
+  .voicebot-response li {
+    margin-bottom: 6px;
+  }
+  
+  /* fadeIn */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  

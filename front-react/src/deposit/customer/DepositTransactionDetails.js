@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Card, Select, DatePicker, Button, Tag, message } from 'antd';
-import { SearchOutlined, DownloadOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCustomerID, refreshAccessToken, setAuthToken } from "../../jwt/AxiosToken";
 import RefreshToken from "../../jwt/RefreshToken";
@@ -16,6 +15,7 @@ const DepositTransactionDetails = () => {
     const [dateRange, setDateRange] = useState([]);
     const [transactions, setTransactions] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [accountType, setAccountType] = useState('deposit');
 
     useEffect(() => {
         const customer_id = getCustomerID();
@@ -71,61 +71,22 @@ const DepositTransactionDetails = () => {
     };
 
     const fetchTransactions = async () => {
-        if (!selectedAccount || !dateRange || dateRange.length !== 2) {
-            console.log('필수 조건 확인:', {
-                selectedAccount,
-                dateRange,
-                dateRangeLength: dateRange?.length
-            });
-            message.error('계좌와 날짜 범위를 모두 선택해주세요.');
-            return;
-        }
-
-        setLoading(true);
         try {
-            const selectedAccountData = accounts.find(acc => acc.accountNumber === selectedAccount);
-            if (!selectedAccountData) {
-                message.error('선택한 계좌를 찾을 수 없습니다.');
-                return;
-            }
-
-            console.log('선택된 계좌 데이터:', selectedAccountData);
-
-            let response;
-            if (selectedAccountData.type === '예금') {
-                response = await RefreshToken.get(`/api/deposit/transactions/account/${selectedAccountData.datId}`, {
-                    params: {
-                        startDate: dateRange[0].format('YYYY-MM-DD'),
-                        endDate: dateRange[1].format('YYYY-MM-DD')
-                    }
-                });
-            } else if (selectedAccountData.type === '적금') {
-                response = await RefreshToken.get(`/api/deposit/transactions/account/${selectedAccountData.satId}`, {
-                    params: {
-                        startDate: dateRange[0].format('YYYY-MM-DD'),
-                        endDate: dateRange[1].format('YYYY-MM-DD')
-                    }
-                });
-            }
+            setLoading(true);
+            const endpoint = accountType === 'deposit'
+                ? `/api/deposit/accounts/deposit/${accountId}/transactions`
+                : `/api/deposit/accounts/savings/${accountId}/transactions`;
             
-            console.log('API 응답:', response.data);
+            const response = await RefreshToken.get(endpoint, {
+                params: {
+                    startDate: dateRange[0].format('YYYY-MM-DD'),
+                    endDate: dateRange[1].format('YYYY-MM-DD')
+                }
+            });
             setTransactions(response.data);
         } catch (error) {
             console.error('거래내역 조회 에러:', error);
-            if (error.response?.status === 401) {
-                const goLogin = window.confirm(
-                    "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
-                );
-                if (goLogin) {
-                    navigate("/login");
-                }
-            } else if (error.response?.status === 400) {
-                message.error(`잘못된 요청입니다: ${error.response.data?.message || '알 수 없는 오류'}`);
-            } else if (error.response?.status === 404) {
-                message.error('적금 거래내역 API가 구현되지 않았습니다.');
-            } else {
-                message.error('거래내역을 불러오는데 실패했습니다.');
-            }
+            alert('거래내역을 불러오는데 실패했습니다.');
         } finally {
             setLoading(false);
         }
@@ -223,14 +184,12 @@ const DepositTransactionDetails = () => {
                     />
                     <Button
                         type="primary"
-                        icon={<SearchOutlined />}
                         onClick={handleSearch}
                         style={{ marginRight: 8 }}
                     >
                         조회
                     </Button>
                     <Button
-                        icon={<DownloadOutlined />}
                         onClick={handleExport}
                     >
                         엑셀다운로드

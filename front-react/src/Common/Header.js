@@ -1,15 +1,6 @@
 import { React, useState, useRef, useEffect } from "react";
-import {
-  Button,
-  Container,
-  Form,
-  Nav,
-  Navbar,
-  NavDropdown,
-} from "react-bootstrap";
+import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import "../Css/Common/Header.css";
 
 const Header = () => {
@@ -85,7 +76,7 @@ const Header = () => {
   const logout = () => {
     localStorage.removeItem("auth_token");
     localStorage.removeItem("customerId");
-    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("role");
     alert("로그아웃 되었습니다.");
     navigate("/");
   };
@@ -189,7 +180,7 @@ const Header = () => {
                       >
                         적금가입
                       </NavDropdown.Item>
-                    </li> 
+                    </li>
                     <li>
                       <NavDropdown.Item
                         className="sub-item"
@@ -198,7 +189,7 @@ const Header = () => {
                       >
                         예적금비교
                       </NavDropdown.Item>
-                    </li>                      
+                    </li>
                   </ul>
                   <ul>
                     <NavDropdown.Item as={Link} to="/depositManagement">
@@ -925,7 +916,11 @@ const Header = () => {
                       문의
                     </NavDropdown.Item>
                     <li>
-                      <NavDropdown.Item className="sub-item" as={Link} to="/Stopgambling">
+                      <NavDropdown.Item
+                        className="sub-item"
+                        as={Link}
+                        to="/Stopgambling"
+                      >
                         불법도박 계좌 신고
                       </NavDropdown.Item>
                     </li>
@@ -933,29 +928,36 @@ const Header = () => {
                 </div>
               </div>
             </NavDropdown>
-
-            {/* 검색창 */}
-            <Form className="search-box">
-              <Form.Control
-                type="search"
-                placeholder="Search"
-                className="search-input"
-              />
-              <Button className="search-btn">
-                <FontAwesomeIcon icon={faMagnifyingGlass} />
-              </Button>
-            </Form>
           </Nav>
 
           {/* 계좌개설/로그인 버튼 */}
           <div className="auth-buttons">
-            <Link to="/join" className="auth-btn signup-btn">
-              계좌개설
-            </Link>
-            {loginStatus ? (
-              <Link to="/" className="auth-btn logout-btn" onClick={logout}>
-                로그아웃
+            {!loginStatus && (
+              <Link to="/join" className="auth-btn signup-btn">
+                계좌개설
               </Link>
+            )}
+
+            {loginStatus ? (
+              localStorage.getItem("role") === "ADMIN" ? (
+                <>
+                  <Link to="/adminPage" className="auth-btn admin-btn">
+                    관리자 페이지
+                  </Link>
+                  <Link to="/" className="auth-btn logout-btn" onClick={logout}>
+                    로그아웃
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link to="/mypage" className="auth-btn mypage-btn">
+                    마이페이지
+                  </Link>
+                  <Link to="/" className="auth-btn logout-btn" onClick={logout}>
+                    로그아웃
+                  </Link>
+                </>
+              )
             ) : (
               <Link to="/login" className="auth-btn login-btn">
                 로그인

@@ -4,36 +4,28 @@ import RefreshToken from '../../jwt/RefreshToken';
 import styles from '../../Css/exchange/ExList.module.css';
 import { useNavigate } from 'react-router-dom';
 
+const ITEMS_PER_PAGE = 15;
+
 const ExList = () => {
   const navigate = useNavigate();
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState('all');
-  const [selectedDate, setSelectedDate] = useState('');
   const [period, setPeriod] = useState('all');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
 
   const customer_id = getCustomerID();
 
   useEffect(() => {
     const transactionList = async () => {
-      const id = getCustomerID();
-          if (!id) {
-            const customer_id = getCustomerID();
-                if (!customer_id) {
-                  if (!customer_id) {
-                    const goLogin = window.confirm(
-                      "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
-                    );
-                    if (goLogin) {
-                      navigate("/login");
-                    }
-                    return;      
-                }
-              }
-          }
+      if (!customer_id) {
+        const goLogin = window.confirm("로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?");
+        if (goLogin) navigate("/login");
+        return;
+      }
       try {
         const response = await RefreshToken.get(`http://localhost:8081/api/exchange/exchangeList/${customer_id}`);
         setTransactions(response.data);
@@ -47,26 +39,30 @@ const ExList = () => {
     transactionList();
   }, [customer_id]);
 
-  const isSameDate = (date1, date2) => {
-    return date1.getFullYear() === date2.getFullYear() &&
-           date1.getMonth() === date2.getMonth() &&
-           date1.getDate() === date2.getDate();
-  };
+  const isSameDate = (date1, date2) => (
+    date1.getFullYear() === date2.getFullYear() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getDate() === date2.getDate()
+  );
 
   const isWithinPeriod = (dateString) => {
     if (!period || period === 'all') return true;
-    const today = new Date();
     const txDate = new Date(dateString.replace(" ", "T"));
+    const today = new Date();
+    const compareDate = new Date();
 
     switch (period) {
       case 'today':
         return isSameDate(today, txDate);
       case '1w':
-        return txDate >= new Date(today.setDate(today.getDate() - 7));
+        compareDate.setDate(today.getDate() - 7);
+        return txDate >= compareDate;
       case '1m':
-        return txDate >= new Date(today.setMonth(today.getMonth() - 1));
+        compareDate.setMonth(today.getMonth() - 1);
+        return txDate >= compareDate;
       case '6m':
-        return txDate >= new Date(today.setMonth(today.getMonth() - 6));
+        compareDate.setMonth(today.getMonth() - 6);
+        return txDate >= compareDate;
       default:
         return true;
     }
@@ -74,7 +70,6 @@ const ExList = () => {
 
   const isWithinRange = (dateString) => {
     if (!startDate && !endDate) return true;
-    if (!dateString) return false;
     const txDate = new Date(dateString.replace(" ", "T"));
     const from = startDate ? new Date(startDate) : null;
     const to = endDate ? new Date(endDate) : null;
@@ -83,11 +78,16 @@ const ExList = () => {
 
   const filteredTransactions = transactions.filter((tx) => {
     const matchType = filter === 'all' || tx.transaction_type === filter;
-    const matchDate = !selectedDate || tx.exchange_transaction_date?.startsWith(selectedDate);
     const matchPeriod = !tx.exchange_transaction_date || isWithinPeriod(tx.exchange_transaction_date);
     const matchRange = isWithinRange(tx.exchange_transaction_date);
-    return matchType && matchDate && matchPeriod && matchRange;
+    return matchType && matchPeriod && matchRange;
   });
+
+  const totalPages = Math.ceil(filteredTransactions.length / ITEMS_PER_PAGE);
+  const paginatedTransactions = filteredTransactions.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   if (loading) return <div>환전 내역을 불러오는 중...</div>;
   if (error) return <div className={styles.error}>{error}</div>;
@@ -100,35 +100,54 @@ const ExList = () => {
         <button onClick={() => setFilter('all')}>전체</button>
         <button onClick={() => setFilter('buy')}>구매 (Buy)</button>
         <button onClick={() => setFilter('sell')}>판매 (Sell)</button>
-        <input
-          type="date"
-          value={selectedDate}
-          onChange={(e) => setSelectedDate(e.target.value)}
-          className={styles.dateInput}
-        />
       </div>
 
       <div className={styles.periodButtons}>
-        <button onClick={() => setPeriod('all')}>전체</button>
-        <button onClick={() => setPeriod('today')}>당일</button>
-        <button onClick={() => setPeriod('1w')}>1주일</button>
-        <button onClick={() => setPeriod('1m')}>1개월</button>
-        <button onClick={() => setPeriod('6m')}>6개월</button>
+        <button onClick={() => {
+          setPeriod('all');
+          setStartDate('');
+          setEndDate('');
+        }}>전체</button>
+        <button onClick={() => {
+          const today = new Date().toISOString().split('T')[0];
+          setPeriod('today');
+          setStartDate(today);
+          setEndDate(today);
+        }}>당일</button>
+        <button onClick={() => {
+          const date = new Date();
+          const to = date.toISOString().split('T')[0];
+          date.setDate(date.getDate() - 7);
+          const from = date.toISOString().split('T')[0];
+          setPeriod('1w');
+          setStartDate(from);
+          setEndDate(to);
+        }}>1주일</button>
+        <button onClick={() => {
+          const date = new Date();
+          const to = date.toISOString().split('T')[0];
+          date.setMonth(date.getMonth() - 1);
+          const from = date.toISOString().split('T')[0];
+          setPeriod('1m');
+          setStartDate(from);
+          setEndDate(to);
+        }}>1개월</button>
+        <button onClick={() => {
+          const date = new Date();
+          const to = date.toISOString().split('T')[0];
+          date.setMonth(date.getMonth() - 6);
+          const from = date.toISOString().split('T')[0];
+          setPeriod('6m');
+          setStartDate(from);
+          setEndDate(to);
+        }}>6개월</button>
       </div>
 
       <div className={styles.dateRangeSection}>
         <label>시작일: </label>
-        <input
-          type="date"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
-        />
+        <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
         <label>종료일: </label>
-        <input
-          type="date"
-          value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
-        />
+        <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
       </div>
 
       <table className={styles.table}>
@@ -141,12 +160,12 @@ const ExList = () => {
           </tr>
         </thead>
         <tbody>
-          {filteredTransactions.length === 0 ? (
+          {paginatedTransactions.length === 0 ? (
             <tr>
               <td colSpan="4" className={styles.noData}>환전 내역이 없습니다.</td>
             </tr>
           ) : (
-            filteredTransactions.map((tx, index) => (
+            paginatedTransactions.map((tx, index) => (
               <tr key={index}>
                 <td className={styles.td}>
                   {tx.exchange_transaction_date
@@ -165,6 +184,16 @@ const ExList = () => {
           )}
         </tbody>
       </table>
+
+      <div className={styles.pagination} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', marginTop: '20px' }}>
+        <button className={styles.exListBtn} onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
+          ◀ 이전
+        </button>
+        <span>{currentPage} / {totalPages}</span>
+        <button className={styles.exListBtn} onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>
+          다음 ▶
+        </button>
+      </div>
     </div>
   );
 };

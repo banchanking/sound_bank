@@ -35,12 +35,16 @@ const DepositComparison = () => {
 
     const fetchProducts = async () => {
         try {
-            const response = await RefreshToken.get('http://localhost:8081/api/deposit/products');
-            setProducts(response.data);
-            setLoading(false);
+            setLoading(true);
+            const [depositResponse, savingsResponse] = await Promise.all([
+                RefreshToken.get('/api/deposit/products/deposit'),
+                RefreshToken.get('/api/deposit/products/savings')
+            ]);
+            setProducts([...depositResponse.data, ...savingsResponse.data]);
         } catch (error) {
-            console.error('상품 조회 실패:', error);
+            console.error('상품 조회 에러:', error);
             message.error('상품 정보를 불러오는데 실패했습니다.');
+        } finally {
             setLoading(false);
         }
     };
@@ -58,8 +62,9 @@ const DepositComparison = () => {
     };
 
     const filteredProducts = products.filter(product => {
-        const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesType = productType === 'ALL' || product.type === productType;
+        const productName = product?.name || '';
+        const matchesSearch = productName.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesType = productType === 'ALL' || product?.type === productType;
         return matchesSearch && matchesType;
     });
 
@@ -75,7 +80,7 @@ const DepositComparison = () => {
                         checked={selectedProducts.includes(record.id)}
                         onChange={() => handleProductSelect(record.id)}
                     />
-                    {text}
+                    {text || '상품명 없음'}
                 </Space>
             ),
         },
@@ -89,38 +94,38 @@ const DepositComparison = () => {
                     FIXED: '정기예금',
                     INSTALLMENT: '적금'
                 };
-                return typeMap[type] || type;
+                return typeMap[type] || type || '유형 없음';
             }
         },
         {
             title: '기본이율',
             dataIndex: 'baseRate',
             key: 'baseRate',
-            render: (rate) => `${rate}%`
+            render: (rate) => `${rate || 0}%`
         },
         {
             title: '우대이율',
             dataIndex: 'preferentialRate',
             key: 'preferentialRate',
-            render: (rate) => `${rate}%`
+            render: (rate) => `${rate || 0}%`
         },
         {
             title: '최소금액',
             dataIndex: 'minAmount',
             key: 'minAmount',
-            render: (amount) => `${amount.toLocaleString()}원`
+            render: (amount) => `${(amount || 0).toLocaleString()}원`
         },
         {
             title: '최대금액',
             dataIndex: 'maxAmount',
             key: 'maxAmount',
-            render: (amount) => `${amount.toLocaleString()}원`
+            render: (amount) => `${(amount || 0).toLocaleString()}원`
         },
         {
             title: '기간',
             dataIndex: 'term',
             key: 'term',
-            render: (term) => `${term}개월`
+            render: (term) => `${term || 0}개월`
         }
     ];
 
@@ -204,12 +209,14 @@ const DepositComparison = () => {
         }
     ];
 
-    const handleCompare = async (values) => {
+    const handleCompare = async () => {
         try {
-            const response = await RefreshToken.post('http://localhost:8081/api/deposit/products/compare', values);
+            const response = await RefreshToken.post('/api/deposit/products/compare', {
+                productIds: selectedProducts
+            });
             setComparisonResult(response.data);
         } catch (error) {
-            console.error('상품 비교 실패:', error);
+            console.error('상품 비교 에러:', error);
             message.error('상품 비교에 실패했습니다.');
         }
     };
@@ -238,7 +245,6 @@ const DepositComparison = () => {
                             prefix={<SearchOutlined />}
                         />
                         <Button
-                            icon={<ReloadOutlined />}
                             onClick={fetchProducts}
                         >
                             새로고침

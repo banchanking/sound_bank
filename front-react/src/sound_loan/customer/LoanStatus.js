@@ -46,7 +46,11 @@ const LoanStatus = () => {
     {
       title: "예/적금",
       icon: <FaPiggyBank />,
-      items: [{ name: "펀드조회", component: "FundInfo" }],
+      items: [
+        { name: "계좌조회", component: "FundInfo" },
+        { name: "거래내역", component: "FundInfo" },
+        { name: "자동이체관리", component: "FundInfo" },
+      ],
     },
     {
       title: "조회/이체",
@@ -90,6 +94,9 @@ const LoanStatus = () => {
 
   const renderComponent = () => {
     switch (selectedComponent) {
+      // 예/적금 컴포넌트 호출 시작
+
+      // 예/적금 컴포넌트 호출 종료
       // 조회/이체 컴포넌트 호출 시작
       case "InquireAccont":
         return <InquireAccont />;
