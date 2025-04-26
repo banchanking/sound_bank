@@ -97,9 +97,9 @@ const SavingsProduct = () => {
         },
         {
             title: '기간',
-            dataIndex: 'period',
-            key: 'period',
-            render: (period) => `${period}개월`,
+            dataIndex: 'termMonths',
+            key: 'termMonths',
+            render: (term) => `${term}개월`,
         },
         {
             title: '최소 금액',
@@ -173,7 +173,7 @@ const SavingsProduct = () => {
                         <InputNumber min={0} max={100} step={0.1} />
                     </Form.Item>
                     <Form.Item
-                        name="period"
+                        name="termMonths"
                         label="기간"
                         rules={[{ required: true, message: '기간을 입력해주세요' }]}
                     >

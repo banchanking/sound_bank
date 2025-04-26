@@ -17,6 +17,7 @@ const DepositJoin = () => {
     const [currentStep, setCurrentStep] = useState(0);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [isAgreed, setIsAgreed] = useState(false);
 
     useEffect(() => {
         const customer_id = getCustomerID();
@@ -34,7 +35,7 @@ const DepositJoin = () => {
 
     const fetchProducts = async () => {
         try {
-            const response = await RefreshToken.get(`/api/deposit/accounts/deposit/${getCustomerID()}`);
+            const response = await RefreshToken.get('/api/deposit/products/deposit');
             setProducts(response.data);
         } catch (error) {
             console.error('상품 조회 실패:', error);
@@ -52,7 +53,9 @@ const DepositJoin = () => {
         try {
             await RefreshToken.post('/api/deposit/accounts/deposit', {
                 ...values,
-                customerId: getCustomerID()
+                customerId: getCustomerID(),
+                productId: selectedProduct.id,
+                interestRate: selectedProduct.interestRate
             });
             message.success('예금 계좌가 개설되었습니다.');
             navigate('/deposit/accounts');
@@ -67,7 +70,7 @@ const DepositJoin = () => {
             title: '예금 가입 확인',
             content: (
                 <Descriptions column={1}>
-                    <Descriptions.Item label="상품명">{selectedProduct?.name || '선택된 상품 없음'}</Descriptions.Item>
+                    <Descriptions.Item label="상품명">{selectedProduct?.productName || '선택된 상품 없음'}</Descriptions.Item>
                     <Descriptions.Item label="이자율">{selectedProduct?.interestRate || 0}%</Descriptions.Item>
                     <Descriptions.Item label="가입금액">{form.getFieldValue('amount')?.toLocaleString() || '0'}원</Descriptions.Item>
                 </Descriptions>
@@ -84,18 +87,24 @@ const DepositJoin = () => {
                 return (
                     <div className="depositProductSelection">
                         <h3>예금 상품 선택</h3>
-                        <div className="depositProductList">
+                        <div className="depositProductList" style={{ display: 'flex', flexWrap: 'wrap', gap: '24px', justifyContent: 'center' }}>
                             {products && products.length > 0 ? (
                                 products.map(product => (
                                     <Card
                                         key={product.id}
                                         className="depositProductCard"
                                         onClick={() => handleProductSelect(product.id)}
+                                        hoverable
+                                        style={{ width: 320, border: '1px solid #e6e6e6', borderRadius: 12, boxShadow: '0 2px 8px #f0f1f2', marginBottom: 16 }}
+                                        bodyStyle={{ padding: 20 }}
                                     >
-                                        <h4>{product.name}</h4>
-                                        <p>이자율: {product.interestRate}%</p>
-                                        <p>최소금액: {product.minAmount?.toLocaleString() || '0'}원</p>
-                                        <p>최대금액: {product.maxAmount?.toLocaleString() || '0'}원</p>
+                                        <h4 style={{ fontSize: 20, fontWeight: 600, marginBottom: 8 }}>{product.productName}</h4>
+                                        <div style={{ marginBottom: 8, color: '#888' }}>{product.productType === 'REGULAR' ? '일반예금' : product.productType === 'FIXED' ? '정기예금' : '적금'}</div>
+                                        <div style={{ fontSize: 16, marginBottom: 4 }}>이자율 <span style={{ color: '#1890ff', fontWeight: 500 }}>{product.interestRate}%</span></div>
+                                        <div style={{ fontSize: 15, marginBottom: 4 }}>기간 <span style={{ color: '#52c41a', fontWeight: 500 }}>{product.termMonths}개월</span></div>
+                                        <div style={{ fontSize: 15, marginBottom: 4 }}>최소금액 <span style={{ color: '#faad14' }}>{Number(product.minAmount).toLocaleString()}원</span></div>
+                                        <div style={{ fontSize: 15, marginBottom: 4 }}>최대금액 <span style={{ color: '#faad14' }}>{Number(product.maxAmount).toLocaleString()}원</span></div>
+                                        <div style={{ color: '#aaa', fontSize: 13, marginTop: 8 }}>{product.productDescription}</div>
                                     </Card>
                                 ))
                             ) : (
@@ -105,6 +114,27 @@ const DepositJoin = () => {
                     </div>
                 );
             case 1:
+                return (
+                    <div className="depositAgreementStep" style={{ maxWidth: 600, margin: '0 auto', padding: 24 }}>
+                        <h3>예금 가입 약관 동의</h3>
+                        <div style={{ background: '#fafafa', border: '1px solid #eee', borderRadius: 8, padding: 16, marginBottom: 16, maxHeight: 200, overflowY: 'auto', fontSize: 14 }}>
+                            <b>[예금상품 이용약관]</b><br />
+                            1. 본 상품은 예금자보호법에 따라 보호됩니다.<br />
+                            2. 이자율, 만기, 중도해지 등 상품별 세부조건을 반드시 확인하세요.<br />
+                            3. 금융사고 예방을 위해 비밀번호는 타인에게 노출하지 마세요.<br />
+                            4. 기타 자세한 사항은 상품설명서 및 은행 홈페이지를 참고하세요.<br />
+                        </div>
+                        <label style={{ display: 'flex', alignItems: 'center', marginBottom: 16 }}>
+                            <input type="checkbox" checked={isAgreed} onChange={e => setIsAgreed(e.target.checked)} style={{ marginRight: 8 }} />
+                            위 약관에 동의합니다.
+                        </label>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <Button onClick={() => setCurrentStep(0)}>이전</Button>
+                            <Button type="primary" onClick={() => setCurrentStep(2)} disabled={!isAgreed}>다음</Button>
+                        </div>
+                    </div>
+                );
+            case 2:
                 return (
                     <Form
                         form={form}
@@ -131,7 +161,7 @@ const DepositJoin = () => {
                         </Form.Item>
 
                         <Form.Item
-                            name="password"
+                            name="accountPassword"
                             label="계좌비밀번호"
                             rules={[
                                 { required: true, message: '계좌비밀번호를 입력해주세요' },
@@ -148,7 +178,7 @@ const DepositJoin = () => {
                                 { required: true, message: '비밀번호를 다시 입력해주세요' },
                                 ({ getFieldValue }) => ({
                                     validator(_, value) {
-                                        if (!value || getFieldValue('password') === value) {
+                                        if (!value || getFieldValue('accountPassword') === value) {
                                             return Promise.resolve();
                                         }
                                         return Promise.reject(new Error('비밀번호가 일치하지 않습니다'));
@@ -191,18 +221,24 @@ const DepositJoin = () => {
 
                         <Form.Item>
                             <Button
+                                style={{ marginRight: 8 }}
+                                onClick={() => setCurrentStep(1)}
+                            >
+                                이전
+                            </Button>
+                            <Button
                                 type="primary"
                                 htmlType="button"
                                 onClick={showConfirm}
                                 loading={loading}
-                                style={{ width: '100%' }}
+                                style={{ width: 'calc(100% - 80px)' }}
                             >
                                 가입하기
                             </Button>
                         </Form.Item>
                     </Form>
                 );
-            case 2:
+            case 3:
                 return (
                     <div className="depositCompletion">
                         <CheckCircleOutlined style={{ fontSize: '64px', color: '#52c41a' }} />
@@ -222,8 +258,9 @@ const DepositJoin = () => {
         <div className="depositContainer">
             <h2 className="depositTitle">예금 가입</h2>
             <Card>
-                <Steps current={currentStep}>
+                <Steps current={currentStep} style={{ marginBottom: 32 }}>
                     <Step title="상품선택" />
+                    <Step title="약관동의" />
                     <Step title="정보입력" />
                     <Step title="가입완료" />
                 </Steps>
