@@ -3,7 +3,7 @@ import { Table, Card, Select, DatePicker, Button, Tag, message } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCustomerID, refreshAccessToken, setAuthToken } from "../../jwt/AxiosToken";
 import RefreshToken from "../../jwt/RefreshToken";
-import '../../Css/deposit/DepositTransactionDetails.css';
+import '../../Css/depositcss/DepositTransactionDetails.css';
 
 const { RangePicker } = DatePicker;
 
