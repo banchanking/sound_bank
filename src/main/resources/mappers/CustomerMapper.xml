@@ -16,4 +16,41 @@
     	FROM customer_tbl
     	WHERE customer_id=#{customerId}
     </select>
+    
+	<select id="myInfoList" parameterType="String" resultType="com.boot.sound.customer.CustomerDTO">
+		SELECT  customer_id
+		,		customer_name
+		,		customer_address
+		,		customer_email
+		,		customer_job
+		,		customer_account_number
+		,		customer_risk_type
+		FROM customer_tbl
+		WHERE customer_id = #{customerId}
+	</select>
+	
+	<select id="encodingInfo" resultType="map">
+		SELECT	customer_resident_number
+		,		customer_phone_number
+		FROM	customer_tbl
+		WHERE	customer_id = #{customerId}
+	</select>
+	
+	<update id="updateMyInfo" parameterType="com.boot.sound.customer.CustomerDTO">
+	    UPDATE customer_tbl
+	    <set>
+	        <if test="customerName != null">customer_name = #{customerName},</if>
+	        <if test="customer_password != null">customer_password = #{customer_password},</if>
+	        <if test="customer_address != null">customer_address = #{customer_address},</if>
+	        <if test="customer_birthday != null">customer_birthday = #{customer_birthday},</if>
+	        <if test="customer_email != null">customer_email = #{customer_email},</if>
+	        <if test="customer_job != null">customer_job = #{customer_job},</if>
+	        <if test="customer_risk_type != null">customer_risk_type = #{customer_risk_type},</if>
+	        <if test="customerPhoneNumber != null">customer_phone_number = #{customerPhoneNumber},</if>
+	        <if test="customer_resident_number != null">customer_resident_number = #{customer_resident_number},</if>
+	    </set>
+	    WHERE customer_id = #{customerId}
+	</update>
+	
+
 </mapper>

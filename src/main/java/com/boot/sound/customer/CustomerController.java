@@ -5,12 +5,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
  import com.boot.sound.jwt.config.UserAuthProvider;
 import com.boot.sound.jwt.dto.CredentialsDTO;
 import com.boot.sound.jwt.dto.SignUpDTO;
+import com.boot.sound.jwt.dto.UpdateDTO;
 import com.boot.sound.jwt.mappers.CustomerMapper;
 
 @RestController
@@ -97,5 +99,25 @@ public class CustomerController {
         return ResponseEntity.ok(response);
        
     }
+    
+    // 회원정보 조회
+   @GetMapping("/myInfoList")
+   public ResponseEntity<?>myInfoList(@RequestParam String customerId){
+	   return new ResponseEntity<>(service.myInfoList(customerId),HttpStatus.OK);
+   }
+   
+   // 회원정보 수정
+   @PostMapping("/updateMyInfo")
+   public ResponseEntity<?>updateMyInfo(@RequestBody UpdateDTO dto){
+	   return new ResponseEntity<>(service.updateMyInfo(dto),HttpStatus.OK);
+   }
+   // 비밀번호 확인
+   @PostMapping("/checkPassword")
+   public ResponseEntity<Boolean> checkPassword(@RequestBody CredentialsDTO request) {
+       boolean isValid = service.checkPassword(request);
+       return new ResponseEntity<>(isValid, HttpStatus.OK);
+   }
+
+
     
 }
