@@ -6,8 +6,8 @@ const DepositList = ({ deposits }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="deposit-list">
-      <h2>예금 내역</h2>
+    <div className="depositList">
+      <h2 className="depositTitle">예금 내역</h2>
       <ul>
         {deposits.map(deposit => (
           <li key={deposit.id}>
