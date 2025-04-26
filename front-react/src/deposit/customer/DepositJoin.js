@@ -35,7 +35,7 @@ const DepositJoin = () => {
 
     const fetchProducts = async () => {
         try {
-            const response = await RefreshToken.get('/api/deposit/products/deposit');
+            const response = await RefreshToken.get('/deposit/products/deposit');
             setProducts(response.data);
         } catch (error) {
             console.error('상품 조회 실패:', error);
@@ -51,7 +51,7 @@ const DepositJoin = () => {
 
     const handleJoin = async (values) => {
         try {
-            await RefreshToken.post('/api/deposit/accounts/deposit', {
+            await RefreshToken.post('/deposit/accounts/deposit', {
                 ...values,
                 customerId: getCustomerID(),
                 productId: selectedProduct.id,

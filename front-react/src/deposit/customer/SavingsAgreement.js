@@ -115,7 +115,7 @@ const SavingsAgreement = () => {
 
     const fetchAgreement = async () => {
         try {
-            const response = await RefreshToken.get('/api/savings/agreement');
+            const response = await RefreshToken.get('/savings/agreement');
             setAgreement(response.data);
         } catch (error) {
             console.error('약관 조회 에러:', error);
@@ -125,7 +125,7 @@ const SavingsAgreement = () => {
 
     const handleAgree = async () => {
         try {
-            await RefreshToken.post('/api/savings/agreement/agree', {
+            await RefreshToken.post('/savings/agreement/agree', {
                 customerId: getCustomerID()
             });
             message.success('약관 동의가 완료되었습니다.');

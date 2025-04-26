@@ -31,7 +31,7 @@ const DepositChange = () => {
 
     const fetchAccounts = async () => {
         try {
-            const response = await RefreshToken.get(`/api/deposit/accounts/customer/${customerId}`);
+            const response = await RefreshToken.get(`/deposit/accounts/customer/${customerId}`);
             setAccounts(response.data);
         } catch (error) {
             console.error('계좌 조회 에러:', error);
@@ -52,7 +52,7 @@ const DepositChange = () => {
 
     const handleChange = async (values) => {
         try {
-            await RefreshToken.put(`/api/deposit/accounts/deposit/${selectedAccount}/password`, {
+            await RefreshToken.put(`/deposit/accounts/deposit/${selectedAccount}/password`, {
                 accountPassword: values.newPassword
             });
             message.success('비밀번호가 변경되었습니다.');
