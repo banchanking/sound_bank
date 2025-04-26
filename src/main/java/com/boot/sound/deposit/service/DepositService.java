@@ -57,6 +57,9 @@ public class DepositService {
     // 계좌 생성/해지
     @Transactional
     public void createDepositAccount(DepositDTO account) {
+        // 계좌번호 자동 생성 및 세팅
+        account.setAccountNumber(generateUniqueAccountNumber());
+
         if (depositDAO.checkAccountNumber(account.getAccountNumber()) > 0) {
             throw new RuntimeException("이미 존재하는 계좌번호입니다.");
         }
@@ -319,4 +322,23 @@ public class DepositService {
             throw new RuntimeException("예금 상품 삭제에 실패했습니다.");
         }
     }
+    
+ // 계좌번호 생성 함수
+    public String generateAccountNumber() {
+        String prefix = "174";
+        String middle = String.format("%06d", (int)(Math.random() * 1_000_000)); // 6자리
+        String suffix = String.format("%04d", (int)(Math.random() * 10_000));   // 4자리
+        return prefix + middle + suffix;
+    }
+
+    // 중복 없는 계좌번호 생성 함수
+    public String generateUniqueAccountNumber() {
+        String accountNumber;
+        do {
+            accountNumber = generateAccountNumber();
+        } while (depositDAO.checkAccountNumber(accountNumber) > 0);
+        return accountNumber;
+    }
+
+    
 } 
