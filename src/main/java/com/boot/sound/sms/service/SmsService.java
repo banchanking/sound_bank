@@ -143,7 +143,7 @@ public class SmsService {
 
 
     public boolean sendSignupVerificationCode(String phoneNumber) {
-        String normalizedPhone = phoneNumber.replaceAll("-", "");
+    	String normalizedPhone = phoneNumber.replaceAll("-", "");
         String verificationCode = generateVerificationCode();
         verificationCodes.put(normalizedPhone, verificationCode);
 
@@ -169,7 +169,9 @@ public class SmsService {
     public boolean verifyCode(SmsRequest smsRequest) {
         String phone = smsRequest.getCustomer_phone_number();
         String storedCode = verificationCodes.get(phone);
-
+        System.out.println("인증 요청 받은 전화번호: " + phone);
+        System.out.println("저장된 코드 (storedCode): " + storedCode);
+        System.out.println("입력한 인증번호 (smsRequest.getCode()): " + smsRequest.getCode());
         if (storedCode == null && phone.contains("-")) {
             String normalizedPhone = phone.replaceAll("-", "");
             storedCode = verificationCodes.get(normalizedPhone);
