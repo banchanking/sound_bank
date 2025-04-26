@@ -220,7 +220,6 @@ const DepositComparison = () => {
             message.error('상품 비교에 실패했습니다.');
         }
     };
-
     return (
         <div className="depositContainer">
             <Card>
