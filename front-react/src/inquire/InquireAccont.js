@@ -21,7 +21,7 @@ function AccountCheck() {
 
     setCustomerId(id);
 
-    RefreshToken.get(`http://localhost:8081/api/accounts/allAccount/${id}`)
+    RefreshToken.get(`/accounts/allAccount/${id}`)
       .then(res => setData(res.data))
       .catch(err => console.error('계좌 불러오기 실패:', err));
   }, []);
