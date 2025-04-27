@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from 'react-router-dom';
 import RefreshToken from "../../jwt/RefreshToken";
 import styles from "../../Css/fund/FundAdmin.module.css";
 
 const OpenApplyList = () => {
-  const navigate = useNavigate();
-  const [showModal, setShowModal] = useState(false);
   const [accounts, setAccounts] = useState([]);
 
   // 승인 대기 계좌 조회
@@ -39,17 +36,8 @@ const OpenApplyList = () => {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("auth_token");
-    if (!token) {
-      setShowModal(true);
-      return;
-    }
-
     fetchPendingAccounts();
   }, []);
-
-  const handleConfirm = () => navigate("/login");
-  const handleCancel = () => navigate("/");
 
   return (
 
