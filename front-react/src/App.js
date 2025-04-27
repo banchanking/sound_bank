@@ -77,8 +77,7 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        {SecurityBlocker}
-        {/* F12 방지 블록방지 */}{" "}
+        { /*<SecurityBlocker/> F12 방지 블록방지 */}{" "}
         {/* Header.js의 Link연동을 위해서 BrowserRouter추가해야됨 */}
         <Header />
         <Routes>

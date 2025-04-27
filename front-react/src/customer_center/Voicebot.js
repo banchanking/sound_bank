@@ -1,6 +1,4 @@
 import React, { useState, useRef, useEffect } from "react";
-import styles from "../Css/customer_center/VoiceBot.module.css"; // 모듈화된 사뱅스타일
-
 
 const VoiceBot = () => {
   const [messages, setMessages] = useState([]);
@@ -10,19 +8,27 @@ const VoiceBot = () => {
 
   // WebSocket 연결 및 첫 인사
   useEffect(() => {
-
     const ws = new WebSocket("ws://localhost:8002/ws");
-    console.log("웹소켓이 연결되었습니다.");
+    console.log("웹소켓이 연결되었습니다."); // 확인용 로그
 
     ws.onopen = () => {
       console.log("WebSocket 연결 완료");
-      ws.send(JSON.stringify({ type: "init", message: "client_connected" }));
+
+      // 첫 번째 메시지 출력
       setMessages((prev) => [
         ...prev,
-        { sender: "bot", text: "안녕하세요. Sound_Bank입니다. 무엇을 도와드릴까요?" },
+        { sender: "bot", text: "안녕하세요. Sound_bank 입니다 무엇을 도와드릴까요?" },
       ]);
+
+      // 첫 인사 음성 재생
       const welcomeAudio = new Audio("http://localhost:8002/static/welcome.mp3");
-      welcomeAudio.play();
+      welcomeAudio.play().catch((err) => console.error("Audio play error:", err));
+
+      // WebSocket 연결이 완료되었음을 메시지로 UI에 반영
+      setMessages((prev) => [
+        ...prev,
+        { sender: "bot", text: "WebSocket 연결이 완료되었습니다." },
+      ]);
     };
 
     ws.onmessage = (event) => {
@@ -31,7 +37,6 @@ const VoiceBot = () => {
         setMessages((prev) => [...prev, { sender: "bot", text: data.text }]);
       } else if (data.type === "audio") {
         const audio = new Audio("http://localhost:8002" + data.audio_path);
-
         audio.play();
       }
     };
@@ -47,7 +52,7 @@ const VoiceBot = () => {
     return () => {
       ws.close();
     };
-  }, []);
+  }, []); // 'messages' 상태를 의존성 배열에서 제거
 
   // 음성 녹음 제어
   const toggleRecording = async () => {
@@ -69,7 +74,6 @@ const VoiceBot = () => {
         setMessages((prev) => [...prev, { sender: "user", text: "음성 메시지 전송됨" }]);
 
         const res = await fetch("http://localhost:8002/upload-audio", {
-
           method: "POST",
           body: formData,
         });
@@ -115,7 +119,6 @@ const VoiceBot = () => {
             </div>
           </div>
         ))}
-
       </div>
       <button onClick={toggleRecording} style={{ marginTop: 15 }}>
         {isRecording ? "녹음 중지" : "음성 질문하기"}
