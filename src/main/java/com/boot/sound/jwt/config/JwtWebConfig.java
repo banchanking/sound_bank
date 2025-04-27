@@ -31,7 +31,7 @@ public class JwtWebConfig {
 		
 		System.out.println("<<< WebConfig-1 >>>");
 		config.setAllowCredentials(true);
-		config.addAllowedOrigin("http://localhost:3000");
+		config.addAllowedOrigin("http://15.165.57.30:3000");
 		config.setAllowedHeaders(Arrays.asList(
 					HttpHeaders.AUTHORIZATION,
 					HttpHeaders.CONTENT_TYPE,

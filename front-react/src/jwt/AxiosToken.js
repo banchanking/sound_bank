@@ -55,7 +55,7 @@ export const refreshAccessToken = async () => {
 
   try {
     const response = await axios.post(
-      "http://localhost:8081/api/refresh-token",
+      "http://15.165.57.30:8081/api/refresh-token",
       {
         customerId: customerId
       }

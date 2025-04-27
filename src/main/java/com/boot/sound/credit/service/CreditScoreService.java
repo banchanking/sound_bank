@@ -50,7 +50,7 @@ public class CreditScoreService {
 
 	        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(feature, headers);
 
-	        String flaskUrl = "http://localhost:5000/predict-credit-score";
+	        String flaskUrl = "http://15.165.57.30:5000/predict-credit-score";
 	        RestTemplate restTemplate = new RestTemplate();
 
 	        try {

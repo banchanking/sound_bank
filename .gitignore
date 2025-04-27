@@ -3,6 +3,10 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+/node/                               # frontend-maven-plugin이 임시로 설치하는 node 폴더
+/front-react/node/                   # React npm 설치 결과물
+/front-react/node_modules/           # React 의존성
+/front-react/build/                  # React 빌드 산출물 (jar 패키징 시 복사됨)
 
 ### STS ###
 .apt_generated
