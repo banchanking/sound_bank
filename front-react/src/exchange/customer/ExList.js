@@ -24,10 +24,11 @@ const ExList = () => {
       if (!customer_id) {
         const goLogin = window.confirm("로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?");
         if (goLogin) navigate("/login");
+        else navigate("/");
         return;
       }
       try {
-        const response = await RefreshToken.get(`http://localhost:8081/api/exchange/exchangeList/${customer_id}`);
+        const response = await RefreshToken.get(`/exchange/exchangeList/${customer_id}`);
         setTransactions(response.data);
       } catch (error) {
         console.error("환전내역 조회 실패", error);

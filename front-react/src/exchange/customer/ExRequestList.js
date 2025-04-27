@@ -21,13 +21,15 @@ const ExRequestList = () => {
                   );
                   if (goLogin) {
                     navigate("/login");
+                  } else {                      
+                      navigate("/");
                   }
                   return;      
               }
             }
         }
 
-    RefreshToken.get(`http://localhost:8081/api/exchange/requestList/${customerId}`)
+    RefreshToken.get(`/exchange/requestList/${customerId}`)
       .then((res) => {
         setRequests(res.data);
         console.log(res.data);

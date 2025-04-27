@@ -20,6 +20,8 @@ const ExAccountManagement = () => {
         );
         if (goLogin) {
           navigate("/login");
+        } else {
+          navigate("/");
         }
         return;      
     }
@@ -27,7 +29,7 @@ const ExAccountManagement = () => {
     const fetchWallet = async () => {
       try {
         const response = await RefreshToken.get(
-          `http://localhost:8081/api/exchange/walletList/${customer_id}`
+          `/exchange/walletList/${customer_id}`
         );
         setWallets(response.data);
       } catch (error) {
@@ -47,7 +49,7 @@ const ExAccountManagement = () => {
   
       try {
         const response = await RefreshToken.put(
-          `http://localhost:8081/api/exchange/deactivateWallet/${wallet.wallet_id}`
+          `/exchange/deactivateWallet/${wallet.wallet_id}`
         );
         
         alert("지갑 해지 신청이 완료되었습니다.");

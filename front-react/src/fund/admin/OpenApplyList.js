@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import FundCustomer from "./FundCustomer";  // 로그인 체크용 팝업 컴포넌트
 import RefreshToken from "../../jwt/RefreshToken";
 import styles from "../../Css/fund/FundAdmin.module.css";
 
@@ -53,14 +52,6 @@ const OpenApplyList = () => {
   const handleCancel = () => navigate("/");
 
   return (
-    <>
-    {showModal && (
-      <FundCustomer
-        message="로그인이 필요한 서비스입니다."
-        onConfirm={handleConfirm}
-        onCancel={handleCancel}
-      />
-    )}
 
     <div className={styles.fundContainer}>
       <h2 className={styles.fundTitle}>계좌 개설신청 목록</h2>
@@ -102,7 +93,6 @@ const OpenApplyList = () => {
         </tbody>
       </table>
     </div>
-    </>
   );
 };
 

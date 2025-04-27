@@ -1,19 +1,26 @@
+/* LoanCalculator.module.css (사뱅스타일 적용) */
+
 /* 전체 레이아웃 */
 .loanCalc-container {
   max-width: 700px;
+  min-height: 560px;
   margin: 2rem auto;
   padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-  background-color: #fff;
+  background-color: #ffffff;
+  border: 1.5px solid #e2e4e7;
+  border-radius: 24px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
   font-family: "Noto Sans KR", sans-serif;
+  animation: fadeIn 0.4s ease;
 }
 
+/* 제목 */
 .loanCalc-title {
   text-align: center;
   font-size: 1.6rem;
   font-weight: 600;
   margin-bottom: 1.5rem;
+  animation: fadeInUp 0.4s ease;
 }
 
 /* 입력 필드 스타일 */
@@ -22,6 +29,7 @@
   flex-direction: column;
   gap: 1rem;
   margin-bottom: 2rem;
+  animation: fadeInUp 0.4s ease;
 }
 
 .loanCalc-inputs label {
@@ -30,58 +38,85 @@
   font-weight: 500;
   font-size: 0.95rem;
   color: #333;
+  animation: fadeInUp 0.4s ease;
 }
 
 .loanCalc-inputs input,
 .loanCalc-inputs select {
   padding: 0.5rem;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+  border-radius: 7px;
+  border: 1.5px solid #e2e4e7;
+  box-sizing: border-box;
   margin-top: 0.3rem;
+  animation: fadeInUp 0.4s ease;
 }
 
 .loanCalc-inputs button {
   align-self: flex-start;
   padding: 0.6rem 1.4rem;
   font-weight: 500;
-  background-color: #1976d2;
-  color: #fff;
+  background-color: #3a3a3c;
+  color: #ffffff;
   border: none;
-  border-radius: 6px;
+  border-radius: 7px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.4s ease, box-shadow 0.4s ease;
+  animation: fadeInUp 0.5s ease;
 }
 
 .loanCalc-inputs button:hover {
-  background-color: #145ea8;
+  background-color: #444;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 /* 결과 영역 */
 .loanCalc-results {
-  border-top: 1px solid #ddd;
+  border-top: 1.5px solid #e2e4e7;
   padding-top: 1.5rem;
+  animation: fadeInUp 0.4s ease;
 }
 
 .loanCalc-results h3,
 .loanCalc-results h4 {
   margin-bottom: 0.8rem;
   font-weight: 600;
+  animation: fadeInUp 0.4s ease;
 }
 
 .loanCalc-results ul {
   list-style: none;
   padding: 0;
   margin: 0 0 1rem 0;
+  animation: fadeInUp 0.4s ease;
 }
 
 .loanCalc-results li {
   padding: 0.4rem 0;
-  border-bottom: 1px dashed #ccc;
+  border-bottom: 1px dashed #e2e4e7;
   font-size: 0.95rem;
+  animation: fadeInUp 0.4s ease;
 }
 
 .loanCalc-results p {
   font-size: 1rem;
   font-weight: 500;
   margin-top: 0.4rem;
+  animation: fadeInUp 0.4s ease;
+}
+
+/* ——— 애니메이션 정의 (맨 아래) ——— */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
