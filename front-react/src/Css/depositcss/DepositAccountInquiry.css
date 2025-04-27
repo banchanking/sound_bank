@@ -1,8 +1,153 @@
 .depositContainer {
-    padding: 2rem;
-    background-color: #fff;
-    border-radius: 16px;
-    box-shadow: 0 0 12px rgba(0, 0, 0, 0.06);
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.depositCard {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+}
+
+.depositProductHeader {
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.depositProductHeader h2 {
+    color: #333;
+    font-size: 24px;
+    margin: 0;
+}
+
+.accountList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.accountCard {
+    background: #f9f9f9;
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s;
+}
+
+.accountCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.accountInfo {
+    flex: 1;
+}
+
+.accountType {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+.accountNumber {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.accountName {
+    font-size: 14px;
+    color: #666;
+}
+
+.accountBalance {
+    text-align: right;
+}
+
+.balanceLabel {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+.balanceAmount {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.depositTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.depositTable th {
+    background-color: #f5f5f5;
+    padding: 12px;
+    text-align: left;
+    font-weight: 500;
+    color: #333;
+    border-bottom: 1px solid #e8e8e8;
+}
+
+.depositTable td {
+    padding: 12px;
+    border-bottom: 1px solid #e8e8e8;
+    color: #666;
+}
+
+.depositTable tr:hover {
+    background-color: #fafafa;
+}
+
+.depositButton {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+    margin-right: 8px;
+}
+
+.depositButton:hover {
+    opacity: 0.8;
+}
+
+.depositButton.primary {
+    background-color: #1890ff;
+    color: white;
+}
+
+.depositButton.danger {
+    background-color: #ff4d4f;
+    color: white;
+}
+
+.depositTag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    margin-right: 8px;
+}
+
+.depositTag.active {
+    background-color: #f6ffed;
+    color: #52c41a;
+    border: 1px solid #b7eb8f;
+}
+
+.depositTag.inactive {
+    background-color: #fff2f0;
+    color: #ff4d4f;
+    border: 1px solid #ffccc7;
 }
 
 .depositTitle {
@@ -49,5 +194,49 @@
     background-color: #000;
     color: #fff;
     margin-right: 8px;
+}
+
+.depositTabs {
+    margin-top: 20px;
+}
+
+.depositTabHeader {
+    display: flex;
+    border-bottom: 1px solid #e8e8e8;
+    margin-bottom: 20px;
+}
+
+.depositTabButton {
+    padding: 10px 20px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: #666;
+    position: relative;
+    transition: all 0.3s;
+}
+
+.depositTabButton:hover {
+    color: #1890ff;
+}
+
+.depositTabButton.active {
+    color: #1890ff;
+    font-weight: 500;
+}
+
+.depositTabButton.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #1890ff;
+}
+
+.depositTabContent {
+    padding: 0 20px;
 }
 
