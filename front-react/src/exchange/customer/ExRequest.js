@@ -50,20 +50,22 @@ const ExRequest = () => {
                   );
                   if (goLogin) {
                     navigate("/login");
+                  } else{
+                    navigate("/");
                   }
                   return;      
               }
             }
         }
     RefreshToken
-      .get(`http://localhost:8081/api/exchange/account/${customer_id}`)
+      .get(`/exchange/account/${customer_id}`)
       .then((res) => setAccounts(res.data))
       .catch((err) => console.error("계좌 목록 불러오기 실패", err));
   }, [customer_id]);
 
   useEffect(() => {
     RefreshToken
-      .get(`http://localhost:8081/api/exchange/myWallet/${customer_id}`)
+      .get(`/exchange/myWallet/${customer_id}`)
       .then((res) => {
         setWallets(res.data); // 전체 지갑 목록 저장
         const wallet = res.data.find(w => w.currency_code === selectedCurrency);
@@ -125,7 +127,7 @@ const ExRequest = () => {
     }
 
     RefreshToken
-      .post("http://localhost:8081/api/exchange/walletCharge", dto)
+      .post("/exchange/walletCharge", dto)
       .then((res) => {
         setResult(res.data);
         alert("거래가 완료되었습니다.");
