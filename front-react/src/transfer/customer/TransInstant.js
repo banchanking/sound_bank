@@ -32,7 +32,7 @@ function TransInstant() {
       return;
     }
     setForm(prev => ({ ...prev, customer_id: id }));
-    RefreshToken.get(`http://localhost:8081/api/accounts/allAccount/${id}`, {
+    RefreshToken.get(`/accounts/allAccount/${id}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => {
@@ -61,7 +61,7 @@ function TransInstant() {
       navigate('/login');
       return;
     }
-    RefreshToken.post("http://localhost:8081/api/transInstant/send", form, {
+    RefreshToken.post("/transInstant/send", form, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => {
@@ -172,8 +172,8 @@ function TransInstant() {
                 <p><b>메모:</b> {form.memo || '-'}</p>
               </div>
               <div className={styles['instant-modalButtons']}>
-                <button onClick={confirmTransfer}>이체하기</button>
-                <button onClick={() => setShowModal(false)}>취소</button>
+                <button className={styles['instant-modalButtons2']}onClick={confirmTransfer}>이체하기</button>
+                <button className={styles['instant-modalButtons2']}onClick={() => setShowModal(false)}>취소</button>
               </div>
             </div>
           </div>
