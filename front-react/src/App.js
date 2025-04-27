@@ -4,7 +4,6 @@ import Footer from "./Common/Footer";
 import Main from "./Common/Main";
 import Header from "./Common/Header";
 import LoanApply from "./sound_loan/customer/LoanApply";
-import LoanManage from "./sound_loan/customer/LoanManage";
 import LoanList from "./sound_loan/admin/LoanList";
 import LoanDetail from "./sound_loan/admin/LoanDetail";
 import LoanUpdate from "./sound_loan/admin/LoanUpdate";
@@ -136,7 +135,6 @@ function App() {
           <Route path="/loanApply" element={<LoanApply />} />
           <Route path="/loanAgreement/:loan_id" element={<LoanAgreement />} />
           <Route path="/loanInfoApply/:loan_id" element={<LoanInfoApply />} />
-          <Route path="/loanManage" element={<LoanManage />} />
           <Route path="/loanCalculator" element={<LoanCalculator />} />
           <Route path="/MyInterest" element={<MyInterest />} />
           <Route path="/MyLateInterest" element={<MyLateInterest />} />

@@ -1,10 +1,89 @@
 import axios from "axios";
+import { getAuthToken, getCustomerID, setAuthToken } from "./AxiosToken";
 
 const AdminAxios = axios.create({
-  baseURL: "http://localhost:8081/admin", // 형님이 사용하는 백엔드 주소로 수정
+  baseURL: "http://localhost:8081/admin",
   headers: {
     "Content-Type": "application/json;charset=utf-8",
   },
 });
+
+let isRefreshing = false;
+let refreshSubscribers = [];
+
+const onRefreshed = (newAccessToken) => {
+  refreshSubscribers.forEach((callback) => callback(newAccessToken));
+  refreshSubscribers = [];
+};
+
+const addRefreshSubscriber = (callback) => {
+  refreshSubscribers.push(callback);
+};
+
+// ✅ Authorization 헤더 설정 (refresh-token 요청은 예외)
+AdminAxios.interceptors.request.use((config) => {
+  const token = getAuthToken();
+  const isRefreshEndpoint = config.url?.includes("/refresh-token");
+
+  if (token && !isRefreshEndpoint) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
+
+// ✅ 401 응답 처리: Access Token 만료 시 토큰 재발급 및 재요청
+AdminAxios.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const { config: originalRequest, response } = error;
+
+    const isUnauthorized = response?.status === 401;
+    const isFirstRetry = !originalRequest._retry;
+
+    if (!isUnauthorized || !isFirstRetry) {
+      return Promise.reject(error);
+    }
+
+    const customerId = getCustomerID();
+    const role = localStorage.getItem("role");
+    if (!customerId) return Promise.reject(error);
+
+    if (isRefreshing) {
+      return new Promise((resolve) => {
+        addRefreshSubscriber((newToken) => {
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+          resolve(AdminAxios(originalRequest));
+        });
+      });
+    }
+
+    originalRequest._retry = true;
+    isRefreshing = true;
+
+    try {
+      console.log("🚨 refresh-token 요청 customerId:", customerId);
+      const { data } = await axios.post(
+        "http://localhost:8081/api/refresh-token",
+        {
+          customerId,
+          role,
+        }
+      );
+      const newAccessToken = data.accessToken || data;
+
+      setAuthToken(newAccessToken);
+      onRefreshed(newAccessToken);
+
+      originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+      return AdminAxios(originalRequest);
+    } catch (refreshError) {
+      console.error("❌ 토큰 재발급 실패", refreshError);
+      return Promise.reject(refreshError);
+    } finally {
+      isRefreshing = false;
+    }
+  }
+);
 
 export default AdminAxios;
