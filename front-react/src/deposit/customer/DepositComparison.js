@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Table, Select, Input, Button, Space, Typography, message, Tabs } from 'antd';
-import { SearchOutlined, ReloadOutlined } from '@ant-design/icons';
+import { Card, Table, Select, Input, Button, Space, Typography } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getCustomerID } from "../../jwt/AxiosToken";
 import RefreshToken from "../../jwt/RefreshToken";
@@ -8,7 +8,6 @@ import '../../Css/depositcss/DepositComparison.css';
 
 const { Title } = Typography;
 const { Option } = Select;
-const { TabPane } = Tabs;
 
 const DepositComparison = () => {
     const navigate = useNavigate();
@@ -17,56 +16,113 @@ const DepositComparison = () => {
     const [selectedProducts, setSelectedProducts] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [productType, setProductType] = useState('ALL');
-    const [comparisonResult, setComparisonResult] = useState([]);
+    const customerId = getCustomerID();
 
-    useEffect(() => {
-        const customer_id = getCustomerID();
-        if (!customer_id) {
-            const goLogin = window.confirm(
-                "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
-            );
-            if (goLogin) {
-                navigate("/login");
+     useEffect(() => {
+            if (!customerId) {
+                const goLogin = window.confirm("로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?");
+                if (goLogin) {
+                    navigate("/login");
+                  } else {
+                    navigate("/");
+                  }
+                  return;      
             }
-            return;
-        }
-        fetchProducts();
-    }, [navigate]);
+            fetchProducts();
+        }, [navigate, customerId]);
+
+      
 
     const fetchProducts = async () => {
         try {
             setLoading(true);
+
+            // API 호출
             const [depositResponse, savingsResponse] = await Promise.all([
                 RefreshToken.get('/deposit/products/deposit'),
                 RefreshToken.get('/deposit/products/savings')
             ]);
-            setProducts([...depositResponse.data, ...savingsResponse.data]);
+
+            // API 응답 데이터 로그 출력
+            console.log('예금 상품 데이터:', depositResponse.data);
+            console.log('적금 상품 데이터:', savingsResponse.data);
+
+            // 예금 상품 매핑
+            const depositProducts = depositResponse.data.map(product => {
+                console.log('예금 상품 매핑 전 데이터:', product);
+                return {
+                    id: `deposit_${product.product_id || `random_${Math.random()}`}`, // product_id가 없으면 고유한 랜덤 값 생성
+                    name: product.product_name || product.name || '상품명 없음', // 상품명을 나타내는 필드 수정
+                    type: product.product_type || '유형 없음',
+                    baseRate: product.interest_rate || 0,
+                    minAmount: product.min_amount || 0,
+                    maxAmount: product.max_amount || 0,
+                    term: product.term_months || 0
+                };
+            });
+
+            // 적금 상품 매핑
+            const savingsProducts = savingsResponse.data.map(product => {
+                console.log('적금 상품 매핑 전 데이터:', product);
+                return {
+                    id: `savings_${product.product_id || `random_${Math.random()}`}`, // product_id가 없으면 고유한 랜덤 값 생성
+                    name: product.product_name || product.name || '상품명 없음', // 상품명을 나타내는 필드 수정
+                    type: product.product_type || '유형 없음',
+                    baseRate: product.interest_rate || 0,
+                    minAmount: product.min_amount || 0,
+                    maxAmount: product.max_amount || 0,
+                    term: product.term_months || 0
+                };
+            });
+
+            // 매핑된 데이터 로그 출력
+            console.log('예금 상품 변환 데이터:', depositProducts);
+            console.log('적금 상품 변환 데이터:', savingsProducts);
+
+            const allProducts = [...depositProducts, ...savingsProducts];
+            console.log('최종 설정될 products 상태:', allProducts);
+
+            setProducts(allProducts);
         } catch (error) {
             console.error('상품 조회 에러:', error);
-            message.error('상품 정보를 불러오는데 실패했습니다.');
+            alert('상품 데이터를 불러오는 중 문제가 발생했습니다.');
         } finally {
             setLoading(false);
         }
     };
 
     const handleProductSelect = (productId) => {
-        if (selectedProducts.includes(productId)) {
-            setSelectedProducts(selectedProducts.filter(id => id !== productId));
-        } else {
-            if (selectedProducts.length < 3) {
-                setSelectedProducts([...selectedProducts, productId]);
+        setSelectedProducts((prevSelectedProducts) => {
+            if (prevSelectedProducts.includes(productId)) {
+                console.log(`상품 선택 해제: ${productId}`);
+                return prevSelectedProducts.filter(id => id !== productId);
             } else {
-                message.warning('최대 3개의 상품만 비교할 수 있습니다.');
+                if (prevSelectedProducts.length < 3) {
+                    console.log(`상품 선택: ${productId}`);
+                    return [...prevSelectedProducts, productId];
+                } else {
+                    console.warn('최대 3개의 상품만 비교할 수 있습니다.');
+                    return prevSelectedProducts;
+                }
             }
-        }
+        });
     };
 
     const filteredProducts = products.filter(product => {
         const productName = product?.name || '';
-        const matchesSearch = productName.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSearch = !searchTerm || productName.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesType = productType === 'ALL' || product?.type === productType;
+
+        // 필터링 조건 로그 출력
+        console.log('상품 이름:', productName);
+        console.log('검색 조건 일치:', matchesSearch);
+        console.log('유형 조건 일치:', matchesType);
+
         return matchesSearch && matchesType;
     });
+
+    // 필터링된 데이터 로그 출력
+    console.log('필터링된 상품 데이터:', filteredProducts);
 
     const columns = [
         {
@@ -80,7 +136,7 @@ const DepositComparison = () => {
                         checked={selectedProducts.includes(record.id)}
                         onChange={() => handleProductSelect(record.id)}
                     />
-                    {text || '상품명 없음'}
+                    {text}
                 </Space>
             ),
         },
@@ -104,12 +160,6 @@ const DepositComparison = () => {
             render: (rate) => `${rate || 0}%`
         },
         {
-            title: '우대이율',
-            dataIndex: 'preferentialRate',
-            key: 'preferentialRate',
-            render: (rate) => `${rate || 0}%`
-        },
-        {
             title: '최소금액',
             dataIndex: 'minAmount',
             key: 'minAmount',
@@ -129,97 +179,13 @@ const DepositComparison = () => {
         }
     ];
 
-    const comparisonColumns = [
-        {
-            title: '비교항목',
-            dataIndex: 'item',
-            key: 'item',
-            width: 150
-        },
-        ...selectedProducts.map(productId => {
-            const product = products.find(p => p.id === productId);
-            return {
-                title: product?.name || '',
-                dataIndex: `product_${productId}`,
-                key: `product_${productId}`,
-                render: (value) => {
-                    if (typeof value === 'number') {
-                        return value.toLocaleString();
-                    }
-                    return value;
-                }
-            };
-        })
-    ];
+    const selectedProductDetails = products.filter(product =>
+        selectedProducts.includes(product.id)
+    );
 
-    const comparisonData = [
-        {
-            key: 'type',
-            item: '상품유형',
-            ...selectedProducts.reduce((acc, productId) => {
-                const product = products.find(p => p.id === productId);
-                acc[`product_${productId}`] = product?.type || '';
-                return acc;
-            }, {})
-        },
-        {
-            key: 'rate',
-            item: '기본이율',
-            ...selectedProducts.reduce((acc, productId) => {
-                const product = products.find(p => p.id === productId);
-                acc[`product_${productId}`] = `${product?.baseRate}%`;
-                return acc;
-            }, {})
-        },
-        {
-            key: 'preferential',
-            item: '우대이율',
-            ...selectedProducts.reduce((acc, productId) => {
-                const product = products.find(p => p.id === productId);
-                acc[`product_${productId}`] = `${product?.preferentialRate}%`;
-                return acc;
-            }, {})
-        },
-        {
-            key: 'min',
-            item: '최소금액',
-            ...selectedProducts.reduce((acc, productId) => {
-                const product = products.find(p => p.id === productId);
-                acc[`product_${productId}`] = `${product?.minAmount.toLocaleString()}원`;
-                return acc;
-            }, {})
-        },
-        {
-            key: 'max',
-            item: '최대금액',
-            ...selectedProducts.reduce((acc, productId) => {
-                const product = products.find(p => p.id === productId);
-                acc[`product_${productId}`] = `${product?.maxAmount.toLocaleString()}원`;
-                return acc;
-            }, {})
-        },
-        {
-            key: 'term',
-            item: '기간',
-            ...selectedProducts.reduce((acc, productId) => {
-                const product = products.find(p => p.id === productId);
-                acc[`product_${productId}`] = `${product?.term}개월`;
-                return acc;
-            }, {})
-        }
-    ];
+    // 선택된 상품 데이터 로그 출력
+    console.log('선택된 상품 데이터:', selectedProductDetails);
 
-    const handleCompare = async () => {
-        try {
-            const response = await RefreshToken.post('/deposit/products/compare', {
-                productIds: selectedProducts
-            });
-            setComparisonResult(response.data);
-        } catch (error) {
-            console.error('상품 비교 에러:', error);
-            message.error('상품 비교에 실패했습니다.');
-        }
-    };
     return (
         <div className="depositContainer">
             <Card>
@@ -256,21 +222,22 @@ const DepositComparison = () => {
                         columns={columns}
                         dataSource={filteredProducts}
                         loading={loading}
-                        rowKey="id"
+                        rowKey={(record) => record.id || `random_${Math.random()}`} // 고유한 키 보장
                         pagination={false}
                     />
-
-                    {selectedProducts.length > 0 && (
-                        <div className="depositComparisonTable">
-                            <Title level={4}>선택한 상품 비교</Title>
-                            <Table
-                                columns={comparisonColumns}
-                                dataSource={comparisonData}
-                                pagination={false}
-                            />
-                        </div>
-                    )}
                 </div>
+
+                {selectedProductDetails.length > 0 && (
+                    <div className="comparisonDetails">
+                        <Title level={4}>선택된 상품 비교</Title>
+                        <Table
+                            columns={columns}
+                            dataSource={selectedProductDetails}
+                            pagination={false}
+                            rowKey={(record) => record.id || `random_${Math.random()}`} // 고유한 키 보장
+                        />
+                    </div>
+                )}
             </Card>
         </div>
     );
