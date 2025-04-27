@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import RefreshToken from "../../jwt/RefreshToken";
 import styles from "../../Css/fund/FundAccount.module.css";
-import FundCustomer from "../admin/FundCustomer";  // 로그인 체크용 팝업 컴포넌트
 
 const OpenAccount = () => {
   const navigate = useNavigate();
@@ -11,16 +10,15 @@ const OpenAccount = () => {
   const [selectedAccount, setSelectedAccount] = useState("");
   const [inputPassword, setInputPassword] = useState("");
   const [accountName, setAccountName] = useState("");
-  const [showModal, setShowModal] = useState(false);
 
   // 로그인 체크 + 기존 보유계좌 조회 (입출금/예금 등)
   useEffect(() => {
-    const token = localStorage.getItem("auth_token");
-    if (!token) {
-      setShowModal(true);
+    if (!customer_id) {
+      const goLogin = window.confirm("로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?");
+      if (goLogin) navigate("/login");
+      else navigate("/");
       return;
     }
-
     const fetchAccounts = async () => {
       try {
         const res = await RefreshToken.get(
@@ -62,20 +60,7 @@ const OpenAccount = () => {
     }
   };
 
-  // 모달 핸들러
-  const handleConfirm = () => navigate("/login");
-  const handleCancel = () => navigate("/");
-
   return (
-    <>
-      {showModal && (
-        <FundCustomer
-          message="로그인이 필요한 서비스입니다."
-          onConfirm={handleConfirm}
-          onCancel={handleCancel}
-        />
-      )}
-
     <div className={styles.fundAccountcontainer}>
       <h2 className={styles.fundAccounttitle}>My펀드 계좌개설</h2>
       <div className={styles.fundAccountform}>
@@ -117,7 +102,6 @@ const OpenAccount = () => {
         </button>
       </div>
     </div>
-    </>
   );
 };
 
