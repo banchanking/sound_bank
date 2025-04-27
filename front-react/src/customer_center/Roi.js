@@ -49,12 +49,12 @@ function Roi() {
       setMessage("이미지를 캡처해주세요.");
       return;
     }
+  
     const formData = new FormData();
-    formData.append("file", capturedImage);
-
+    formData.append("file", capturedImage);  // 확인할 부분: "file" 이름이 서버에서 기대하는 필드 이름인지
+  
     try {
-      const response = await fetch("https://06e8-180-71-139-27.ngrok-free.app/ocr", {
-
+      const response = await fetch("https://appocr.jp.ngrok.io/ocr", {
         method: "POST",
         body: formData,
       });
@@ -68,6 +68,7 @@ function Roi() {
       setMessage("통신 실패: " + error.message);
     }
   };
+  
 
   return (
     <div className={styles["roi-container"]}>
