@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import RefreshToken from "../../jwt/RefreshToken";
+import { useNavigate } from 'react-router-dom';
 import styles from "../../Css/fund/MyFund.module.css";
 
 const CloseAccount = () => {
+  const navigate = useNavigate();
   const [fundAccounts, setFundAccounts] = useState([]);
+  const customer_id = localStorage.getItem("customerId");
 
   // 📌 펀드 계좌 목록 조회 함수
   const fetchFundAccounts = async () => {
@@ -18,6 +21,12 @@ const CloseAccount = () => {
 
   // 📌 컴포넌트가 마운트될 때 계좌 목록 조회
   useEffect(() => {
+    if (!customer_id) {
+      const goLogin = window.confirm("로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?");
+      if (goLogin) navigate("/login");
+      else navigate("/");
+      return;
+    }
     fetchFundAccounts();
   }, []);
 

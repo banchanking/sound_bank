@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styles from "../../Css/fund/FundList.module.css";
 import Fund from './Fund';  // 상세보기용 팝업 컴포넌트
 import RefreshToken from "../../jwt/RefreshToken";
-import FundCustomer from "../admin/FundCustomer";  // 로그인 체크용 팝업 컴포넌트
+
 
 const FundList = () => {
   const navigate = useNavigate();
@@ -12,17 +12,17 @@ const FundList = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [showDetail, setShowDetail] = useState(false);
   const [selectedFundId, setSelectedFundId] = useState(null);
-  const [showModal, setShowModal] = useState(false);
+  const customer_id = localStorage.getItem("customerId");
 
   // 로그인 체크 + 펀드 불러오기
   useEffect(() => {
-    const token = localStorage.getItem("auth_token");
-    if (!token) {
-      setShowModal(true);
-      return;
-    }
-
     const fetchFunds = async () => {
+      if (!customer_id) {
+        const goLogin = window.confirm("로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?");
+        if (goLogin) navigate("/login");
+        else navigate("/");
+        return;
+      }
       try {
         const response = await RefreshToken.get("/registeredFunds");
         setFunds(response.data);
@@ -91,20 +91,7 @@ const FundList = () => {
 
   const closeDetail = () => setShowDetail(false);
 
-  // 모달 핸들러
-  const handleConfirm = () => navigate("/login");
-  const handleCancel = () => navigate("/");
-
   return (
-    <>
-      {showModal && (
-        <FundCustomer
-          message="로그인이 필요한 서비스입니다."
-          onConfirm={handleConfirm}
-          onCancel={handleCancel}
-        />
-      )}
-
       <div className={styles.fundContainer}>
         <div className={styles.fundtesttitle}>
           <h1>펀드 상품 목록</h1>
@@ -145,7 +132,6 @@ const FundList = () => {
           /> 
         )}
       </div>
-      </>
     );
   };
 
