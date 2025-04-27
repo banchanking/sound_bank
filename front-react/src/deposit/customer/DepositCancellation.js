@@ -1,207 +1,150 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Select, Button, Card, message, Modal, Descriptions, InputNumber } from 'antd';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { getCustomerID } from "../../jwt/AxiosToken";
 import RefreshToken from "../../jwt/RefreshToken";
 import '../../Css/depositcss/DepositCancellation.css';
 
-const { Option } = Select;
-
 const DepositCancellation = () => {
     const navigate = useNavigate();
-    const { accountId } = useParams();
-    const [form] = Form.useForm();
     const [accounts, setAccounts] = useState([]);
-    const [transferAccounts, setTransferAccounts] = useState([]);
     const [selectedAccount, setSelectedAccount] = useState(null);
+    const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(true);
+    const customerId = getCustomerID();
 
     useEffect(() => {
-        const customer_id = getCustomerID();
-        if (!customer_id) {
+        if (!customerId) {
             const goLogin = window.confirm(
                 "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
             );
             if (goLogin) {
                 navigate("/login");
-            }
+            } else {
+                navigate("/");
+              }
+            
             return;
         }
         fetchAccounts();
-        fetchTransferAccounts();
-        fetchAccountDetails();
-    }, [navigate, accountId]);
+    }, [navigate, customerId]);
 
     const fetchAccounts = async () => {
         try {
-            const customerId = getCustomerID();
-            const response = await RefreshToken.get(`/deposit/accounts/customer/${customerId}`);
-            setAccounts(response.data);
+            const [depositResponse, savingsResponse] = await Promise.all([
+                RefreshToken.get(`/deposit/accounts/customer/${customerId}`),
+                RefreshToken.get(`/savings/accounts/customer/${customerId}`)
+            ]);
+            const allAccounts = [
+                ...depositResponse.data.map(acc => ({ ...acc, type: '예금' })),
+                ...savingsResponse.data.map(acc => ({ ...acc, type: '적금' }))
+            ];
+            // 여기서 ACTIVE 계좌만 걸러주기
+            const activeAccounts = allAccounts.filter(acc => acc.accountStatus === 'ACTIVE');
+            
+            setAccounts(activeAccounts);
         } catch (error) {
             console.error('계좌 조회 에러:', error);
-            console.error('계좌 정보를 불러오는데 실패했습니다.');
-        }
-    };
-
-    const fetchTransferAccounts = async () => {
-        try {
-            const response = await RefreshToken.get('/transfer-accounts');
-            setTransferAccounts(response.data);
-        } catch (error) {
-            console.error('이체계좌 정보를 불러오는데 실패했습니다.');
-        }
-    };
-
-    const fetchAccountDetails = async () => {
-        try {
-            const customerId = getCustomerID();
-            const response = await RefreshToken.get(`/deposit/accounts/${accountId}`, {
-                params: { customerId }
-            });
-            setSelectedAccount(response.data);
-            setLoading(false);
-        } catch (error) {
-            console.error('계좌 정보 조회 에러:', error);
-            message.error('계좌 정보를 불러오는데 실패했습니다.');
-            setLoading(false);
-        }
-    };
-
-    const handleAccountChange = async (accountId) => {
-        const account = accounts.find(a => a.id === accountId);
-        setSelectedAccount(account);
-        form.setFieldsValue({
-            accountId: account.id,
-            balance: account.balance,
-            password: '',
-            transferAccount: null
-        });
-    };
-
-    const handleSubmit = async (values) => {
-        setLoading(true);
-        try {
-            const customerId = getCustomerID();
-            await RefreshToken.post(`/deposit/accounts/${values.accountId}/cancel`, {
-                ...values,
-                customerId
-            });
-            message.success('예금 계좌 해지가 완료되었습니다.');
-            form.resetFields();
-            navigate('/deposit/accounts');
-        } catch (error) {
-            console.error('계좌 해지 에러:', error);
-            message.error('계좌 해지에 실패했습니다.');
+            alert('계좌 정보를 불러오는데 실패했습니다.');
         } finally {
             setLoading(false);
         }
     };
-
-    const showConfirmModal = (values) => {
-        Modal.confirm({
-            title: '예금 해지 확인',
-            content: '정말로 이 예금 계좌를 해지하시겠습니까? 이 작업은 되돌릴 수 없습니다.',
-            okText: '해지',
-            okType: 'danger',
-            cancelText: '취소',
-            onOk: () => handleSubmit(values)
-        });
+    
+    const handleAccountChange = (e) => {
+        const accountNumber = e.target.value;
+        setSelectedAccount(accountNumber);
     };
 
-    const handleCancellation = async (values) => {
+    const handlePasswordChange = (e) => {
+        setPassword(e.target.value);
+    };
+
+    const handleCancellation = async (e) => {
+        e.preventDefault();
+        if (!selectedAccount) {
+            alert('계좌를 선택해주세요.');
+            return;
+        }
+        if (!password) {
+            alert('계좌 비밀번호를 입력해주세요.');
+            return;
+        }
+    
         try {
-            await RefreshToken.delete(`/deposit/accounts/deposit/${selectedAccount}`, {
-                data: {
-                    accountPassword: values.password
-                }
-            });
-            message.success('예금 계좌가 해지되었습니다.');
+            const account = accounts.find(acc => acc.accountNumber === selectedAccount);
+            const endpoint = account.type === '예금'
+                ? `/deposit/accounts/deposit/${selectedAccount}`
+                : `/deposit/accounts/savings/${selectedAccount}`;
+    
+                await RefreshToken.delete(endpoint, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    data: {
+                        accountPassword: password
+                    }
+                });
+                
+    
+            alert('계좌 해지가 완료되었습니다.');
             navigate('/deposit/accounts');
         } catch (error) {
             console.error('계좌 해지 에러:', error);
-            message.error('계좌 해지에 실패했습니다.');
+            alert('계좌 해지에 실패했습니다.');
         }
     };
+    
 
     return (
-        <div className="deposit-cancellation-container">
-            <Card title="예금 계좌 해지">
-                <Form
-                    form={form}
-                    layout="vertical"
-                    onFinish={showConfirmModal}
-                >
-                    <Form.Item
-                        name="accountId"
-                        label="해지할 계좌"
-                        rules={[{ required: true, message: '계좌를 선택해주세요' }]}
-                    >
-                        <Select
-                            placeholder="계좌를 선택해주세요"
+        <div className="depositContainer">
+            <div className="depositCard">
+                <div className="depositProductHeader">
+                    <h2>예적금 계좌 해지</h2>
+                </div>
+
+                <form onSubmit={handleCancellation} className="depositForm">
+                    <div className="formGroup">
+                        <label htmlFor="accountNumber">해지할 계좌</label>
+                        <select
+                            id="accountNumber"
+                            value={selectedAccount || ''}
                             onChange={handleAccountChange}
+                            required
                         >
+                            <option value="">계좌 선택</option>
                             {accounts.map(account => (
-                                <Option key={account.id} value={account.id}>
-                                    {account.accountNumber} - {account.productName}
-                                </Option>
+                                <option key={account.accountNumber} value={account.accountNumber}>
+                                    {account.accountNumber} - {account.productName} ({account.type})
+                                </option>
                             ))}
-                        </Select>
-                    </Form.Item>
+                        </select>
+                    </div>
 
                     {selectedAccount && (
                         <>
-                            <Form.Item
-                                name="balance"
-                                label="잔액"
-                            >
-                                <InputNumber
-                                    style={{ width: '100%' }}
-                                    value={selectedAccount.balance}
-                                    disabled
-                                    formatter={value => `${value.toLocaleString()}원`}
+                            <div className="formGroup">
+                                <label htmlFor="password">계좌 비밀번호</label>
+                                <input
+                                    type="password"
+                                    id="password"
+                                    value={password}
+                                    onChange={handlePasswordChange}
+                                    maxLength={4}
+                                    required
                                 />
-                            </Form.Item>
+                            </div>
 
-                            <Form.Item
-                                name="password"
-                                label="계좌비밀번호"
-                                rules={[
-                                    { required: true, message: '계좌비밀번호를 입력해주세요' },
-                                    { len: 4, message: '비밀번호는 4자리여야 합니다' }
-                                ]}
+                            <button
+                                type="submit"
+                                className="depositBtn"
+                                disabled={loading}
                             >
-                                <Input.Password placeholder="계좌비밀번호 4자리" maxLength={4} />
-                            </Form.Item>
-
-                            <Form.Item
-                                name="transferAccount"
-                                label="이체계좌"
-                                rules={[{ required: true, message: '이체계좌를 선택해주세요' }]}
-                            >
-                                <Select placeholder="이체계좌 선택">
-                                    {transferAccounts.map(account => (
-                                        <Option key={account.id} value={account.id}>
-                                            {account.accountNumber} - {account.bankName}
-                                        </Option>
-                                    ))}
-                                </Select>
-                            </Form.Item>
-
-                            <Form.Item>
-                                <Button
-                                    type="primary"
-                                    danger
-                                    htmlType="button"
-                                    loading={loading}
-                                    style={{ width: '100%' }}
-                                >
-                                    해지하기
-                                </Button>
-                            </Form.Item>
+                                계좌 해지하기
+                            </button>
                         </>
                     )}
-                </Form>
-            </Card>
+                </form>
+            </div>
         </div>
     );
 };
