@@ -23,7 +23,7 @@ function TransMulti() {
       return;
     }
 
-    RefreshToken.get(`http://localhost:8081/api/accounts/allAccount/${customer_id}`, {
+    RefreshToken.get(`/accounts/allAccount/${customer_id}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => {
@@ -75,7 +75,7 @@ function TransMulti() {
 
     try {
       const pwdRes = await RefreshToken.post(
-        'http://localhost:8081/api/transMulti/checkPwd',
+        '/transMulti/checkPwd',
         { account_number: form.out_account_number, password: form.password },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -94,7 +94,7 @@ function TransMulti() {
       };
 
       await RefreshToken.post(
-        'http://localhost:8081/api/transMulti/add',
+        '/transMulti/add',
         data,
         { headers: { Authorization: `Bearer ${token}` } }
       );

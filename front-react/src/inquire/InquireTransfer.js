@@ -33,7 +33,7 @@ function CheckTx() {
     }
     setCustomerId(id);
 
-    RefreshToken.get(`http://localhost:8081/api/accounts/allAccount/${id}`)
+    RefreshToken.get(`/accounts/allAccount/${id}`)
       .then((response) => {
         let list = Array.isArray(response.data) ? response.data : Object.values(response.data).flat();
         setAccountList(list);
@@ -54,7 +54,7 @@ function CheckTx() {
   };
 
   const fetchTransactions = () => {
-    RefreshToken.get('http://localhost:8081/api/transactions', {
+    RefreshToken.get('/transactions', {
       params: {
         account_number: selectedAccount,
         start_date: startDate,

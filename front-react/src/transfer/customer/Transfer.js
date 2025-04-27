@@ -28,7 +28,7 @@ function TransInstant() {
     }
     setForm(prev => ({ ...prev, customer_id: id }));
 
-    RefreshToken.get(`http://localhost:8081/api/accounts/allAccount/${id}`)
+    RefreshToken.get(`/accounts/allAccount/${id}`)
       .then(res => {
         const raw = res.data;
         let list = Array.isArray(raw) ? raw : Object.values(raw).flat();
@@ -45,7 +45,7 @@ function TransInstant() {
 
   // 이체 최종 확인
   const confirmTransfer = () => {
-    RefreshToken.post("http://localhost:8081/api/transInstant/send", form)
+    RefreshToken.post("/transInstant/send", form)
       .then(res => {
         if (res.data === "비밀번호 오류") {
           alert("비밀번호가 일치하지 않습니다.");
