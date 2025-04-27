@@ -2,13 +2,26 @@ import React, { useEffect, useState } from "react";
 import styles from "../../Css/exchange/ExRate.module.css";
 import ExCalc from "./ExCalc";
 import useExchangeRates from "./useExchangeRates";
+import { getCustomerID } from '../../jwt/AxiosToken';
+import { useNavigate } from 'react-router-dom';
+
+
 
 const ExRate = () => {
+  const navigate = useNavigate();
   const [date, setDate] = useState("");
   const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
 
   // 초기 날짜 설정
   useEffect(() => {
+    const customer_id = getCustomerID();
+    
+    if (!customer_id) {
+      const goLogin = window.confirm("로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?");
+      if (goLogin) navigate("/login");
+      else navigate("/");
+      return;
+    }
     const today = new Date();
     const offset = today.getTimezoneOffset();
     const localDate = new Date(today.getTime() - offset * 60 * 1000);
