@@ -9,14 +9,14 @@ const AdminWalletList = () => {
     const [customer_search, setCustomer_search] = useState("");
 
     useEffect(() => {
-        RefreshToken.get("http://localhost:8081/api/admin/wallets/customers")
+        RefreshToken.get("/admin/wallets/customers")
             .then(res => setCustomers(res.data))
             .catch(err => console.error("고객 목록 로딩 실패", err));
     }, []);
 
     const handle_customer_click = (customer_id) => {
         setSelected_customer_id(customer_id);
-        RefreshToken.get(`http://localhost:8081/api/admin/wallets/${customer_id}`)
+        RefreshToken.get(`/admin/wallets/${customer_id}`)
             .then(res => setWallets(res.data.map(w => ({ ...w, ORIGINAL_STATUS: w.STATUS }))))
             .catch(err => console.error("지갑 상세 로딩 실패", err));
     };
@@ -31,7 +31,7 @@ const AdminWalletList = () => {
         const updated = wallets.filter(w => w.STATUS !== w.ORIGINAL_STATUS);
         const payload = updated.length === 1 ? updated[0] : updated;
 
-        RefreshToken.put("http://localhost:8081/api/admin/wallets/update", payload)
+        RefreshToken.put("/admin/wallets/update", payload)
             .then(() => alert("상태가 성공적으로 저장되었습니다."))
             .catch(err => alert("저장 실패: " + err));
     };
