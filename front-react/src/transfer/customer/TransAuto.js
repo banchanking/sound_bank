@@ -34,7 +34,7 @@ function TransAuto() {
       return;
     }
     setForm(prev => ({ ...prev, customer_id: id }));
-    RefreshToken.get(`http://localhost:8081/api/accounts/allAccount/${id}`)
+    RefreshToken.get(`/accounts/allAccount/${id}`)
       .then(res => {
         const list = Array.isArray(res.data) ? res.data : Object.values(res.data).flat();
         setAccounts(list);
@@ -75,7 +75,7 @@ function TransAuto() {
     }
 
     try {
-      const res = await RefreshToken.post('http://localhost:8081/api/transAuto/add', form);
+      const res = await RefreshToken.post('/transAuto/add', form);
       if (res.data === '비밀번호 오류') {
         alert('비밀번호가 틀렸습니다.');
       } else {
