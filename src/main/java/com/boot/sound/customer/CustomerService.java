@@ -22,7 +22,11 @@ import com.boot.sound.jwt.config.EncryptionUtils; // 암호화 유틸 불러오�
 import java.math.BigDecimal;
 import java.nio.CharBuffer;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 
 @RequiredArgsConstructor
@@ -256,6 +260,32 @@ public class CustomerService {
 
         throw new AppException("Invalid password", HttpStatus.BAD_REQUEST);
     }
+    
+    @Transactional
+    public List<String> deleteCustomerIfNoAssets(String customerId) {
+        Map<String, Object> assets = customerMapper.checkCustomerAssets(customerId);
+
+        List<String> activeAssets = new ArrayList<>();
+
+        // Map을 돌면서 상품이 존재하는 것만 뽑아오기
+        assets.forEach((key, value) -> {
+            if (value != null) {
+                activeAssets.add(value.toString()); // "외환 지갑", "출금계좌", "펀드계좌" 등
+            }
+        });
+
+        if (!activeAssets.isEmpty()) {
+            // 가입된 상품이 하나라도 있으면, 리스트 반환
+            return activeAssets;
+        }
+
+        // 가입된 상품이 없으면 삭제 진행
+        customerMapper.deleteCustomer(customerId);
+        return Collections.emptyList(); // 가입된 상품 없음
+    }
+
+
+
 
     
     

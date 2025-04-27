@@ -1,6 +1,7 @@
 package com.boot.sound.admin.service;
 
 import java.nio.CharBuffer;
+import java.util.List;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -49,5 +50,29 @@ public class AdminService {
     @Transactional
     public void saveAdminRefreshToken(String customerId, String refresh_token) {
     	dao.saveAdminRefreshToken(customerId, refresh_token);
+    }
+    
+    @Transactional
+    public Boolean insert(AdminDTO dto) {
+    	String password = dto.getPassword();
+    	dto.setPassword(encoder.encode(password));
+    	return dao.insert(dto);
+    }
+    
+    @Transactional
+    public List<AdminDTO> adminList() {
+    	return dao.adminList();
+    }
+    
+    @Transactional
+    public Boolean update(AdminDTO dto) {
+    	String password = dto.getPassword();
+    	dto.setPassword(encoder.encode(password));
+    	return dao.update(dto);
+    }
+    
+    @Transactional
+    public Boolean delete(AdminDTO dto) {
+    	return dao.delete(dto);
     }
 }

@@ -296,7 +296,8 @@ public class LoanService {
 		
 	// 가입 상품 중도상환 처리
 	@Transactional
-	public int calculatePrepaymentPenalty(PrepaymentDTO dto) {
+	public Boolean calculatePrepaymentPenalty(PrepaymentDTO dto) {
+		 try {
 		LoanStatusDTO status = new LoanStatusDTO();
 		
 		 // 1. 필요한 값 추출
@@ -378,8 +379,12 @@ public class LoanService {
 	    status.setRemainingTerm(0);
 	    status.setLoanProgress("중도상환");
 	    dao.updateLoanStatus(status);
-		return 1;
-	}
+	      return true; // ✅ 성공하면 true 리턴
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		        return false; // ✅ 실패하면 false 리턴
+		    }
+		}
 	
 	@Transactional
 	public List<LoanInterestPaymentDTO> myInterestList(String customerId){

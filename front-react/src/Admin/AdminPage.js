@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   FaUser,
   FaPiggyBank,
@@ -29,23 +29,43 @@ import SavingsProduct from "../deposit/admin/SavingsProduct";
 import MultiAdmin from "../transfer/admin/MultiAdmin";
 import LimitAdmin from "../transfer/admin/LimitAdmin";
 import FundProductAdmin from "../fund/admin/FundProductAdmin";
+import AdminList from "./AdminList";
+import { useLocation } from "react-router-dom";
+import LoanDetail from "../sound_loan/admin/LoanDetail";
+import LoanUpdate from "../sound_loan/admin/LoanUpdate";
+import AdminInsert from "./AdminInsert";
+import AdminEdit from "./AdminEdit";
 
 const AdminPage = () => {
+  const location = useLocation();
   const [activeMenuIndex, setActiveMenuIndex] = useState(null);
-  const [selectedComponent, setSelectedComponent] = useState("null");
+  const [selectedComponent, setSelectedComponent] = useState(
+    location.state?.component || "AdminList"
+  );
+  const [selectedLoanId, setSelectedLoanId] = useState(null);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [selectedAdmin, setSelectedAdmin] = useState(null);
 
   const refreshInterest = () => {
     setRefreshKey((prev) => prev + 1);
   };
+
+  useEffect(() => {
+    if (location.state?.component) {
+      setSelectedComponent(location.state.component);
+    }
+    if (location.state?.loan_id) {
+      setSelectedLoanId(location.state.loan_id);
+    }
+  }, [location.state]);
 
   const menuData = [
     {
       title: "관리자 페이지",
       icon: <FaUser />,
       items: [
-        { name: "관리자목록", component: "FundInfo" },
-        { name: "회원탈퇴", component: "FundInfo" },
+        { name: "관리자목록", component: "AdminList" },
+        { name: "관리자등록", component: "AdminInsert" },
       ],
     },
     {
@@ -101,6 +121,25 @@ const AdminPage = () => {
 
   const renderComponent = () => {
     switch (selectedComponent) {
+      // 관리자 컴포넌트 호출 시작
+      case "AdminList":
+        return (
+          <AdminList
+            setSelectedAdmin={setSelectedAdmin}
+            setSelectedComponent={setSelectedComponent}
+          />
+        );
+      case "AdminInsert":
+        return <AdminInsert onBack={() => setSelectedComponent("AdminList")} />;
+      case "AdminEdit":
+        return (
+          <AdminEdit
+            selectedAdmin={selectedAdmin}
+            onBack={() => setSelectedComponent("AdminList")}
+          />
+        );
+
+      // 관리자 컴포넌트 호출종료
       // 예금 컴포넌트 호출 시작
       case "DepositProduct":
         return <DepositProduct />;
@@ -118,6 +157,10 @@ const AdminPage = () => {
         return <LoanInsertForm />;
       case "LoanList":
         return <LoanList />;
+      case "LoanDetail":
+        return <LoanDetail loan_id={selectedLoanId} />;
+      case "LoanUpdate":
+        return <LoanUpdate loan_id={selectedLoanId} />;
       case "LoanInterestList":
         return <LoanInterestList />;
       case "LoanCustomerList":
