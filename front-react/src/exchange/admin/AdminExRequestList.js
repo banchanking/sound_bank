@@ -5,11 +5,10 @@ import styles from "../../Css/exchange/ExRequestList.module.css";
 
 const ExRequestList = () => {
   const [requests, setRequests] = useState([]); // 환전 신청 목록
-  const [isAdmin, setIsAdmin] = useState(false); // 관리자 여부 확인
   const customerId = getCustomerID();
 
   useEffect(() => {
-    RefreshToken.get(`http://localhost:8081/api/admin/requestList`)
+    RefreshToken.get(`/admin/requestList`)
       .then((res) => {
         setRequests(res.data);
         console.log(res.data);
@@ -32,8 +31,9 @@ const ExRequestList = () => {
       await RefreshToken.put(`/admin/approval`, approvalData);
       alert(`요청이 ${approvalData.approval_status === "APPROVED" ? "승인" : "거절"}되었습니다.`);
 
-      const res = await RefreshToken.get(`/exchange/requestList/${approvalData.customer_id}`);
-      setRequests(res.data);
+      // 2) 초기 조회와 동일한 엔드포인트로 전체 목록 재조회
+      const res = await RefreshToken.get(`/admin/requestList`);
+      setRequests(res.data);      
     } catch (error) {
       console.error("승인/거절 처리 실패:", error);
       alert("처리 중 오류가 발생했습니다.");
