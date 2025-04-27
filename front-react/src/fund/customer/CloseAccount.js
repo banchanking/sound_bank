@@ -95,7 +95,7 @@ const CloseAccount = () => {
               </td>
               <td>
               {acc.status === "APPROVED" && (
-                <button onClick={() => handleCloseAccount(acc.fundAccountId)}>해지하기</button>
+                <button className={styles.fundCloseButton} onClick={() => handleCloseAccount(acc.fundAccountId)}>해지하기</button>
               )}
               </td>
             </tr>

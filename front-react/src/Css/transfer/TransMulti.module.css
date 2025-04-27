@@ -104,7 +104,7 @@
 }
 
 .multi-multiTable td {
-  padding: 4px;
+  padding: 3px;
 }
 
 /* 추가/삭제 버튼 */
@@ -156,7 +156,7 @@
 
 /* 전송 버튼 */
 .multi-btnSend {
-  width: 750px;
+  width: 150px;
   padding: 12px;
   font-size: 16px;
   font-weight: 600;
