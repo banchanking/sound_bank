@@ -1,10 +1,15 @@
+/* LoanCustomer.module.css (사뱅스타일 적용) */
+
 .loanCustomer-container {
+  max-width: 1200px;
+  min-height: 560px;
+  margin: 2rem auto;
   padding: 2rem;
-  margin: 0 auto;
-  background-color: #fff;
-  color: #111;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  background-color: #ffffff;
+  border: 1.5px solid #e2e4e7;
+  border-radius: 24px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.05);
+  animation: fadeIn 0.4s ease;
 }
 
 .loanCustomer-title {
@@ -13,6 +18,7 @@
   font-weight: 700;
   margin-bottom: 1.5rem;
   color: #222;
+  animation: fadeInUp 0.4s ease;
 }
 
 .loanCustomer-searchBar {
@@ -21,36 +27,42 @@
   flex-wrap: wrap;
   gap: 0.75rem;
   margin-bottom: 2rem;
+  animation: fadeInUp 0.4s ease;
 }
 
 .loanCustomer-searchBar input {
   padding: 0.5rem 1rem;
   width: 260px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  background-color: #f9f9f9;
+  border: 1.5px solid #e2e4e7;
+  border-radius: 7px;
+  background-color: #fafafa;
   color: #111;
   font-size: 0.95rem;
+  box-sizing: border-box;
+  animation: fadeInUp 0.4s ease;
 }
 
 .loanCustomer-searchBar button {
-  padding: 0.5rem 1.1rem;
-  background-color: #1976d2;
-  color: white;
+  padding: 0.6rem 1.2rem;
+  background-color: #3a3a3c;
+  color: #ffffff;
   border: none;
-  border-radius: 6px;
+  border-radius: 7px;
   cursor: pointer;
   font-weight: 500;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.4s ease, box-shadow 0.4s ease;
+  animation: fadeInUp 0.5s ease;
 }
 
 .loanCustomer-searchBar button:hover {
-  background-color: #125ea3;
+  background-color: #444;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .loanCustomer-table-wrapper {
   width: 100%;
   overflow-x: auto;
+  animation: fadeInUp 0.4s ease;
 }
 
 .loanCustomer-table {
@@ -58,15 +70,17 @@
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 2rem;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
+  animation: fadeInUp 0.4s ease;
 }
 
 .loanCustomer-table th,
 .loanCustomer-table td {
-  border: 1px solid #ccc;
-  padding: 0.5rem 0.4rem;
+  border: 1.5px solid #e2e4e7;
+  padding: 0.6rem 0.4rem;
   text-align: center;
   word-break: keep-all;
+  animation: fadeInUp 0.4s ease;
 }
 
 .loanCustomer-table th {
@@ -76,7 +90,8 @@
 }
 
 .loanCustomer-table tbody tr:hover {
-  background-color: #f9fbff;
+  background-color: #f6fbff;
+  transition: background-color 0.3s ease;
 }
 
 .loanCustomer-pagination {
@@ -85,28 +100,102 @@
   flex-wrap: wrap;
   gap: 0.5rem;
   margin-top: 1rem;
+  animation: fadeInUp 0.4s ease;
 }
 
 .loanCustomer-pagination button {
-  padding: 0.45rem 0.9rem;
-  background-color: #e0e0e0;
-  color: #333;
+  padding: 0.6rem 1.2rem;
+  background-color: #3a3a3c;
+  color: #ffffff;
   border: none;
-  border-radius: 4px;
+  border-radius: 7px;
   cursor: pointer;
   font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.4s ease, box-shadow 0.4s ease;
+  animation: fadeInUp 0.5s ease;
 }
 
-.loanCustomer-pagination button.active,
-.loanCustomer-pagination button:hover {
-  background-color: #1976d2;
-  color: white;
+.loanCustomer-pagination button:hover,
+.loanCustomer-pagination button.active {
+  background-color: #444444;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .loanCustomer-footer {
-  margin: 50px auto;
   display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  animation: fadeInUp 0.4s ease;
 }
+
 .loanCustomer-footer-select {
-  width: 400px;
+  width: 200px;
+  padding: 0.5rem;
+  border: 1.5px solid #e2e4e7;
+  border-radius: 12px;
+  background-color: #fafafa;
+  box-sizing: border-box;
+  animation: fadeInUp 0.4s ease;
+}
+
+
+.loanCustomer-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  animation: fadeInUp 0.4s ease;
+}
+
+.loanCustomer-footer select {
+  padding: 0.6rem 1rem;
+  border: 1.5px solid #e2e4e7;
+  border-radius: 7px;
+  background-color: #ffffff;
+  color: #333;
+  font-size: 0.95rem;
+  transition: border-color 0.3s ease;
+}
+
+.loanCustomer-footer select:focus {
+  border-color: #3a3a3c;
+  outline: none;
+}
+
+.loanCustomer-footer button {
+  padding: 0.6rem 1.4rem;
+  background-color: #3a3a3c;
+  color: white;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.4s ease, box-shadow 0.4s ease;
+  animation: fadeInUp 0.5s ease;
+}
+
+.loanCustomer-footer button:hover {
+  background-color: #444;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* ——— 애니메이션 정의 (맨 아래) ——— */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

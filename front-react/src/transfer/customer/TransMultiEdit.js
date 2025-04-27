@@ -16,7 +16,7 @@ function TransMultiEdit() {
       return;
     }
 
-    RefreshToken.get(`http://localhost:8081/api/transMulti/list/${customer_id}`, {
+    RefreshToken.get(`/transMulti/list/${customer_id}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(res => setList(res.data))
@@ -29,7 +29,7 @@ function TransMultiEdit() {
   const deleteRow = (id) => {
     if (!window.confirm('정말 삭제하시겠습니까?')) return;
 
-    RefreshToken.delete(`http://localhost:8081/api/transMulti/delete/${id}`, {
+    RefreshToken.delete(`/transMulti/delete/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(() => {
@@ -49,7 +49,7 @@ function TransMultiEdit() {
   };
 
   const update = () => {
-    RefreshToken.put('http://localhost:8081/api/transMulti/update', editItem, {
+    RefreshToken.put('/transMulti/update', editItem, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(() => {
