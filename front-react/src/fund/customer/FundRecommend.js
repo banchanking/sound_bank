@@ -4,24 +4,23 @@ import styles from "../../Css/fund/FundList.module.css"; // 스타일 파일 추
 import style from "../../Css/exchange/ExList.module.css"; // 페이지네이션 스타일 파일
 import RefreshToken from "../../jwt/RefreshToken"; // 인증 포함된 인스턴스 사용
 import Fund from "./Fund"; // 상세보기용 팝업 컴포넌트
-import FundCustomer from "../admin/FundCustomer"; // 로그인 체크용 팝업 컴포넌트
 
 const FundRecommend = () => {
   const navigate = useNavigate();
+  const customer_id = localStorage.getItem("customerId");
   const [recommendedFunds, setRecommendedFunds] = useState([]);
   const [selectedFund, setSelectedFund] = useState(null); // 선택된 펀드
   const [showDetail, setShowDetail] = useState(false); // 상세보기 팝업 여부
-  const [showModal, setShowModal] = useState(false);
   const [search, setSearch] = useState(""); // 검색어 상태
   const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태
   const itemsPerPage = 10; // 페이지당 표시할 항목 수
 
   // 투자 성향 기반 추천 펀드 불러오기
   useEffect(() => {
-    // 로그인 체크
-    const token = localStorage.getItem("auth_token");
-    if (!token) {
-      setShowModal(true);
+    if (!customer_id) {
+      const goLogin = window.confirm("로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?");
+      if (goLogin) navigate("/login");
+      else navigate("/");
       return;
     }
 
@@ -82,10 +81,6 @@ const FundRecommend = () => {
     }
   };
 
-  // 모달 핸들러
-  const handleConfirm = () => navigate("/login");
-  const handleCancel = () => navigate("/");
-
   // 검색 필터링
   const filteredFunds = recommendedFunds.filter(
     (fund) =>
@@ -100,14 +95,6 @@ const FundRecommend = () => {
 
   return (
     <>
-      {showModal && (
-        <FundCustomer
-          message="로그인이 필요한 서비스입니다."
-          onConfirm={handleConfirm}
-          onCancel={handleCancel}
-        />
-      )}
-
       <div className={styles.fundContainer}>
           <h1 className={styles.fundTitle}> 투자성향 기반 추천 펀드</h1>
       <div></div>
