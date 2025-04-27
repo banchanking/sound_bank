@@ -17,13 +17,21 @@ function TransMulti() {
   const token = localStorage.getItem('auth_token');
 
   useEffect(() => {
-    if (!customer_id || !token) {
-      alert('로그인이 필요합니다');
-      navigate('/login');
-      return;
+    if (!customer_id) {
+      if (!customer_id) {
+        const goLogin = window.confirm(
+          "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
+        );
+        if (goLogin) {
+          navigate("/login");
+        } else {
+          navigate("/");
+        }
+        return;      
     }
+  }
 
-    RefreshToken.get(`http://localhost:8081/api/accounts/allAccount/${customer_id}`, {
+    RefreshToken.get(`/accounts/allAccount/${customer_id}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => {
@@ -75,7 +83,7 @@ function TransMulti() {
 
     try {
       const pwdRes = await RefreshToken.post(
-        'http://localhost:8081/api/transMulti/checkPwd',
+        '/transMulti/checkPwd',
         { account_number: form.out_account_number, password: form.password },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -94,7 +102,7 @@ function TransMulti() {
       };
 
       await RefreshToken.post(
-        'http://localhost:8081/api/transMulti/add',
+        '/transMulti/add',
         data,
         { headers: { Authorization: `Bearer ${token}` } }
       );

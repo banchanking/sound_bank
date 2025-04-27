@@ -80,7 +80,7 @@ const CloseApplyList = () => {
                     : acc.status}
                 </td>
                 <td>
-                  <button onClick={() => handleApproveClose(acc.fundAccountId)} className={styles.fundRejectBtn}>승인</button>
+                  <button onClick={() => handleApproveClose(acc.fundAccountId)} className={styles.fundApproveBtn}>승인</button>
                   <button onClick={() => handleRejectClose(acc.fundAccountId)} className={styles.fundRejectBtn}>거절</button>
                 </td>
               </tr>

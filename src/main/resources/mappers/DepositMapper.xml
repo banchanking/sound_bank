@@ -1,9 +1,549 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper
-    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.boot.sound.deposit.DepositProducDAO">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.sound.deposit.dao.DepositDAO">
+    
+    <!-- 예금 상품 목록 조회 -->
+    <select id="getDepositProducts" resultType="com.boot.sound.deposit.dto.DepositDTO">
+        SELECT 
+            product_id as id,
+            product_name as productName,
+            product_type as productType,
+            interest_rate as interestRate,
+            min_amount as minAmount,
+            max_amount as maxAmount,
+            term_months as termMonths,
+            description,
+            created_at as createdAt,
+            updated_at as updatedAt
+        FROM DEPOSIT_PRODUCT_TBL
+        ORDER BY product_id DESC
+    </select>
+    
+    <!-- 적금 상품 목록 조회 -->
+    <select id="getSavingsProducts" resultType="com.boot.sound.deposit.dto.DepositDTO">
+        SELECT 
+            product_id as id,
+            product_name as productName,
+            product_type as productType,
+            interest_rate as interestRate,
+            min_amount as minAmount,
+            max_amount as maxAmount,
+            term_months as termMonths,
+            description,
+            created_at as createdAt,
+            updated_at as updatedAt
+        FROM SAVINGS_PRODUCT_TBL
+        ORDER BY product_id DESC
+    </select>
+    
+    <!-- 예금 계좌 목록 조회 -->
+    <select id="getDepositAccounts" resultType="com.boot.sound.deposit.dto.DepositDTO">
+        SELECT 
+            dat_id as id,
+            customer_id as customerId,
+            product_id as productId,
+            account_number as accountNumber,
+            account_password as accountPassword,
+            balance,
+            interest_rate as interestRate,
+            account_status as accountStatus,
+            auto_transfer_enabled as autoTransferEnabled,
+            auto_transfer_amount as autoTransferAmount,
+            auto_transfer_day as autoTransferDay,
+            created_at as createdAt,
+            updated_at as updatedAt
+        FROM DEPOSIT_ACCOUNT_TBL
+        WHERE customer_id = #{customerId}
+        ORDER BY dat_id DESC
+    </select>
+    
+    <!-- 적금 계좌 목록 조회 -->
+    <select id="getSavingsAccounts" resultType="com.boot.sound.deposit.dto.DepositDTO">
+        SELECT 
+            sat_id as id,
+            customer_id as customerId,
+            product_id as productId,
+            account_number as accountNumber,
+            account_password as accountPassword,
+            balance,
+            interest_rate as interestRate,
+            account_status as accountStatus,
+            monthly_amount as monthlyAmount,
+            maturity_date as maturityDate,
+            created_at as createdAt,
+            updated_at as updatedAt
+        FROM SAVINGS_ACCOUNT_TBL
+        WHERE customer_id = #{customerId}
+        ORDER BY sat_id DESC
+    </select>
 
+    <!-- 예금 상품 상세 조회 -->
+    <select id="getDepositProductDetail" resultType="com.boot.sound.deposit.dto.DepositDTO">
+        SELECT 
+            product_id as id,
+            product_name as productName,
+            product_type as productType,
+            interest_rate as interestRate,
+            min_amount as minAmount,
+            max_amount as maxAmount,
+            term_months as termMonths,
+            description,
+            created_at as createdAt,
+            updated_at as updatedAt
+        FROM DEPOSIT_PRODUCT_TBL
+        WHERE product_id = #{productId}
+    </select>
 
-  
-</mapper>
+    <!-- 적금 상품 상세 조회 -->
+    <select id="getSavingsProductDetail" resultType="com.boot.sound.deposit.dto.DepositDTO">
+        SELECT 
+            product_id as id,
+            product_name as productName,
+            product_type as productType,
+            interest_rate as interestRate,
+            min_amount as minAmount,
+            max_amount as maxAmount,
+            term_months as termMonths,
+            description,
+            created_at as createdAt,
+            updated_at as updatedAt
+        FROM SAVINGS_PRODUCT_TBL
+        WHERE product_id = #{productId}
+    </select>
+
+    <!-- 예금 계좌 상세 조회 -->
+    <select id="getDepositAccountDetail" resultType="com.boot.sound.deposit.dto.DepositDTO">
+        SELECT 
+            dat_id as id,
+            customer_id as customerId,
+            product_id as productId,
+            account_number as accountNumber,
+            account_password as accountPassword,
+            balance,
+            interest_rate as interestRate,
+            account_status as accountStatus,
+            auto_transfer_enabled as autoTransferEnabled,
+            auto_transfer_amount as autoTransferAmount,
+            auto_transfer_day as autoTransferDay,
+            created_at as createdAt,
+            updated_at as updatedAt
+        FROM DEPOSIT_ACCOUNT_TBL
+        WHERE dat_id = #{accountId}
+    </select>
+
+    <!-- 적금 계좌 상세 조회 -->
+    <select id="getSavingsAccountDetail" resultType="com.boot.sound.deposit.dto.DepositDTO">
+        SELECT 
+            sat_id as id,
+            customer_id as customerId,
+            product_id as productId,
+            account_number as accountNumber,
+            account_password as accountPassword,
+            balance,
+            interest_rate as interestRate,
+            account_status as accountStatus,
+            monthly_amount as monthlyAmount,
+            maturity_date as maturityDate,
+            created_at as createdAt,
+            updated_at as updatedAt
+        FROM SAVINGS_ACCOUNT_TBL
+        WHERE sat_id = #{accountId}
+    </select>
+
+    <!-- 예금 계좌 생성 -->
+    <insert id="createDepositAccount" parameterType="com.boot.sound.deposit.dto.DepositDTO">
+        INSERT INTO DEPOSIT_ACCOUNT_TBL (
+            customer_id,
+            product_id,
+            account_number,
+            account_password,
+            balance,
+            interest_rate,
+            account_status,
+            auto_transfer_enabled,
+            auto_transfer_amount,
+            auto_transfer_day,
+            created_at,
+            updated_at
+        ) VALUES (
+            #{customerId},
+            #{productId},
+            #{accountNumber},
+            #{accountPassword},
+            0,
+            #{interestRate},
+            'ACTIVE',
+            #{autoTransferEnabled},
+            #{autoTransferAmount},
+            #{autoTransferDay},
+            NOW(),
+            NOW()
+        )
+    </insert>
+
+    <!-- 적금 계좌 생성 -->
+    <insert id="createSavingsAccount" parameterType="com.boot.sound.deposit.dto.DepositDTO">
+        INSERT INTO SAVINGS_ACCOUNT_TBL (
+            customer_id,
+            product_id,
+            account_number,
+            account_password,
+            balance,
+            interest_rate,
+            account_status,
+            monthly_amount,
+            maturity_date,
+            created_at,
+            updated_at
+        ) VALUES (
+            #{customerId},
+            #{productId},
+            #{accountNumber},
+            #{accountPassword},
+            0,
+            #{interestRate},
+            'ACTIVE',
+            #{monthlyAmount},
+            #{maturityDate},
+            NOW(),
+            NOW()
+        )
+    </insert>
+
+    <!-- 계좌번호 중복 확인 -->
+    <select id="checkAccountNumber" resultType="int">
+        SELECT COUNT(*)
+        FROM (
+            SELECT account_number FROM DEPOSIT_ACCOUNT_TBL
+            UNION ALL
+            SELECT account_number FROM SAVINGS_ACCOUNT_TBL
+        ) AS all_accounts
+        WHERE account_number = #{accountNumber}
+    </select>
+
+    <!-- 예금 계좌 해지 -->
+    <update id="closeDepositAccount">
+        UPDATE DEPOSIT_ACCOUNT_TBL
+        SET account_status = 'CLOSED',
+            updated_at = NOW()
+        WHERE dat_id = #{accountId}
+        AND account_password = #{accountPassword}
+        AND account_status = 'ACTIVE'
+    </update>
+
+    <!-- 적금 계좌 해지 -->
+    <update id="closeSavingsAccount">
+        UPDATE SAVINGS_ACCOUNT_TBL
+        SET account_status = 'CLOSED',
+            updated_at = NOW()
+        WHERE sat_id = #{accountId}
+        AND account_password = #{accountPassword}
+        AND account_status = 'ACTIVE'
+    </update>
+
+    <!-- 예금 계좌 잔액 조회 -->
+    <select id="getDepositAccountBalance" resultType="java.math.BigDecimal">
+        SELECT balance
+        FROM DEPOSIT_ACCOUNT_TBL
+        WHERE dat_id = #{accountId}
+    </select>
+
+    <!-- 적금 계좌 잔액 조회 -->
+    <select id="getSavingsAccountBalance" resultType="java.math.BigDecimal">
+        SELECT balance
+        FROM SAVINGS_ACCOUNT_TBL
+        WHERE sat_id = #{accountId}
+    </select>
+
+    <!-- 예금 계좌 입금 -->
+    <update id="deposit">
+        UPDATE DEPOSIT_ACCOUNT_TBL
+        SET balance = balance + #{amount},
+            updated_at = NOW()
+        WHERE dat_id = #{accountId}
+        AND account_status = 'ACTIVE'
+    </update>
+
+    <!-- 예금 계좌 출금 -->
+    <update id="withdraw">
+        UPDATE DEPOSIT_ACCOUNT_TBL
+        SET balance = balance - #{amount},
+            updated_at = NOW()
+        WHERE dat_id = #{accountId}
+        AND account_status = 'ACTIVE'
+        AND balance >= #{amount}
+    </update>
+
+    <!-- 적금 계좌 입금 -->
+    <update id="depositSavings">
+        UPDATE SAVINGS_ACCOUNT_TBL
+        SET balance = balance + #{amount},
+            updated_at = NOW()
+        WHERE sat_id = #{accountId}
+        AND account_status = 'ACTIVE'
+    </update>
+
+    <!-- 적금 계좌 출금 -->
+    <update id="withdrawSavings">
+        UPDATE SAVINGS_ACCOUNT_TBL
+        SET balance = balance - #{amount},
+            updated_at = NOW()
+        WHERE sat_id = #{accountId}
+        AND account_status = 'ACTIVE'
+        AND balance >= #{amount}
+    </update>
+
+    <!-- 예금 거래 내역 생성 -->
+    <insert id="createDepositTransaction" parameterType="com.boot.sound.deposit.dto.DepositDTO">
+        INSERT INTO DEPOSIT_TRANSACTION_TBL (
+            dat_id,
+            transaction_type,
+            amount,
+            balance,
+            description,
+            created_at
+        ) VALUES (
+            #{id},
+            #{transactionType},
+            #{amount},
+            #{balance},
+            #{description},
+            NOW()
+        )
+    </insert>
+
+    <!-- 적금 거래 내역 생성 -->
+    <insert id="createSavingsTransaction" parameterType="com.boot.sound.deposit.dto.DepositDTO">
+        INSERT INTO SAVINGS_TRANSACTION_TBL (
+            sat_id,
+            transaction_type,
+            amount,
+            balance,
+            description,
+            created_at
+        ) VALUES (
+            #{id},
+            #{transactionType},
+            #{amount},
+            #{balance},
+            #{description},
+            NOW()
+        )
+    </insert>
+
+    <!-- 예금 계좌 거래 내역 조회 -->
+    <select id="getDepositTransactions" resultType="com.boot.sound.deposit.dto.DepositDTO">
+        SELECT 
+            dtt_id as id,
+            dat_id as accountId,
+            transaction_type as transactionType,
+            amount,
+            balance,
+            description,
+            created_at as createdAt
+        FROM DEPOSIT_TRANSACTION_TBL
+        WHERE dat_id = #{accountId}
+        AND created_at BETWEEN #{startDate} AND #{endDate}
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 적금 계좌 거래 내역 조회 -->
+    <select id="getSavingsTransactions" resultType="com.boot.sound.deposit.dto.DepositDTO">
+        SELECT 
+            stt_id as id,
+            sat_id as accountId,
+            transaction_type as transactionType,
+            amount,
+            balance,
+            description,
+            created_at as createdAt
+        FROM SAVINGS_TRANSACTION_TBL
+        WHERE sat_id = #{accountId}
+        AND created_at BETWEEN #{startDate} AND #{endDate}
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 예금 계좌 자동이체 설정 -->
+    <update id="setAutoTransfer">
+        UPDATE DEPOSIT_ACCOUNT_TBL
+        SET auto_transfer_enabled = #{enabled},
+            auto_transfer_amount = #{amount},
+            auto_transfer_day = #{transferDay},
+            updated_at = NOW()
+        WHERE dat_id = #{accountId}
+        AND account_status = 'ACTIVE'
+    </update>
+
+    <!-- 자동이체 대상 계좌 조회 -->
+    <select id="getAutoTransferAccounts" resultType="com.boot.sound.deposit.dto.DepositDTO">
+        SELECT 
+            dat_id as id,
+            customer_id as customerId,
+            product_id as productId,
+            account_number as accountNumber,
+            account_password as accountPassword,
+            balance,
+            interest_rate as interestRate,
+            account_status as accountStatus,
+            auto_transfer_enabled as autoTransferEnabled,
+            auto_transfer_amount as autoTransferAmount,
+            auto_transfer_day as autoTransferDay,
+            created_at as createdAt,
+            updated_at as updatedAt
+        FROM DEPOSIT_ACCOUNT_TBL
+        WHERE account_status = 'ACTIVE'
+        AND auto_transfer_enabled = true
+        AND auto_transfer_day = #{today}
+    </select>
+
+    <!-- 자동이체 실행 -->
+    <update id="executeAutoTransfer">
+        UPDATE DEPOSIT_ACCOUNT_TBL
+        SET balance = balance + #{amount},
+            updated_at = NOW()
+        WHERE dat_id = #{accountId}
+        AND account_status = 'ACTIVE'
+    </update>
+
+    <!-- 만기일 도래 적금 계좌 조회 -->
+    <select id="getMaturedSavingsAccounts" resultType="com.boot.sound.deposit.dto.DepositDTO">
+        SELECT 
+            sat_id as id,
+            customer_id as customerId,
+            product_id as productId,
+            account_number as accountNumber,
+            account_password as accountPassword,
+            balance,
+            interest_rate as interestRate,
+            account_status as accountStatus,
+            monthly_amount as monthlyAmount,
+            maturity_date as maturityDate,
+            created_at as createdAt,
+            updated_at as updatedAt
+        FROM SAVINGS_ACCOUNT_TBL
+        WHERE account_status = 'ACTIVE'
+        AND maturity_date = #{today}
+    </select>
+
+    <!-- 적금 계좌 만기 처리 -->
+    <update id="processMaturity">
+        UPDATE SAVINGS_ACCOUNT_TBL
+        SET balance = balance + #{interestAmount},
+            updated_at = NOW()
+        WHERE sat_id = #{accountId}
+        AND account_status = 'ACTIVE'
+    </update>
+
+    <!-- 적금 계좌 상태 변경 -->
+    <update id="updateSavingsAccountStatus">
+        UPDATE SAVINGS_ACCOUNT_TBL
+        SET account_status = #{status},
+            updated_at = NOW()
+        WHERE sat_id = #{accountId}
+    </update>
+
+    <!-- 이자 지급 대상 예금 계좌 조회 -->
+    <select id="getInterestPaymentDepositAccounts" resultType="com.boot.sound.deposit.dto.DepositDTO">
+        SELECT 
+            dat_id as id,
+            customer_id as customerId,
+            product_id as productId,
+            account_number as accountNumber,
+            account_password as accountPassword,
+            balance,
+            interest_rate as interestRate,
+            account_status as accountStatus,
+            auto_transfer_enabled as autoTransferEnabled,
+            auto_transfer_amount as autoTransferAmount,
+            auto_transfer_day as autoTransferDay,
+            created_at as createdAt,
+            updated_at as updatedAt
+        FROM DEPOSIT_ACCOUNT_TBL
+        WHERE account_status = 'ACTIVE'
+        AND DAY(created_at) = DAY(#{today})
+    </select>
+
+    <!-- 이자 지급 대상 적금 계좌 조회 -->
+    <select id="getInterestPaymentSavingsAccounts" resultType="com.boot.sound.deposit.dto.DepositDTO">
+        SELECT 
+            sat_id as id,
+            customer_id as customerId,
+            product_id as productId,
+            account_number as accountNumber,
+            account_password as accountPassword,
+            balance,
+            interest_rate as interestRate,
+            account_status as accountStatus,
+            monthly_amount as monthlyAmount,
+            maturity_date as maturityDate,
+            created_at as createdAt,
+            updated_at as updatedAt
+        FROM SAVINGS_ACCOUNT_TBL
+        WHERE account_status = 'ACTIVE'
+        AND DAY(created_at) = DAY(#{today})
+    </select>
+
+    <!-- 예금 계좌 이자 지급 -->
+    <update id="payDepositInterest">
+        UPDATE DEPOSIT_ACCOUNT_TBL
+        SET balance = balance + #{interestAmount},
+            updated_at = NOW()
+        WHERE dat_id = #{accountId}
+        AND account_status = 'ACTIVE'
+    </update>
+
+    <!-- 적금 계좌 이자 지급 -->
+    <update id="paySavingsInterest">
+        UPDATE SAVINGS_ACCOUNT_TBL
+        SET balance = balance + #{interestAmount},
+            updated_at = NOW()
+        WHERE sat_id = #{accountId}
+        AND account_status = 'ACTIVE'
+    </update>
+
+    <!-- 예금 계좌 비밀번호 변경 -->
+    <update id="changeDepositAccountPassword">
+        UPDATE DEPOSIT_ACCOUNT_TBL
+        SET account_password = #{newPassword},
+            updated_at = NOW()
+        WHERE dat_id = #{accountId}
+        AND account_password = #{oldPassword}
+        AND account_status = 'ACTIVE'
+    </update>
+
+    <!-- 적금 계좌 비밀번호 변경 -->
+    <update id="changeSavingsAccountPassword">
+        UPDATE SAVINGS_ACCOUNT_TBL
+        SET account_password = #{newPassword},
+            updated_at = NOW()
+        WHERE sat_id = #{accountId}
+        AND account_password = #{oldPassword}
+        AND account_status = 'ACTIVE'
+    </update>
+    
+    <!-- 예금 상품 추가  -->
+    <insert id="addDepositProduct" parameterType="com.boot.sound.deposit.dto.DepositDTO">
+    INSERT INTO DEPOSIT_PRODUCT_TBL
+    (product_name, product_type, interest_rate, min_amount, max_amount, term_months, description, created_at, updated_at)
+    VALUES
+    (#{productName}, #{productType}, #{interestRate}, #{minAmount}, #{maxAmount}, #{termMonths}, #{productDescription}, NOW(), NOW())
+</insert>
+    <!-- 예금 상품 수정  -->
+    <update id="updateDepositProduct" parameterType="map">
+    UPDATE DEPOSIT_PRODUCT_TBL
+    SET
+        product_name = #{product.productName},
+        product_type = #{product.productType},
+        interest_rate = #{product.interestRate},
+        min_amount = #{product.minAmount},
+        max_amount = #{product.maxAmount},
+        term_months = #{product.termMonths},
+        description = #{product.productDescription},
+        updated_at = NOW()
+    WHERE product_id = #{productId}
+</update>
+    <!-- 예금 상품 삭제  -->
+    <delete id="deleteDepositProduct" parameterType="int">
+    DELETE FROM DEPOSIT_PRODUCT_TBL WHERE product_id = #{productId}
+</delete>
+</mapper> 

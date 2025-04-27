@@ -3,7 +3,6 @@
 ================================ */
 .nav-bar {
   backdrop-filter: blur(10px); /* 유리처럼 흐릿하게 */
-  padding: 2px 15px;
   position: relative;
   top: 0;
   width: 100%;
@@ -103,11 +102,12 @@
 
 /* 드롭다운 메뉴 기본 상태 (숨김) */
 .NavDropdown-menu .dropdown-menu {
-  width: 100vw !important;
+  width: 100% !important;
   position: fixed !important;
   left: 0 !important;
   top: 60px !important;
   margin: 0 !important;
+  margin-top: -5px !important;
   border: none;
   border-radius: 0;
   opacity: 0;

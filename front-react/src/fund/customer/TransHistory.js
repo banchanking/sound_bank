@@ -3,17 +3,16 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import RefreshToken from "../../jwt/RefreshToken";
 import styles from "../../Css/fund/MyFund.module.css";
-import FundCustomer from "../admin/FundCustomer";
 import MyFund from "./MyFund";
 import { Chart } from "react-google-charts";
 import Papa from "papaparse";
 
 const TransHistory = () => {
   const navigate = useNavigate();
+  const customer_id = localStorage.getItem("customerId");
   const [transactions, setTransactions] = useState([]);
   const [closedAccounts, setClosedAccounts] = useState([]);
   const [modalType, setModalType] = useState(null);
-  const [showModal, setShowModal] = useState(false);
   const [selectedTx, setSelectedTx] = useState(null);
   const [password, setPassword] = useState("");
   const [fundRates, setFundRates] = useState({});
@@ -29,9 +28,10 @@ const TransHistory = () => {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("auth_token");
-    if (!token) {
-      setShowModal(true);
+    if (!customer_id) {
+      const goLogin = window.confirm("로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?");
+      if (goLogin) navigate("/login");
+      else navigate("/");
       return;
     }
     fetchTransactions();
@@ -92,24 +92,14 @@ const TransHistory = () => {
     }
   };
 
-  const handleConfirm = () => navigate("/login");
-  const handleCancel = () => navigate("/");
-
   const formatCurrency = (value) => `${Math.round(value).toLocaleString()}원`;
 
   return (
-    <>
-      {showModal && (
-        <FundCustomer
-          message="로그인이 필요한 서비스입니다."
-          onConfirm={handleConfirm}
-          onCancel={handleCancel}
-        />
-      )}
 
       <div className={styles.fundContainer}>
         <h2 className={styles.fundTitle}>My펀드 거래내역</h2>
         <div className={styles.fundTable}>
+          <br></br><br></br>
           <button className={styles.fundbuttonGroup} onClick={() => openModal("BUY")}>펀드 매수 내역</button>
           <button className={styles.fundbuttonGroup} onClick={() => openModal("SELL")}>펀드 환매 내역</button>
           <button className={styles.fundbuttonGroup} onClick={() => openModal("CLOSED")}>해지된 My펀드</button>
@@ -143,7 +133,7 @@ const TransHistory = () => {
           return (
             <div className={styles.fundmodalOverlay}>
               <div className={styles.fundmodalContent}>
-                <button className={styles.modalCloseBtn} onClick={closeModal}>X</button>
+                <button className={styles.fundmodalCloseBtn} onClick={closeModal}>X</button>
                 <h3>{selectedTx.fund_name} 정산 요약</h3>
                 <Chart
                   chartType="ColumnChart"
@@ -164,21 +154,40 @@ const TransHistory = () => {
                 <p style={{ marginTop: "10px", fontWeight: "bold" }}>
                   현재 평가 금액: {formatCurrency(currentValue)}
                 </p>
-                <div style={{ marginTop: "20px" }}>
+                <div style={{ marginTop: "20px", display: "flex", flexDirection: "column", alignItems: "center" }}>
                   <input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="펀드 계좌 비밀번호"
+                    style={{
+                      padding: "10px",
+                      fontSize: "1rem",
+                      marginBottom: "10px",
+                      width: "300px",
+                      textAlign: "center",
+                    }}
                   />
-                  <button onClick={handleSellConfirm}>환매 신청</button>
+                  <button
+                    onClick={handleSellConfirm}
+                    style={{
+                      padding: "10px 20px",
+                      fontSize: "1rem",
+                      backgroundColor: "#2d8cf0",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "5px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    환매 신청
+                  </button>
                 </div>
               </div>
             </div>
           );
         })()}
       </div>
-    </>
   );
 };
 

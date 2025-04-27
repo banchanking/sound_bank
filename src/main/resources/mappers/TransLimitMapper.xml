@@ -31,7 +31,7 @@
 	  FROM transfer_tbl t
 	  JOIN approval_tbl a ON t.transfer_id = a.transfer_id
 	  WHERE t.customer_id = #{customer_id}
-	    AND a.status = '승인'
+	    AND t.status = '승인'
 	  ORDER BY a.approval_date DESC
 	  LIMIT 1
 	</select>

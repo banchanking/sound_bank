@@ -1,48 +1,65 @@
-/* LoanInterestList.module.css */
+/* LoanInterestList.module.css (사뱅스타일 + 테이블 행 호버 효과 추가) */
 
 .interestContainer {
-  padding: 2rem;
   max-width: 1200px;
-  margin: 0 auto;
-  background-color: white;
-  color: black;
-  border-radius: 12px;
+  min-height: 560px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #ffffff;
+  border: 1.5px solid #e2e4e7;
+  border-radius: 24px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.05);
+  animation: fadeIn 0.4s ease;
 }
 
 .interestTitle {
   text-align: center;
   font-size: 1.8rem;
+  font-weight: 700;
   margin-bottom: 1rem;
-  color: black;
+  color: #222;
+  animation: fadeInUp 0.4s ease;
 }
 
 .interestSearch {
   display: flex;
   justify-content: center;
+  gap: 0.75rem;
   margin-bottom: 1.5rem;
-  gap: 0.5rem;
+  animation: fadeInUp 0.4s ease;
 }
 
 .interestSearch input {
-  padding: 0.5rem;
-  width: 250px;
-  border: 1px solid #555;
-  border-radius: 6px;
-  background-color: #1e1e1e;
-  color: white;
+  flex: 1;
+  max-width: 250px;
+  padding: 0.6rem 1rem;
+  border: 1.5px solid #e2e4e7;
+  border-radius: 7px;
+  background-color: #fafafa;
+  color: #333;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+  animation: fadeInUp 0.4s ease;
 }
 
 .interestSearch button {
-  padding: 0.5rem 1rem;
-  background-color: #333;
-  color: white;
+  padding: 0.6rem 1.2rem;
+  background-color: #3a3a3c;
+  color: #ffffff;
   border: none;
-  border-radius: 6px;
+  border-radius: 7px;
   cursor: pointer;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.4s ease, box-shadow 0.4s ease;
+  animation: fadeInUp 0.5s ease;
 }
 
 .interestSearch button:hover {
-  background-color: #555;
+  background-color: #444;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .interestTable {
@@ -51,20 +68,28 @@
   margin-bottom: 1.5rem;
   font-size: 0.9rem;
   table-layout: fixed;
+  animation: fadeInUp 0.4s ease;
 }
 
 .interestTable th,
 .interestTable td {
-  border: 1px solid #444;
+  border: 1.5px solid #e2e4e7;
   padding: 0.6rem;
   text-align: center;
-  background-color: white;
-  color: black;
+  vertical-align: middle;
+  /* background-color 제거 */
+  color: #333;
+  animation: fadeInUp 0.4s ease;
 }
 
 .interestTable th {
-  background-color: white;
-  font-weight: bold;
+  background-color: #f4f4f4;
+  font-weight: 600;
+}
+
+.interestTable tbody tr:hover {
+  background-color: #f6fbfd;
+  transition: background-color 0.3s ease;
 }
 
 .interestPagination {
@@ -72,24 +97,50 @@
   justify-content: center;
   gap: 0.5rem;
   margin-top: 1rem;
+  animation: fadeInUp 0.4s ease;
 }
 
 .interestPagination button {
-  padding: 0.4rem 0.8rem;
-  background-color: #333;
-  color: white;
+  padding: 0.6rem 1.2rem;
+  background-color: #3a3a3c;
+  color: #ffffff;
   border: none;
-  border-radius: 4px;
+  border-radius: 7px;
   cursor: pointer;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.4s ease, box-shadow 0.4s ease;
+  animation: fadeInUp 0.5s ease;
 }
 
-.interestPagination button.active,
-.interestPagination button:hover {
-  background-color: #666;
+.interestPagination button:hover,
+.interestPagination button.active {
+  background-color: #444;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .interestEmpty {
   text-align: center;
   margin-top: 1rem;
-  color: #888;
+  color: #777;
+  animation: fadeInUp 0.4s ease;
+}
+
+/* ——— 애니메이션 정의 (맨 아래) ——— */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

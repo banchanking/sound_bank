@@ -4,10 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.boot.sound.inquire.account.AccountDAO;
 import com.boot.sound.inquire.account.AccountDTO;
 import com.boot.sound.jwt.dto.CredentialsDTO;
 import com.boot.sound.jwt.dto.SignUpDTO;
+import com.boot.sound.jwt.dto.UpdateDTO;
 import com.boot.sound.jwt.exception.AppException;
 import com.boot.sound.jwt.mappers.CustomerMapper;
 import com.boot.sound.transfer.transLimit.ApprovalDTO;
@@ -19,6 +22,11 @@ import com.boot.sound.jwt.config.EncryptionUtils; // 암호화 유틸 불러오�
 import java.math.BigDecimal;
 import java.nio.CharBuffer;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 
 @RequiredArgsConstructor
@@ -29,6 +37,7 @@ public class CustomerService {
     private CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
     private final PasswordEncoder encoder;
+
 
     @Autowired
     private AccountDAO accountDAO;
@@ -171,4 +180,114 @@ public class CustomerService {
                 .orElseThrow(() -> new AppException("Unknown customer", HttpStatus.NOT_FOUND));
         return customerMapper.toCustomerDTO(user);
     }
+    
+    // 회원정보 조회
+    @Transactional
+    public CustomerDTO myInfoList(String customerId) {
+    	CustomerDTO dto = customerMapper.myInfoList(customerId);
+    	
+    	Map<String, String> map = customerMapper.encodingInfo(customerId);
+    	String encodedResidentNumber = map.get("customer_resident_number");
+    	String encodedPhoneNumber = map.get("customer_phone_number");
+    	dto.setCustomer_resident_number(EncryptionUtils.decrypt(encodedResidentNumber));
+    	dto.setCustomer_phone_number(EncryptionUtils.decrypt(encodedPhoneNumber));
+    	return dto;
+    }
+    
+    // 회원정보 수정
+    @Transactional
+    public int updateMyInfo(UpdateDTO dto) {
+        CustomerDTO customer = new CustomerDTO();
+        
+        // 암호화 필요한 필드들 처리
+        // 주민번호 암호화 (null 체크)
+        if (dto.getCustomer_resident_number() != null) {
+            customer.setCustomer_resident_number(EncryptionUtils.encrypt(dto.getCustomer_resident_number()));
+        }
+
+        // 전화번호 암호화 (null 체크)
+        if (dto.getCustomerPhoneNumber() != null) {
+            customer.setCustomerPhoneNumber(EncryptionUtils.encrypt(dto.getCustomerPhoneNumber()));
+        }
+        
+        if (dto.getCustomerPassword() != null) {
+        customer.setCustomer_password(encoder.encode(CharBuffer.wrap(dto.getCustomerPassword())));
+        }
+        // 일반 필드들 매핑
+        customer.setCustomer_id(dto.getCustomerId());
+        customer.setCustomer_name(dto.getCustomerName());
+        customer.setCustomer_email(dto.getCustomer_email());
+        customer.setCustomer_address(dto.getCustomer_address());
+        customer.setCustomer_job(dto.getCustomer_job());
+        customer.setCustomer_risk_type(dto.getCustomer_risk_type());
+        
+        if (dto.getCustomer_resident_number() != null) {
+            customer.setCustomer_resident_number(EncryptionUtils.encrypt(dto.getCustomer_resident_number()));
+
+            // 주민등록번호로 생년월일 세팅
+            String front = dto.getCustomer_resident_number().substring(0, 6);
+            String centuryCode = dto.getCustomer_resident_number().substring(7, 8);
+            String birthYearPrefix;
+
+            switch (centuryCode) {
+                case "1": case "2":
+                    birthYearPrefix = "19";
+                    break;
+                case "3": case "4":
+                    birthYearPrefix = "20";
+                    break;
+                default:
+                    throw new IllegalArgumentException("유효하지 않은 주민번호입니다.");
+            }
+
+            String fullBirth = birthYearPrefix + front;
+            String formatted = fullBirth.substring(0, 4) + "-" + fullBirth.substring(4, 6) + "-" + fullBirth.substring(6, 8);
+            customer.setCustomer_birthday(formatted);
+        }
+
+        return customerMapper.updateMyInfo(customer);
+    }
+    
+    @Transactional
+    public Boolean checkPassword(CredentialsDTO dto) {
+
+        CustomerDTO user = customerRepository.findById(dto.getCustomerId())
+                .orElseThrow(() -> new AppException("UnKnown user", HttpStatus.NOT_FOUND));
+
+        if (encoder.matches(CharBuffer.wrap(dto.getCustomer_password()), user.getCustomer_password())) {
+            return true;
+        }
+
+        throw new AppException("Invalid password", HttpStatus.BAD_REQUEST);
+    }
+    
+    @Transactional
+    public List<String> deleteCustomerIfNoAssets(String customerId) {
+        Map<String, Object> assets = customerMapper.checkCustomerAssets(customerId);
+
+        List<String> activeAssets = new ArrayList<>();
+
+        // Map을 돌면서 상품이 존재하는 것만 뽑아오기
+        assets.forEach((key, value) -> {
+            if (value != null) {
+                activeAssets.add(value.toString()); // "외환 지갑", "출금계좌", "펀드계좌" 등
+            }
+        });
+
+        if (!activeAssets.isEmpty()) {
+            // 가입된 상품이 하나라도 있으면, 리스트 반환
+            return activeAssets;
+        }
+
+        // 가입된 상품이 없으면 삭제 진행
+        customerMapper.deleteCustomer(customerId);
+        return Collections.emptyList(); // 가입된 상품 없음
+    }
+
+
+
+
+    
+    
+    
 }

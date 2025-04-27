@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import RefreshToken from "../../jwt/RefreshToken";
+import Papa from "papaparse"; // CSV 파싱 라이브러리
 import styles from "../../Css/fund/FundAdmin.module.css";
+import style from "../../Css/exchange/ExList.module.css"; // 새로운 스타일 파일
 
 const CustomerTransHistory = () => {
   const [transactions, setTransactions] = useState([]); // 전체 거래 내역 상태
+  const [fundRates, setFundRates] = useState({}); // 펀드 수익률 데이터
   const [search, setSearch] = useState(""); // 검색어 상태
   const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태
   const itemsPerPage = 10; // 페이지당 표시할 항목 수
@@ -21,11 +24,58 @@ const CustomerTransHistory = () => {
     fetchData();
   }, []);
 
+  // 펀드 수익률 데이터 가져오기
+  useEffect(() => {
+    Papa.parse("/data/fundList_updated.csv", {
+      header: true,
+      download: true,
+      complete: (results) => {
+        const map = {};
+        results.data.forEach((row) => {
+          const name = row.fund_name?.trim();
+          if (name) {
+            map[name] = {
+              return_1m: parseFloat(row.return_1m || 0), // 그대로 사용
+              return_3m: parseFloat(row.return_3m || 0), // 그대로 사용
+              return_6m: parseFloat(row.return_6m || 0), // 그대로 사용
+              return_12m: parseFloat(row.return_12m || 0), // 그대로 사용
+            };
+          }
+        });
+        setFundRates(map);
+      },
+    });
+  }, []);
+
+  // 현재가 계산 함수
+  const calculateCurrentValue = (fundName, units, price) => {
+    if (!fundName || !units || !price) {
+      console.error("Invalid input for calculateCurrentValue:", { fundName, units, price });
+      return 0;
+    }
+
+    const fund = fundRates[fundName?.trim()];
+    if (!fund) {
+      console.error("No fund data found for:", fundName);
+      return 0;
+    }
+
+    // 12개월 수익률 기준으로 현재가 계산
+    const rate = fund.return_12m / 100; // 퍼센트 값을 소수로 변환
+    const currentValue = units * price * (1 + rate); // 현재가 계산
+    console.log("현재가 계산:", { fundName, units, price, rate, currentValue });
+    return currentValue;
+  };
+  
   // 수익률 계산 함수
   const calculateReturnRate = (price, current) => {
-    if (!price || !current) return "-";
-    const rate = ((current - price) / price) * 100;
-    return rate.toFixed(2) + "%";
+    if (!price || !current || price <= 0) {
+      console.error("Invalid input for calculateReturnRate:", { price, current });
+      return "-"; // 값이 없거나 단가가 0 이하인 경우
+    }
+    const rate = (current - price) / price; // 수익률 계산
+    console.log("수익률 계산:", { price, current, rate });
+    return rate.toFixed(2) + "%"; // 소수점 2자리까지 표시 후 % 추가
   };
 
   // 검색 필터링
@@ -66,79 +116,74 @@ const CustomerTransHistory = () => {
             <th>펀드명</th>
             <th>거래일</th>
             <th>거래유형</th>
-            <th>투자금액</th>
-            <th>단가</th>
+            <th>투자금액 (원화)</th>
+            <th>단가 (원화)</th>
             <th>좌수</th>
-            <th>현재가</th>
-            <th>수익률</th>
+            <th>현재가 (원화)</th>
+            <th>수익률 (%)</th>
             <th>상태</th>
           </tr>
         </thead>
         <tbody>
-          {currentTransactions.map((tx) => (
-            <tr key={tx.fundTransactionId}>
-              <td>{tx.customerId}</td>
-              <td>{tx.fund_name}</td>
-              <td>{tx.fundTransactionDate}</td>
-              <td>{tx.fundTransactionType}</td>
-              <td>{tx.fundInvestAmount?.toLocaleString()}</td>
-              <td>{tx.fundPricePerUnit}</td>
-              <td>{tx.fundUnitsPurchased}</td>
-              <td>{tx.fundCurrentValue}</td>
-              <td>{calculateReturnRate(tx.fundPricePerUnit, tx.fundCurrentValue)}</td>
-              <td>{tx.status}</td>
-            </tr>
-          ))}
+          {currentTransactions.map((tx) => {
+            const currentValue = calculateCurrentValue(
+              tx.fund_name,
+              tx.fundUnitsPurchased,
+              tx.fundPricePerUnit
+            );
+            const returnRate = calculateReturnRate(tx.fundPricePerUnit, currentValue);
+
+            return (
+              <tr key={tx.fundTransactionId}>
+                <td>{tx.customerId}</td>
+                <td>{tx.fund_name}</td>
+                <td>{tx.fundTransactionDate}</td>
+                <td>{tx.fundTransactionType}</td>
+                <td>{tx.fundInvestAmount?.toLocaleString()}</td>
+                <td>{tx.fundPricePerUnit?.toLocaleString()}</td>
+                <td>{tx.fundUnitsPurchased}</td>
+                <td>{currentValue?.toLocaleString()}</td> {/* 현재가 */}
+                <td>{returnRate}</td> {/* 수익률 */}
+                <td>{tx.status}</td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
 
       {/* 페이지네이션 */}
-      <div className={styles.fundpagination}>
-        <span
-          onClick={() => handlePageChange(1)} // 첫 페이지로 이동
-          style={{
-            cursor: currentPage === 1 ? "not-allowed" : "pointer",
-            color: currentPage === 1 ? "#ccc" : "#007bff",
-          }}
+      <div
+        className={style.pagination}
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: "10px",
+          marginTop: "20px",
+        }}
+      >
+        <button
+          className={style.exListBtn}
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} // 이전 페이지로 이동
+          disabled={currentPage === 1}
         >
-          {"<<"}
-        </span>
-        <span
-          onClick={() => handlePageChange(Math.max(currentPage - 1, 1))} // 이전 페이지로 이동
-          style={{
-            cursor: currentPage === 1 ? "not-allowed" : "pointer",
-            color: currentPage === 1 ? "#ccc" : "#007bff",
-          }}
+          ◀ 이전
+        </button>
+        <span>
+          {currentPage} / {Math.ceil(filtered.length / itemsPerPage)}
+        </span>{" "}
+        {/* 현재 페이지 / 총 페이지 */}
+        <button
+          className={style.exListBtn}
+          onClick={() =>
+            setCurrentPage((prev) =>
+              Math.min(prev + 1, Math.ceil(filtered.length / itemsPerPage))
+            )
+          } // 다음 페이지로 이동
+          disabled={currentPage === Math.ceil(filtered.length / itemsPerPage)}
         >
-          {"<"}
-        </span>
-        {Array.from({ length: Math.ceil(filtered.length / itemsPerPage) }, (_, i) => (
-          <span
-            key={i + 1}
-            className={currentPage === i + 1 ? styles.activePage : ""}
-            onClick={() => handlePageChange(i + 1)}
-          >
-            {i + 1}
-          </span>
-        ))}
-        <span
-          onClick={() => handlePageChange(Math.min(currentPage + 1, Math.ceil(filtered.length / itemsPerPage)))} // 다음 페이지로 이동
-          style={{
-            cursor: currentPage === Math.ceil(filtered.length / itemsPerPage) ? "not-allowed" : "pointer",
-            color: currentPage === Math.ceil(filtered.length / itemsPerPage) ? "#ccc" : "#007bff",
-          }}
-        >
-          {">"}
-        </span>
-        <span
-          onClick={() => handlePageChange(Math.ceil(filtered.length / itemsPerPage))} // 마지막 페이지로 이동
-          style={{
-            cursor: currentPage === Math.ceil(filtered.length / itemsPerPage) ? "not-allowed" : "pointer",
-            color: currentPage === Math.ceil(filtered.length / itemsPerPage) ? "#ccc" : "#007bff",
-          }}
-        >
-          {">>"}
-        </span>
+          다음 ▶
+        </button>
       </div>
     </div>
   );

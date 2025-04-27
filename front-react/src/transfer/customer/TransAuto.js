@@ -29,12 +29,20 @@ function TransAuto() {
   useEffect(() => {
     const id = getCustomerID();
     if (!id) {
-      alert('로그인이 필요합니다');
-      navigate('/login');
-      return;
+      if (!id) {
+        const goLogin = window.confirm(
+          "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
+        );
+        if (goLogin) {
+          navigate("/login");
+        } else {
+          navigate("/");
+        }
+        return;      
     }
+  }
     setForm(prev => ({ ...prev, customer_id: id }));
-    RefreshToken.get(`http://localhost:8081/api/accounts/allAccount/${id}`)
+    RefreshToken.get(`/accounts/allAccount/${id}`)
       .then(res => {
         const list = Array.isArray(res.data) ? res.data : Object.values(res.data).flat();
         setAccounts(list);
@@ -75,7 +83,7 @@ function TransAuto() {
     }
 
     try {
-      const res = await RefreshToken.post('http://localhost:8081/api/transAuto/add', form);
+      const res = await RefreshToken.post('/transAuto/add', form);
       if (res.data === '비밀번호 오류') {
         alert('비밀번호가 틀렸습니다.');
       } else {
