@@ -17,11 +17,19 @@ function TransMulti() {
   const token = localStorage.getItem('auth_token');
 
   useEffect(() => {
-    if (!customer_id || !token) {
-      alert('로그인이 필요합니다');
-      navigate('/login');
-      return;
+    if (!customer_id) {
+      if (!customer_id) {
+        const goLogin = window.confirm(
+          "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
+        );
+        if (goLogin) {
+          navigate("/login");
+        } else {
+          navigate("/");
+        }
+        return;      
     }
+  }
 
     RefreshToken.get(`/accounts/allAccount/${customer_id}`, {
       headers: { Authorization: `Bearer ${token}` }
