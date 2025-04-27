@@ -20,6 +20,7 @@ public class DepositDTO {
     private String accountStatus;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String nickname;
 
     // 상품 관련 필드
     private String productName;
