@@ -232,29 +232,6 @@ const Header = () => {
                       </NavDropdown.Item>
                     </li>
                   </ul>
-                  <ul>
-                    <NavDropdown.Item as={Link} to="/depositManagement">
-                      관리자
-                    </NavDropdown.Item>
-                    <li>
-                      <NavDropdown.Item
-                        className="sub-item"
-                        as={Link}
-                        to="/depositProduct"
-                      >
-                        예금상품추가
-                      </NavDropdown.Item>
-                    </li>
-                    <li>
-                      <NavDropdown.Item
-                        className="sub-item"
-                        as={Link}
-                        to="/savingsProduct"
-                      >
-                        적금상품추가
-                      </NavDropdown.Item>
-                    </li>
-                  </ul>
                 </div>
               </div>
             </NavDropdown>
@@ -311,7 +288,7 @@ const Header = () => {
 
                   <ul>
                     <NavDropdown.Item as={Link} to="/transfer">
-                      이체(고객)
+                      이체
                     </NavDropdown.Item>
                     <li>
                       <NavDropdown.Item
@@ -350,30 +327,6 @@ const Header = () => {
                       </NavDropdown.Item>
                     </li>
                   </ul>
-
-                  <ul>
-                    <NavDropdown.Item as={Link} to="/transferAdmin">
-                      이체(관리자)
-                    </NavDropdown.Item>
-                    <li>
-                      <NavDropdown.Item
-                        className="sub-item"
-                        as={Link}
-                        to="/multiAdmin"
-                      >
-                        다건이체 승인
-                      </NavDropdown.Item>
-                    </li>
-                    <li>
-                      <NavDropdown.Item
-                        className="sub-item"
-                        as={Link}
-                        to="/limitAdmin"
-                      >
-                        이체한도 심사
-                      </NavDropdown.Item>
-                    </li>
-                  </ul>
                 </div>
               </div>
             </NavDropdown>
@@ -397,7 +350,7 @@ const Header = () => {
                 <div className="deposit-saving-row">
                   <ul>
                     <NavDropdown.Item as={Link} to="#">
-                      고객
+                      대출 상품
                     </NavDropdown.Item>
                     <li>
                       <NavDropdown.Item
@@ -408,30 +361,27 @@ const Header = () => {
                         대출 신청
                       </NavDropdown.Item>
                     </li>
-                    <li>
-                      <NavDropdown.Item
-                        className="sub-item"
-                        as={Link}
-                        to="/loanStatus"
-                      >
-                        대출 진행현황
-                      </NavDropdown.Item>
-                    </li>
-                    <li>
-                      <NavDropdown.Item
-                        className="sub-item"
-                        as={Link}
-                        to="/loanManage"
-                      >
-                        대출 관리
-                      </NavDropdown.Item>
-                    </li>
 
                     <li>
                       <NavDropdown.Item
                         className="sub-item"
                         as={Link}
-                        to="/myLoanDetail"
+                        to="/LoanCalculator"
+                      >
+                        대출 계산기{" "}
+                      </NavDropdown.Item>
+                    </li>
+                  </ul>
+
+                  <ul>
+                    <NavDropdown.Item as={Link} to="#">
+                      대출 관리
+                    </NavDropdown.Item>
+                    <li>
+                      <NavDropdown.Item
+                        className="sub-item"
+                        as={Link}
+                        to="/MyLoanStatus"
                       >
                         나의 대출정보{" "}
                       </NavDropdown.Item>
@@ -440,59 +390,18 @@ const Header = () => {
                       <NavDropdown.Item
                         className="sub-item"
                         as={Link}
-                        to="/loanService"
+                        to="/MyInterest"
                       >
-                        기타 서비스{" "}
-                      </NavDropdown.Item>
-                    </li>
-                  </ul>
-                  <ul>
-                    <NavDropdown.Item as={Link} to="#">
-                      관리자
-                    </NavDropdown.Item>
-                    <li>
-                      <NavDropdown.Item
-                        className="sub-item"
-                        as={Link}
-                        to="/loanList"
-                      >
-                        대출상품목록
+                        이자 납부 내역{" "}
                       </NavDropdown.Item>
                     </li>
                     <li>
                       <NavDropdown.Item
                         className="sub-item"
                         as={Link}
-                        to="/loanInsertForm"
+                        to="/MyLateInterest"
                       >
-                        대출상품등록
-                      </NavDropdown.Item>
-                    </li>
-                    <li>
-                      <NavDropdown.Item
-                        className="sub-item"
-                        as={Link}
-                        to="/loanCustomerList"
-                      >
-                        대출고객목록
-                      </NavDropdown.Item>
-                    </li>
-                    <li>
-                      <NavDropdown.Item
-                        className="sub-item"
-                        as={Link}
-                        to="/loanInterestList"
-                      >
-                        대출이자납입내역
-                      </NavDropdown.Item>
-                    </li>
-                    <li>
-                      <NavDropdown.Item
-                        className="sub-item"
-                        as={Link}
-                        to="/loanLateInterestList"
-                      >
-                        연체이력고객목록
+                        나의 연체 이력{" "}
                       </NavDropdown.Item>
                     </li>
                   </ul>
@@ -518,18 +427,10 @@ const Header = () => {
               >
                 <div className="deposit-saving-row">
                   <ul>
-                    <NavDropdown.Item as={Link} to="/fund">
+                    <NavDropdown.Item as={Link} to="#">
                       펀드 상품
                     </NavDropdown.Item>
-                    <li>
-                      <NavDropdown.Item
-                        className="sub-item"
-                        as={Link}
-                        to="/fundSearch"
-                      >
-                        펀드 상품검색
-                      </NavDropdown.Item>
-                    </li>
+
                     <li>
                       <NavDropdown.Item
                         className="sub-item"
@@ -559,7 +460,7 @@ const Header = () => {
                     </li>
                   </ul>
                   <ul>
-                    <NavDropdown.Item as={Link} to="/myFund">
+                    <NavDropdown.Item as={Link} to="#">
                       My 펀드
                     </NavDropdown.Item>
                     <li>
@@ -596,70 +497,6 @@ const Header = () => {
                         to="/transHistory"
                       >
                         거래 내역 (매수, 환매)
-                      </NavDropdown.Item>
-                    </li>
-                  </ul>
-                  <ul>
-                    <NavDropdown.Item as={Link} to="/fundProductAdmin">
-                      펀드 상품
-                    </NavDropdown.Item>
-                    <li>
-                      <NavDropdown.Item
-                        className="sub-item"
-                        as={Link}
-                        to="/fundProductManage"
-                      >
-                        펀드 상품 관리
-                      </NavDropdown.Item>
-                    </li>
-                    <li>
-                      <NavDropdown.Item
-                        className="sub-item"
-                        as={Link}
-                        to="/fundTestManage"
-                      >
-                        투자성향분석 테스트 관리
-                      </NavDropdown.Item>
-                    </li>
-                  </ul>
-                  <ul>
-                    <NavDropdown.Item as={Link} to="/fundCustomer">
-                      고객 펀드
-                    </NavDropdown.Item>
-                    <li>
-                      <NavDropdown.Item
-                        className="sub-item"
-                        as={Link}
-                        to="/findFundCustomer"
-                      >
-                        고객 펀드 조회
-                      </NavDropdown.Item>
-                    </li>
-                    <li>
-                      <NavDropdown.Item
-                        className="sub-item"
-                        as={Link}
-                        to="/openApplyList"
-                      >
-                        계좌 개설신청 목록
-                      </NavDropdown.Item>
-                    </li>
-                    <li>
-                      <NavDropdown.Item
-                        className="sub-item"
-                        as={Link}
-                        to="/closeApplyList"
-                      >
-                        계좌 해지신청 목록
-                      </NavDropdown.Item>
-                    </li>
-                    <li>
-                      <NavDropdown.Item
-                        className="sub-item"
-                        as={Link}
-                        to="/customerTransHistory"
-                      >
-                        회원 거래내역 조회
                       </NavDropdown.Item>
                     </li>
                   </ul>
@@ -750,23 +587,6 @@ const Header = () => {
                     </li>
                   </ul>
                   {/* customer 끝 */}
-
-                  {/* admin 시작 */}
-                  <ul>
-                    <NavDropdown.Item as={Link} to="#">
-                      (관리자)
-                    </NavDropdown.Item>
-                    <li>
-                      <NavDropdown.Item
-                        className="sub-item"
-                        as={Link}
-                        to="/admin_ex_management"
-                      >
-                        외환관리자페이지
-                      </NavDropdown.Item>
-                    </li>
-                  </ul>
-                  {/* admin 끝 */}
                 </div>
               </div>
             </NavDropdown>
@@ -838,15 +658,6 @@ const Header = () => {
                         to="/businesshour"
                       >
                         이용안내 시간
-                      </NavDropdown.Item>
-                    </li>
-                    <li>
-                      <NavDropdown.Item
-                        className="sub-item"
-                        as={Link}
-                        to="charge"
-                      >
-                        금리 안내
                       </NavDropdown.Item>
                     </li>
                   </ul>

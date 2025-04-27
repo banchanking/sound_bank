@@ -78,8 +78,14 @@ public class FundServiceImpl {
 	// 펀드상품 수정
 	@Transactional
 	public int updateFund(Long fund_id, FundDTO dto) {
-		System.out.println("서비스 - updateFund");
-		return fundRepository.updateFund(dto);
+	    System.out.println("서비스 - updateFund");
+	    System.out.println("수정할 fund_id: " + fund_id);
+	    System.out.println("수정할 fund_name: " + dto.getFund_name());
+
+	    dto.setFund_id(fund_id);
+	    int result = fundRepository.updateFund(dto);
+	    System.out.println("업데이트 결과: " + result);
+	    return result;
 	}
 	
 	// 펀드상품 삭제
@@ -95,7 +101,6 @@ public class FundServiceImpl {
 	@Transactional
 	public void updateRiskTypes(List<FundDTO> funds) {
 	    for (FundDTO fund : funds) {
-	    	System.out.println("🔁 업데이트: " + fund.getFund_name() + " → " + fund.getFund_risk_type());
 	        fundRepository.updateRiskType(fund.getFund_name(), fund.getFund_risk_type());
 	    }
 	}

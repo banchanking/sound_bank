@@ -26,7 +26,7 @@ const LoanInfoApply = () => {
   });
 
   const [creditScore, setCreditScore] = useState(0);
-
+  const [selectedLoanTerm, setSelectedLoanTerm] = useState("");
   const [loanTerms, setLoanTerms] = useState({});
   const [loanTermsAgree, setLoanTermsAgree] = useState({
     term_id: 0,
@@ -250,8 +250,8 @@ const LoanInfoApply = () => {
               <td>
                 <select
                   className={styles.input}
-                  name="loan_term"
-                  onChange={change_value}
+                  value={selectedLoanTerm}
+                  onChange={(e) => setSelectedLoanTerm(e.target.value)}
                 >
                   <option value="">상환 기간을 선택해주세요</option>
                   {Array.from(

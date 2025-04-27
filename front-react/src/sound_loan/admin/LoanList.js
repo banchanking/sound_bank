@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styles from "../../Css/loan/LoanList.module.css";
 import RefreshToken from "../../jwt/RefreshToken";
 
-const LoanList = () => {
+const LoanList = ({ onEdit }) => {
   const [loanList, setLoanList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredList, setFilteredList] = useState([]);
+  const navigate = useNavigate();
 
   const fetchData = () => {
     RefreshToken.get("/loanList")
@@ -19,6 +20,12 @@ const LoanList = () => {
       .catch((error) => {
         console.error("데이터 가져오기 오류:", error);
       });
+  };
+
+  const handleDetailClick = (loanId) => {
+    navigate("/adminPage", {
+      state: { component: "LoanDetail", loan_id: loanId },
+    });
   };
 
   useEffect(() => {
@@ -100,9 +107,12 @@ const LoanList = () => {
               <td>{loan.loan_term}</td>
               <td className={styles.loanInfo}>{loan.loan_info}</td>
               <td>
-                <Link to={`/loanDetail/${loan.loan_id}`}>
-                  <button className={styles.detailButton}>상세보기</button>
-                </Link>
+                <button
+                  className={styles.detailButton}
+                  onClick={() => handleDetailClick(loan.loan_id)}
+                >
+                  상세보기
+                </button>
               </td>
             </tr>
           ))}

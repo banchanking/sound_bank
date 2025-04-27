@@ -106,7 +106,7 @@ public class UserAuthProvider {
 			System.out.println("<<< UserAuthProvider - createToken() >>>");
 			
 			Date now = new Date();  // java.util
-			Date validity = new Date(now.getTime() + 360);   // 토큰 유효시간 1시간
+			Date validity = new Date(now.getTime() + 360000);   // 토큰 유효시간 1시간
 			
 			// JWT를 사용하려면 pom.xml에 java-jwt 추가
 			return JWT.create()

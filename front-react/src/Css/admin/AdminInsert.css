@@ -1,0 +1,53 @@
+.adminInsert-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.adminInsert-title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.adminInsert-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.adminInsert-form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.adminInsert-form-group label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.adminInsert-form-group input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.adminInsert-submit-button {
+  padding: 10px;
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.adminInsert-submit-button:hover {
+  background-color: black;
+}
+
+.password-check-text.mismatch {
+  color: red;
+}
+
+.password-check-text.match {
+  color: green;
+}

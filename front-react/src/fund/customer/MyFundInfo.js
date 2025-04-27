@@ -3,24 +3,24 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import RefreshToken from "../../jwt/RefreshToken";
 import styles from "../../Css/fund/MyFund.module.css";
-import FundCustomer from "../admin/FundCustomer";
 import { Chart } from "react-google-charts";
 import Papa from "papaparse";
 
 const MyFundInfo = () => {
   const navigate = useNavigate();
+  const customer_id = localStorage.getItem("customerId");
   const [approvedTransactions, setApprovedTransactions] = useState([]);
   const [fundRates, setFundRates] = useState({});
   const [summary, setSummary] = useState({ totalInvested: 0, totalRate: 0 });
   const [chartData, setChartData] = useState([]);
   const [donutData, setDonutData] = useState([]);
   const [barData, setBarData] = useState([]);
-  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("auth_token");
-    if (!token) {
-      setShowModal(true);
+    if (!customer_id) {
+      const goLogin = window.confirm("로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?");
+      if (goLogin) navigate("/login");
+      else navigate("/");
       return;
     }
     const customerId = localStorage.getItem("customerId");
@@ -133,19 +133,7 @@ const MyFundInfo = () => {
     document.body.removeChild(link);
   };
 
-  const handleConfirm = () => navigate("/login");
-  const handleCancel = () => navigate("/");
-
   return (
-    <>
-      {showModal && (
-        <FundCustomer
-          message="로그인이 필요한 서비스입니다."
-          onConfirm={handleConfirm}
-          onCancel={handleCancel}
-        />
-      )}
-
       <div className={styles.fundContainer}>
         <h2 className={styles.fundTitle}>내 펀드 수익 분석</h2>
         <p>총 투자금: {summary.totalInvested.toLocaleString()}원</p>
@@ -205,7 +193,6 @@ const MyFundInfo = () => {
           수익률 CSV 저장
         </button>
       </div>
-    </>
   );
 };
 

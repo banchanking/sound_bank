@@ -48,8 +48,8 @@ export const request = (method, url, data) => {
 };
 
 export const refreshAccessToken = async () => {
-  const refreshToken = localStorage.getItem("refresh_token");
-  if (!refreshToken) {
+  const customerId = getCustomerID();
+  if (!customerId) {
     return null;
   }
 
@@ -57,12 +57,11 @@ export const refreshAccessToken = async () => {
     const response = await axios.post(
       "http://localhost:8081/api/refresh-token",
       {
-        refreshToken,
+        customerId: customerId
       }
     );
 
-    // 👉 백엔드 응답 형식에 따라 다음 줄 조정 필요!
-    const newAccessToken = response.data.accessToken || response.data; // 예: accessToken만 응답하거나 전체 객체일 경우
+    const newAccessToken = response.data;
     localStorage.setItem("auth_token", newAccessToken);
     return newAccessToken;
   } catch (error) {
