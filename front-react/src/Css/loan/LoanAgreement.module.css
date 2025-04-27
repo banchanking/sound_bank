@@ -1,26 +1,31 @@
 /* LoanAgreement.module.css */
 
 .agreementContainer {
-  border: 1px solid #ccc;
+  border: 1.5px solid #e2e4e7; /* 보더만 변경 */
   padding: 2rem;
   margin: 2rem auto;
   max-width: 1200px;
   background-color: white;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
   border-radius: 12px;
+  animation: fadeIn 0.4s ease; /* 애니메이션 추가 */
 }
 
 .TitleArea {
   text-align: center;
   margin-bottom: 1.5rem;
+  animation: fadeInUp 0.4s ease;
 }
 
 .Title {
   font-size: 1.8rem;
   font-weight: bold;
+  animation: fadeInUp 0.4s ease;
 }
 
 .textArea {
   margin-bottom: 1.5rem;
+  animation: fadeInUp 0.4s ease;
 }
 
 .text {
@@ -34,6 +39,7 @@
   justify-content: center;
   gap: 1rem;
   margin-bottom: 1rem;
+  animation: fadeInUp 0.4s ease;
 }
 
 .AgreementBtn button {
@@ -43,6 +49,7 @@
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  animation: fadeInUp 0.5s ease;
 }
 
 .AgreementBtn button:hover {
@@ -54,12 +61,14 @@
   padding: 1.2rem;
   margin-bottom: 1.5rem;
   border-radius: 6px;
+  animation: fadeInUp 0.4s ease;
 }
 
 .OfferTitle {
   font-size: 1.2rem;
   font-weight: bold;
   margin-bottom: 1rem;
+  animation: fadeInUp 0.4s ease;
 }
 
 .OfferText1,
@@ -73,6 +82,7 @@
 
 .OfferArea {
   margin-bottom: 2rem;
+  animation: fadeInUp 0.4s ease;
 }
 
 .OfferTable {
@@ -97,6 +107,7 @@
 
 .purpose {
   line-height: 1.6;
+  animation: fadeInUp 0.4s ease;
 }
 
 .FinalArea {
@@ -104,6 +115,7 @@
   padding: 1rem;
   background-color: #f1f1f1;
   border-radius: 8px;
+  animation: fadeInUp 0.4s ease;
 }
 
 .FinalText span {
@@ -111,17 +123,20 @@
   font-size: 0.85rem;
   margin-bottom: 0.5rem;
   color: #333;
+  animation: fadeInUp 0.4s ease;
 }
 
 .FinalBtnArea {
   margin-top: 1rem;
   text-align: center;
+  animation: fadeInUp 0.4s ease;
 }
 
 .FinalBtnArea span {
   display: block;
   margin-bottom: 1rem;
   font-weight: 500;
+  animation: fadeInUp 0.4s ease;
 }
 
 .FinalBtn {
@@ -132,8 +147,26 @@
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  animation: fadeInUp 0.5s ease;
 }
 
 .FinalBtn:hover {
   background-color: #666;
+}
+
+/* ——— 애니메이션 정의 (파일 맨 아래) ——— */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
