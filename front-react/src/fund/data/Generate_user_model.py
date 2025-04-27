@@ -78,8 +78,8 @@ def train_user_model(input_file, model_file):
 if __name__ == "__main__":
     # 1. 사용자 성향 예측 모델 학습 (질문 데이터 기반)
     train_user_model(
-        "d:/DEV/workspace_springBoot_ict04/sound_bank/front-react/public/data/preprocessed_data.csv",
-        "d:/DEV/workspace_springBoot_ict04/sound_bank/front-react/public/data/user_model.h5"
+        "/var/www/soundbank/data/preprocessed_data.csv",
+        "/var/www/soundbank/data/user_model.h5"
     )
 # .h5 파일은 HDF5 (Hierarchical Data Format version 5) 형식의 파일로, 대용량 데이터를 저장하는 데 사용됨. Keras에서는 모델의 구조와 가중치를 저장하는 데 사용됨. 
 # HDF5는 바이너리 형식으로 데이터를 저장하므로, 텍스트 파일보다 더 효율적으로 대량의 데이터를 저장하고 읽을 수 있음. 

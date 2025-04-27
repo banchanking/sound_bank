@@ -117,12 +117,12 @@ if __name__ == "__main__":
     df = generate_investment_data(num_samples)
 
     # 생성된 데이터를 CSV 파일로 저장
-    input_file = "../../../public/data/training_data.csv"
+    input_file = "/var/www/soundbank/data/training_data.csv"
     df.to_csv(input_file, index=False)
     print(f"Training data saved to {input_file}")
 
     # 데이터 전처리 및 증강
-    output_file = "../../../public/data/preprocessed_data.csv"
+    output_file = "/var/www/soundbank/data/preprocessed_data.csv"
     preprocess_data(input_file, output_file)
     
     data = pd.read_csv(input_file)

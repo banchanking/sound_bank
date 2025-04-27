@@ -19,8 +19,9 @@ app.add_middleware(
 )
 
 # ----------- 모델 경로 정의 -----------
-USER_MODEL_PATH = "../../../public/data/user_model.h5"
-FUND_MODEL_PATH = "../../../public/data/fund_model.h5"
+# ec2 절대 경로로 모델 위치 지정
+USER_MODEL_PATH = "/var/www/soundbank/data/user_model.h5"
+FUND_MODEL_PATH = "/var/www/soundbank/data/fund_model.h5"
 
 # ----------- 모델 불러오기 -----------
 user_model = load_model(USER_MODEL_PATH)

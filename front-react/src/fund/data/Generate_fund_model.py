@@ -148,15 +148,15 @@ if __name__ == "__main__":
     
     # 모델 학습 결과 추가
     train_fund_model(
-        "d:/DEV/workspace_springBoot_ict04/sound_bank/front-react/public/data/fundList.csv",
-        "d:/DEV/workspace_springBoot_ict04/sound_bank/front-react/public/data/fund_model.h5",
+        "/var/www/soundbank/data/fundList.csv",
+        "/var/www/soundbank/data/fund_model.h5",
     )
 
     # 2. 펀드 목록 기반 투자성향 예측 및 업데이트된 CSV 저장
     predict_fund_risk_type(
-        "d:/DEV/workspace_springBoot_ict04/sound_bank/front-react/public/data/fund_model.h5",
-        "d:/DEV/workspace_springBoot_ict04/sound_bank/front-react/public/data/fundList.csv",
-        "d:/DEV/workspace_springBoot_ict04/sound_bank/front-react/public/data/fundList_updated.csv"
+        "/var/www/soundbank/data/fund_model.h5",
+        "/var/www/soundbank/data/fundList.csv",
+        "/var/www/soundbank/data/fundList_updated.csv"
     )    
     
 # .h5 파일은 HDF5 (Hierarchical Data Format version 5) 형식의 파일로, 대용량 데이터를 저장하는 데 사용됨. Keras에서는 모델의 구조와 가중치를 저장하는 데 사용됨. 
