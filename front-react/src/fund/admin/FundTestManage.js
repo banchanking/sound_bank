@@ -1,23 +1,13 @@
 // ✅ 최종 정리된 FundTestManage.js (로딩+메시지 일관 처리)
-import React, { useEffect, useState } from "react";
-import { useNavigate } from 'react-router-dom';
-import FundCustomer from "./FundCustomer";
+import React, { useState } from "react";
 import Papa from "papaparse";
 import styles from "../../Css/fund/FundList.module.css";
 import RefreshToken from "../../jwt/RefreshToken";
 
 const FundTestManage = () => {
-  const navigate = useNavigate();
-  const [showModal, setShowModal] = useState(false);
+  
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const token = localStorage.getItem("auth_token");
-    if (!token) {
-      setShowModal(true);
-    }
-  }, []);
 
   // ✅ AI 모델 재학습 요청
   const handleRetrain = async () => {
@@ -76,19 +66,8 @@ const FundTestManage = () => {
     }
   };
 
-  const handleConfirm = () => navigate("/login");
-  const handleCancel = () => navigate("/");
-
   return (
     <>
-      {showModal && (
-        <FundCustomer
-          message="로그인이 필요한 서비스입니다."
-          onConfirm={handleConfirm}
-          onCancel={handleCancel}
-        />
-      )}
-
       <div className={styles.aiManagementContainer}>
         <h2 className={styles.aiManagementTitle}>투자성향분석 AI 관리</h2>
         <div className={styles.aiButtonGroup}> 
