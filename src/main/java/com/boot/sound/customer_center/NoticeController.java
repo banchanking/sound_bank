@@ -1,75 +1,59 @@
 package com.boot.sound.customer_center;
 
+import com.boot.sound.jwt.config.UserAuthProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/notices")
-@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/api/notices")
 public class NoticeController {
 
+    private final NoticeService noticeService;
+    private final UserAuthProvider userAuthProvider;
+
     @Autowired
-    private NoticeService noticeService;
-
-    @GetMapping
-    public ResponseEntity<List<Notice>> getAllNotices() {
-        List<Notice> notices = noticeService.getAllNotices();
-        return ResponseEntity.ok(notices);
+    public NoticeController(NoticeService noticeService, UserAuthProvider userAuthProvider) {
+        this.noticeService = noticeService;
+        this.userAuthProvider = userAuthProvider;
     }
 
-    @GetMapping("/category/{category}")
-    public ResponseEntity<List<Notice>> getNoticesByCategory(@PathVariable String category) {
-        List<Notice> notices = noticeService.getNoticesByCategory(category);
-        return ResponseEntity.ok(notices);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Notice> getNoticeById(@PathVariable Long id) {
-        Notice notice = noticeService.getNoticeById(id);
-        return ResponseEntity.ok(notice);
-    }
-
+    // 1. 공지사항 등록 (Create)
     @PostMapping
-    public ResponseEntity<Notice> createNotice(@RequestBody Notice notice, @RequestHeader("Authorization") String auth) {
-        if (!isAdminAuthenticated(auth)) {
-            return ResponseEntity.status(403).build();
-        }
-        Notice createdNotice = noticeService.createNotice(notice);
-        return ResponseEntity.ok(createdNotice);
+    @ResponseStatus(HttpStatus.CREATED)
+    public Notice createNotice(@RequestBody Notice notice, @RequestHeader("Authorization") String token) {
+        userAuthProvider.validationToken(token.substring(7)); // JWT 토큰 검증
+        return noticeService.createNotice(notice);
     }
 
+    // 2. 모든 공지사항 조회 (Read)
+    @GetMapping
+    public List<Notice> getAllNotices(@RequestHeader("Authorization") String token) {
+        userAuthProvider.validationToken(token.substring(7)); // JWT 토큰 검증
+        return noticeService.getAllNotices();
+    }
+
+    // 3. 특정 공지사항 조회 (Read)
+    @GetMapping("/{id}")
+    public Notice getNoticeById(@PathVariable Long id, @RequestHeader("Authorization") String token) {
+        userAuthProvider.validationToken(token.substring(7)); // JWT 토큰 검증
+        return noticeService.getNoticeById(id);
+    }
+
+    // 4. 공지사항 수정 (Update)
     @PutMapping("/{id}")
-    public ResponseEntity<Notice> updateNotice(@PathVariable Long id, @RequestBody Notice notice, @RequestHeader("Authorization") String auth) {
-        if (!isAdminAuthenticated(auth)) {
-            return ResponseEntity.status(403).build();
-        }
-        Notice updatedNotice = noticeService.updateNotice(id, notice);
-        return ResponseEntity.ok(updatedNotice);
+    public Notice updateNotice(@PathVariable Long id, @RequestBody Notice notice, @RequestHeader("Authorization") String token) {
+        userAuthProvider.validationToken(token.substring(7)); // JWT 토큰 검증
+        return noticeService.updateNotice(id, notice);
     }
 
+    // 5. 공지사항 삭제 (Delete)
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteNotice(@PathVariable Long id, @RequestHeader("Authorization") String auth) {
-        if (!isAdminAuthenticated(auth)) {
-            return ResponseEntity.status(403).build();
-        }
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteNotice(@PathVariable Long id, @RequestHeader("Authorization") String token) {
+        userAuthProvider.validationToken(token.substring(7)); // JWT 토큰 검증
         noticeService.deleteNotice(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    private boolean isAdminAuthenticated(String auth) {
-        if (auth == null || !auth.startsWith("Basic ")) {
-            return false;
-        }
-        String credentials = auth.substring(6);
-        String[] decoded = new String(java.util.Base64.getDecoder().decode(credentials)).split(":");
-        if (decoded.length != 2) {
-            return false;
-        }
-        String username = decoded[0];
-        String password = decoded[1];
-        return noticeService.authenticateAdmin(username, password);
     }
 }
