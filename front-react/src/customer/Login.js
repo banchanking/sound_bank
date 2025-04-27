@@ -15,7 +15,7 @@ const Login = () => {
     e.preventDefault();
 
     axios
-      .post("http://localhost:8081/api/login.do", {
+      .post("http://15.165.57.30/:8081/api/login.do", {
         customerId: form.customerId,
         customer_password: form.customer_password,
       })
