@@ -3,11 +3,14 @@ package com.boot.sound.admin.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boot.sound.admin.dto.AdminDTO;
@@ -49,5 +52,46 @@ public class AdminController {
 
 	}
 
+	@PostMapping("/insert")
+	public ResponseEntity<?> insert(@RequestBody AdminDTO dto){
+		 try {
+			 adminService.insert(dto);
+		        return ResponseEntity.ok("등록되었습니다"); 
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+		                             .body("등록 중 오류가 발생했습니다"); 
+		    }
+	}
+	
+	@GetMapping("/list")
+	public ResponseEntity<?> adminList(){
+		return new ResponseEntity<>(adminService.adminList(),HttpStatus.CREATED);
+	}
+	
+	@PostMapping("/update")
+	public ResponseEntity<?> update(@RequestBody AdminDTO dto){
+		 try {
+			 adminService.update(dto);
+		        return ResponseEntity.ok("수정되었습니다"); 
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+		                             .body("수정 중 오류가 발생했습니다"); 
+		    }
+	}
+	
+	
+	@PostMapping("/delete")
+	public ResponseEntity<?> delete(@RequestBody  AdminDTO dto){
+		 try {
+			 adminService.delete(dto);
+		        return ResponseEntity.ok("삭제되었습니다"); 
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+		                             .body("삭제 중 오류가 발생했습니다"); 
+		    }
+	}
 
 }

@@ -427,7 +427,7 @@ const Header = () => {
               >
                 <div className="deposit-saving-row">
                   <ul>
-                    <NavDropdown.Item as={Link} to="/fund">
+                    <NavDropdown.Item as={Link} to="#">
                       펀드 상품
                     </NavDropdown.Item>
 
@@ -460,7 +460,7 @@ const Header = () => {
                     </li>
                   </ul>
                   <ul>
-                    <NavDropdown.Item as={Link} to="/myFund">
+                    <NavDropdown.Item as={Link} to="#">
                       My 펀드
                     </NavDropdown.Item>
                     <li>
@@ -658,15 +658,6 @@ const Header = () => {
                         to="/businesshour"
                       >
                         이용안내 시간
-                      </NavDropdown.Item>
-                    </li>
-                    <li>
-                      <NavDropdown.Item
-                        className="sub-item"
-                        as={Link}
-                        to="charge"
-                      >
-                        금리 안내
                       </NavDropdown.Item>
                     </li>
                   </ul>

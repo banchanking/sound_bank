@@ -18,13 +18,22 @@ const DeleteCustomer = () => {
         if (res.data === true) {
           if (window.confirm("정말 회원 탈퇴하시겠습니까? 🥲")) {
             RefreshToken.post("/deleteCustomer", { customerId })
-              .then(() => {
+              .then((res) => {
                 alert("회원탈퇴가 완료되었습니다. 감사합니다.");
                 window.location.href = "/";
               })
               .catch((error) => {
-                console.error("탈퇴 실패:", error);
-                alert("회원탈퇴 처리 중 오류가 발생했습니다.");
+                if (error.response && Array.isArray(error.response.data)) {
+                  // 상품이 존재할 때
+                  alert(
+                    "탈퇴 불가: 가입된 상품이 존재합니다\n" +
+                      error.response.data.join(", ")
+                  );
+                } else {
+                  // 서버 자체 에러
+                  console.error("탈퇴 실패:", error);
+                  alert("회원탈퇴 처리 중 오류가 발생했습니다.");
+                }
               });
           }
         } else {

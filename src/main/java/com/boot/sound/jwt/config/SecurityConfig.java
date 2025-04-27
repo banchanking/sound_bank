@@ -41,6 +41,7 @@ public class SecurityConfig {
 							"/api/joinAction.do",
 							"/api/sms/signup/request",
 							"/api/sms/signup/verify").permitAll()
+					.antMatchers(HttpMethod.GET,"/api/idConfirmAction.do","/api/loanList").permitAll()
 					.anyRequest().authenticated()
 		);			
 		
