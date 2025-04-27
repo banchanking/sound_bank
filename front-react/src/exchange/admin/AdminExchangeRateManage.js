@@ -38,7 +38,7 @@ const AdminExchangeRateManage = () => {
 
     setIsSaving(true);
     RefreshToken
-      .put("http://localhost:8081/api/admin/updateRatesFee", parsedRates)
+      .put("/admin/updateRatesFee", parsedRates)
       .then(() => {
         alert(`수수료가 변경되었습니다.`);
       })
@@ -54,7 +54,7 @@ const AdminExchangeRateManage = () => {
     // 버튼 클릭 시 isSaving 상태는 변경하되, 텍스트는 변경하지 않음
     setIsSaving(true);
     RefreshToken
-      .post("http://localhost:8081/api/exchange/save")
+      .post("/exchange/save")
       .then(() => {
         alert(`${date} 환율이 저장되었습니다.`);
       })
