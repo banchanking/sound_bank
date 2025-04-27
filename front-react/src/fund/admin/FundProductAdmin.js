@@ -130,7 +130,7 @@ const FundProductAdmin = () => {
   return (
     <div className={styles.fundContainer}>
       <h2 className={styles.fundTitle}>펀드 상품 등록</h2>
-      <table className={styles.fundTable}>
+      <table className={styles.fundInsertTable}>
         <thead>
           <tr>
             <th>펀드명</th>
@@ -187,67 +187,42 @@ const FundProductAdmin = () => {
       </div>
 
       {isPopupOpen && (
-        <div className={styles.popupOverlay}>
-          <div className={styles.popupModal}>
-            <div className={styles.popupHeader}>
+        <div className={styles.fundpopupOverlay}>
+          <div className={styles.fundpopupModal}>
+            <div className={styles.fundpopupHeader}>
               <h3>펀드 등록</h3>
-              <span className={styles.closeButton} onClick={handleClosePopup}>
-                &times;
-              </span>
+              <button className={styles.closeButton} onClick={handleClosePopup}>×</button>
             </div>
-            <div className="popup-body">
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleSaveFund();
-                }}
-              >
-                <div>
-                  <label>펀드 이름:</label>
-                  <input type="text" name="fund_name" value={formData.fund_name} onChange={handleChange} required />
-                </div>
-                <div>
-                  <label>운용사명:</label>
-                  <input type="text" name="fund_company" value={formData.fund_company} onChange={handleChange} required />
-                </div>
-                <div>
-                  <label>펀드 유형:</label>
-                  <input type="text" name="fund_type" value={formData.fund_type} onChange={handleChange} />
-                </div>
-                <div>
-                  <label>펀드 등급:</label>
-                  <input type="number" name="fund_grade" value={formData.fund_grade} onChange={handleChange} min="1" max="10" />
-                </div>
-                <div>
-                  <label>총보수 (%):</label>
-                  <input type="number" name="fund_fee_rate" value={formData.fund_fee_rate} onChange={handleChange} step="0.01" />
-                </div>
-                <div>
-                  <label>선취수수료:</label>
-                  <input type="number" name="fund_upfront_fee" value={formData.fund_upfront_fee} onChange={handleChange} step="0.01" />
-                </div>
-                <div>
-                  <label>1개월 수익률 (%):</label>
-                  <input type="number" name="return_1m" value={formData.return_1m} onChange={handleChange} step="0.01" />
-                </div>
-                <div>
-                  <label>3개월 수익률 (%):</label>
-                  <input type="number" name="return_3m" value={formData.return_3m} onChange={handleChange} step="0.01" />
-                </div>
-                <div>
-                  <label>6개월 수익률 (%):</label>
-                  <input type="number" name="return_6m" value={formData.return_6m} onChange={handleChange} step="0.01" />
-                </div>
-                <div>
-                  <label>12개월 수익률 (%):</label>
-                  <input type="number" name="return_12m" value={formData.return_12m} onChange={handleChange} step="0.01" />
-                </div>
-                <div className={styles.actionbuttons}>
-                  <button type="submit">저장</button>
-                  <button type="button" onClick={handleClosePopup}>닫기</button>
-                </div>
-              </form>
-            </div>
+            <form onSubmit={(e) => { e.preventDefault(); handleSaveFund(); }}>
+              <div>
+                <label>펀드 이름:</label>
+                <input type="text" name="fund_name" value={formData.fund_name} className={styles.rateInput} onChange={handleChange} />
+              </div>
+              <div>
+                <label>운용사명:</label>
+                <input type="text" name="fund_company" value={formData.fund_company} className={styles.rateInput} onChange={handleChange} />
+              </div>
+              <div>
+                <label>펀드 유형:</label>
+                <input type="text" name="fund_type" value={formData.fund_type} className={styles.rateInput} onChange={handleChange} />
+              </div>
+              <div>
+                <label>펀드 등급:</label>
+                <input type="number" name="fund_grade" value={formData.fund_grade} className={styles.feeInput} onChange={handleChange} />
+              </div>
+              <div>
+                <label>총보수 (%):</label>
+                <input type="number" name="fund_fee_rate" value={formData.fund_fee_rate} className={styles.feeInput} onChange={handleChange} />
+              </div>
+              <div>
+                <label>선취수수료 (%):</label>
+                <input type="number" name="fund_upfront_fee" value={formData.fund_upfront_fee} className={styles.feeInput} onChange={handleChange} />
+              </div>
+              <div className={styles.actionbuttons}>
+                <button type="submit" className={styles.fundInsertButton}>저장</button>
+                <button type="button" className={styles.fundInsertButton2} onClick={handleClosePopup}>닫기</button>
+              </div>
+            </form>
           </div>
         </div>
       )}

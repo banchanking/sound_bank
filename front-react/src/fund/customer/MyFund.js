@@ -44,7 +44,7 @@ const MyFund = ({ type, onClose, transactions, closedAccounts, onSellRequest }) 
                 {type === "BUY" && (
                   <td>
                     {tx.status === "APPROVED" ? (
-                      <button onClick={() => onSellRequest(tx)}>환매하기</button>
+                      <button className={styles.sellButton} onClick={() => onSellRequest(tx)}>환매하기</button>
                     ) : tx.status === "PENDING" ? (
                       <span className={styles.pendingLabel}>승인 대기중</span>
                     ) : null}
