@@ -12,7 +12,7 @@
             min_amount as minAmount,
             max_amount as maxAmount,
             term_months as termMonths,
-            description,
+            description  as productDescription,
             created_at as createdAt,
             updated_at as updatedAt
         FROM DEPOSIT_PRODUCT_TBL
@@ -87,7 +87,7 @@
             min_amount as minAmount,
             max_amount as maxAmount,
             term_months as termMonths,
-            description,
+            description  as productDescription,
             created_at as createdAt,
             updated_at as updatedAt
         FROM DEPOSIT_PRODUCT_TBL
@@ -150,8 +150,9 @@
         WHERE sat_id = #{accountId}
     </select>
 
-    <!-- 예금 계좌 생성 -->
-    <insert id="createDepositAccount" parameterType="com.boot.sound.deposit.dto.DepositDTO">
+    <!-- 예금 계좌 생성 (수정: useGeneratedKeys 추가) -->
+    <insert id="createDepositAccount" parameterType="com.boot.sound.deposit.dto.DepositDTO"
+            useGeneratedKeys="true" keyProperty="id">
         INSERT INTO DEPOSIT_ACCOUNT_TBL (
             customer_id,
             product_id,
@@ -170,7 +171,7 @@
             #{productId},
             #{accountNumber},
             #{accountPassword},
-            0,
+            #{balance},
             #{interestRate},
             'ACTIVE',
             #{autoTransferEnabled},
@@ -182,33 +183,37 @@
     </insert>
 
     <!-- 적금 계좌 생성 -->
-    <insert id="createSavingsAccount" parameterType="com.boot.sound.deposit.dto.DepositDTO">
-        INSERT INTO SAVINGS_ACCOUNT_TBL (
-            customer_id,
-            product_id,
-            account_number,
-            account_password,
-            balance,
-            interest_rate,
-            account_status,
-            monthly_amount,
-            maturity_date,
-            created_at,
-            updated_at
-        ) VALUES (
-            #{customerId},
-            #{productId},
-            #{accountNumber},
-            #{accountPassword},
-            0,
-            #{interestRate},
-            'ACTIVE',
-            #{monthlyAmount},
-            #{maturityDate},
-            NOW(),
-            NOW()
-        )
-    </insert>
+   <insert id="createSavingsAccount" 
+        parameterType="com.boot.sound.deposit.dto.DepositDTO"
+        useGeneratedKeys="true"
+        keyProperty="id">
+    INSERT INTO SAVINGS_ACCOUNT_TBL (
+        customer_id,
+        product_id,
+        account_number,
+        account_password,
+        balance,
+        interest_rate,
+        account_status,
+        monthly_amount,
+        maturity_date,
+        created_at,
+        updated_at
+    ) VALUES (
+        #{customerId},
+        #{productId},
+        #{accountNumber},
+        #{accountPassword},
+        #{monthlyAmount},
+        #{interestRate},
+        'ACTIVE',
+        #{monthlyAmount},
+        #{maturityDate},
+        NOW(),
+        NOW()
+    )
+</insert>
+
 
     <!-- 계좌번호 중복 확인 -->
     <select id="checkAccountNumber" resultType="int">
@@ -226,7 +231,7 @@
         UPDATE DEPOSIT_ACCOUNT_TBL
         SET account_status = 'CLOSED',
             updated_at = NOW()
-        WHERE dat_id = #{accountId}
+        WHERE account_number   = #{accountId}
         AND account_password = #{accountPassword}
         AND account_status = 'ACTIVE'
     </update>
@@ -236,132 +241,154 @@
         UPDATE SAVINGS_ACCOUNT_TBL
         SET account_status = 'CLOSED',
             updated_at = NOW()
-        WHERE sat_id = #{accountId}
+        WHERE account_number   = #{accountId}
         AND account_password = #{accountPassword}
         AND account_status = 'ACTIVE'
     </update>
 
-    <!-- 예금 계좌 잔액 조회 -->
-    <select id="getDepositAccountBalance" resultType="java.math.BigDecimal">
-        SELECT balance
-        FROM DEPOSIT_ACCOUNT_TBL
-        WHERE dat_id = #{accountId}
-    </select>
-
+	 <!-- 예금 계좌 잔액 조회 -->
+		<select id="getDepositAccountBalance" resultType="java.math.BigDecimal">
+    SELECT balance
+    FROM DEPOSIT_ACCOUNT_TBL
+    WHERE account_number = #{accountId}
+	</select>
     <!-- 적금 계좌 잔액 조회 -->
     <select id="getSavingsAccountBalance" resultType="java.math.BigDecimal">
         SELECT balance
         FROM SAVINGS_ACCOUNT_TBL
-        WHERE sat_id = #{accountId}
+        WHERE account_number = #{accountId}
     </select>
 
-    <!-- 예금 계좌 입금 -->
-    <update id="deposit">
-        UPDATE DEPOSIT_ACCOUNT_TBL
-        SET balance = balance + #{amount},
-            updated_at = NOW()
-        WHERE dat_id = #{accountId}
-        AND account_status = 'ACTIVE'
-    </update>
+ <!-- 예금 계좌 비밀번호 조회 -->
+<select id="getDepositAccountPassword" resultType="String">
+    SELECT account_password
+    FROM DEPOSIT_ACCOUNT_TBL
+    WHERE dat_id = #{accountId}
+</select>
 
-    <!-- 예금 계좌 출금 -->
-    <update id="withdraw">
-        UPDATE DEPOSIT_ACCOUNT_TBL
-        SET balance = balance - #{amount},
-            updated_at = NOW()
-        WHERE dat_id = #{accountId}
-        AND account_status = 'ACTIVE'
-        AND balance >= #{amount}
-    </update>
+<!-- 적금 계좌 비밀번호 조회 -->
+<select id="getSavingsAccountPassword" resultType="String">
+    SELECT account_password
+    FROM SAVINGS_ACCOUNT_TBL
+    WHERE sat_id = #{accountId}
+</select>
 
-    <!-- 적금 계좌 입금 -->
-    <update id="depositSavings">
-        UPDATE SAVINGS_ACCOUNT_TBL
-        SET balance = balance + #{amount},
-            updated_at = NOW()
-        WHERE sat_id = #{accountId}
-        AND account_status = 'ACTIVE'
-    </update>
+<!-- 예금 계좌 입금 -->
+<update id="deposit">
+    UPDATE DEPOSIT_ACCOUNT_TBL
+    SET balance = balance + #{amount},
+        updated_at = NOW()
+    WHERE dat_id  = #{accountId}
+</update>
 
-    <!-- 적금 계좌 출금 -->
-    <update id="withdrawSavings">
-        UPDATE SAVINGS_ACCOUNT_TBL
-        SET balance = balance - #{amount},
-            updated_at = NOW()
-        WHERE sat_id = #{accountId}
-        AND account_status = 'ACTIVE'
-        AND balance >= #{amount}
-    </update>
+<!-- 예금 계좌 출금 -->
+<update id="withdraw">
+    UPDATE DEPOSIT_ACCOUNT_TBL
+    SET balance = balance - #{amount},
+        updated_at = NOW()
+    WHERE dat_id   = #{accountId}
+    AND balance >= #{amount} -- 출금 가능 체크
+</update>
 
-    <!-- 예금 거래 내역 생성 -->
-    <insert id="createDepositTransaction" parameterType="com.boot.sound.deposit.dto.DepositDTO">
-        INSERT INTO DEPOSIT_TRANSACTION_TBL (
-            dat_id,
-            transaction_type,
-            amount,
-            balance,
-            description,
-            created_at
-        ) VALUES (
-            #{id},
-            #{transactionType},
-            #{amount},
-            #{balance},
-            #{description},
-            NOW()
-        )
-    </insert>
+<!-- 적금 계좌 입금 -->
+<update id="depositSavings">
+    UPDATE SAVINGS_ACCOUNT_TBL
+    SET balance = balance + #{amount},
+        updated_at = NOW()
+    WHERE dat_id  = #{accountId}
+</update>
 
-    <!-- 적금 거래 내역 생성 -->
-    <insert id="createSavingsTransaction" parameterType="com.boot.sound.deposit.dto.DepositDTO">
-        INSERT INTO SAVINGS_TRANSACTION_TBL (
-            sat_id,
-            transaction_type,
-            amount,
-            balance,
-            description,
-            created_at
-        ) VALUES (
-            #{id},
-            #{transactionType},
-            #{amount},
-            #{balance},
-            #{description},
-            NOW()
-        )
-    </insert>
+<!-- 적금 계좌 출금 -->
+<update id="withdrawSavings">
+    UPDATE SAVINGS_ACCOUNT_TBL
+    SET balance = balance - #{amount},
+        updated_at = NOW()
+    WHERE dat_id   = #{accountId}
+    AND balance >= #{amount} -- 출금 가능 체크
+</update>
+
+
+ <!-- 예금 거래내역 등록 (완전히 수정된 버전) -->
+<insert id="createDepositTransaction" parameterType="com.boot.sound.deposit.dto.DepositDTO">
+    INSERT INTO DEPOSIT_TRANSACTION_TBL (
+        dat_id,
+        transaction_type,
+        amount,
+        balance,
+        description,
+        transaction_date
+    ) VALUES (
+        #{transaction.accountId},          <!-- transaction.accountId 로! -->
+        #{transaction.transactionType},
+        #{transaction.transactionAmount},
+        #{transaction.transactionAmount},  <!-- 초기 잔액 = 입금금액으로 -->
+        #{transaction.transactionDescription},
+        NOW()
+    )
+</insert>
+
+
+
+
+  <!-- 적금 거래내역 등록 -->
+<insert id="createSavingsTransaction" parameterType="com.boot.sound.deposit.dto.DepositDTO">
+    INSERT INTO SAVINGS_TRANSACTION_TBL (
+        sat_id,
+        transaction_type,
+        amount,
+        balance,
+        description,
+        transaction_date
+    ) VALUES (
+        #{transaction.accountId},
+        #{transaction.transactionType},
+        #{transaction.transactionAmount},
+        #{transaction.balance},
+        #{transaction.transactionDescription},
+        NOW()
+    )
+</insert>
+
+
+
 
     <!-- 예금 계좌 거래 내역 조회 -->
-    <select id="getDepositTransactions" resultType="com.boot.sound.deposit.dto.DepositDTO">
-        SELECT 
-            dtt_id as id,
-            dat_id as accountId,
-            transaction_type as transactionType,
-            amount,
-            balance,
-            description,
-            created_at as createdAt
-        FROM DEPOSIT_TRANSACTION_TBL
-        WHERE dat_id = #{accountId}
-        AND created_at BETWEEN #{startDate} AND #{endDate}
-        ORDER BY created_at DESC
-    </select>
+<select id="getDepositTransactions" resultType="com.boot.sound.deposit.dto.DepositDTO" parameterType="map">
+    SELECT 
+        transaction_id  AS id,
+        dat_id AS accountId,
+        transaction_type AS transactionType,
+        amount AS transactionAmount,
+        balance,
+        description AS transactionDescription,
+        transaction_date AS transactionDate
+    FROM DEPOSIT_TRANSACTION_TBL
+    WHERE dat_id = #{accountId}
+      AND transaction_date BETWEEN #{startDate,jdbcType=TIMESTAMP} AND #{endDate,jdbcType=TIMESTAMP}
+    ORDER BY transaction_date DESC
+</select>
+
+
+
+
 
     <!-- 적금 계좌 거래 내역 조회 -->
-    <select id="getSavingsTransactions" resultType="com.boot.sound.deposit.dto.DepositDTO">
+    <select id="getSavingsTransactions" resultType="com.boot.sound.deposit.dto.DepositDTO" parameterType="map">
         SELECT 
-            stt_id as id,
-            sat_id as accountId,
-            transaction_type as transactionType,
-            amount,
-            balance,
-            description,
-            created_at as createdAt
-        FROM SAVINGS_TRANSACTION_TBL
-        WHERE sat_id = #{accountId}
-        AND created_at BETWEEN #{startDate} AND #{endDate}
-        ORDER BY created_at DESC
-    </select>
+        transaction_id  AS id,            -- 적금 거래 PK
+        sat_id AS accountId,     -- 적금 계좌 ID,
+        transaction_type AS transactionType,
+        amount AS transactionAmount,
+        balance,
+        description AS transactionDescription,
+		transaction_date AS transactionDate
+		    FROM SAVINGS_TRANSACTION_TBL
+		    WHERE dat_id = #{accountId}
+		       AND transaction_date BETWEEN #{startDate,jdbcType=TIMESTAMP} AND #{endDate,jdbcType=TIMESTAMP}
+		    ORDER BY transaction_date DESC
+		</select>
+
+
 
     <!-- 예금 계좌 자동이체 설정 -->
     <update id="setAutoTransfer">
@@ -501,49 +528,139 @@
         AND account_status = 'ACTIVE'
     </update>
 
-    <!-- 예금 계좌 비밀번호 변경 -->
-    <update id="changeDepositAccountPassword">
-        UPDATE DEPOSIT_ACCOUNT_TBL
-        SET account_password = #{newPassword},
+	 <!-- 예금 계좌 비밀번호 변경 -->
+<update id="changeDepositAccountPassword" parameterType="map">
+    UPDATE DEPOSIT_ACCOUNT_TBL
+    SET account_password = #{newPassword},
+        updated_at = NOW()
+    WHERE dat_id = #{accountId}
+    AND account_password = #{oldPassword}
+    AND account_status = 'ACTIVE'
+</update>
+
+
+<!-- 적금 계좌 비밀번호 변경   -->
+<update id="changeSavingsAccountPassword" parameterType="map">
+    UPDATE SAVINGS_ACCOUNT_TBL
+    SET account_password = #{newPassword},
+        updated_at = NOW()
+    WHERE sat_id = #{accountId}
+    AND account_password = #{oldPassword}
+    AND account_status = 'ACTIVE'
+</update>
+
+    
+	<!-- 예금 상품 추가 -->
+	<insert id="addDepositProduct" parameterType="com.boot.sound.deposit.dto.DepositDTO">
+	    INSERT INTO DEPOSIT_PRODUCT_TBL
+	    (product_name, product_type, interest_rate, min_amount, max_amount, term_months, description, created_at, updated_at)
+	    VALUES
+	    (#{productName}, #{productType}, #{interestRate}, #{minAmount}, #{maxAmount}, #{termMonths}, #{productDescription}, NOW(), NOW())
+	</insert>
+
+
+    <!-- 예금 상품 수정 -->
+    <update id="updateDepositProduct">
+        UPDATE DEPOSIT_PRODUCT_TBL
+        SET 
+            product_name = #{dto.productName},
+            product_type = #{dto.productType},
+            interest_rate = #{dto.interestRate},
+            min_amount = #{dto.minAmount},
+            max_amount = #{dto.maxAmount},
+            term_months = #{dto.termMonths},
+            description = #{dto.productDescription},
             updated_at = NOW()
-        WHERE dat_id = #{accountId}
-        AND account_password = #{oldPassword}
-        AND account_status = 'ACTIVE'
+        WHERE product_id = #{productId}
     </update>
 
-    <!-- 적금 계좌 비밀번호 변경 -->
-    <update id="changeSavingsAccountPassword">
-        UPDATE SAVINGS_ACCOUNT_TBL
-        SET account_password = #{newPassword},
-            updated_at = NOW()
-        WHERE sat_id = #{accountId}
-        AND account_password = #{oldPassword}
-        AND account_status = 'ACTIVE'
-    </update>
+    <!-- 예금 상품 삭제 -->
+    <delete id="deleteDepositProduct">
+        DELETE FROM DEPOSIT_PRODUCT_TBL WHERE product_id = #{productId}
+    </delete>
     
-    <!-- 예금 상품 추가  -->
-    <insert id="addDepositProduct" parameterType="com.boot.sound.deposit.dto.DepositDTO">
-    INSERT INTO DEPOSIT_PRODUCT_TBL
-    (product_name, product_type, interest_rate, min_amount, max_amount, term_months, description, created_at, updated_at)
-    VALUES
-    (#{productName}, #{productType}, #{interestRate}, #{minAmount}, #{maxAmount}, #{termMonths}, #{productDescription}, NOW(), NOW())
-</insert>
-    <!-- 예금 상품 수정  -->
-    <update id="updateDepositProduct" parameterType="map">
-    UPDATE DEPOSIT_PRODUCT_TBL
-    SET
-        product_name = #{product.productName},
-        product_type = #{product.productType},
-        interest_rate = #{product.interestRate},
-        min_amount = #{product.minAmount},
-        max_amount = #{product.maxAmount},
-        term_months = #{product.termMonths},
-        description = #{product.productDescription},
-        updated_at = NOW()
-    WHERE product_id = #{productId}
+	    <!-- 적금 상품 추가 -->
+	<insert id="addSavingsProduct" parameterType="com.boot.sound.deposit.dto.DepositDTO">
+	    INSERT INTO SAVINGS_PRODUCT_TBL
+	    (product_name, product_type, interest_rate, min_amount, max_amount, term_months, description, created_at, updated_at)
+	    VALUES
+	    (#{productName}, #{productType}, #{interestRate}, #{minAmount}, #{maxAmount}, #{termMonths}, #{productDescription}, NOW(), NOW())
+	</insert>
+	
+	<!-- 적금 상품 수정 -->
+	<update id="updateSavingsProduct">
+	    UPDATE SAVINGS_PRODUCT_TBL
+	    SET product_name = #{dto.productName},
+	        product_type = #{dto.productType},
+	        interest_rate = #{dto.interestRate},
+	        min_amount = #{dto.minAmount},
+	        max_amount = #{dto.maxAmount},
+	        term_months = #{dto.termMonths},
+	        description = #{dto.productDescription},
+	        updated_at = NOW()
+	    WHERE product_id = #{productId}
+	</update>
+	
+	<!-- 적금 상품 삭제 -->
+	<delete id="deleteSavingsProduct">
+	    DELETE FROM SAVINGS_PRODUCT_TBL WHERE product_id = #{productId}
+	</delete>
+	
+	<!-- 계좌번호(accountNumber)로 예금 계좌 잔액 조회 -->
+<select id="getDepositAccountBalanceByAccountNumber" resultType="java.math.BigDecimal">
+    SELECT balance
+    FROM DEPOSIT_ACCOUNT_TBL
+    WHERE account_number = #{accountId}
+</select>
+
+	<!-- 계좌번호(accountNumber)로 적금 계좌 잔액 조회 -->
+<select id="getSavingsAccountBalanceByAccountNumber" resultType="java.math.BigDecimal">
+    SELECT balance
+    FROM SAVINGS_ACCOUNT_TBL
+    WHERE account_number = #{accountId}
+</select>
+
+<!-- 예금 계좌의 customer_id 가져오기 -->
+<select id="getCustomerIdFromDepositAccount" resultType="String">
+    SELECT customer_id
+    FROM DEPOSIT_ACCOUNT_TBL
+    WHERE account_number  = #{accountId}
+</select>
+
+<!-- 적금 계좌의 customer_id 가져오기 -->
+<select id="getCustomerIdFromSavingsAccount" resultType="String">
+    SELECT customer_id
+    FROM SAVINGS_ACCOUNT_TBL
+    WHERE account_number  = #{accountId}
+</select>
+
+<!-- customer_id 기준으로 기본 계좌에 잔액 이체 -->
+<update id="transferBalanceToMainAccount">
+    UPDATE ACCOUNT_TBL
+    SET balance = balance + #{balance}
+    WHERE customer_id = #{customerId}
+    AND status = 'ACTIVE'
 </update>
-    <!-- 예금 상품 삭제  -->
-    <delete id="deleteDepositProduct" parameterType="int">
-    DELETE FROM DEPOSIT_PRODUCT_TBL WHERE product_id = #{productId}
-</delete>
+
+
+<!-- 예금 별명 변경 -->
+<update id="updateNickname">
+    UPDATE DEPOSIT_ACCOUNT_TBL
+    SET nickname = #{nickname},
+        updated_at = NOW()
+    WHERE dat_id = #{accountId}
+</update>
+
+<!-- 적금 별명 변경 -->
+<update id="updateSavingsNickname">
+    UPDATE SAVINGS_ACCOUNT_TBL
+    SET nickname = #{nickname},
+        updated_at = NOW()
+    WHERE sat_id = #{accountId}
+</update>
+
+
+
+
+    
 </mapper> 

@@ -1,42 +1,70 @@
 .depositContainer {
-    padding: 2rem;
-    background-color: #fff;
-    border-radius: 16px;
-    box-shadow: 0 0 12px rgba(0, 0, 0, 0.06);
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
-.depositTitle {
-    font-size: 22px;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    color: #111;
+.depositCard {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+}
+
+.depositProductHeader {
+    margin-bottom: 24px;
     text-align: center;
+}
+
+.depositProductHeader h2 {
+    color: #333;
+    font-size: 24px;
+    margin: 0;
+}
+
+.depositTableContainer {
+    overflow-x: auto;
 }
 
 .depositTable {
     width: 100%;
     border-collapse: collapse;
-    border-radius: 12px;
-    overflow: hidden;
-    background-color: #fafafa;
+    margin-top: 20px;
+}
+
+.depositTable th,
+.depositTable td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e8e8e8;
 }
 
 .depositTable th {
-    background-color: #eee;
+    background-color: #f5f5f5;
     font-weight: 500;
-    padding: 12px;
     color: #333;
 }
 
-.depositTable td {
-    padding: 12px;
-    text-align: center;
-    border-top: 1px solid #ddd;
-    color: #222;
+.depositTable tr:hover {
+    background-color: #f9f9f9;
 }
 
-.depositRow:nth-child(even) {
-    background-color: #f4f4f4;
+.transaction-tag {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.transaction-tag.deposit {
+    background-color: #e6f7ff;
+    color: #1890ff;
+}
+
+.transaction-tag.withdrawal {
+    background-color: #fff1f0;
+    color: #f5222d;
 }
 
 .depositBtn {
