@@ -1,5 +1,7 @@
 package com.boot.sound.admin.dao;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 
 import com.boot.sound.admin.dto.AdminDTO;
@@ -15,4 +17,12 @@ public interface AdminDAO {
 	public void saveAdminRefreshToken(String customerId, String refresh_token);
 	
 	public String getRefreshToken(String customerId);
+	
+	public Boolean insert(AdminDTO dto);
+	
+	public List<AdminDTO> adminList();
+	
+	public Boolean update(AdminDTO dto);
+	
+	public Boolean delete(AdminDTO dto);
 }

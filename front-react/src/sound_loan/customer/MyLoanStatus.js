@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import RefreshToken from "../../jwt/RefreshToken";
 import "../../Css/loan/MyLoanStatus.css";
+import { useNavigate } from "react-router-dom";
 
 const MyLoanStatus = ({ onRefresh }) => {
   const [loanStatusList, setLoanStatusList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
   const formatDate = (timestamp) => {
     if (!timestamp) return "-";
@@ -26,17 +28,31 @@ const MyLoanStatus = ({ onRefresh }) => {
     };
 
     RefreshToken.post("/calculatePrepaymentPenalty", payload)
-      .then(() => {
-        alert("중도상환 처리가 완료되었습니다.");
-        onRefresh();
+      .then((res) => {
+        if (res.data.status === "success") {
+          alert(res.data.message); // ✅ "중도상환 완료"
+          onRefresh();
+        } else {
+          alert(res.data.message); // ✅ 실패 메시지 ("중도상환 실패" 등)
+        }
       })
       .catch((err) => {
         console.error("중도상환 에러:", err);
-        alert("중도상환 처리가 되지 않았습니다.");
+        if (err.response && err.response.data && err.response.data.message) {
+          alert(err.response.data.message); // ✅ 서버가 보내준 에러메시지 (예: "계좌 잔액 부족")
+        } else {
+          alert("서버 통신 중 오류가 발생했습니다.");
+        }
       });
   };
 
   useEffect(() => {
+    if (!localStorage.getItem("customerId")) {
+      alert("로그인이 필요한 서비스입니다.");
+
+      navigate("/");
+      return;
+    }
     RefreshToken.get("/myLoanStatus", {
       params: { customerId: localStorage.getItem("customerId") },
     })
@@ -103,8 +119,12 @@ const MyLoanStatus = ({ onRefresh }) => {
                 <strong>수수료:</strong> {loan.prepayment_penalty}%
               </div>
               <div>
-                {loan.loanProgress === "중도상환" ||
-                loan.loanProgress === "만기" ? (
+                {loan.loanProgress === "신청" ? (
+                  <button className="myLoanStatus-button" disabled>
+                    미승인
+                  </button>
+                ) : loan.loanProgress === "중도상환" ||
+                  loan.loanProgress === "만기" ? (
                   <button className="myLoanStatus-button" disabled>
                     상환완료
                   </button>

@@ -2,8 +2,10 @@
 import React, { useEffect, useState } from "react";
 import RefreshToken from "../../jwt/RefreshToken";
 import "../../Css/loan/MyInterest.css";
+import { useNavigate } from "react-router-dom";
 
 const MyInterest = ({ onRefresh }) => {
+  const navigate = useNavigate();
   const [interestList, setInterestList] = useState([]);
   const [filteredList, setFilteredList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -39,6 +41,12 @@ const MyInterest = ({ onRefresh }) => {
   };
 
   useEffect(() => {
+    if (!localStorage.getItem("customerId")) {
+      alert("로그인이 필요한 서비스입니다.");
+
+      navigate("/");
+      return;
+    }
     RefreshToken.get("/myInterestList", {
       params: { customerId: localStorage.getItem("customerId") },
     })

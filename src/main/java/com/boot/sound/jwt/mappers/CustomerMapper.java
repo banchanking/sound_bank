@@ -18,4 +18,6 @@ public interface CustomerMapper {
 	CustomerDTO myInfoList(String customerId);
 	Map<String, String>encodingInfo(String customerId);
 	int updateMyInfo(CustomerDTO dto);
+	Map<String, Object>checkCustomerAssets(String customerId);
+	void deleteCustomer(String customerId);
 }

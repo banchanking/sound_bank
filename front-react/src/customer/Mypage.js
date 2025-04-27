@@ -10,7 +10,6 @@ import {
   FaChevronUp,
 } from "react-icons/fa";
 import MyInfo from "./MyInfo";
-import LoanApply from "../sound_loan/customer/LoanApply";
 import MyInterest from "../sound_loan/customer/MyInterest";
 import MyLoanStatus from "../sound_loan/customer/MyLoanStatus";
 import MyLateInterest from "../sound_loan/customer/MyLateInterest";
@@ -70,7 +69,6 @@ const Mypage = () => {
       title: "대출",
       icon: <FaMoneyCheckAlt />,
       items: [
-        { name: "대출신청하기", component: "LoanApply" },
         { name: "대출현황 및 중도상환처리", component: "MyLoanStatus" },
         { name: "이자납입내역", component: "MyInterest" },
         { name: "연체내역", component: "MyLateInterest" },
@@ -123,8 +121,6 @@ const Mypage = () => {
         return <InquireTransfer />;
       // 조회/이체 컴포넌트 호출 종료
       // 대출 컴포넌트 호출 시작
-      case "LoanApply":
-        return <LoanApply />;
       case "MyLoanStatus":
         return <MyLoanStatus key={refreshKey} onRefresh={refreshInterest} />;
       case "MyInterest":

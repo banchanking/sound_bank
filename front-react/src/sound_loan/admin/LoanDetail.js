@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styles from "../../Css/loan/LoanDetail.module.css";
 import RefreshToken from "../../jwt/RefreshToken";
 
-const LoanDetail = () => {
-  const { loan_id } = useParams();
+const LoanDetail = ({ loan_id }) => {
   const navigate = useNavigate();
 
   const [loan, setLoan] = useState({
@@ -20,20 +19,26 @@ const LoanDetail = () => {
   });
 
   useEffect(() => {
-    RefreshToken.get("/loanDetail/" + loan_id).then((res) => {
-      setLoan(res.data);
-    });
+    if (loan_id) {
+      RefreshToken.get("/loanDetail/" + loan_id)
+        .then((res) => {
+          setLoan(res.data);
+        })
+        .catch((error) => {
+          console.error("LoanDetail 불러오기 오류:", error);
+        });
+    }
   }, [loan_id]);
 
   const updateForm = () => {
-    navigate("/loanUpdate/" + loan_id);
+    navigate("/adminPage", { state: { component: "LoanUpdate" } });
   };
 
   const deleteForm = () => {
     RefreshToken.delete("/loanDelete/" + loan_id)
       .then(() => {
         alert("삭제 되었습니다.");
-        navigate("/loanList");
+        navigate("/adminPage", { state: { component: "LoanList" } });
       })
       .catch((err) => {
         alert(err);
