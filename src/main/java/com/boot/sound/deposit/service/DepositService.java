@@ -122,34 +122,28 @@ public class DepositService {
  // 예금 해지
     @Transactional
     public void closeDepositAccount(String accountId, String accountPassword) {
-        // 예금 계좌의 customer_id 가져오기
         String customerId = depositDAO.getCustomerIdFromDepositAccount(accountId);
         BigDecimal balance = depositDAO.getDepositAccountBalance(accountId);
 
-        
-        System.out.println("[DEBUG] 해지할 계좌 잔액: " + balance);
-        System.out.println("[DEBUG] 해지할 계좌의 고객ID: " + customerId);
         if (balance == null) {
             throw new RuntimeException("계좌를 찾을 수 없습니다.");
         }
 
         if (balance.compareTo(BigDecimal.ZERO) > 0) {
-            System.out.println("[DEBUG] 기본계좌로 이체 시도: 고객ID=" + customerId + ", 이체금액=" + balance);
             depositDAO.transferBalanceToMainAccount(customerId, balance);
-            System.out.println("[DEBUG] 기본계좌로 이체 완료");
         }
 
-        if (depositDAO.closeDepositAccount(accountId, accountPassword) != 1) { // ✅ Long.parseLong 제거
-            throw new RuntimeException("예금 계좌 해지에 실패했습니다.");
+        // 기존: 상태 변경 UPDATE
+        // 변경: 아예 계좌 삭제
+        if (depositDAO.deleteDepositAccount(accountId, accountPassword) != 1) {
+            throw new RuntimeException("예금 계좌 삭제에 실패했습니다.");
         }
     }
-
-
     
- // 적금 해지
+    
+    // 적금 해지
     @Transactional
     public void closeSavingsAccount(String accountId, String accountPassword) {
-        // 적금 계좌의 customer_id 가져오기
         String customerId = depositDAO.getCustomerIdFromSavingsAccount(accountId);
         BigDecimal balance = depositDAO.getSavingsAccountBalance(accountId);
 
@@ -158,13 +152,16 @@ public class DepositService {
         }
 
         if (balance.compareTo(BigDecimal.ZERO) > 0) {
-            depositDAO.transferBalanceToMainAccount(customerId, balance); // ✅ customer_id 기준 이체
+            depositDAO.transferBalanceToMainAccount(customerId, balance);
         }
 
-        if (depositDAO.closeSavingsAccount(accountId, accountPassword) != 1) { // ✅ Long.parseLong 제거
-            throw new RuntimeException("적금 계좌 해지에 실패했습니다.");
+        // 기존: 상태 변경 UPDATE
+        // 변경: 아예 계좌 삭제
+        if (depositDAO.deleteSavingsAccount(accountId, accountPassword) != 1) {
+            throw new RuntimeException("적금 계좌 삭제에 실패했습니다.");
         }
     }
+
 
 
 
@@ -491,6 +488,20 @@ public class DepositService {
     public BigDecimal getSavingsAccountBalanceByAccountNumber(String accountNumber) {
         return depositDAO.getDepositAccountBalanceByAccountNumber(accountNumber);
     }
+
+ // 계좌 번호로 예적금 잔액 조회
+    public BigDecimal getBalance(String accountNumber, String type) {
+        if ("DEPOSIT".equals(type)) {
+            return depositDAO.getDepositAccountBalanceByAccountNumber(accountNumber);
+        } else if ("SAVINGS".equals(type)) {
+            return depositDAO.getSavingsAccountBalanceByAccountNumber(accountNumber);
+        } else {
+            throw new IllegalArgumentException("알 수 없는 계좌 타입입니다: " + type);
+        }
+    }
+
+
+
 
 
     

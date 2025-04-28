@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react"; // React의 상태 관리와 생명주기 훅
 import RefreshToken from "../../jwt/RefreshToken"; // 인증 토큰 갱신을 위한 Axios 인스턴스
 import styles from "../../Css/fund/FundAdmin.module.css"; // CSS 모듈 스타일링
+import style from "../../Css/exchange/ExList.module.css"; // 새로운 스타일 파일
 
 const FindFundCustomer = () => {
   // 상태 관리
@@ -45,8 +46,8 @@ const FindFundCustomer = () => {
   // 검색 필터링
   const filteredTransactions = transactions.filter(
     (tx) =>
-      (tx.customerId?.toString().toLowerCase().includes(search.toLowerCase()) || // 고객 ID 검색
-      tx.fundId?.toString().toLowerCase().includes(search.toLowerCase())) // 펀드 ID 검색
+      tx.customerId?.toString().toLowerCase().includes(search.toLowerCase()) || // 고객 ID 검색
+      tx.fundId?.toString().toLowerCase().includes(search.toLowerCase()) // 펀드 ID 검색
   );
 
   // 현재 페이지에 표시할 데이터 계산
@@ -139,52 +140,22 @@ const FindFundCustomer = () => {
       </table>
 
       {/* 페이지네이션 */}
-      <div className={styles.fundpagination}>
-        <span
-          onClick={() => handlePageChange(1)} // 첫 페이지로 이동
-          style={{
-            cursor: currentPage === 1 ? "not-allowed" : "pointer",
-            color: currentPage === 1 ? "#ccc" : "#007bff",
-          }}
+      <div className={style.pagination} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', marginTop: '20px' }}>
+        <button
+          className={style.exListBtn}
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} // 이전 페이지로 이동
+          disabled={currentPage === 1}
         >
-          {"<<"}
-        </span>
-        <span
-          onClick={() => handlePageChange(Math.max(currentPage - 1, 1))} // 이전 페이지로 이동
-          style={{
-            cursor: currentPage === 1 ? "not-allowed" : "pointer",
-            color: currentPage === 1 ? "#ccc" : "#007bff",
-          }}
+          ◀ 이전
+        </button>
+        <span>{currentPage} / {Math.ceil(filteredTransactions.length / itemsPerPage)}</span> {/* 현재 페이지 / 총 페이지 */}
+        <button
+          className={style.exListBtn}
+          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, Math.ceil(filteredTransactions.length / itemsPerPage)))} // 다음 페이지로 이동
+          disabled={currentPage === Math.ceil(filteredTransactions.length / itemsPerPage)}
         >
-          {"<"}
-        </span>
-        {Array.from({ length: Math.ceil(filteredTransactions.length / itemsPerPage) }, (_, i) => (
-          <span
-            key={i + 1}
-            className={currentPage === i + 1 ? styles.activePage : ""}
-            onClick={() => handlePageChange(i + 1)}
-          >
-            {i + 1}
-          </span>
-        ))}
-        <span
-          onClick={() => handlePageChange(Math.min(currentPage + 1, Math.ceil(filteredTransactions.length / itemsPerPage)))} // 다음 페이지로 이동
-          style={{
-            cursor: currentPage === Math.ceil(filteredTransactions.length / itemsPerPage) ? "not-allowed" : "pointer",
-            color: currentPage === Math.ceil(filteredTransactions.length / itemsPerPage) ? "#ccc" : "#007bff",
-          }}
-        >
-          {">"}
-        </span>
-        <span
-          onClick={() => handlePageChange(Math.ceil(filteredTransactions.length / itemsPerPage))} // 마지막 페이지로 이동
-          style={{
-            cursor: currentPage === Math.ceil(filteredTransactions.length / itemsPerPage) ? "not-allowed" : "pointer",
-            color: currentPage === Math.ceil(filteredTransactions.length / itemsPerPage) ? "#ccc" : "#007bff",
-          }}
-        >
-          {">>"}
-        </span>
+          다음 ▶
+        </button>
       </div>
     </div>
   );

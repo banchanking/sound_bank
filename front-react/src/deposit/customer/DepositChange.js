@@ -91,80 +91,94 @@ const DepositChange = () => {
         <div className="depositContainer">
             <h2 className="depositTitle">예금 계좌 정보 변경</h2>
             <Card>
-                <Form
-                    form={form}
-                    layout="vertical"
-                >
-                    <Form.Item
-                        name="accountId"
-                        label="계좌 선택"
-                        rules={[{ required: true, message: '계좌를 선택해주세요' }]}
+                {accounts.length === 0 ? (
+                    <div>현재 조회 가능한 계좌가 없습니다.</div>
+                ) : (
+                    <Form
+                        form={form}
+                        layout="vertical"
                     >
-                        <Select
-                            placeholder="계좌를 선택해주세요"
-                            onChange={handleAccountChange}
-                        >
-                            {accounts.map(account => (
-                                <Option key={account.id} value={account.id}>
-                                    {account.accountNumber} - {account.productName}
-                                </Option>
-                            ))}
-                        </Select>
-                    </Form.Item>
-
-                    {selectedAccount && (
-                        <>
-                            {/* 기존 비밀번호와 새 비밀번호 변경 */}
-                            <Form.Item
-                                name="oldPassword"
-                                label="기존 비밀번호 (4자리)"
-                                rules={[{ required: true, message: '기존 비밀번호를 입력해주세요' }, { len: 4, message: '비밀번호는 4자리여야 합니다' }]}
+                        <Form.Item
+                            name="accountId"
+                            label="계좌 선택"
+                            rules={[{ required: true, message: '계좌를 선택해주세요' }]}
                             >
-                                <Input.Password maxLength={4} placeholder="기존 비밀번호 입력" />
+                            <Select
+                                placeholder="계좌를 선택해주세요"
+                                onChange={handleAccountChange}
+                            >
+                                {accounts
+                                .filter(account => account.accountStatus === 'ACTIVE')
+                                .map(account => (
+                                    <Option key={account.id} value={account.id}>
+                                    {account.accountNumber} - {account.productName} - {account.balance.toLocaleString()}원
+                                    </Option>
+                                ))}
+                            </Select>
                             </Form.Item>
 
-                            <Form.Item
-                                name="newPassword"
-                                label="새 비밀번호 (4자리)"
-                                rules={[{ required: true, message: '새 비밀번호를 입력해주세요' }, { len: 4, message: '비밀번호는 4자리여야 합니다' }]}
-                            >
-                                <Input.Password maxLength={4} placeholder="새 비밀번호 입력" />
-                            </Form.Item>
-
-                            <Form.Item>
-                                <Button
-                                    type="primary"
-                                    onClick={() => form.validateFields(['oldPassword', 'newPassword']).then(handlePasswordChange)}
-                                    style={{ width: '100%', marginBottom: '10px' }}
+    
+                        {selectedAccount && (
+                            <>
+                                {/* 기존 비밀번호와 새 비밀번호 변경 */}
+                                <Form.Item
+                                    name="oldPassword"
+                                    label="기존 비밀번호 (4자리)"
+                                    rules={[
+                                        { required: true, message: '기존 비밀번호를 입력해주세요' },
+                                        { len: 4, message: '비밀번호는 4자리여야 합니다' }
+                                    ]}
                                 >
-                                    비밀번호 변경
-                                </Button>
-                            </Form.Item>
-
-                            {/* 계좌 별명 변경 */}
-                            <Form.Item
-                                name="nickname"
-                                label="계좌 별명 (선택)"
-                                rules={[{ max: 20, message: '별명은 최대 20자까지 가능합니다' }]}
-                            >
-                                <Input placeholder="예: 월급통장, 비상금통장" />
-                            </Form.Item>
-
-                            <Form.Item>
-                                <Button
-                                    type="primary"
-                                    onClick={() => form.validateFields(['nickname']).then(handleNicknameChange)}
-                                    style={{ width: '100%' }}
+                                    <Input.Password maxLength={4} placeholder="기존 비밀번호 입력" />
+                                </Form.Item>
+    
+                                <Form.Item
+                                    name="newPassword"
+                                    label="새 비밀번호 (4자리)"
+                                    rules={[
+                                        { required: true, message: '새 비밀번호를 입력해주세요' },
+                                        { len: 4, message: '비밀번호는 4자리여야 합니다' }
+                                    ]}
                                 >
-                                    별명 변경
-                                </Button>
-                            </Form.Item>
-                        </>
-                    )}
-                </Form>
+                                    <Input.Password maxLength={4} placeholder="새 비밀번호 입력" />
+                                </Form.Item>
+    
+                                <Form.Item>
+                                    <Button
+                                        type="primary"
+                                        onClick={() => form.validateFields(['oldPassword', 'newPassword']).then(handlePasswordChange)}
+                                        style={{ width: '100%', marginBottom: '10px' }}
+                                    >
+                                        비밀번호 변경
+                                    </Button>
+                                </Form.Item>
+    
+                                {/* 계좌 별명 변경 */}
+                                <Form.Item
+                                    name="nickname"
+                                    label="계좌 별명 (선택)"
+                                    rules={[{ max: 20, message: '별명은 최대 20자까지 가능합니다' }]}
+                                >
+                                    <Input placeholder="예: 월급통장, 비상금통장" />
+                                </Form.Item>
+    
+                                <Form.Item>
+                                    <Button
+                                        type="primary"
+                                        onClick={() => form.validateFields(['nickname']).then(handleNicknameChange)}
+                                        style={{ width: '100%' }}
+                                    >
+                                        별명 변경
+                                    </Button>
+                                </Form.Item>
+                            </>
+                        )}
+                    </Form>
+                )}
             </Card>
         </div>
     );
+    
 };
 
 export default DepositChange;

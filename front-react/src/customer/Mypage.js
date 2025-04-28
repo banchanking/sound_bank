@@ -9,7 +9,7 @@ import {
   FaChevronDown,
   FaChevronUp,
 } from "react-icons/fa";
-import LoanApply from "../sound_loan/customer/LoanApply";
+import MyInfo from "./MyInfo";
 import MyInterest from "../sound_loan/customer/MyInterest";
 import MyLoanStatus from "../sound_loan/customer/MyLoanStatus";
 import MyLateInterest from "../sound_loan/customer/MyLateInterest";
@@ -27,10 +27,12 @@ import InquireTransfer from "../inquire/InquireTransfer";
 import DepositAccountInquiry from "../deposit/customer/DepositAccountInquiry";
 import DepositTransactionDetails from "../deposit/customer/DepositTransactionDetails";
 import DepositAutoManagement from "../deposit/customer/DepositAutoManagement";
+import MyInfoEdit from "./MyInfoEdit";
+import DeleteCustomer from "./DeleteCustomer";
 
 const Mypage = () => {
   const [activeMenuIndex, setActiveMenuIndex] = useState(null);
-  const [selectedComponent, setSelectedComponent] = useState("null");
+  const [selectedComponent, setSelectedComponent] = useState("MyInfo");
   const [refreshKey, setRefreshKey] = useState(0);
 
   const refreshInterest = () => {
@@ -42,8 +44,8 @@ const Mypage = () => {
       title: "마이페이지",
       icon: <FaUser />,
       items: [
-        { name: "내정보조회", component: "FundInfo" },
-        { name: "회원탈퇴", component: "FundInfo" },
+        { name: "내정보조회", component: "MyInfo" },
+        { name: "회원탈퇴", component: "DeleteCustomer" },
       ],
     },
     {
@@ -67,7 +69,6 @@ const Mypage = () => {
       title: "대출",
       icon: <FaMoneyCheckAlt />,
       items: [
-        { name: "대출신청하기", component: "LoanApply" },
         { name: "대출현황 및 중도상환처리", component: "MyLoanStatus" },
         { name: "이자납입내역", component: "MyInterest" },
         { name: "연체내역", component: "MyLateInterest" },
@@ -97,6 +98,14 @@ const Mypage = () => {
 
   const renderComponent = () => {
     switch (selectedComponent) {
+      // 마이페이지 컴포넌트 호출 시작
+      case "MyInfo":
+        return <MyInfo onEdit={() => setSelectedComponent("MyInfoEdit")} />;
+      case "MyInfoEdit":
+        return <MyInfoEdit onCancel={() => setSelectedComponent("MyInfo")} />;
+      case "DeleteCustomer":
+        return <DeleteCustomer />;
+      // 마이페이지 컴포넌트 호출 종료
       // 예/적금 컴포넌트 호출 시작
       case "DepositAccountInquiry":
         return <DepositAccountInquiry />;
@@ -112,8 +121,6 @@ const Mypage = () => {
         return <InquireTransfer />;
       // 조회/이체 컴포넌트 호출 종료
       // 대출 컴포넌트 호출 시작
-      case "LoanApply":
-        return <LoanApply />;
       case "MyLoanStatus":
         return <MyLoanStatus key={refreshKey} onRefresh={refreshInterest} />;
       case "MyInterest":

@@ -15,7 +15,7 @@ function TransAutoEdit() {
       alert('로그인이 필요합니다.');
       return;
     }
-    RefreshToken.get(`http://localhost:8081/api/transAuto/list/${id}`)
+    RefreshToken.get(`/transAuto/list/${id}`)
       .then(res => setList(res.data))
       .catch(err => {
         console.error('조회 실패:', err);
@@ -42,7 +42,7 @@ function TransAutoEdit() {
   };
 
   const update = () => {
-    RefreshToken.put('http://localhost:8081/api/transAuto/update', editItem)
+    RefreshToken.put('/transAuto/update', editItem)
       .then(() => {
         alert('수정 완료');
         setEditItem(null);
@@ -56,7 +56,7 @@ function TransAutoEdit() {
 
   const handleDelete = (id) => {
     if (window.confirm('정말 삭제하시겠습니까?')) {
-      RefreshToken.delete(`http://localhost:8081/api/transAuto/delete/${id}`)
+      RefreshToken.delete(`/transAuto/delete/${id}`)
         .then(() => {
           alert('삭제되었습니다');
           setList(prev => prev.filter(item => item.transfer_id !== id));

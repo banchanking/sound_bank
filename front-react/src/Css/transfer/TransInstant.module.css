@@ -115,8 +115,8 @@
   cursor: pointer;
 }
 
-.instant-modalButtons button:hover {
-  filter: brightness(1.1);
+.instant-modalButtons2:hover {
+  background-color: #555;
 }
 
 @keyframes instant-fadeIn {

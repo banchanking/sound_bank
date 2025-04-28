@@ -120,7 +120,7 @@ const Fund = ({ fundId, onClose, onBuy }) => {
           />
 
           <label>매수 좌수</label>
-          <input
+          <input className={styles.byInput}
             type="number"
             value={unitCount}
             onChange={(e) => setUnitCount(e.target.value)}

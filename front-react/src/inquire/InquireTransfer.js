@@ -27,13 +27,21 @@ function CheckTx() {
   useEffect(() => {
     const id = getCustomerID();
     if (!id) {
-      alert('로그인이 필요합니다.');
-      navigate('/login');
-      return;
+      if (!id) {
+        const goLogin = window.confirm(
+          "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
+        );
+        if (goLogin) {
+          navigate("/login");
+        } else {
+          navigate("/");
+        }
+        return;      
     }
+  }
     setCustomerId(id);
 
-    RefreshToken.get(`http://localhost:8081/api/accounts/allAccount/${id}`)
+    RefreshToken.get(`/accounts/allAccount/${id}`)
       .then((response) => {
         let list = Array.isArray(response.data) ? response.data : Object.values(response.data).flat();
         setAccountList(list);
@@ -54,7 +62,7 @@ function CheckTx() {
   };
 
   const fetchTransactions = () => {
-    RefreshToken.get('http://localhost:8081/api/transactions', {
+    RefreshToken.get('/transactions', {
       params: {
         account_number: selectedAccount,
         start_date: startDate,

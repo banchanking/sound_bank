@@ -1,12 +1,15 @@
-/* LoanList.module.css */
+/* LoanList.module.css (사뱅스타일 + 검색바 레이아웃 수정) */
 
 .loanListContainer {
   max-width: 1200px;
+  min-height: 560px;
   margin: 2rem auto;
   padding: 2rem;
   background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e4e7;
+  border-radius: 24px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.05);
+  animation: fadeIn 0.4s ease;
 }
 
 .loanListTitle {
@@ -15,54 +18,77 @@
   font-weight: 600;
   margin-bottom: 1.5rem;
   color: #222;
+  animation: fadeInUp 0.4s ease;
 }
 
+/* -------- 검색바 레이아웃 수정 -------- */
 .searchBar {
   display: flex;
-  justify-content: center;
+  align-items: center;
   gap: 0.5rem;
   margin-bottom: 1.5rem;
+  animation: fadeInUp 0.4s ease;
 }
 
 .searchBar input {
+  flex: 1;                           /* 남은 공간 모두 차지 */
+  min-width: 0;                      /* 오버플로우 방지 */
   padding: 0.5rem;
-  width: 240px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+  border: 1px solid #e2e4e7;
+  border-radius: 7px;
   font-size: 0.9rem;
+  box-sizing: border-box;
+  animation: fadeInUp 0.4s ease;
 }
 
 .searchBar button {
-  padding: 0.5rem 1rem;
-  background-color: #333;
-  color: white;
+  flex: 0 0 auto;                   /* 고정 크기 */
+  padding: 0.6rem 1.2rem;
+  background-color: #3a3a3c;
+  color: #ffffff;
   border: none;
-  border-radius: 6px;
+  border-radius: 7px;
   cursor: pointer;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.4s ease, box-shadow 0.4s ease;
+  animation: fadeInUp 0.5s ease;
 }
 
 .searchBar button:hover {
-  background-color: #555;
+  background-color: #444;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
+/* -------- 검색바 끝 -------- */
 
 .loanTable {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.9rem;
   table-layout: fixed;
+  animation: fadeInUp 0.4s ease;
 }
 
 .loanTable th,
 .loanTable td {
-  border: 1px solid #ddd;
-  padding: 0.75rem;
+  border: 1px solid #e2e4e7;
+  padding: 0.6rem;
   text-align: center;
   color: #333;
+  animation: fadeInUp 0.4s ease;
 }
 
 .loanTable th {
   background-color: #f5f5f5;
   font-weight: 600;
+}
+
+/* 사뱅스타일 기본 row 호버 효과 */
+loanTable tbody tr:hover {
+  background-color: #ebf0f3;
+  transition: background-color 0.3s ease;
 }
 
 .loanInfo {
@@ -73,17 +99,24 @@
 }
 
 .detailButton {
-  background-color: #1976d2;
-  color: white;
+  padding: 0.5rem 0.8rem;
+  font-size: 0.75rem;
+  background-color: #3a3a3c;
+  color: #ffffff;
   border: none;
-  padding: 0.4rem 0.8rem;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 0.8rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.4s ease, box-shadow 0.4s ease;
+  animation: fadeInUp 0.5s ease;
 }
 
 .detailButton:hover {
-  background-color: #1565c0;
+  background-color: #5e5e5e;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .pagination {
@@ -91,18 +124,49 @@
   justify-content: center;
   gap: 0.3rem;
   margin-top: 1rem;
+  animation: fadeInUp 0.4s ease;
 }
 
 .pagination button {
-  background-color: #333;
-  color: white;
-  padding: 0.4rem 0.8rem;
+  padding: 0.6rem 1.2rem;
+  background-color: #3a3a3c;
+  color: #ffffff;
   border: none;
-  border-radius: 4px;
+  border-radius: 7px;
   cursor: pointer;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.4s ease, box-shadow 0.4s ease;
+  animation: fadeInUp 0.5s ease;
 }
 
-.pagination .active,
-.pagination button:hover {
-  background-color: #666;
+.pagination button:hover,
+.pagination button.active {
+  background-color: #444;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+
+table tbody tr:hover {
+  background-color: #f7fafc;
+  transition: background-color 0.3s ease;
+}
+
+/* ——— 애니메이션 정의 (맨 아래) ——— */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

@@ -95,10 +95,10 @@ public class DepositController {
  // 예금 계좌 해지
     @DeleteMapping("/deposit/accounts/deposit/{accountId}")
     public ResponseEntity<?> closeDepositAccount(
-        @PathVariable String accountId,   // 🔥 int → String
-        @RequestBody AccountCloseRequest request) {  // 🔥 DepositDTO → AccountCloseRequest
+        @PathVariable String accountId,
+        @RequestParam String accountPassword) {  // 🔥 여기 수정!
         try {
-            depositService.closeDepositAccount(accountId, request.getAccountPassword());
+            depositService.closeDepositAccount(accountId, accountPassword);
             return ResponseEntity.ok().body("예금 계좌가 성공적으로 해지되었습니다.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -108,15 +108,16 @@ public class DepositController {
     // 적금 계좌 해지
     @DeleteMapping("/deposit/accounts/savings/{accountId}")
     public ResponseEntity<?> closeSavingsAccount(
-        @PathVariable String accountId,   // 🔥 int → String
-        @RequestBody AccountCloseRequest request) {  // 🔥 DepositDTO → AccountCloseRequest
+        @PathVariable String accountId,
+        @RequestParam String accountPassword) {  // 🔥 여기 수정!
         try {
-            depositService.closeSavingsAccount(accountId, request.getAccountPassword());
+            depositService.closeSavingsAccount(accountId, accountPassword);
             return ResponseEntity.ok().body("적금 계좌가 성공적으로 해지되었습니다.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
 
 
  // ✅ 예금 계좌 입금
@@ -422,6 +423,11 @@ public class DepositController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    
+    
+
+
+
 
 
 

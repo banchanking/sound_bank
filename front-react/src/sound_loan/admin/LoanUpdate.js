@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styles from "../../Css/loan/LoanUpdate.module.css";
 import RefreshToken from "../../jwt/RefreshToken";
 
-const LoanUpdate = () => {
+const LoanUpdate = ({ loan_id }) => {
   const formRef = useRef();
   const navigate = useNavigate();
-  const { loan_id } = useParams();
+
   const [loan, setLoan] = useState({
     loan_id: 0,
     loan_name: "",

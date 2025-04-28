@@ -1,12 +1,20 @@
 import React, { useEffect, useState } from "react";
 import RefreshToken from "../../jwt/RefreshToken";
 import "../../Css/loan/MyLateInterest.css"; // 전용 스타일
+import { useNavigate } from "react-router-dom";
 
 const MyLateInterest = () => {
   const [lateList, setLateList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    if (!localStorage.getItem("customerId")) {
+      alert("로그인이 필요한 서비스입니다.");
+
+      navigate("/");
+      return;
+    }
     RefreshToken.get("/myLateInterest", {
       params: {
         customerId: localStorage.getItem("customerId"),

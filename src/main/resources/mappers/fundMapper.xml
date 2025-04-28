@@ -58,8 +58,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             return_1m = #{return_1m},
             return_3m = #{return_3m},
             return_6m = #{return_6m},
-            return_12m = #{return_12m},
-            fund_risk_type = #{fund_risk_type}
+            return_12m = #{return_12m}
         WHERE fund_id = #{fund_id}
     </update>
 

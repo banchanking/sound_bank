@@ -17,7 +17,7 @@ function TransLimitEdit() {
       alert('로그인이 필요합니다');
       return;
     }
-    RefreshToken.get(`http://localhost:8081/api/transLimit/list/${customer_id}`, {
+    RefreshToken.get(`/transLimit/list/${customer_id}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(res => setList(res.data))
@@ -29,7 +29,7 @@ function TransLimitEdit() {
 
   const deleteRow = (id) => {
     if (!window.confirm('정말 삭제하시겠습니까?')) return;
-    RefreshToken.delete(`http://localhost:8081/api/transLimit/delete/${id}`, {
+    RefreshToken.delete(`/transLimit/delete/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(() => setList(prev => prev.filter(item => item.transfer_id !== id)))
@@ -51,7 +51,7 @@ function TransLimitEdit() {
   };
 
   const handleUpdate = () => {
-    RefreshToken.put('http://localhost:8081/api/transLimit/update', editItem, {
+    RefreshToken.put('/transLimit/update', editItem, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(() => {

@@ -1,57 +1,84 @@
+/* My펀드 계좌개설 전체 박스 */
 .fundAccountcontainer {
-    min-height: 600px;
-    max-width: 500px;
-    margin: 3rem auto;
-    padding: 2rem;
-    background: #ffffff;
-    border: 2px solid #222;
-    border-radius: 16px;
-    box-shadow: 4px 4px 0 #000;
-  }
-  
-  .fundAccounttitle {
-    text-align: center;
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: #111;
-    margin-bottom: 2rem;
-  }
-  
-  .fundAccountform {
-    display: flex;
-    flex-direction: column;
-    gap: 1.2rem;
-  }
-  
-  .fundAccountlabel {
-    font-weight: bold;
-    color: #333;
-  }
-  
-  .fundAccountinput,
-  .fundAccountselect {
-    padding: 0.8rem;
-    border: 1px solid #aaa;
-    border-radius: 8px;
-    font-size: 1rem;
-    outline: none;
-  }
-  
-  .fundAccountbutton {
-    padding: 1rem;
-    margin-top: 1.5rem;
-    font-size: 1.1rem;
-    font-weight: bold;
-    background-color: #000;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.2s;
-    width: auto;
-  }
-  
-  .fundAccountbutton:hover {
-    background-color: #333;
-  }
-  
+  min-height: 600px;
+  max-width: 500px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background: #ffffff;
+  border: 1.5px solid #e2e4e7;
+  border-radius: 20px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.4s ease;
+}
+
+/* 제목 */
+.fundAccounttitle {
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #222;
+  margin-bottom: 2rem;
+  animation: fadeInUp 0.4s ease;
+}
+
+/* 입력폼 전체 */
+.fundAccountform {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* 라벨 */
+.fundAccountlabel {
+  font-weight: 600;
+  font-size: 15px;
+  color: #333;
+}
+
+/* 인풋, 셀렉트 */
+.fundAccountinput,
+.fundAccountselect {
+  padding: 12px;
+  border: 1.5px solid #ccc;
+  border-radius: 10px;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.fundAccountinput:focus,
+.fundAccountselect:focus {
+  border-color: #537697; /* 포커스 시 사뱅파란색 */
+  box-shadow: 0 0 5px rgba(83, 118, 151, 0.4);
+}
+
+/* 버튼 */
+.fundAccountbutton {
+  padding: 14px;
+  margin-top: 1.5rem;
+  font-size: 16px;
+  font-weight: bold;
+  background-color: #353535; /* 사뱅 파란색 */
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  width: 100%;
+}
+
+.fundAccountbutton:hover {
+  background-color: #555; /* hover 시 밝은 파란색 */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* 애니메이션 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
