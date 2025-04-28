@@ -39,6 +39,8 @@ const Login = () => {
         const msg = error.response?.data?.message;
         if (msg === "UnKnown user" || msg === "Invalid password") {
           alert("아이디 또는 비밀번호를 다시 확인하세요");
+        } else if (msg === "signOut user") {
+          alert("탈퇴된 고객입니다.");
         } else {
           alert("서버 오류가 발생했습니다");
         }
