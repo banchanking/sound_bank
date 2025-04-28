@@ -385,14 +385,22 @@
 		)
 	</insert>
 	
-	<select id="myInterestList" parameterType="String" resultMap="LoanInterestPaymentMap">
+		<select id="myInterestList" parameterType="String" resultMap="LoanInterestPaymentMap">
 		  SELECT 
 		    ROW_NUMBER() OVER (ORDER BY a.interest_payment_no) AS no,
 		    a.*,
 		    b.loan_name,
 		    b.account_number 
 		  FROM loan_interest_payment_tbl a
-		  JOIN loan_status_tbl b 
+		  JOIN (
+		      SELECT loan_id, customer_id, loan_name, account_number
+		      FROM loan_status_tbl
+		      WHERE (loan_id, customer_id, loan_status_no) IN (
+		          SELECT loan_id, customer_id, MAX(loan_status_no)
+		          FROM loan_status_tbl
+		          GROUP BY loan_id, customer_id
+		      )
+		  ) b
 		    ON a.loan_id = b.loan_id 
 		    AND a.customer_id = b.customer_id
 		  WHERE a.customer_id = #{customerId}

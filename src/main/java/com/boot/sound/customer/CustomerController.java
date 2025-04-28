@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +20,12 @@ import com.boot.sound.jwt.dto.SignUpDTO;
 import com.boot.sound.jwt.dto.UpdateDTO;
 import com.boot.sound.jwt.mappers.CustomerMapper;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
 @RequestMapping("/api")
 @CrossOrigin
+@Slf4j
 public class CustomerController {
 
     @Autowired
@@ -80,7 +86,7 @@ public class CustomerController {
 
     // 로그인
     @PostMapping("/login.do")	
-    public ResponseEntity<?> login(@RequestBody CredentialsDTO dto) {
+    public ResponseEntity<?> login(@RequestBody CredentialsDTO dto,  HttpServletResponse response) {
         System.out.println(dto);
         // 로그인한 사용자 정보 가져오기
         CustomerDTO customer = service.login(dto);
@@ -94,18 +100,26 @@ public class CustomerController {
         // Access Token 및 Refresh Token 생성
         String accessToken = provider.createToken(customer.getCustomerId());
         String refresh_token = provider.createRefreshToken(customer.getCustomerId());
+        
+        // ✅ 쿠키에 refreshToken 심기
+        Cookie refreshTokenCookie = new Cookie("refreshToken", refresh_token);
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(false); // HTTPS 환경에서는 true
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60); // 7일
+        
+        response.addCookie(refreshTokenCookie);
 
         // Refresh Token DB에 저장
         customerMapper.saveRefreshToken(customer.getCustomerId(), refresh_token);
 
-        // 클라이언트에게 Access Token, Refresh Token 및 Customer ID 전달
-        Map<String, String> response = new HashMap<>();
-        response.put("customer_token", accessToken);
-        response.put("customerId", customer.getCustomerId()); // Customer ID 추가
+        
 
-        System.out.println(accessToken);
-        System.out.println(refresh_token);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(Map.of(
+                "customer_token", accessToken,
+                "customerId", customer.getCustomerId(),
+                "role","CUSTOMER"
+            ));
        
     }
     
@@ -129,10 +143,11 @@ public class CustomerController {
    
    // 로그아웃
    @PostMapping("/logout")
-   public ResponseEntity<?>logout(@RequestBody Map<String, String> request){
+   public ResponseEntity<?>logout(@RequestBody Map<String, String> request, HttpServletResponse response){
 
 	   String customerId = request.get("customerId");
 	   System.out.println("요청ID:"+customerId);
+	   provider.deleteRefreshTokenCookie(response);
 	   return new ResponseEntity<>(service.logout(customerId),HttpStatus.OK);
    }
    

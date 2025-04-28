@@ -3,6 +3,9 @@ package com.boot.sound.admin.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -32,23 +35,32 @@ public class AdminController {
 	private final UserAuthProvider provider;
 	
 	@PostMapping("/login")
-	public ResponseEntity<?> login(@RequestBody AdminRequestDTO request) {
+	public ResponseEntity<?> login(@RequestBody AdminRequestDTO request, HttpServletResponse response) {
 		// 서비스에서 로그인 처리 + 검증 + 관리자 정보 리턴
 	    AdminDTO admin = adminService.login(request);
 
 	    // 토큰 발급
 	    String token = provider.createAdminToken(admin.getCustomerId());
-	    String refreshToken = provider.createRefreshToken(admin.getCustomerId());
+	    String refreshToken = provider.createAdminRefreshToken(admin.getCustomerId());
 
 	    // refreshToken DB저장
 	    adminService.saveAdminRefreshToken(admin.getCustomerId(), refreshToken);
+	    
+	    Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(false); // HTTPS 환경에서는 true
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60); // 7일
+        
+        response.addCookie(refreshTokenCookie);
 
-	    Map<String, String> response = new HashMap<>();
-	    response.put("admin_token",token);
-	    response.put("customerId",admin.getCustomerId());
-	    response.put("role",admin.getRole());
 
-	    return ResponseEntity.ok(response);
+
+	    return ResponseEntity.ok(Map.of(
+                "customer_token", token,
+                "customerId", admin.getCustomerId(),
+                "role","ADMIN"
+            ));
 
 	}
 
