@@ -1,7 +1,8 @@
+// src/components/SignupSMSModal.jsx
 import React, { useState, useEffect } from "react";
 import Modal from "react-modal";
 import RefreshToken from "../jwt/RefreshToken";
-import "../Css/customer/JoinModal.module.css";
+import styles from "../Css/customer/JoinModal.module.css";
 
 Modal.setAppElement("#root");
 
@@ -37,7 +38,7 @@ const SignupSMSModal = ({ isOpen, onRequestClose, onVerified, phoneNumber }) => 
         customer_phone_number: phoneNumber,
         code: verificationCode,
       });
-  
+
       if (res.status === 200 && res.data === true) {
         alert("인증 성공");
         onVerified();
@@ -61,11 +62,20 @@ const SignupSMSModal = ({ isOpen, onRequestClose, onVerified, phoneNumber }) => 
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          width: "400px",
+          width: "420px",
+          height: "300px",
+          padding: "0",
+          border: "none",
+          borderRadius: "20px",
+          overflow: "hidden",
+        },
+        overlay: {
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          zIndex: 1000,
         },
       }}
     >
-      <div className="modalArea">
+      <div className={styles.smsModalArea}>
         <h2>인증번호 입력</h2>
         <input
           type="text"
@@ -73,10 +83,14 @@ const SignupSMSModal = ({ isOpen, onRequestClose, onVerified, phoneNumber }) => 
           onChange={(e) => setVerificationCode(e.target.value)}
           placeholder="인증번호 입력"
         />
-      </div>
-      <div className="buttonContainer">
-        <button onClick={verifyCode}>인증확인</button>
-        <button onClick={onRequestClose}>닫기</button>
+        <div className={styles.smsButtonContainer}>
+          <button className={styles.smsModalBtn} onClick={verifyCode}>
+            인증확인
+          </button>
+          <button className={styles.smsModalBtn} onClick={onRequestClose}>
+            닫기
+          </button>
+        </div>
       </div>
     </Modal>
   );
