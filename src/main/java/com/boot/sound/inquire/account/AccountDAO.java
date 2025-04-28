@@ -14,4 +14,7 @@ public interface AccountDAO {
 	
     public void insertAccount(AccountDTO account);
     
+    // 입출금 계좌 해지
+    public void deleteAccount(String account_number);
+    
 }

@@ -17,4 +17,11 @@ public class AccountController {
     public Map<String, List<AccountDTO>> getAllAccounts(@PathVariable String customer_id) {
         return service.getAccountsGroupedByType(customer_id);
     }
+    
+    // 입출금 계좌 해지
+    @PostMapping("/closeAccount/{account_number}")
+    public void closeAccount(@PathVariable String account_number) {
+        service.closeAccount(account_number);
+    }
+    
 }

@@ -119,7 +119,7 @@
   font-size: 15px;
   font-weight: 600;
   color: #fff;
-  background: linear-gradient(to right, #3a3a3c, #2c2c2e);
+  background: linear-gradient(to right, #537697, #537697);
   border: none;
   border-radius: 12px;
   cursor: pointer;
@@ -131,6 +131,26 @@
 .account-transferButton:hover {
   filter: brightness(1.07);
 }
+
+.account-transferButton2 {
+  width: 100%;
+  padding: 12px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(to right, #3a3a3c, #2c2c2e);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  animation: account-fadeInUp 0.5s ease;
+}
+
+.account-transferButton2:hover {
+  filter: brightness(1.07);
+}
+
 
 .account-transferButton:active {
   transform: scale(0.98);
