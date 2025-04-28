@@ -25,4 +25,12 @@
     )
   </insert>
   
+  <!-- 입출금계좌 해지 -->
+  <delete id="deleteAccount" parameterType="String">
+    DELETE FROM account_tbl
+    WHERE account_number = #{account_number}
+    AND account_type = '입출금'
+</delete>
+
+  
 </mapper>

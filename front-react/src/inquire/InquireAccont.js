@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import RefreshToken from "../jwt/RefreshToken"; 
-import styles from '../Css/inquire/InquireAccount.module.css';
+import RefreshToken from "../jwt/RefreshToken";
 import { getCustomerID } from "../jwt/AxiosToken";
 import { useNavigate } from 'react-router-dom';
+import styles from '../Css/inquire/InquireAccount.module.css';
 
 function AccountCheck() {
   const navigate = useNavigate();
@@ -14,18 +14,14 @@ function AccountCheck() {
   useEffect(() => {
     const id = getCustomerID();
     if (!id) {
-      if (!id) {
-        const goLogin = window.confirm(
-          "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
-        );
-        if (goLogin) {
-          navigate("/login");
-        } else {
-          navigate("/");
-        }
-        return;      
+      const goLogin = window.confirm("로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?");
+      if (goLogin) {
+        navigate("/login");
+      } else {
+        navigate("/");
+      }
+      return;
     }
-  }
     setCustomerId(id);
 
     RefreshToken.get(`/accounts/allAccount/${id}`)
@@ -57,6 +53,50 @@ function AccountCheck() {
       <p><b>개설일:</b> {new Date(item.open_date).toLocaleString()}</p>
     </div>
   );
+
+  // "이체하기" 버튼 클릭
+  const handleTransfer = () => {
+    if (!accNum) {
+      alert("이체할 계좌를 선택하세요.");
+      return;
+    }
+    navigate('/transInstant');
+  };
+
+  // "입출금 계좌 해지" 버튼 클릭
+  const handleCloseAccount = () => {
+    if (!accNum) {
+      alert("해지할 계좌를 선택하세요.");
+      return;
+    }
+
+    const selected = data[type].find(a => a.account_number === accNum);
+    if (!selected) {
+      alert("선택한 계좌를 찾을 수 없습니다.");
+      return;
+    }
+
+    if (selected.balance > 0) {
+      const moveToTransfer = window.confirm("잔액이 남아 있습니다. 먼저 본인 명의 다른 계좌로 이체해 주세요.");
+      if (moveToTransfer) {
+        navigate('/transInstant');
+      }
+      return;
+    }
+
+    const confirmClose = window.confirm("정말로 계좌를 해지하시겠습니까?");
+    if (confirmClose) {
+      RefreshToken.post(`/accounts/closeAccount/${accNum}`)
+        .then(() => {
+          alert("계좌가 성공적으로 해지되었습니다.");
+          window.location.reload()
+        })
+        .catch(err => {
+          console.error('계좌 해지 실패:', err);
+          alert("계좌 해지에 실패했습니다.");
+        });
+    }
+  };
 
   return (
     <div className={styles["account-wrapper"]}>
@@ -95,8 +135,12 @@ function AccountCheck() {
       )}
 
       <div className={styles["account-buttonArea"]}>
-        <button className={styles["account-transferButton"]} onClick={() => navigate('/transInstant')}>
+        <button className={styles["account-transferButton"]} onClick={handleTransfer}>
           이체하기
+        </button>
+        <br /><br />
+        <button className={styles["account-transferButton2"]} onClick={handleCloseAccount}>
+          입출금계좌 해지 (회원탈퇴용)
         </button>
       </div>
     </div>
