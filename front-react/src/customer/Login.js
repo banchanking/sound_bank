@@ -22,10 +22,16 @@ const Login = () => {
   const onLogin = (e) => {
     e.preventDefault();
     axios
-      .post("http://localhost:8081/api/login.do", {
-        customerId: form.customerId,
-        customer_password: form.customer_password,
-      })
+      .post(
+        "http://localhost:8081/api/login.do",
+        {
+          customerId: form.customerId,
+          customer_password: form.customer_password,
+        },
+        {
+          withCredentials: true, // ✅ 추가
+        }
+      )
       .then((res) => {
         // 토큰과 고객 ID 저장
         setAuthToken(res.data.customer_token);
