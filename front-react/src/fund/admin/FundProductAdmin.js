@@ -1,5 +1,3 @@
-// ✅ FundProductAdmin.js - 네 원래 구조 기준 + Set비교 + 검색기능 + 에러없이 최종
-
 import React, { useState, useEffect } from "react";
 import Papa from "papaparse";
 import styles from "../../Css/fund/FundAdmin.module.css";
@@ -27,7 +25,7 @@ const FundProductAdmin = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const itemsPerPage = 10;
 
-  // ✅ 등록된 펀드 목록 가져오기
+  // ✅ DB 등록된 펀드 가져오기
   const fetchRegisteredFunds = async () => {
     try {
       const response = await RefreshToken.get("/registeredFunds");
@@ -38,7 +36,7 @@ const FundProductAdmin = () => {
     }
   };
 
-  // ✅ CSV 파일 불러오기
+  // ✅ CSV 파일 가져오기
   const fetchFundsFromCSV = async () => {
     try {
       const response = await fetch("/data/fundList.csv");
@@ -68,7 +66,7 @@ const FundProductAdmin = () => {
     }
   };
 
-  // ✅ 전체 데이터 로딩
+  // ✅ 전체 데이터 불러오기
   const fetchData = async () => {
     await fetchRegisteredFunds();
     await fetchFundsFromCSV();
@@ -120,7 +118,7 @@ const FundProductAdmin = () => {
     setIsPopupOpen(false);
   };
 
-  // ✅ input 변경 핸들러
+  // ✅ 입력 핸들러
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -139,8 +137,18 @@ const FundProductAdmin = () => {
     }
   };
 
-  // ✅ 검색 필터 적용
-  const filteredFunds = funds.filter(fund =>
+  // ✅ 등록되지 않은 펀드만 필터
+  const unregisteredFunds = funds.filter(
+    fund => !registeredFundSet.has(fund.fund_name?.trim().toLowerCase())
+  );
+
+  // ✅ 중복 펀드명 제거
+  const uniqueFunds = Array.from(new Map(
+    unregisteredFunds.map(fund => [fund.fund_name, fund])
+  ).values());
+
+  // ✅ 검색 적용
+  const filteredFunds = uniqueFunds.filter(fund =>
     fund.fund_name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -182,30 +190,28 @@ const FundProductAdmin = () => {
           </tr>
         </thead>
         <tbody className={styles.fundTable}>
-          {currentFunds.map((fund, index) => {
-            const isRegistered = registeredFundSet.has(fund.fund_name?.trim().toLowerCase());
-            return (
-              <tr key={`${fund.fund_name}-${index}`}>
-                <td>{fund.fund_name}</td>
-                <td>{fund.fund_company}</td>
-                <td>{fund.fund_type}</td>
-                <td>{fund.fund_grade}</td>
-                <td>{fund.fund_fee_rate}</td>
-                <td>{fund.fund_upfront_fee}</td>
-                <td>{fund.return_1m}</td>
-                <td>{fund.return_3m}</td>
-                <td>{fund.return_6m}</td>
-                <td>{fund.return_12m}</td>
-                <td>
-                  {isRegistered ? (
-                    <button className={styles.disabledButton} disabled>등록됨</button>
-                  ) : (
-                    <button className={styles.fundButton} onClick={() => handleOpenPopup(fund)}>등록</button>
-                  )}
-                </td>
-              </tr>
-            );
-          })}
+          {currentFunds.map((fund, index) => (
+            <tr key={`${fund.fund_name}-${index}`}>
+              <td>{fund.fund_name}</td>
+              <td>{fund.fund_company}</td>
+              <td>{fund.fund_type}</td>
+              <td>{fund.fund_grade}</td>
+              <td>{fund.fund_fee_rate}</td>
+              <td>{fund.fund_upfront_fee}</td>
+              <td>{fund.return_1m}</td>
+              <td>{fund.return_3m}</td>
+              <td>{fund.return_6m}</td>
+              <td>{fund.return_12m}</td>
+              <td>
+                <button
+                  className={styles.fundButton}
+                  onClick={() => handleOpenPopup(fund)}
+                >
+                  등록
+                </button>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
 
