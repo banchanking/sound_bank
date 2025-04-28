@@ -8,6 +8,16 @@ const MyFund = ({ type, onClose, transactions, closedAccounts, onSellRequest }) 
     CLOSED: "해지된 펀드 계좌",
   };
 
+  // 날짜 포맷팅 함수
+  const formatDate = (dateString) => {
+    if (!dateString || isNaN(new Date(dateString).getTime())) return "N/A"; // 날짜가 없거나 유효하지 않을 경우
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // 월은 0부터 시작하므로 +1
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}/${month}/${day}`;
+  };
+
   const filtered = type === "BUY"
     ? transactions.filter(tx => tx.fundTransactionType === "BUY")
     : type === "SELL"
@@ -40,7 +50,7 @@ const MyFund = ({ type, onClose, transactions, closedAccounts, onSellRequest }) 
                 <td>{tx.fundInvestAmount?.toLocaleString() || tx.fundBalance?.toLocaleString()}</td>
                 <td>{tx.fundUnitsPurchased || "-"}</td>
                 <td>{tx.fundPricePerUnit || "-"}</td>
-                <td>{tx.fundTransactionDate || tx.closeDate || "-"}</td>
+                <td>{formatDate(tx.fundTransactionDate || tx.closeDate)}</td> {/* 날짜 포맷팅 */}
                 {type === "BUY" && (
                   <td>
                     {tx.status === "APPROVED" ? (

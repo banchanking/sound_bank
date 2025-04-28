@@ -17,6 +17,16 @@ const CloseApplyList = () => {
     }
   };
 
+  // 날짜 포맷팅 함수
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A"; // 날짜가 없을 경우
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // 월은 0부터 시작하므로 +1
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}/${month}/${day}`;
+  };
+
   // 해지 승인 처리
   const handleApproveClose = async (fundAccountId) => {
     try {
@@ -69,19 +79,29 @@ const CloseApplyList = () => {
                 <td>{acc.customerId}</td>
                 <td>{acc.fundAccountNumber}</td>
                 <td>{acc.linkedAccountNumber}</td>
-                <td>{acc.fundOpenDate}</td>
+                <td>{formatDate(acc.fundOpenDate)}</td> {/* 날짜 포맷팅 */}
                 <td>
-                  {acc.status === 'DEACTIVE'
+                  {acc.status === "DEACTIVE"
                     ? "해지 요청"
-                    : acc.status === 'CLOSED'
+                    : acc.status === "CLOSED"
                     ? "해지 완료"
-                    : acc.status === 'REJECTED'
+                    : acc.status === "REJECTED"
                     ? "해지 거절"
                     : acc.status}
                 </td>
                 <td>
-                  <button onClick={() => handleApproveClose(acc.fundAccountId)} className={styles.fundApproveBtn}>승인</button>
-                  <button onClick={() => handleRejectClose(acc.fundAccountId)} className={styles.fundRejectBtn}>거절</button>
+                  <button
+                    onClick={() => handleApproveClose(acc.fundAccountId)}
+                    className={styles.fundApproveBtn}
+                  >
+                    승인
+                  </button>
+                  <button
+                    onClick={() => handleRejectClose(acc.fundAccountId)}
+                    className={styles.fundRejectBtn}
+                  >
+                    거절
+                  </button>
                 </td>
               </tr>
             ))
