@@ -89,7 +89,7 @@ function AccountCheck() {
       RefreshToken.post(`/accounts/closeAccount/${accNum}`)
         .then(() => {
           alert("계좌가 성공적으로 해지되었습니다.");
-          navigate('/mypage');
+          window.location.reload()
         })
         .catch(err => {
           console.error('계좌 해지 실패:', err);

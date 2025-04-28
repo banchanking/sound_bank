@@ -265,7 +265,7 @@ const Header = () => {
               >
                 <div className="deposit-saving-row">
                   <ul>
-                    <NavDropdown.Item as={Link} to="/inquire">
+                    <NavDropdown.Item>
                       조회
                     </NavDropdown.Item>
                     <li>
@@ -298,7 +298,7 @@ const Header = () => {
                   </ul>
 
                   <ul>
-                    <NavDropdown.Item as={Link} to="/transfer">
+                    <NavDropdown.Item>
                       이체
                     </NavDropdown.Item>
                     <li>
