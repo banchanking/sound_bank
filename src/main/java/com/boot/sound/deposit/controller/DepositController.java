@@ -102,9 +102,9 @@ public class DepositController {
 
 
     //  예금 계좌 해지
-    @PutMapping("/deposit/accounts/deposit/{accountId}/close")
+    @PutMapping("/deposit/accounts/deposit/{selectAcount}/close")
     public ResponseEntity<?> closeDepositAccount(
-        @PathVariable String accountId,
+    	@PathVariable("accountId") String accountId,
         @RequestBody DepositDTO request
     ) {
         try {
@@ -117,9 +117,9 @@ public class DepositController {
     }
 
     //  적금 계좌 해지
-    @PutMapping("/deposit/accounts/savings/{accountId}/close")
+    @PutMapping("/deposit/accounts/savings/{selectAcount}/close")
     public ResponseEntity<?> closeSavingsAccount(
-        @PathVariable String accountId,
+    	@PathVariable("accountId") String accountId,
         @RequestBody DepositDTO request
     ) {
         try {

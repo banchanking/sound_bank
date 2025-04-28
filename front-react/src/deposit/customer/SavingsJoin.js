@@ -13,6 +13,8 @@ const SavingsJoin = () => {
     const [loading, setLoading] = useState(true);
     const [balance, setBalance] = useState('');
     const customerId = getCustomerID();
+    const [accounts, setAccounts] = useState([]);
+    const [selectedWithdrawAccountNumber, setSelectedWithdrawAccountNumber] = useState('');
 
     useEffect(() => {
         if (!customerId) {
@@ -25,6 +27,7 @@ const SavingsJoin = () => {
             return;
         }
         fetchProducts();
+        fetchAccounts();
     }, [navigate, customerId]);
 
     const fetchProducts = async () => {
@@ -36,6 +39,15 @@ const SavingsJoin = () => {
             alert('상품 정보를 불러오는데 실패했습니다.');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchAccounts = async () => {
+        try {
+            const res = await RefreshToken.get(`/accounts/allAccount/${customerId}`);
+            setAccounts(res.data['입출금'] || []);
+        } catch (error) {
+            console.error('입출금 계좌 조회 실패:', error);
         }
     };
 
@@ -70,6 +82,8 @@ const SavingsJoin = () => {
                 accountPassword: password,
                 monthlyAmount,
                 maturityDate: calcMaturityDate(selectedProduct.termMonths),
+                withdrawalAccountNumber: selectedWithdrawAccountNumber,   // ✅ 출금할 계좌
+                withdrawalAmount: monthlyAmount   // ✅ 출금할 금액 (monthlyAmount 사용!)
             });
 
             const accountNumber = createRes.data.accountNumber || createRes.data.account_number;
@@ -92,7 +106,7 @@ const SavingsJoin = () => {
             });
 
             alert('적금 계좌가 성공적으로 개설되었습니다.');
-            navigate('/deposit/accounts');
+            navigate('/');
         } catch (error) {
             console.error('적금 계좌 개설 실패:', error);
             alert('적금 계좌 개설에 실패했습니다.');
@@ -140,6 +154,23 @@ const SavingsJoin = () => {
                                     최소 {selectedProduct.minAmount.toLocaleString()}원 이상
                                 </div>
                             </div>
+
+                            <div className="formGroup">
+                                <label>출금 계좌 선택</label>
+                                <select
+                                    value={selectedWithdrawAccountNumber}
+                                    onChange={(e) => setSelectedWithdrawAccountNumber(e.target.value)}
+                                    required
+                                >
+                                    <option value="">출금할 입출금 계좌를 선택하세요</option>
+                                    {accounts.map(acc => (
+                                        <option key={acc.account_number} value={acc.account_number}>
+                                            {acc.account_name} ({acc.account_number}) - 잔액: {acc.balance.toLocaleString()}원
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
 
                             <div className="formGroup">
                                 <label>계좌 비밀번호 (4자리)</label>

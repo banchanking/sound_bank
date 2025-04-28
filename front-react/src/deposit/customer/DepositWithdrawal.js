@@ -49,37 +49,24 @@ const DepositWithdrawal = () => {
         const [type, id] = e.target.value.split('-');
         const accountId = parseInt(id, 10);
         const selected = accounts.find(acc => acc.id === accountId && acc.type === type);
-    
+
         if (selected) {
             setSelectedAccount(selected);
             setAccountType(type);
-    
-            // 계좌 선택 시 바로 잔액 반영
-            setAccountBalance(selected.balance); // 잔액 업데이트
-    
-            // 계좌번호가 숫자일 경우 문자열로 변환하여 API 호출
-            const accountNumber = selected.accountNumber.toString();
-    
-            // 호출되는 URL을 확인
-            console.log('API 호출 URL:', `http://localhost:8081/api/deposit/accounts/balance/${accountNumber}`);
-            
+
             try {
                 const url = type === 'DEPOSIT'
-                    ? `/deposit/accounts/balance/${accountNumber}`
-                    : `/deposit/accounts/savings/balance/${accountNumber}`;
-    
-                // 요청을 보내기 전에 로그로 URL을 출력
-                console.log(`Request URL: ${url}`);
-    
+                    ? `/deposit/accounts/balance/${selected.accountNumber}`
+                    : `/deposit/accounts/savings/balance/${selected.accountNumber}`;
+
                 const response = await RefreshToken.get(url);
-                setAccountBalance(response.data); // API 응답으로 잔액 업데이트
+                setAccountBalance(response.data);
             } catch (error) {
                 console.error('잔액 조회 에러:', error);
                 alert('잔액을 불러오는 데 실패했습니다.');
             }
         }
     };
-    
 
     const handleTransaction = async (type) => {
         if (!selectedAccount) {
@@ -101,7 +88,7 @@ const DepositWithdrawal = () => {
                 : `/deposit/accounts/savings/${selectedAccount.id}/${type}`;
 
             await RefreshToken.post(endpoint, {
-                transactionAmount: Number(amount),  // 여기! 숫자로 변환
+                transactionAmount: amount,
                 accountPassword: password
             });
 
@@ -118,89 +105,78 @@ const DepositWithdrawal = () => {
     return (
         <div className="depositContainer">
             <div className="depositCard">
-                {accounts.length === 0 ? (
-                    <div>현재 조회 가능한 계좌가 없습니다.</div>
-                ) : (
-                    <>
-                        <div className="depositProductHeader">
-                            <h2>예적금 입출금</h2>
-                        </div>
-    
-                        <form className="depositForm" onSubmit={(e) => e.preventDefault()}>
-                        <div className="formGroup">
-                                <label>계좌 선택</label>
-                                <select onChange={handleAccountChange} required>
-                                    <option value="">계좌 선택</option>
-                                    {accounts
-                                    .filter(acc => acc.accountStatus === 'ACTIVE')
-                                    .map(acc => (
-                                        <option key={`${acc.type}-${acc.id}`} value={`${acc.type}-${acc.id}`}>
-                                        [{acc.type === 'DEPOSIT' ? '예금' : '적금'}] {acc.accountNumber} - {acc.productName} 
-                                        </option>
-                                    ))}
-                                </select>
-                                </div>
+                <div className="depositProductHeader">
+                    <h2>예적금 입출금</h2>
+                </div>
 
+                <form className="depositForm" onSubmit={(e) => e.preventDefault()}>
+                    <div className="formGroup">
+                        <label>계좌 선택</label>
+                        <select onChange={handleAccountChange} required>
+                            <option value="">계좌 선택</option>
+                            {accounts.map(acc => (
+                                <option key={`${acc.type}-${acc.id}`} value={`${acc.type}-${acc.id}`}>
+                                    [{acc.type === 'DEPOSIT' ? '예금' : '적금'}] {acc.accountNumber}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
 
-    
-                            {selectedAccount && (
-                                <>
-                                    <div className="formGroup">
-                                        <label>현재 잔액</label>
-                                        <input type="text" value={`${accountBalance.toLocaleString()}원`} disabled />
-                                    </div>
-    
-                                    <div className="formGroup">
-                                        <label>금액</label>
-                                        <input
-                                            type="text"
-                                            value={amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                                            onChange={(e) => {
-                                                const rawValue = e.target.value.replace(/,/g, ""); 
-                                                if (!isNaN(rawValue)) { 
-                                                    setAmount(rawValue);
-                                                }
-                                            }}
-                                            required
-                                        />
-                                    </div>
-    
-                                    <div className="formGroup">
-                                        <label>계좌 비밀번호 (4자리)</label>
-                                        <input
-                                            type="password"
-                                            value={password}
-                                            onChange={(e) => setPassword(e.target.value)}
-                                            maxLength={4}
-                                            required
-                                        />
-                                    </div>
-    
-                                    <div className="formGroup" style={{ display: 'flex', gap: '10px' }}>
-                                        <button
-                                            type="button"
-                                            className="depositBtn"
-                                            onClick={() => handleTransaction('deposit')}
-                                        >
-                                            입금하기
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="depositBtn"
-                                            onClick={() => handleTransaction('withdraw')}
-                                        >
-                                            출금하기
-                                        </button>
-                                    </div>
-                                </>
-                            )}
-                        </form>
-                    </>
-                )}
+                    {selectedAccount && (
+                        <>
+                            <div className="formGroup">
+                                <label>현재 잔액</label>
+                                <input type="text" value={`${accountBalance.toLocaleString()}원`} disabled />
+                            </div>
+
+                            <div className="formGroup">
+                                <label>금액</label>
+                                <input
+                                        type="text"
+                                        value={amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                                        onChange={(e) => {
+                                            const rawValue = e.target.value.replace(/,/g, ""); // 콤마 제거하고
+                                            if (!isNaN(rawValue)) { // 숫자면만
+                                                setAmount(rawValue); // 상태에 숫자만 저장
+                                            }
+                                        }}
+                                        required
+                                    />
+                            </div>
+
+                            <div className="formGroup">
+                                <label>계좌 비밀번호 (4자리)</label>
+                                <input
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    maxLength={4}
+                                    required
+                                />
+                            </div>
+
+                            <div className="formGroup" style={{ display: 'flex', gap: '10px' }}>
+                                <button
+                                    type="button"
+                                    className="depositBtn"
+                                    onClick={() => handleTransaction('deposit')}
+                                >
+                                    입금하기
+                                </button>
+                                <button
+                                    type="button"
+                                    className="depositBtn"
+                                    onClick={() => handleTransaction('withdraw')}
+                                >
+                                    출금하기
+                                </button>
+                            </div>
+                        </>
+                    )}
+                </form>
             </div>
         </div>
     );
-    
 };
 
 export default DepositWithdrawal;

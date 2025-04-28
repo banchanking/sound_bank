@@ -59,9 +59,8 @@ public class DepositService {
  // 예금 계좌 생성
     @Transactional
     public String createDepositAccount(DepositDTO account) {
-        // 1. 계좌번호 자동 생성
-        String accountNumber = generateUniqueAccountNumber();
-        account.setAccountNumber(accountNumber);
+        // 1. 예금 계좌 번호 생성
+        account.setAccountNumber(generateUniqueAccountNumber());
 
         // 2. 상품 이자율 복사
         DepositDTO product = depositDAO.getDepositProductDetail(account.getProductId());
@@ -70,20 +69,27 @@ public class DepositService {
         }
         account.setInterestRate(product.getInterestRate());
 
-        // 3. 계좌 상태 초기화
+        // 3. 계좌 상태
         account.setAccountStatus("ACTIVE");
 
         // 4. 중복 체크
-        if (depositDAO.checkAccountNumber(accountNumber) > 0) {
+        if (depositDAO.checkAccountNumber(account.getAccountNumber()) > 0) {
             throw new RuntimeException("이미 존재하는 계좌번호입니다.");
         }
 
-        // 5. 계좌 생성
-        if (depositDAO.createDepositAccount(account) != 1) {
-            throw new RuntimeException("예금 계좌 생성에 실패했습니다.");
+
+        // 5. ✅ 먼저 출금 계좌에서 초기입금액만큼 빼기
+        if (depositDAO.withdrawFromAccount(account.getWithdrawalAccountNumber(), account.getBalance()) != 1) {
+            throw new RuntimeException("출금 계좌 잔액 차감 실패");
         }
 
-        // 6. 최초 입금 거래내역 생성
+
+        // 6. 예금계좌 생성
+        if (depositDAO.createDepositAccount(account) != 1) {
+            throw new RuntimeException("예금 계좌 생성 실패");
+        }
+
+        // 7. 최초 거래내역 생성
         DepositDTO transaction = new DepositDTO();
         transaction.setAccountId(account.getId());
         transaction.setTransactionType("DEPOSIT");
@@ -94,8 +100,10 @@ public class DepositService {
 
         depositDAO.createDepositTransaction(transaction);
 
-        return accountNumber; // 🔥 생성한 계좌번호 리턴
+        return account.getAccountNumber(); // 생성된 계좌번호 반환
     }
+
+
 
 
 
@@ -106,12 +114,24 @@ public class DepositService {
         String accountNumber = generateUniqueAccountNumber();
         account.setAccountNumber(accountNumber);
 
+        if (depositDAO.withdrawFromAccount(account.getWithdrawalAccountNumber(), account.getMonthlyAmount()) != 1) {
+            throw new RuntimeException("출금 계좌 잔액 차감 실패");
+            
+            
+        }
+        
         if (depositDAO.checkAccountNumber(accountNumber) > 0) {
             throw new RuntimeException("이미 존재하는 계좌번호입니다.");
         }
+        
+        account.setAccountStatus("ACTIVE");
+        
         if (depositDAO.createSavingsAccount(account) != 1) {
             throw new RuntimeException("적금 계좌 생성에 실패했습니다.");
         }
+       
+        
+        
 
         // 최초 거래내역 생성
         DepositDTO transaction = new DepositDTO();
@@ -132,7 +152,9 @@ public class DepositService {
     @Transactional
     public void closeDepositAccount(String accountId, String accountPassword) {
         String customerId = depositDAO.getCustomerIdFromDepositAccount(accountId);
-        BigDecimal balance = depositDAO.getDepositAccountBalance(accountId);
+        System.out.println("넘어온 accountId = " + accountId);
+
+        BigDecimal balance = depositDAO.getDepositBalanceByAccountNumber(accountId); // O
 
         if (balance == null) {
             throw new RuntimeException("계좌를 찾을 수 없습니다.");
@@ -146,7 +168,6 @@ public class DepositService {
             throw new RuntimeException("예금 계좌 삭제에 실패했습니다.");
         }
 
-        // ✅ 기본계좌 ACCOUNT_TBL 상태 변경 추가
         accountService.updateAccountStatusToClosed(accountId);
     }
 
@@ -154,7 +175,8 @@ public class DepositService {
     @Transactional
     public void closeSavingsAccount(String accountId, String accountPassword) {
         String customerId = depositDAO.getCustomerIdFromSavingsAccount(accountId);
-        BigDecimal balance = depositDAO.getSavingsAccountBalance(accountId);
+
+        BigDecimal balance = depositDAO.getDepositBalanceByAccountNumber(accountId); // O
 
         if (balance == null) {
             throw new RuntimeException("계좌를 찾을 수 없습니다.");
@@ -168,7 +190,6 @@ public class DepositService {
             throw new RuntimeException("적금 계좌 삭제에 실패했습니다.");
         }
 
-        // ✅ 기본계좌 ACCOUNT_TBL 상태 변경 추가
         accountService.updateAccountStatusToClosed(accountId);
     }
 
@@ -269,7 +290,7 @@ public class DepositService {
         }
 
         // ⭐ 입금 후 최신 잔액 조회
-        BigDecimal updatedBalance = depositDAO.getDepositAccountBalance(accountId);
+        BigDecimal updatedBalance = depositDAO.getDepositAccountBalance(String.valueOf(accountId));
 
         DepositDTO transaction = new DepositDTO();
         transaction.setAccountId(accountId);
@@ -298,7 +319,7 @@ public class DepositService {
         }
 
         // ⭐ 출금 후 최신 잔액 조회
-        BigDecimal updatedBalance = depositDAO.getDepositAccountBalance(accountId);
+        BigDecimal updatedBalance = depositDAO.getDepositAccountBalance(String.valueOf(accountId));
 
         DepositDTO transaction = new DepositDTO();
         transaction.setAccountId(accountId);
@@ -323,7 +344,7 @@ public class DepositService {
             throw new RuntimeException("적금 입금 실패");
         }
 
-        BigDecimal updatedBalance = depositDAO.getSavingsAccountBalance(accountId);
+        BigDecimal updatedBalance = depositDAO.getDepositAccountBalance(String.valueOf(accountId));
 
         DepositDTO transaction = new DepositDTO();
         transaction.setAccountId(accountId);
@@ -351,7 +372,7 @@ public class DepositService {
             throw new RuntimeException("적금 출금 실패");
         }
 
-        BigDecimal updatedBalance = depositDAO.getSavingsAccountBalance(accountId);
+        BigDecimal updatedBalance = depositDAO.getDepositAccountBalance(String.valueOf(accountId));
 
         DepositDTO transaction = new DepositDTO();
         transaction.setAccountId(accountId);
@@ -512,8 +533,7 @@ public class DepositService {
     }
 
 
-
-
+  
 
     
 } 

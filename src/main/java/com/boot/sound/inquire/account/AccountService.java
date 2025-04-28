@@ -93,6 +93,12 @@ public class AccountService {
     
  // 입출금 계좌 상태 변경 (해지)
     public void updateAccountStatusToClosed(String accountNumber) {
+    	 AccountDTO account = accountRepository.findByAccountNumber(accountNumber)
+                 .orElseThrow(() -> new RuntimeException("계좌를 찾을 수 없습니다."));
+
+         if (account.getBalance().compareTo(BigDecimal.ZERO) != 0) {
+             throw new RuntimeException("잔액이 0원이 아닙니다. 타행 본인계좌로 이체 진행후 해지해주세요.");
+         }
         accountDAO.updateAccountStatusToClosed(accountNumber);
     }
 
