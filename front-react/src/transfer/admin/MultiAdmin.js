@@ -9,7 +9,7 @@ function TransMultiApprove() {
   const [loading, setLoading] = useState(false);
 
   const fetchApproveList = () => {
-    RefreshToken.get('http://localhost:8081/api/multiAdmin/approveList', {
+    RefreshToken.get('/multiAdmin/approveList', {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => {
@@ -44,7 +44,7 @@ function TransMultiApprove() {
 
   const handleApprove = (group) => {
     setLoading(true);
-    RefreshToken.post(`http://localhost:8081/api/multiAdmin/approveMultiGroup`, {
+    RefreshToken.post(`/multiAdmin/approveMultiGroup`, {
       customer_id: group.customer_id,
       request_date: group.request_date
     }, {
@@ -62,7 +62,7 @@ function TransMultiApprove() {
     const reason = prompt('반려 사유를 입력하세요:');
     if (!reason) return;
 
-    RefreshToken.post(`http://localhost:8081/api/multiAdmin/rejectMultiGroup`, {
+    RefreshToken.post(`/multiAdmin/rejectMultiGroup`, {
       customer_id: group.customer_id,
       request_date: group.request_date,
       reason

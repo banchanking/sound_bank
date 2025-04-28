@@ -33,5 +33,31 @@
 		FROM admin_tbl
 		WHERE customer_id = #{customerId}
 	</select>
+	
+	<insert id="insert" parameterType="com.boot.sound.admin.dto.AdminDTO">
+		INSERT INTO admin_tbl(customer_id,password,name,role)
+		VALUES(#{customerId},#{password},#{name},'ADMIN')
+	</insert>
+	
+	<select id="adminList" resultMap="AdminMap">
+		SELECT * FROM admin_tbl
+	</select>
+	
+	<update id="update">
+		UPDATE admin_tbl
+		<set>
+			<if test="name != null">name = #{name},</if>
+	        <if test="password != null">password = #{password},</if>
+		</set>
+		WHERE customer_id = #{customerId}
+	</update>
+	
+	<delete id="delete" parameterType="com.boot.sound.admin.dto.AdminDTO">
+		DELETE FROM admin_tbl
+		WHERE customer_id = #{customerId}
+	</delete>
+	
+	
+	
   
 </mapper>

@@ -1,6 +1,7 @@
 package com.boot.sound.loan;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -131,9 +132,31 @@ public class LoanController {
 	
 	// 중도 상환처리 및 대출상태 변경처리
 	@PostMapping("/calculatePrepaymentPenalty")
-	public ResponseEntity<?>calculatePrepaymentPenalty(@RequestBody PrepaymentDTO dto){
-		return new ResponseEntity<>(service.calculatePrepaymentPenalty(dto),HttpStatus.OK);
+	public ResponseEntity<?> calculatePrepaymentPenalty(@RequestBody PrepaymentDTO dto) {
+	    try {
+	        Boolean result = service.calculatePrepaymentPenalty(dto);
+	        Map<String, Object> response = new HashMap<>();
+
+	        if (result) {
+	            response.put("status", "success");
+	            response.put("message", "중도상환 완료");
+	            return ResponseEntity.ok(response);
+	        } else {
+	            response.put("status", "fail");
+	            response.put("message", "중도상환 실패");
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+
+	        Map<String, Object> errorResponse = new HashMap<>();
+	        errorResponse.put("status", "error");
+	        errorResponse.put("message", e.getMessage() != null ? e.getMessage() : "서버 내부 오류");
+
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+	    }
 	}
+
 	
 	// 고객별 대출이자 납부내역
 	@GetMapping("/myInterestList")

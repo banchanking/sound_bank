@@ -7,6 +7,8 @@ const LoanInterestList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredList, setFilteredList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [pageGroup, setPageGroup] = useState(1);
+  const pageGroupSize = 10;
   const itemsPerPage = 10;
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -53,6 +55,31 @@ const LoanInterestList = () => {
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
+  };
+
+  // 페이지 그룹 처리 로직
+  const startPage = (pageGroup - 1) * pageGroupSize + 1;
+  const endPage = Math.min(startPage + pageGroupSize - 1, totalPages);
+
+  const pageNumbers = [];
+  for (let i = startPage; i <= endPage; i++) {
+    pageNumbers.push(i);
+  }
+
+  // ◀ 버튼 클릭시 이전 그룹 이동
+  const handlePrevGroup = () => {
+    if (pageGroup > 1) {
+      setPageGroup(pageGroup - 1);
+      setCurrentPage((pageGroup - 2) * pageGroupSize + 1);
+    }
+  };
+
+  // ▶ 버튼 클릭시 다음 그룹 이동
+  const handleNextGroup = () => {
+    if (endPage < totalPages) {
+      setPageGroup(pageGroup + 1);
+      setCurrentPage(pageGroup * pageGroupSize + 1);
+    }
   };
 
   return (
@@ -110,7 +137,15 @@ const LoanInterestList = () => {
 
       {totalPages > 1 && (
         <div className="interestPagination">
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+          {/* ◀ 그룹 이동 */}
+          {startPage > 1 && (
+            <button onClick={handlePrevGroup} className="groupButton">
+              ◀
+            </button>
+          )}
+
+          {/* 현재 그룹 페이지 번호 표시 */}
+          {pageNumbers.map((page) => (
             <button
               key={page}
               onClick={() => handlePageChange(page)}
@@ -119,6 +154,13 @@ const LoanInterestList = () => {
               {page}
             </button>
           ))}
+
+          {/* ▶ 그룹 이동 */}
+          {endPage < totalPages && (
+            <button onClick={handleNextGroup} className="groupButton">
+              ▶
+            </button>
+          )}
         </div>
       )}
     </div>

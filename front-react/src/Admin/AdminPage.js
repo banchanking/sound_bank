@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   FaUser,
   FaPiggyBank,
@@ -21,40 +21,67 @@ import FindFundCustomer from "../fund/admin/FindFundCustomer";
 import OpenApplyList from "../fund/admin/OpenApplyList";
 import CloseApplyList from "../fund/admin/CloseApplyList";
 import CustomerTransHistory from "../fund/admin/CustomerTransHistory";
+import AdminExchangeRateManage from "../exchange/admin/AdminExchangeRateManage";
+import AdminWalletList from "../exchange/admin/AdminWalletList";
+import AdminExRequestList from "../exchange/admin/AdminExRequestList";
+import DepositProduct from "../deposit/admin/DepositProduct";
+import SavingsProduct from "../deposit/admin/SavingsProduct";
+import MultiAdmin from "../transfer/admin/MultiAdmin";
+import LimitAdmin from "../transfer/admin/LimitAdmin";
+import FundProductAdmin from "../fund/admin/FundProductAdmin";
+import AdminList from "./AdminList";
+import { useLocation } from "react-router-dom";
+import LoanDetail from "../sound_loan/admin/LoanDetail";
+import LoanUpdate from "../sound_loan/admin/LoanUpdate";
+import AdminInsert from "./AdminInsert";
+import AdminEdit from "./AdminEdit";
 
 const AdminPage = () => {
+  const location = useLocation();
   const [activeMenuIndex, setActiveMenuIndex] = useState(null);
-  const [selectedComponent, setSelectedComponent] = useState("null");
+  const [selectedComponent, setSelectedComponent] = useState(
+    location.state?.component || "AdminList"
+  );
+  const [selectedLoanId, setSelectedLoanId] = useState(null);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [selectedAdmin, setSelectedAdmin] = useState(null);
 
   const refreshInterest = () => {
     setRefreshKey((prev) => prev + 1);
   };
+
+  useEffect(() => {
+    if (location.state?.component) {
+      setSelectedComponent(location.state.component);
+    }
+    if (location.state?.loan_id) {
+      setSelectedLoanId(location.state.loan_id);
+    }
+  }, [location.state]);
 
   const menuData = [
     {
       title: "관리자 페이지",
       icon: <FaUser />,
       items: [
-        { name: "관리자목록", component: "FundInfo" },
-        { name: "회원탈퇴", component: "FundInfo" },
+        { name: "관리자목록", component: "AdminList" },
+        { name: "관리자등록", component: "AdminInsert" },
       ],
     },
     {
       title: "예/적금",
       icon: <FaPiggyBank />,
       items: [
-        { name: "계좌조회", component: "DepositAccountInquiry" },
-        { name: "거래내역", component: "DepositTransactionDetails" },
-        { name: "자동이체관리", component: "DepositAutoManagement" },
+        { name: "예금상품관리", component: "DepositProduct" },
+        { name: "적금상품관리", component: "SavingsProduct" },
       ],
     },
     {
       title: "조회/이체",
       icon: <FaExchangeAlt />,
       items: [
-        { name: "보유계좌", component: "InquireAccont" },
-        { name: "거래내역", component: "InquireTransfer" },
+        { name: "다건이체 승인", component: "MultiAdmin" },
+        { name: "이체한도 심사", component: "LimitAdmin" },
       ],
     },
     {
@@ -72,19 +99,20 @@ const AdminPage = () => {
       title: "외환",
       icon: <FaGlobe />,
       items: [
-        { name: "My 지갑", component: "ExchangeWalletStatus" },
-        { name: "환전내역 조회", component: "ExList" },
-        { name: "외환 지갑 해지", component: "ExAccountManagement" },
+        { name: "환율/수수료 조정", component: "AdminExchangeRateManage" },
+        { name: "회원 지갑 목록", component: "AdminWalletList" },
+        { name: "환전 승인/거부", component: "AdminExRequestList" },
       ],
     },
     {
       title: "펀드",
       icon: <FaChartLine />,
       items: [
+        { name: "펀드상품등록", component: "FundProductAdmin" },
         { name: "펀드상품관리", component: "FundProductManage" },
         { name: "투자성향분석 테스트관리", component: "FundTestManage" },
         { name: "고객펀드조회", component: "FindFundCustomer" },
-        { name: "계좌개선신청목록", component: "OpenApplyList" },
+        { name: "계좌개설신청목록", component: "OpenApplyList" },
         { name: "계좌해지신청목록", component: "CloseApplyList" },
         { name: "회원거래내역조회", component: "CustomerTransHistory" },
       ],
@@ -93,11 +121,46 @@ const AdminPage = () => {
 
   const renderComponent = () => {
     switch (selectedComponent) {
+      // 관리자 컴포넌트 호출 시작
+      case "AdminList":
+        return (
+          <AdminList
+            setSelectedAdmin={setSelectedAdmin}
+            setSelectedComponent={setSelectedComponent}
+          />
+        );
+      case "AdminInsert":
+        return <AdminInsert onBack={() => setSelectedComponent("AdminList")} />;
+      case "AdminEdit":
+        return (
+          <AdminEdit
+            selectedAdmin={selectedAdmin}
+            onBack={() => setSelectedComponent("AdminList")}
+          />
+        );
+
+      // 관리자 컴포넌트 호출종료
+      // 예금 컴포넌트 호출 시작
+      case "DepositProduct":
+        return <DepositProduct />;
+      case "SavingsProduct":
+        return <SavingsProduct />;
+      // 예금 컴포넌트 호출 종료
+      // 조회 컴포넌트 호출 시작
+      case "MultiAdmin":
+        return <MultiAdmin />;
+      case "LimitAdmin":
+        return <LimitAdmin />;
+      // 조회 컴포넌트 호출 종료
       // 대출 컴포넌트 호출 시작
       case "LoanInsertForm":
         return <LoanInsertForm />;
       case "LoanList":
         return <LoanList />;
+      case "LoanDetail":
+        return <LoanDetail loan_id={selectedLoanId} />;
+      case "LoanUpdate":
+        return <LoanUpdate loan_id={selectedLoanId} />;
       case "LoanInterestList":
         return <LoanInterestList />;
       case "LoanCustomerList":
@@ -107,6 +170,8 @@ const AdminPage = () => {
       // 대출 컴포넌트 호출 종료
 
       // 펀드 컴포넌트 호출 시작
+      case "FundProductAdmin":
+        return <FundProductAdmin />;
       case "FundProductManage":
         return <FundProductManage />;
       case "FundTestManage":
@@ -120,6 +185,15 @@ const AdminPage = () => {
       case "CustomerTransHistory":
         return <CustomerTransHistory />;
       // 펀드 컴포넌트 호출 종료
+
+      // 외환 컴포넌트 호출 시작
+      case "AdminExchangeRateManage":
+        return <AdminExchangeRateManage />;
+      case "AdminWalletList":
+        return <AdminWalletList />;
+      case "AdminExRequestList":
+        return <AdminExRequestList />;
+      // 외환 컴포넌트 호출 종료
       default:
         return (
           <div className="adminPage-placeholder">메뉴를 선택해주세요.</div>

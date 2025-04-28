@@ -1,172 +1,267 @@
+/* 전체 컨테이너 */
 .fundContainer {
-    min-height: 600px;
-    max-width: 1000px;
-    margin: 3rem auto;
-    padding: 2rem;
-    background: #ffffff;
-    border: 2px solid #222;
-    border-radius: 16px;
-    box-shadow: 4px 4px 0 #000;
-  }
-  
-  .fundTitle {
-    text-align: center;
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: #111;
-    margin-bottom: 2rem;
-  }
-  
-  .fundDescription {
-    display: flex;
-    flex-direction: column;
-    gap: 1.2rem;
-  }
+  min-height: 600px;
+  max-width: 1000px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background: #ffffff;
+  border: 1.5px solid #e2e4e7;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  font-family: 'Pretendard', sans-serif;
+  animation: fadeIn 0.4s ease;
+}
 
-  .fundTable {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 2rem;
-  }
-  
-  .fundlabel {
-    font-weight: bold;
-    color: #333;
-  }
-  
-  .fundTable th,
-  .fundTable td {
-    border: 1px solid #ddd;
-    padding: 2px;
-    text-align: center;
-  }
-  
-  .fundTable th {
-    background-color: #f9f9f9;
-    font-weight: 600;
-    color: #333;
-  }
+/* 타이틀 */
+.fundTitle {
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 2.5rem;
+  animation: fadeUp 0.4s ease;
+}
 
+/* 테이블 */
+.fundTable {
+  width: 100%;
+  height: 250px;
+  border-collapse: collapse;
+  margin-top: 2rem;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.00);
+}
+
+.fundTable th,
+.fundTable td {
+  border: 1px solid #e0e0e0;
+  padding: 1rem;
+  text-align: center;
+  font-size: 15px;
+}
+
+.fundTable th {
+  background-color: #f5f5f7;
+  font-weight: 600;
+  color: #333;
+}
+
+.fundTable td {
+  padding: 6px; /* 세로 패딩을 얇게 */
+  height: 1px; /* td 높이 강제 얇게 */
+  font-size: 14px;
+  text-align: center;
+}
+
+.fundTable tr:hover td {
+  background-color: #f5f7fa; /* 연한 회색 톤으로 강조 */
+}
+
+.sellButton {
+  background-color: #ffe6e6; /* 연한 분홍 배경 */
+  color: #c0392b; /* 진한 레드 글자색 */
+  border: 1.5px solid #f5c6cb; /* 연한 핑크 테두리 */
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.sellButton:hover {
+  background-color: #ffecec; /* hover 시 살짝 더 밝게 */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* 살짝 빛 효과 */
+}
+
+/* 계좌 상태 표시 */
 .fundstatus {
-    font-weight: bold;
-    border-radius: 8px;
-    padding: 1rem;
-    font-size: 1.1rem;
-    background-color: #000;
-    color: white;
-    border: none;
-    cursor: pointer;
-    transition: 0.2s;
-  }
-  
-  .fundapproved {
-    background-color: #e6f9f0;
-    color: #1a7f5a;
-    border: 1px solid #b1e2c9;
-  }
-  
-  .fundrejected {
-    background-color: #fff0f0;
-    color: #c0392b;
-    border: 1px solid #f5c6cb;
-  }
-  
-  .fundpending {
-    background-color: #f0f0f0;
-    color: #777;
-    border: 1px solid #ddd;
-  }
-  
-  .fundmodalBackdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  }
-  
-  .fundmodal {
-    background-color: #fff;
-    padding: 24px 32px;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
-    text-align: center;
-    width: 300px;
-    max-width: 80%;
-  }
-  
-  .fundmodal p {
-    font-size: 16px;
-    margin-bottom: 20px;
-    font-weight: 500;
-  }
-  
-  .fundbuttonGroup {
-    background-color: #000000;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 20px; /* 버튼 내부 여백 */
-    margin: 10px 0;
-    font-weight: 600;
-    font-size: 16px;
-    cursor: pointer;
-    white-space: nowrap; /* 텍스트를 한 줄로 표시 */
-    overflow: hidden;
-    transition: background-color 0.2s ease;
-    display: block;
-    margin: 2rem auto 0 auto;
-    font-size: 1rem;
-    min-width: 200px; /* 버튼의 최소 너비 설정 */
-    max-width: 300px; /* 버튼의 최대 너비 설정 (선택 사항) */
-  }
-  
-  .fundbuttonGroup button {
-    flex: 1;
-    padding: 10px 12px;
-    margin: 0 6px;
-    border-radius: 8px;
-    background-color: #000;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
-  }
-  
-  .fundbuttonGroup button:hover {
-    background-color: #444;
-  }
-  
-  .fundmodalOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 9999; /* 💥 아주 높게! 푸터보다 위에 뜨게 */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .fundmodalContent {
-    background: white;
-    padding: 24px;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 800px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    z-index: 10000;
-  }
-  
-  .fundmodalCloseBtn {
-    float: right;
-    margin-bottom: 10px;
-  }
-  
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.fundapproved {
+  background-color: #e6f9f0;
+  color: #1a7f5a;
+  border: 1px solid #b1e2c9;
+}
+
+.fundrejected {
+  background-color: #ffe6e6;
+  color: #d9534f;
+  border: 1px solid #f5c6cb;
+}
+
+.fundpending {
+  background-color: #f0f0f0;
+  color: #777;
+  border: 1px solid #ddd;
+}
+
+/* 버튼 공통 */
+.fundbuttonGroup, .fundButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  width: 220px;
+  margin: 20px auto;
+  background: linear-gradient(to right, #3a3a3c, #2c2c2e);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.fundbuttonGroup:hover, .fundButton:hover {
+  background: linear-gradient(to right, #555, #444);
+}
+
+/* 모달 오버레이 */
+.fundmodalOverlay, .fundmodalBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  display: flex;
+  margin-top: -20px;
+  justify-content: center;
+  align-items: center;
+  overflow-y: auto; /* 스크롤 가능 */
+  padding: 20px; /* 화면 작을 때 양 옆 여백 살짝 */
+}
+
+/* 모달 콘텐츠 */
+.fundmodalContent, .fundmodal {
+  background: #ffffff;
+  padding: 2.5rem;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 900px; /* 🔥 기존 700px → 900px로 넓힘 */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  animation: fadeInUp 0.4s ease;
+}
+
+/* 모달 헤더 */
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modalTitle {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #222;
+}
+
+.modalClose {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #777;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.modalClose:hover {
+  color: #222;
+}
+
+/* 모달 닫기 버튼 (X) */
+.fundmodalCloseBtn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #777;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.fundmodalCloseBtn:hover {
+  color: #222;
+}
+
+/* 페딩 라벨 */
+.pendingLabel {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #999;
+}
+
+/* 펀드해지 버튼*/
+.fundCloseButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 16px;
+  background-color: #c2dbf3; 
+  color: #537697; 
+  width: 100px;
+  border: none; 
+  border-radius: 999px; 
+  font-size: 15px;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08); 
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+.fundCloseButton:hover {
+  background-color: #bccfe5; 
+}
+
+.modalClose {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 90px;
+  height: 36px;
+  background-color: #555555; /* 기본 블랙톤 */
+  color: #ffffff; /* 글자 흰색 */
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08); /* 부드러운 빛효과 */
+}
+
+.modalClose:hover {
+  background-color: #3a3a3c; /* hover 시 약간 밝은 블랙 */
+  color: #ffffff;
+}
+
+
+/* 애니메이션 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}

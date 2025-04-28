@@ -58,7 +58,7 @@ public interface DepositDAO {
             @Param("endDate") LocalDateTime endDate
         );
 
-        List<DepositDTO> getSavingsTransactions(
+    List<DepositDTO> getSavingsTransactions(
             @Param("accountId") int accountId, 
             @Param("startDate") LocalDateTime startDate, 
             @Param("endDate") LocalDateTime endDate
@@ -141,7 +141,13 @@ public interface DepositDAO {
 
 
 
+ // 예금 계좌 삭제
+    int deleteDepositAccount(@Param("accountId") String accountId, @Param("accountPassword") String accountPassword);
 
+    // 적금 계좌 삭제
+    int deleteSavingsAccount(@Param("accountId") String accountId, @Param("accountPassword") String accountPassword);
+
+    
 
 
 

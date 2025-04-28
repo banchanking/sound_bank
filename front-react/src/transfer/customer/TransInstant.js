@@ -27,12 +27,20 @@ function TransInstant() {
     const id = getCustomerID();
     const token = localStorage.getItem("auth_token");
     if (!id) {
-      alert('로그인이 필요합니다.');
-      navigate('/login');
-      return;
+      if (!id) {
+        const goLogin = window.confirm(
+          "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
+        );
+        if (goLogin) {
+          navigate("/login");
+        } else {
+          navigate("/");
+        }
+        return;      
     }
+  }
     setForm(prev => ({ ...prev, customer_id: id }));
-    RefreshToken.get(`http://localhost:8081/api/accounts/allAccount/${id}`, {
+    RefreshToken.get(`/accounts/allAccount/${id}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => {
@@ -61,7 +69,7 @@ function TransInstant() {
       navigate('/login');
       return;
     }
-    RefreshToken.post("http://localhost:8081/api/transInstant/send", form, {
+    RefreshToken.post("/transInstant/send", form, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => {
@@ -172,8 +180,8 @@ function TransInstant() {
                 <p><b>메모:</b> {form.memo || '-'}</p>
               </div>
               <div className={styles['instant-modalButtons']}>
-                <button onClick={confirmTransfer}>이체하기</button>
-                <button onClick={() => setShowModal(false)}>취소</button>
+                <button className={styles['instant-modalButtons2']}onClick={confirmTransfer}>이체하기</button>
+                <button className={styles['instant-modalButtons2']}onClick={() => setShowModal(false)}>취소</button>
               </div>
             </div>
           </div>

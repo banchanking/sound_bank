@@ -85,6 +85,8 @@ const DepositCancellation = () => {
                     }
                 });
                 
+                
+                
     
             alert('계좌 해지가 완료되었습니다.');
             navigate('/deposit/accounts');
@@ -101,52 +103,61 @@ const DepositCancellation = () => {
                 <div className="depositProductHeader">
                     <h2>예적금 계좌 해지</h2>
                 </div>
-
-                <form onSubmit={handleCancellation} className="depositForm">
-                    <div className="formGroup">
-                        <label htmlFor="accountNumber">해지할 계좌</label>
-                        <select
-                            id="accountNumber"
-                            value={selectedAccount || ''}
-                            onChange={handleAccountChange}
-                            required
-                        >
-                            <option value="">계좌 선택</option>
-                            {accounts.map(account => (
-                                <option key={account.accountNumber} value={account.accountNumber}>
-                                    {account.accountNumber} - {account.productName} ({account.type})
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    {selectedAccount && (
-                        <>
-                            <div className="formGroup">
-                                <label htmlFor="password">계좌 비밀번호</label>
-                                <input
-                                    type="password"
-                                    id="password"
-                                    value={password}
-                                    onChange={handlePasswordChange}
-                                    maxLength={4}
+    
+                {accounts.length === 0 ? (
+                    <div>현재 조회 가능한 계좌가 없습니다.</div>
+                ) : (
+                    <form onSubmit={handleCancellation} className="depositForm">
+                        <div className="formGroup">
+                                <label htmlFor="accountNumber">해지할 계좌</label>
+                                <select
+                                    id="accountNumber"
+                                    value={selectedAccount || ''}
+                                    onChange={handleAccountChange}
                                     required
-                                />
-                            </div>
+                                >
+                                    <option value="">계좌 선택</option>
+                                    {accounts
+                                    .filter(account => account.accountStatus === 'ACTIVE')
+                                    .map(account => (
+                                        <option key={account.accountNumber} value={account.accountNumber}>
+                                        {account.accountNumber} - {account.productName} - {account.balance.toLocaleString()}원
+                                        </option>
+                                    ))}
+                                </select>
+                                </div>
 
-                            <button
-                                type="submit"
-                                className="depositBtn"
-                                disabled={loading}
-                            >
-                                계좌 해지하기
-                            </button>
-                        </>
-                    )}
-                </form>
+
+    
+                        {selectedAccount && (
+                            <>
+                                <div className="formGroup">
+                                    <label htmlFor="password">계좌 비밀번호</label>
+                                    <input
+                                        type="password"
+                                        id="password"
+                                        value={password}
+                                        onChange={handlePasswordChange}
+                                        maxLength={4}
+                                        required
+                                    />
+                                </div>
+    
+                                <button
+                                    type="submit"
+                                    className="depositBtn"
+                                    disabled={loading}
+                                >
+                                    계좌 해지하기
+                                </button>
+                            </>
+                        )}
+                    </form>
+                )}
             </div>
         </div>
     );
+    
 };
 
 export default DepositCancellation;

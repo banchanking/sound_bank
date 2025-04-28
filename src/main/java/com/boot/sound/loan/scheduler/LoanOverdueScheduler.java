@@ -24,7 +24,7 @@ public class LoanOverdueScheduler {
     private final AccountService accountService; // 계좌 출금 처리 서비스
 
     // ✅ [1] 미납 내역 자동 납부 스케줄러 - 매일 특정 시각에 실행
-    @Scheduled(cron = "0 36 21 * * ?")
+    @Scheduled(cron = "25 23 16 * * ?")
     public void processMissedRepayments() {
         log.info("\u23F0 [미납 자동납부 스케줄러] 미납 납부 시도 시작");
 

@@ -31,7 +31,7 @@ const useExchangeRates = (date) => {
     const fetchRates = async () => {
       const formattedDate = new Date(date).toISOString().split("T")[0];
       try {
-        const response = await RefreshToken.get("http://localhost:8081/api/exchange/dbRates", {
+        const response = await RefreshToken.get("/exchange/dbRates", {
           params: { date: formattedDate },
         });
 

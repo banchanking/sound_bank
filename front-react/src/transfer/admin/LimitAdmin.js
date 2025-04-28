@@ -12,7 +12,7 @@ function AdminLimit() {
       const reason = prompt('반려 사유를 입력하세요:');
       if (!reason) return;
 
-      RefreshToken.post('http://localhost:8081/api/transLimit/admin/reject', {
+      RefreshToken.post('transLimit/admin/reject', {
         transfer_id,
         reject_reason: reason
       })
@@ -32,7 +32,7 @@ function AdminLimit() {
         });
 
     } else if (action === 'approve') {
-      RefreshToken.post('http://localhost:8081/api/transLimit/admin/approve', {
+      RefreshToken.post('transLimit/admin/approve', {
         transfer_id,
         approval_limit: requested_limit
       })
@@ -59,7 +59,7 @@ function AdminLimit() {
   };
 
   useEffect(() => {
-    RefreshToken.get('http://localhost:8081/api/transLimit/admin/list')
+    RefreshToken.get('/transLimit/admin/list')
       .then(res => setRequests(res.data))
       .catch(err => {
         console.error('요청 목록 조회 실패:', err);

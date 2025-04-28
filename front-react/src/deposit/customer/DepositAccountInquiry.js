@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getCustomerID } from "../../jwt/AxiosToken";
 import RefreshToken from "../../jwt/RefreshToken";
 import '../../Css/depositcss/DepositAccountInquiry.css';
+import { Card } from 'antd';
 
 const DepositAccountInquiry = () => {
     const [depositAccounts, setDepositAccounts] = useState([]);
@@ -30,36 +31,60 @@ const DepositAccountInquiry = () => {
   
       // 예금 계좌 가져오기
       RefreshToken.get(`/deposit/accounts/deposit/${customerId}`)
-        .then(res => setDepositAccounts(res.data))
+        .then(res => {
+          console.log('예금 계좌 조회 결과:', res.data); // 🔥 여기 찍어야 한다
+          setDepositAccounts(res.data)})
         .catch(err => console.error('예금 계좌 조회 실패:', err));
   
       // 적금 계좌 가져오기
       RefreshToken.get(`/deposit/accounts/savings/${customerId}`)
-        .then(res => setSavingsAccounts(res.data))
+        .then(res => 
+          setSavingsAccounts(res.data))
         .catch(err => console.error('적금 계좌 조회 실패:', err));
     }, [customerId]);
   
     return (
-      <div>
+      <div className="depositContainer">
         <h2>예금 계좌 목록</h2>
-        <ul>
-          {depositAccounts.map(account => (
-            <li key={account.id}>
-              {account.accountNumber} - {account.balance.toLocaleString()}원
-            </li>
-          ))}
-        </ul>
-  
+        {depositAccounts.length === 0 ? (
+          <div>현재 조회 가능한 계좌가 없습니다.</div>
+        ) : (
+          <div className="accountCardContainer">
+            {depositAccounts
+              .filter(account => account.accountStatus === 'ACTIVE')
+              .map(account => (
+                <Card key={account.id} className="accountCard">
+                  <div className="accountNumber">{account.accountNumber}</div>
+                  <div className="productName">{account.productName}</div>
+                  <div className="accountBalance">{account.balance.toLocaleString()}원</div>
+                </Card>
+              ))}
+          </div>
+        )}
+    
         <h2>적금 계좌 목록</h2>
-        <ul>
-          {savingsAccounts.map(account => (
-            <li key={account.id}>
-              {account.accountNumber} - {account.balance.toLocaleString()}원
-            </li>
-          ))}
-        </ul>
+        {savingsAccounts.length === 0 ? (
+          <div>현재 조회 가능한 계좌가 없습니다.</div>
+        ) : (
+          <div className="accountCardContainer">
+            {savingsAccounts
+              .filter(account => account.accountStatus === 'ACTIVE')
+              .map(account => (
+                <Card key={account.id} className="accountCard">
+                  <div className="accountNumber">{account.accountNumber}</div>
+                  <div className="productName">{account.productName}</div>
+                  <div className="accountBalance">{account.balance.toLocaleString()}원</div>
+                </Card>
+              ))}
+          </div>
+        )}
       </div>
     );
+    
+    
+    
+    
+
   };
   
   export default DepositAccountInquiry;

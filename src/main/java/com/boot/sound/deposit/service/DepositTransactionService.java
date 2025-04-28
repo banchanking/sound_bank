@@ -55,9 +55,10 @@ public class DepositTransactionService {
     // 예금 출금 처리
     @Transactional
     public int withdraw(DepositTransactionDTO transaction) {
-        // 잔액 확인
-        DepositTransactionDTO lastTransaction = getDepositTransactionDetail(transaction.getTransactionId());
-        if (lastTransaction == null || lastTransaction.getBalance().compareTo(transaction.getAmount()) < 0) {
+        // 계좌 현재 잔액 가져오기
+        BigDecimal currentBalance = depositTransactionDAO.getDepositAccountBalance(transaction.getAccountNumber());
+
+        if (currentBalance == null || currentBalance.compareTo(transaction.getAmount()) < 0) {
             throw new RuntimeException("잔액이 부족합니다.");
         }
         
@@ -66,12 +67,13 @@ public class DepositTransactionService {
         
         // 계좌 잔액 업데이트
         if (result > 0) {
-            BigDecimal newBalance = transaction.getBalance().subtract(transaction.getAmount());
+            BigDecimal newBalance = currentBalance.subtract(transaction.getAmount());
             depositTransactionDAO.updateDepositAccountBalance(transaction.getAccountNumber(), newBalance);
         }
         
         return result;
     }
+
 
     // 적금 입금 처리
     @Transactional
@@ -87,4 +89,29 @@ public class DepositTransactionService {
         
         return result;
     }
+    
+    // 적금 출금 처리
+    @Transactional
+    public int savingsWithdraw(DepositTransactionDTO transaction) {
+        // 계좌 현재 잔액 가져오기
+        BigDecimal currentBalance = depositTransactionDAO.getSavingsAccountBalance(transaction.getAccountNumber());
+
+        if (currentBalance == null || currentBalance.compareTo(transaction.getAmount()) < 0) {
+            throw new RuntimeException("잔액이 부족합니다.");
+        }
+        
+        // 거래 내역 생성
+        int result = depositTransactionDAO.createSavingsTransaction(transaction);
+        
+        // 계좌 잔액 업데이트
+        if (result > 0) {
+            BigDecimal newBalance = currentBalance.subtract(transaction.getAmount());
+            depositTransactionDAO.updateSavingsAccountBalance(transaction.getAccountNumber(), newBalance);
+        }
+        
+        return result;
+    }
+
+    
+    
 } 

@@ -56,42 +56,59 @@ const DepositAutosettings = () => {
 
     return (
         <div className="depositContainer">
-            <Card title="자동이체 설정">
-                <Form form={form} layout="vertical" onFinish={handleSubmit}>
-                    <Form.Item name="accountId" label="계좌 선택" rules={[{ required: true, message: '계좌를 선택해주세요' }]}> 
+            {accounts.length === 0 ? (
+                <Card>
+                    <div>현재 조회 가능한 계좌가 없습니다.</div>
+                </Card>
+            ) : (
+                <Card title="자동이체 설정">
+                    <Form form={form} layout="vertical" onFinish={handleSubmit}>
+                    <Form.Item
+                        name="accountId"
+                        label="계좌 선택"
+                        rules={[{ required: true, message: '계좌를 선택해주세요' }]}
+                        >
                         <select onChange={(e) => handleAccountChange(Number(e.target.value))}>
                             <option value="">계좌 선택</option>
-                            {accounts.map(account => (
+                            {accounts
+                            .filter(account => account.accountStatus === 'ACTIVE')
+                            .map(account => (
                                 <option key={account.id} value={account.id}>
-                                    {account.accountNumber} - {account.productName}
+                                {account.accountNumber} - {account.productName} - {account.balance.toLocaleString()}원
                                 </option>
                             ))}
                         </select>
-                    </Form.Item>
+                        </Form.Item>
 
-                    {selectedAccount && (
-                        <>
-                            <Form.Item name="targetAccountNumber" label="이체할 계좌번호" rules={[{ required: true }]}> 
-                                <Input placeholder="이체할 계좌번호 입력" />
-                            </Form.Item>
 
-                            <Form.Item name="transferAmount" label="이체 금액" rules={[{ required: true }]}> 
-                                <InputNumber min={10000} step={10000} style={{ width: '100%' }} placeholder="10000원 단위" />
-                            </Form.Item>
-
-                            <Form.Item name="transferDay" label="매월 이체일 (1~28일)" rules={[{ required: true }]}> 
-                                <InputNumber min={1} max={28} style={{ width: '100%' }} placeholder="1~28일 입력" />
-                            </Form.Item>
-
-                            <Form.Item>
-                                <Button type="primary" htmlType="submit" style={{ width: '100%' }}>자동이체 등록</Button>
-                            </Form.Item>
-                        </>
-                    )}
-                </Form>
-            </Card>
+    
+                        {selectedAccount && (
+                            <>
+                                <Form.Item name="targetAccountNumber" label="이체할 계좌번호" rules={[{ required: true }]}>
+                                    <Input placeholder="이체할 계좌번호 입력" />
+                                </Form.Item>
+    
+                                <Form.Item name="transferAmount" label="이체 금액" rules={[{ required: true }]}>
+                                    <InputNumber min={10000} step={10000} style={{ width: '100%' }} placeholder="10000원 단위" />
+                                </Form.Item>
+    
+                                <Form.Item name="transferDay" label="매월 이체일 (1~28일)" rules={[{ required: true }]}>
+                                    <InputNumber min={1} max={28} style={{ width: '100%' }} placeholder="1~28일 입력" />
+                                </Form.Item>
+    
+                                <Form.Item>
+                                    <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
+                                        자동이체 등록
+                                    </Button>
+                                </Form.Item>
+                            </>
+                        )}
+                    </Form>
+                </Card>
+            )}
         </div>
     );
+    
 };
 
 export default DepositAutosettings;
