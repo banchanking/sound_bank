@@ -22,7 +22,7 @@ function Chatbot() {
       try {
         setMessages((prev) => [...prev, { type: 'user', text: question, time }]);
 
-        const res = await axios.post('http://15.165.57.30:8001/ask', { question });
+        const res = await axios.post('http://15.165.57.30:8001/ask/', { question });
         const { faq_answer, generated_answer } = res.data;
 
         setMessages((prev) => [
