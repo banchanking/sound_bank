@@ -23,6 +23,7 @@
     "fastapi": "^0.0.8",
     "lodash": "^4.17.21",
     "moment": "^2.30.1",
+    "ogl": "^1.0.11",
     "papaparse": "^5.5.2",
     "pyodide": "^0.27.5",
     "python-shell": "^5.0.0",
