@@ -181,6 +181,7 @@ public class SmsService {
         }
 
         boolean result = smsRequest.getCode() != null && smsRequest.getCode().equals(storedCode);
+        System.out.println("인증결과 : "+result);
 
         if (result) {
             verificationCodes.remove(phone);
