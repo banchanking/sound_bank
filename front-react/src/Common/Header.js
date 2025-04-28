@@ -2,6 +2,7 @@ import { React, useState, useRef, useEffect } from "react";
 import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "../Css/Common/Header.css";
+import RefreshToken from "../jwt/RefreshToken";
 
 const Header = () => {
   // 현재 열려 있는 드롭다운 메뉴 ID를 저장
@@ -74,11 +75,21 @@ const Header = () => {
   }, [localStorage.getItem("customerId")]);
 
   const logout = () => {
-    localStorage.removeItem("auth_token");
-    localStorage.removeItem("customerId");
-    localStorage.removeItem("role");
-    alert("로그아웃 되었습니다.");
-    navigate("/");
+    RefreshToken.post("/logout", {
+      customerId: localStorage.getItem("customerId"),
+    })
+      .then((res) => {
+        console.log(res.data);
+        localStorage.removeItem("auth_token");
+        localStorage.removeItem("customerId");
+        localStorage.removeItem("role");
+        alert("로그아웃 되었습니다.");
+        navigate("/");
+      })
+      .catch((error) => {
+        console.log(error);
+        alert("로그아웃 실패.");
+      });
   };
 
   console.log(loginStatus);
@@ -128,7 +139,7 @@ const Header = () => {
               >
                 <div className="deposit-saving-row">
                   <ul>
-                    <NavDropdown.Item as={Link} to="/accountOverview">
+                    <NavDropdown.Item>
                       조회/입출금
                     </NavDropdown.Item>
                     <li>
@@ -160,7 +171,7 @@ const Header = () => {
                     </li>
                   </ul>
                   <ul>
-                    <NavDropdown.Item as={Link} to="/productSubscription">
+                    <NavDropdown.Item>
                       상품가입
                     </NavDropdown.Item>
                     <li>
@@ -192,7 +203,7 @@ const Header = () => {
                     </li>
                   </ul>
                   <ul>
-                    <NavDropdown.Item as={Link} to="/depositManagement">
+                    <NavDropdown.Item>
                       예금관리
                     </NavDropdown.Item>
                     <li>
@@ -254,7 +265,7 @@ const Header = () => {
               >
                 <div className="deposit-saving-row">
                   <ul>
-                    <NavDropdown.Item as={Link} to="/inquire">
+                    <NavDropdown.Item>
                       조회
                     </NavDropdown.Item>
                     <li>
@@ -287,7 +298,7 @@ const Header = () => {
                   </ul>
 
                   <ul>
-                    <NavDropdown.Item as={Link} to="/transfer">
+                    <NavDropdown.Item>
                       이체
                     </NavDropdown.Item>
                     <li>
