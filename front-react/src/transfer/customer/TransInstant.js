@@ -27,24 +27,24 @@ function TransInstant() {
     const id = getCustomerID();
     const token = localStorage.getItem("auth_token");
     if (!id) {
-      if (!id) {
-        const goLogin = window.confirm(
-          "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
-        );
-        if (goLogin) {
-          navigate("/login");
-        } else {
-          navigate("/");
-        }
-        return;      
+      const goLogin = window.confirm(
+        "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
+      );
+      if (goLogin) {
+        navigate("/login");
+      } else {
+        navigate("/");
+      }
+      return;
     }
-  }
     setForm(prev => ({ ...prev, customer_id: id }));
     RefreshToken.get(`/accounts/allAccount/${id}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => {
-        const list = Array.isArray(res.data) ? res.data : Object.values(res.data).flat();
+        const list = Array.isArray(res.data)
+          ? res.data
+          : Object.values(res.data).flat();
         setAccounts(list);
       })
       .catch(err => console.error('계좌 불러오기 실패:', err));
@@ -99,12 +99,18 @@ function TransInstant() {
       });
   };
 
+  // 선택된 출금계좌 객체 찾기
+  const selectedAccount = accounts.find(acc =>
+    (acc.account_number || acc.dat_account_num) === form.out_account_number
+  );
+
   return (
     <div style={{ display: 'flex' }}>
       <Sidebar />
       <div className={styles['instant-wrapper']}>
         <h2 className={styles['instant-title']}>실시간 이체</h2>
         <form onSubmit={e => { e.preventDefault(); setShowModal(true); }}>
+          {/* 출금 계좌 선택 */}
           <select
             name="out_account_number"
             value={form.out_account_number}
@@ -123,6 +129,16 @@ function TransInstant() {
             ))}
           </select>
 
+          {/* 잔액 표시 */}
+          {selectedAccount && (
+            <div className={styles['instant-balance']}>
+              잔액: {Number(
+                selectedAccount.balance ?? selectedAccount.account_balance ?? 0
+              ).toLocaleString('ko-KR')} 원
+            </div>
+          )}
+
+          {/* 입금 계좌, 받는 사람, 금액 등 */}
           <input
             name="in_account_number"
             placeholder="입금 계좌"
@@ -180,8 +196,18 @@ function TransInstant() {
                 <p><b>메모:</b> {form.memo || '-'}</p>
               </div>
               <div className={styles['instant-modalButtons']}>
-                <button className={styles['instant-modalButtons2']}onClick={confirmTransfer}>이체하기</button>
-                <button className={styles['instant-modalButtons2']}onClick={() => setShowModal(false)}>취소</button>
+                <button
+                  className={styles['instant-modalButtons2']}
+                  onClick={confirmTransfer}
+                >
+                  이체하기
+                </button>
+                <button
+                  className={styles['instant-modalButtons2']}
+                  onClick={() => setShowModal(false)}
+                >
+                  취소
+                </button>
               </div>
             </div>
           </div>
