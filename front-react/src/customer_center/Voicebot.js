@@ -101,7 +101,7 @@ const VoiceBot = () => {
   };
 
   return (
-    <div style={{ padding: 20, maxWidth: 600, margin: "0 auto" }}>
+    <div style={{ minHeight: 620, padding: 20, maxWidth: 600, margin: "0 auto" }}>
       <h3>Sound_Bank 음성 상담</h3>
       <div style={{ border: "1px solid #ccc", borderRadius: 10, padding: 15, height: 400, overflowY: "auto" }}>
         {messages.map((msg, idx) => (

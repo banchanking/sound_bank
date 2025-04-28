@@ -25,7 +25,7 @@ const AdminLogin = () => {
       password: admin.password,
     })
       .then((res) => {
-        setAuthToken(res.data.admin_token);
+        setAuthToken(res.data.customer_token);
         setCustomerID(res.data.customerId);
         setRole(res.data.role);
 

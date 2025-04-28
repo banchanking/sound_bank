@@ -2,7 +2,8 @@ import axios from "axios";
 import { getAuthToken, getCustomerID, setAuthToken } from "./AxiosToken";
 
 const AdminAxios = axios.create({
-  baseURL: "http://15.165.57.30:8081/admin",
+  baseURL: "http://localhost:8081/admin",
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json;charset=utf-8",
   },
@@ -27,6 +28,8 @@ AdminAxios.interceptors.request.use((config) => {
 
   if (token && !isRefreshEndpoint) {
     config.headers.Authorization = `Bearer ${token}`;
+  } else if (isRefreshEndpoint) {
+    delete config.headers.Authorization; // ✅ 강제로 Authorization 헤더 제거!
   }
 
   return config;
@@ -46,7 +49,6 @@ AdminAxios.interceptors.response.use(
     }
 
     const customerId = getCustomerID();
-    const role = localStorage.getItem("role");
     if (!customerId) return Promise.reject(error);
 
     if (isRefreshing) {
@@ -64,7 +66,7 @@ AdminAxios.interceptors.response.use(
     try {
       console.log("🚨 refresh-token 요청 customerId:", customerId);
       const { data } = await axios.post(
-        "http://15.165.57.30:8081/api/refresh-token",
+        "http://localhost:8081/api/refresh-token",
         {
           customerId,
           role,
