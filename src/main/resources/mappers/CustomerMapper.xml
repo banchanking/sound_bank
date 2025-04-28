@@ -71,11 +71,25 @@
 	</select>
 
 		
-		<delete id="deleteCustomer">
+		<update id="deleteCustomer">
 			UPDATE customer_tbl
 			set customer_status = '탈퇴'
 			WHERE customer_id = #{customerId}
-		</delete>
+		</update>
+		
+		<select id="selectSignOut" resultType="int">
+			SELECT COUNT(*)
+			FROM customer_tbl
+			WHERE customer_id = #{customerId}
+			AND customer_status = '가입'
+		</select>
+		
+		<update id="logout">
+		    UPDATE customer_tbl
+		    SET refresh_token = NULL
+		    WHERE customer_id = #{customerId}
+		</update>
+
 	
 
 </mapper>

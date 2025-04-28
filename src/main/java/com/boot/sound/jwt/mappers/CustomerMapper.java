@@ -20,4 +20,6 @@ public interface CustomerMapper {
 	int updateMyInfo(CustomerDTO dto);
 	Map<String, Object>checkCustomerAssets(String customerId);
 	void deleteCustomer(String customerId);
+	int selectSignOut(String customerId); 
+	Boolean logout(String customerId);
 }
