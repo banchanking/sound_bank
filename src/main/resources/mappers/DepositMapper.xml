@@ -38,44 +38,56 @@
     
     <!-- 예금 계좌 목록 조회 -->
     <select id="getDepositAccounts" resultType="com.boot.sound.deposit.dto.DepositDTO">
-        SELECT 
-            dat_id as id,
-            customer_id as customerId,
-            product_id as productId,
-            account_number as accountNumber,
-            account_password as accountPassword,
-            balance,
-            interest_rate as interestRate,
-            account_status as accountStatus,
-            auto_transfer_enabled as autoTransferEnabled,
-            auto_transfer_amount as autoTransferAmount,
-            auto_transfer_day as autoTransferDay,
-            created_at as createdAt,
-            updated_at as updatedAt
-        FROM DEPOSIT_ACCOUNT_TBL
-        WHERE customer_id = #{customerId}
-        ORDER BY dat_id DESC
-    </select>
+		  SELECT 
+		    a.dat_id as id,
+		    a.customer_id as customerId,
+		    a.product_id as productId,
+		    a.account_number as accountNumber,
+		    a.account_password as accountPassword,
+		    a.balance,
+		    a.interest_rate as interestRate,
+		    a.account_status as accountStatus,
+		    a.auto_transfer_enabled as autoTransferEnabled,
+		    a.auto_transfer_amount as autoTransferAmount,
+		    a.auto_transfer_day as autoTransferDay,
+		    a.created_at as createdAt,
+		    a.updated_at as updatedAt,
+		    a.nickname,
+		    p.product_name as productName,          -- ✅ 상품명 추가
+		    p.product_type as productType,          -- ✅ 상품유형 추가
+		    p.term_months as termMonths             -- ✅ 기간(개월) 추가
+		  FROM DEPOSIT_ACCOUNT_TBL a
+		  JOIN DEPOSIT_PRODUCT_TBL p ON a.product_id = p.product_id
+		  WHERE a.customer_id = #{customerId}
+		  ORDER BY a.dat_id DESC
+		</select>
+
     
     <!-- 적금 계좌 목록 조회 -->
     <select id="getSavingsAccounts" resultType="com.boot.sound.deposit.dto.DepositDTO">
-        SELECT 
-            sat_id as id,
-            customer_id as customerId,
-            product_id as productId,
-            account_number as accountNumber,
-            account_password as accountPassword,
-            balance,
-            interest_rate as interestRate,
-            account_status as accountStatus,
-            monthly_amount as monthlyAmount,
-            maturity_date as maturityDate,
-            created_at as createdAt,
-            updated_at as updatedAt
-        FROM SAVINGS_ACCOUNT_TBL
-        WHERE customer_id = #{customerId}
-        ORDER BY sat_id DESC
-    </select>
+			  SELECT 
+			    a.sat_id as id,
+			    a.customer_id as customerId,
+			    a.product_id as productId,
+			    a.account_number as accountNumber,
+			    a.account_password as accountPassword,
+			    a.balance,
+			    a.interest_rate as interestRate,
+			    a.account_status as accountStatus,
+			    a.monthly_amount as monthlyAmount,
+			    a.maturity_date as maturityDate,
+			    a.created_at as createdAt,
+			    a.updated_at as updatedAt,
+			    a.nickname,
+			    p.product_name as productName,          -- ✅ 상품명 추가
+			    p.product_type as productType,          -- ✅ 상품유형 추가
+			    p.term_months as termMonths             -- ✅ 기간(개월) 추가
+			  FROM SAVINGS_ACCOUNT_TBL a
+			  JOIN SAVINGS_PRODUCT_TBL p ON a.product_id = p.product_id
+			  WHERE a.customer_id = #{customerId}
+			  ORDER BY a.sat_id DESC
+			</select>
+
 
     <!-- 예금 상품 상세 조회 -->
     <select id="getDepositProductDetail" resultType="com.boot.sound.deposit.dto.DepositDTO">
@@ -231,7 +243,7 @@
         UPDATE DEPOSIT_ACCOUNT_TBL
         SET account_status = 'CLOSED',
             updated_at = NOW()
-        WHERE account_number   = #{accountId}
+        WHERE account_number   = #{accountId, jdbcType=VARCHAR}
         AND account_password = #{accountPassword}
         AND account_status = 'ACTIVE'
     </update>
@@ -241,7 +253,7 @@
         UPDATE SAVINGS_ACCOUNT_TBL
         SET account_status = 'CLOSED',
             updated_at = NOW()
-        WHERE account_number   = #{accountId}
+        WHERE account_number   = #{accountId, jdbcType=VARCHAR}
         AND account_password = #{accountPassword}
         AND account_status = 'ACTIVE'
     </update>
@@ -383,7 +395,7 @@
         description AS transactionDescription,
 		transaction_date AS transactionDate
 		    FROM SAVINGS_TRANSACTION_TBL
-		    WHERE dat_id = #{accountId}
+		    WHERE sat_id = #{accountId}
 		       AND transaction_date BETWEEN #{startDate,jdbcType=TIMESTAMP} AND #{endDate,jdbcType=TIMESTAMP}
 		    ORDER BY transaction_date DESC
 		</select>
@@ -574,10 +586,7 @@
         WHERE product_id = #{productId}
     </update>
 
-    <!-- 예금 상품 삭제 -->
-    <delete id="deleteDepositProduct">
-        DELETE FROM DEPOSIT_PRODUCT_TBL WHERE product_id = #{productId}
-    </delete>
+
     
 	    <!-- 적금 상품 추가 -->
 	<insert id="addSavingsProduct" parameterType="com.boot.sound.deposit.dto.DepositDTO">
@@ -601,37 +610,34 @@
 	    WHERE product_id = #{productId}
 	</update>
 	
-	<!-- 적금 상품 삭제 -->
-	<delete id="deleteSavingsProduct">
-	    DELETE FROM SAVINGS_PRODUCT_TBL WHERE product_id = #{productId}
-	</delete>
+
 	
 	<!-- 계좌번호(accountNumber)로 예금 계좌 잔액 조회 -->
 <select id="getDepositAccountBalanceByAccountNumber" resultType="java.math.BigDecimal">
     SELECT balance
     FROM DEPOSIT_ACCOUNT_TBL
-    WHERE account_number = #{accountId}
+    WHERE account_number = #{accountNumber} 
 </select>
 
 	<!-- 계좌번호(accountNumber)로 적금 계좌 잔액 조회 -->
 <select id="getSavingsAccountBalanceByAccountNumber" resultType="java.math.BigDecimal">
     SELECT balance
     FROM SAVINGS_ACCOUNT_TBL
-    WHERE account_number = #{accountId}
+    WHERE account_number = #{accountNumber}
 </select>
 
 <!-- 예금 계좌의 customer_id 가져오기 -->
 <select id="getCustomerIdFromDepositAccount" resultType="String">
     SELECT customer_id
     FROM DEPOSIT_ACCOUNT_TBL
-    WHERE account_number  = #{accountId}
+    WHERE account_number  = #{accountNumber} 
 </select>
 
 <!-- 적금 계좌의 customer_id 가져오기 -->
 <select id="getCustomerIdFromSavingsAccount" resultType="String">
     SELECT customer_id
     FROM SAVINGS_ACCOUNT_TBL
-    WHERE account_number  = #{accountId}
+    WHERE account_number  = #{accountNumber}
 </select>
 
 <!-- customer_id 기준으로 기본 계좌에 잔액 이체 -->
@@ -658,6 +664,52 @@
         updated_at = NOW()
     WHERE sat_id = #{accountId}
 </update>
+
+
+
+<select id="getBalance" resultType="java.math.BigDecimal">
+    SELECT balance
+    FROM deposit_accounts
+    WHERE account_number = #{accountNumber}
+</select>
+
+<!-- 예금 상품 삭제 -->
+<delete id="deleteDepositProduct">
+    DELETE FROM DEPOSIT_PRODUCT_TBL
+    WHERE product_id = #{productId}
+</delete>
+
+<!-- 적금 상품 삭제 -->
+<delete id="deleteSavingsProduct">
+    DELETE FROM SAVINGS_PRODUCT_TBL
+    WHERE product_id = #{productId}
+</delete>
+
+
+
+<!-- 출금계좌 잔액 차감 -->
+<update id="withdrawFromAccount" parameterType="map">
+    UPDATE ACCOUNT_TBL
+    SET BALANCE = BALANCE - #{amount}
+    WHERE ACCOUNT_NUMBER = #{accountNumber}
+      AND BALANCE >= #{amount}
+</update>
+
+<select id="getDepositBalanceByAccountNumber" resultType="java.math.BigDecimal">
+    SELECT balance
+    FROM DEPOSIT_ACCOUNT_TBL
+    WHERE account_number = #{accountNumber}
+</select>
+
+
+
+<select id="getSavingsBalanceByAccountNumber" resultType="java.math.BigDecimal">
+    SELECT balance
+    FROM SAVINGS_ACCOUNT_TBL
+    WHERE account_number = #{accountNumber}
+</select>
+
+
 
 
 

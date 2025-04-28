@@ -3,7 +3,9 @@ package com.boot.sound.deposit.controller;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -77,46 +79,60 @@ public class DepositController {
     public DepositDTO getSavingsAccountDetail(@PathVariable int accountId) {
         return depositService.getSavingsAccountDetail(accountId);
     }
-
-    // 예금 계좌 생성
+    
+    
+    // 예금계좌생성
     @PostMapping("/deposit/accounts/deposit")
-    public ResponseEntity<?> createDepositAccount(@RequestBody DepositDTO dto) {
-        depositService.createDepositAccount(dto);
-        return ResponseEntity.ok().body("예금 계좌가 성공적으로 개설되었습니다.");
+    public ResponseEntity<Map<String, String>> createDepositAccount(@RequestBody DepositDTO dto) {
+        String accountNumber = depositService.createDepositAccount(dto);
+        Map<String, String> response = new HashMap<>();
+        response.put("accountNumber", accountNumber);
+        return ResponseEntity.ok(response);
     }
 
-    // 적금 계좌 생성
+    // 적금계좌생성
     @PostMapping("/deposit/accounts/savings")
-    public ResponseEntity<?> createSavingsAccount(@RequestBody DepositDTO dto) {
-        depositService.createSavingsAccount(dto);
-        return ResponseEntity.ok().body("적금 계좌가 성공적으로 개설되었습니다.");
+    public ResponseEntity<Map<String, String>> createSavingsAccount(@RequestBody DepositDTO dto) {
+        String accountNumber = depositService.createSavingsAccount(dto);
+        Map<String, String> response = new HashMap<>();
+        response.put("accountNumber", accountNumber);
+        return ResponseEntity.ok(response);
     }
 
- // 예금 계좌 해지
-    @DeleteMapping("/deposit/accounts/deposit/{accountId}")
+
+
+    //  예금 계좌 해지
+    @PutMapping("/deposit/accounts/deposit/{selectAcount}/close")
     public ResponseEntity<?> closeDepositAccount(
-        @PathVariable String accountId,   // 🔥 int → String
-        @RequestBody AccountCloseRequest request) {  // 🔥 DepositDTO → AccountCloseRequest
+    	@PathVariable("accountId") String accountId,
+        @RequestBody DepositDTO request
+    ) {
         try {
-            depositService.closeDepositAccount(accountId, request.getAccountPassword());
-            return ResponseEntity.ok().body("예금 계좌가 성공적으로 해지되었습니다.");
+            String accountPassword = request.getAccountPassword();
+            depositService.closeDepositAccount(accountId, accountPassword);
+            return ResponseEntity.ok("예금 계좌가 성공적으로 해지되었습니다.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    // 적금 계좌 해지
-    @DeleteMapping("/deposit/accounts/savings/{accountId}")
+    //  적금 계좌 해지
+    @PutMapping("/deposit/accounts/savings/{selectAcount}/close")
     public ResponseEntity<?> closeSavingsAccount(
-        @PathVariable String accountId,   // 🔥 int → String
-        @RequestBody AccountCloseRequest request) {  // 🔥 DepositDTO → AccountCloseRequest
+    	@PathVariable("accountId") String accountId,
+        @RequestBody DepositDTO request
+    ) {
         try {
-            depositService.closeSavingsAccount(accountId, request.getAccountPassword());
-            return ResponseEntity.ok().body("적금 계좌가 성공적으로 해지되었습니다.");
+            String accountPassword = request.getAccountPassword();
+            depositService.closeSavingsAccount(accountId, accountPassword);
+            return ResponseEntity.ok("적금 계좌가 성공적으로 해지되었습니다.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+
+
 
 
  // ✅ 예금 계좌 입금
@@ -170,6 +186,7 @@ public class DepositController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
 
 
  // 예금 거래내역 조회
@@ -422,6 +439,11 @@ public class DepositController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    
+    
+
+
+
 
 
 

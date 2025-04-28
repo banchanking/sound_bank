@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getCustomerID } from "../../jwt/AxiosToken";
 import RefreshToken from "../../jwt/RefreshToken";
 import '../../Css/depositcss/DepositJoin.css';
-import { useNavigate } from 'react-router-dom';
 
 const DepositJoin = () => {
     const navigate = useNavigate();
     const [products, setProducts] = useState([]);
+    const [accounts, setAccounts] = useState([]);
     const [selectedProduct, setSelectedProduct] = useState(null);
-    const [currentStep, setCurrentStep] = useState('select'); // 'select', 'agreement', 'form'
+    const [selectedWithdrawAccountNumber, setSelectedWithdrawAccount] = useState('');
+    const [currentStep, setCurrentStep] = useState('select');
     const [amount, setAmount] = useState('');
     const [password, setPassword] = useState('');
     const customerId = getCustomerID();
@@ -18,15 +20,14 @@ const DepositJoin = () => {
             const goLogin = window.confirm("로그인이 필요합니다. 로그인 페이지로 이동할까요?");
             if (goLogin) {
                 navigate("/login");
-              } else {
+            } else {
                 navigate("/");
-              }
-              return;      
+            }
+            return;
         }
         fetchProducts();
+        fetchAccounts();
     }, [customerId]);
-
-    
 
     const fetchProducts = async () => {
         try {
@@ -37,6 +38,16 @@ const DepositJoin = () => {
             alert('상품 정보를 불러오는데 실패했습니다.');
         }
     };
+
+    const fetchAccounts = async () => {
+        try {
+            const response = await RefreshToken.get(`/accounts/allAccount/${customerId}`);
+            setAccounts(response.data['입출금'] || []); 
+        } catch (error) {
+            console.error('입출금 계좌 조회 실패:', error);
+        }
+    };
+    
 
     const handleProductClick = (product) => {
         setSelectedProduct(product);
@@ -58,17 +69,43 @@ const DepositJoin = () => {
             alert('계좌 비밀번호를 4자리로 입력해주세요.');
             return;
         }
+        if (!selectedWithdrawAccountNumber) {
+            alert('출금할 입출금 계좌를 선택해주세요.');
+            return;
+        }
 
         try {
-            await RefreshToken.post('/deposit/accounts/deposit', {
+            // 1단계: 예금 계좌 생성
+            const createRes = await RefreshToken.post('/deposit/accounts/deposit', {
+                customerId,
                 productId: selectedProduct.id,
                 balance: amount,
                 accountPassword: password,
-                customerId
+                withdrawalAccountNumber: selectedWithdrawAccountNumber      
+            });
+            
+
+            const accountNumber = createRes.data.accountNumber || createRes.data.account_number;
+            if (!accountNumber) {
+                throw new Error('생성된 계좌번호를 가져오지 못했습니다.');
+            }
+
+            // 2단계: account_tbl에 추가
+            await RefreshToken.post('/accounts/createDepositAccount', {
+                accountNumber,
+                customer_id: customerId,
+                account_type: '예금',
+                account_pwd: password,
+                balance: amount,
+                interest_rate: selectedProduct.interestRate,
+                yield_rate: 0,
+                currency_type: 'KRW',
+                account_name: selectedProduct.productName,
+                open_date: new Date()
             });
 
             alert('예금 계좌가 성공적으로 개설되었습니다.');
-            window.location.href = '/deposit/accounts';
+            navigate('/');
         } catch (error) {
             console.error('계좌 개설 실패:', error);
             alert('계좌 개설에 실패했습니다.');
@@ -109,9 +146,11 @@ const DepositJoin = () => {
             {currentStep === 'agreement' && selectedProduct && (
                 <div className="depositCard">
                     <div className="depositProductHeader">
-                        <h2>{selectedProduct.productName} 가입 동의</h2>
+                        <h2>가입 동의</h2>
                     </div>
                     <div>
+                        <h3>상품명</h3>
+                        <p>{selectedProduct.productName}</p>
                         <h3>상품 설명</h3>
                         <p>{selectedProduct.productDescription || "상품 설명이 없습니다."}</p>
 
@@ -128,7 +167,7 @@ const DepositJoin = () => {
             {currentStep === 'form' && selectedProduct && (
                 <div className="depositCard">
                     <div className="depositProductHeader">
-                        <h2>{selectedProduct.productName} 가입 정보 입력</h2>
+                        <h2>가입 정보 입력</h2>
                     </div>
                     <form onSubmit={handleSubmit} className="depositForm">
                         <div className="formGroup">
@@ -144,6 +183,23 @@ const DepositJoin = () => {
                                 최소 입금액: {selectedProduct.minAmount.toLocaleString()}원
                             </div>
                         </div>
+
+                        <div className="formGroup">
+                            <label>출금 계좌 선택</label>
+                            <select
+                                value={selectedWithdrawAccountNumber}
+                                onChange={(e) => setSelectedWithdrawAccount(e.target.value)}
+                                required
+                            >
+                                <option value="">출금할 입출금 계좌를 선택하세요</option>
+                                {accounts.map(acc => (
+                                    <option key={acc.account_number} value={acc.account_number}>
+                                        {acc.account_name} ({acc.account_number}) - 잔액: {acc.balance.toLocaleString()}원
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
                         <div className="formGroup">
                             <label>계좌 비밀번호 (4자리)</label>
                             <input

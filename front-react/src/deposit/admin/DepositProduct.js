@@ -194,8 +194,7 @@ const DepositProduct = () => {
                         >
                             <Select>
                                 <Option value="REGULAR">일반예금</Option>
-                                <Option value="FIXED">정기예금</Option>
-                                <Option value="INSTALLMENT">적금</Option>
+                                <Option value="FIXED">정기예금</Option>                                
                             </Select>
                         </Form.Item>
 

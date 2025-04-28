@@ -58,7 +58,7 @@ public interface DepositDAO {
             @Param("endDate") LocalDateTime endDate
         );
 
-        List<DepositDTO> getSavingsTransactions(
+    List<DepositDTO> getSavingsTransactions(
             @Param("accountId") int accountId, 
             @Param("startDate") LocalDateTime startDate, 
             @Param("endDate") LocalDateTime endDate
@@ -140,6 +140,20 @@ public interface DepositDAO {
     int updateSavingsNickname(@Param("accountId") String accountId, @Param("nickname") String nickname);
 
 
+ // 출금계좌 잔액 차감
+    int withdrawFromAccount(@Param("accountNumber") String accountNumber, @Param("amount") BigDecimal amount);
+
+
+ // 출금계좌 잔액 차감
+    int decreaseBalance(@Param("accountNumber") String accountNumber, @Param("amount") BigDecimal amount);
+
+
+    
+//    BigDecimal getDepositBalanceByAccountNumber(@Param("accountNumber") String accountNumber);
+//    BigDecimal getSavingsBalanceByAccountNumber(@Param("accountNumber") String accountNumber);
+    
+    BigDecimal getDepositBalanceByAccountNumber(@Param("accountNumber") String accountNumber);
+    BigDecimal getSavingsBalanceByAccountNumber(@Param("accountNumber") String accountNumber);
 
 
 
