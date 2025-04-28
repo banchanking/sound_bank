@@ -50,7 +50,7 @@ const SMSVerificationModal = ({ isOpen, onRequestClose, onVerified }) => {
         customer_phone_number,
         code: verificationCode,
       });
-      if (response.status === 200) {
+      if (response.data === true) {
         alert("인증이 완료되었습니다.");
         onVerified();
         onRequestClose();
