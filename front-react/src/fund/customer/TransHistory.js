@@ -1,4 +1,3 @@
-// ✅ TransHistory.js - 모달에 닫기 버튼 추가
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import RefreshToken from "../../jwt/RefreshToken";
