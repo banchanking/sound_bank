@@ -1,65 +1,86 @@
-/* JoinModal.module.css */
+/* src/Css/customer/SignupSMSModal.module.css */
 
-.modalArea {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+/* 모달 전체 감싸는 영역 */
+.smsModalArea {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 30px;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  width: 100%;
+  box-sizing: border-box;
+  height: 300px;
+  animation: fadeInUp 0.5s ease;
+}
+
+/* 모달 제목 */
+.smsModalArea h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1e1e1e;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* 인증번호 입력 인풋 */
+.smsModalArea input[type="text"] {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 16px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 12px;
+  background-color: #f9fafb;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  box-sizing: border-box;
+}
+
+.smsModalArea input[type="text"]:focus {
+  border-color: #2e3744;
+  background-color: #ffffff;
+  outline: none;
+}
+
+/* 버튼 영역 */
+.smsButtonContainer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+/* 버튼 */
+.smsModalBtn {
+  background-color: #2c2c2c;
+  color: white;
+  padding: 12px 20px;
+  font-size: 15px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.smsModalBtn:hover {
+  background-color: #555;
+  box-shadow: 0 4px 12px rgba(2, 2, 2, 0.1);
+}
+
+/* 반응형 */
+@media (max-width: 480px) {
+  .smsModalArea {
     padding: 20px;
   }
   
-  .labelContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .labelContainer label {
-    font-size: 15px;
-    font-weight: 600;
-    margin-bottom: 6px;
-    color: #333;
-  }
-  
-  .labelContainer input,
-  .labelContainer select {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
+  .smsModalBtn {
+    padding: 10px 16px;
     font-size: 14px;
-    box-sizing: border-box;
   }
-  
-  .buttonContainer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-    margin-top: 20px;
-  }
-  
-  .modalBtn {
-    background-color: #3182f6;
-    color: white;
-    padding: 10px 20px;
-    font-size: 14px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
-  }
-  
-  .modalBtn:hover {
-    background-color: #1f5fba;
-  }
-  
-  @media (max-width: 480px) {
-    .modalArea {
-      padding: 10px;
-    }
-  
-    .modalBtn {
-      padding: 8px 16px;
-      font-size: 13px;
-    }
-  }
-  
+}
+
+/* 부드러운 페이드인 애니메이션 */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

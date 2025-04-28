@@ -5,8 +5,8 @@ from sklearn.linear_model import LinearRegression
 import os
 from flask_cors import CORS
 
-MODEL_PATH = "credit_score_model_final.pkl"
-CSV_PATH = "dummy_credit_score_final_realistic.csv"
+MODEL_PATH = "/var/www/soundbank/data/credit_score_model_final.pkl"
+CSV_PATH = "/var/www/soundbank/data/dummy_credit_score_final_realistic.csv"
 
 # === 모델 학습 ===
 if not os.path.exists(MODEL_PATH):
@@ -48,8 +48,11 @@ def predict_credit_score():
         df["loan_ratio"] = df["loan_balance_total"] / (df["asset_total"] + 1)
         df["loan_ratio_penalty"] = (df["loan_ratio"] * 100) ** 1.2
 
-        df["asset_bonus"] = ((df["loan_balance_total"] == 0) & (df["loan_total_amount"] == 0)).astype(int) * (
-            df["asset_total"] / 1_000_000).clip(0, 200)
+        # 순자산 = 자산 - 대출금
+        df["net_asset"] = df["asset_total"] - df["loan_balance_total"]
+
+        # 순자산 기준 보너스 계산
+        df["asset_bonus"] = (df["net_asset"] / 10_000_000).clip(0, 50)
 
         df["repayment_bonus"] = df["completed_term_ratio"].clip(0.8, 1.0) * 100
 
