@@ -45,7 +45,7 @@ async def predict(data: InvestmentRequest):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="15.165.57.30", port=8000)
     
 # 펀드 추천을 위한 CSV 파일 로드
 funds = pd.read_csv("D:/DEV/workspace_springBoot_ict04/sound_bank/front-react/public/data/fundList.csv")

@@ -18,7 +18,7 @@ const LoanDetail = (props) => {
   ]);
 
   useEffect(() => {
-    fetch("http://localhost:8081/api/loanDetail/" + loan_id)
+    fetch("http://15.165.57.30:8081/api/loanDetail/" + loan_id)
       .then((res) => res.json())
       .then((res) => {
         setLoan(res);
@@ -30,7 +30,7 @@ const LoanDetail = (props) => {
   };
 
   const deleteForm = () => {
-    fetch("http://localhost:8081/api/loanDelete/" + loan_id, {
+    fetch("http://15.165.57.30:8081/api/loanDelete/" + loan_id, {
       method: "DELETE",
     })
       .then((res) => res.text())

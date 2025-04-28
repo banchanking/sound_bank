@@ -61,7 +61,7 @@ const Join = () => {
         }
         try {
             // API 호출을 통해 아이디 중복 확인
-            const response = await axios.get(`http://localhost:8081/api/idConfirmAction.do?customer_id=${form.customer_id}`);
+            const response = await axios.get(`http://15.165.57.30:8081/api/idConfirmAction.do?customer_id=${form.customer_id}`);
             const { available, message } = response.data;
             alert(message);
             if (available) {
@@ -100,7 +100,7 @@ const Join = () => {
 
         try {
             // API 호출로 회원가입 처리
-            const response = await axios.post('http://localhost:8081/api/joinAction.do', requestData);
+            const response = await axios.post('http://15.165.57.30:8081/api/joinAction.do', requestData);
             alert(response.data);
             window.location.href = '/';
         } catch (error) {

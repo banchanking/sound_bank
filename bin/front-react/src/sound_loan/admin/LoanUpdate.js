@@ -27,7 +27,7 @@ const LoanUpdate = () => {
   };
 
   useEffect(() => {
-    fetch("http://localhost:8081/api/loanDetail/" + loan_id)
+    fetch("http://15.165.57.30:8081/api/loanDetail/" + loan_id)
       .then((res) => res.json())
       .then((res) => {
         setLoan(res);
@@ -64,7 +64,7 @@ const LoanUpdate = () => {
       alert("대출 정보를 입력하세요.");
       return null;
     }
-    fetch("http://localhost:8081/api/loanUpdate/" + loan_id, {
+    fetch("http://15.165.57.30:8081/api/loanUpdate/" + loan_id, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json;charset=utf-8",

@@ -5,7 +5,7 @@ const FileDownLoader = () => {
     
     const handleDownload = async () => {
         try{
-            const response = await fetch('http://localhost:8081/download'); // 서버에서 파일 다운로드
+            const response = await fetch('http://15.165.57.30:8081/download'); // 서버에서 파일 다운로드
             const blob = await response.blob(); // Blob 데이터로 변환
             const link = document.createElement('a'); // a 태그 생성
             link.href = URL.createObjectURL(blob); // Blob 데이터를 URL로 생성

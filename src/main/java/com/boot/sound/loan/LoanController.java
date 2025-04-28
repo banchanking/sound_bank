@@ -44,13 +44,13 @@ public class LoanController {
 
 	private final LoanService service;
 	
-	// 대출 상품 리스트 http://localhost:8081/api/loanList
+	// 대출 상품 리스트 http://15.165.57.30:8081/api/loanList
 	@GetMapping("/loanList")
 	public ResponseEntity<?> loanList(){
 		return new ResponseEntity<>(service.loanList(),HttpStatus.OK);
 	};
 	
-	// 대출 상품 등록 및 약관등록 http://localhost:8081/api/loanInsert
+	// 대출 상품 등록 및 약관등록 http://15.165.57.30:8081/api/loanInsert
 	@PostMapping("/loanInsert")
 	public ResponseEntity<?> loanInsert(@RequestBody LoanWithTermsDTO dto){
 		return new ResponseEntity<>(service.loanInsert(dto),HttpStatus.CREATED);
@@ -62,20 +62,20 @@ public class LoanController {
 		return new ResponseEntity<>(service.loanUpdate(loan_id,dto),HttpStatus.CREATED);
 	}
 	
-	// 대출 상품 삭제 http://localhost:8081/api/loanDelete
+	// 대출 상품 삭제 http://15.165.57.30:8081/api/loanDelete
 	@DeleteMapping("/loanDelete/{loan_id}")
 	public ResponseEntity<?> loanDelete(@PathVariable int loan_id){
 		return new ResponseEntity<>(service.loanDelete(loan_id),HttpStatus.OK);
 	}
 	
-	// 대출 상품 상세 http://localhost:8081/api/loanDetail/{loan_id}
+	// 대출 상품 상세 http://15.165.57.30:8081/api/loanDetail/{loan_id}
 	@GetMapping("/loanDetail/{loan_id}")
 	public ResponseEntity<?> loanDetail(@PathVariable int loan_id){
 		return new ResponseEntity<>(service.loanDetail(loan_id),HttpStatus.OK);
 	}
 	
 	
-	// 대출 신청전 동의서 동의내역 관리 http://localhost:8081/api/consertInsert
+	// 대출 신청전 동의서 동의내역 관리 http://15.165.57.30:8081/api/consertInsert
 	@PostMapping("/consertInsert")
 	public ResponseEntity<?> consentInsert(@RequestBody LoanConsentDTO dto){
 		System.out.println(dto);

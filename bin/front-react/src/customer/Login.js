@@ -13,7 +13,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:8081/api/login.do', form);
+      const res = await axios.post('http://15.165.57.30:8081/api/login.do', form);
 
       // 로그인 성공 후 customer_id 저장
       localStorage.setItem('customer_id', form.customer_id);

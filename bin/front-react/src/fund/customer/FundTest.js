@@ -103,7 +103,7 @@ const FundTest = () => {
       console.log("Submitting payload:", payload); // 디버깅용 로그
 
       // 서버로 POST 요청
-      const response = await axios.post("http://127.0.0.1:8000/predict", payload, {
+      const response = await axios.post("http://15.165.57.30:8000/predict", payload, {
         headers: {
           "Content-Type": "application/json",
         },

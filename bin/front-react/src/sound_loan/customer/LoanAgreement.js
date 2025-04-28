@@ -70,7 +70,7 @@ const LoanAgreement = () => {
   useEffect(() => {
     if (consent.loan_id && consent.consent_to_use && consent.consent_to_view) {
       console.log(consent); // 상태 업데이트 후 실행
-      fetch("http://localhost:8081/api/consertInsert", {
+      fetch("http://15.165.57.30:8081/api/consertInsert", {
         method: "POST",
         headers: {
           "Content-Type": "application/json;charset=utf-8",

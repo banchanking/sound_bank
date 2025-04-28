@@ -24,7 +24,7 @@ const LoanApply = (props) => {
   // 상품 이름 검색
   const searchName = () => {
     fetch(
-      `http://localhost:8081/api/loanNameSearch/?loan_name=${encodeURIComponent(
+      `http://15.165.57.30:8081/api/loanNameSearch/?loan_name=${encodeURIComponent(
         loan_name
       )}`,
       {
@@ -47,7 +47,7 @@ const LoanApply = (props) => {
       });
     // 검색 된 상품 갯수값
     fetch(
-      `http://localhost:8081/api/loanNameCnt/?loan_name=${encodeURIComponent(
+      `http://15.165.57.30:8081/api/loanNameCnt/?loan_name=${encodeURIComponent(
         loan_name
       )}`,
       {
@@ -73,7 +73,7 @@ const LoanApply = (props) => {
     const loan_type = e.target.value;
     // 전체 상품 검색
     if (loan_type === "전체") {
-      fetch("http://localhost:8081/api/loanList", {
+      fetch("http://15.165.57.30:8081/api/loanList", {
         method: "GET",
       })
         .then((res) => {
@@ -88,7 +88,7 @@ const LoanApply = (props) => {
         .catch((error) => {
           console.error("데이터 가져오기 오류:", error);
         });
-      fetch("http://localhost:8081/api/loanCnt", {
+      fetch("http://15.165.57.30:8081/api/loanCnt", {
         method: "GET",
       })
         .then((res) => {
@@ -108,7 +108,7 @@ const LoanApply = (props) => {
     // 원하는 상품 유형 검색
     else {
       fetch(
-        `http://localhost:8081/api/loanTypeSearch/?loan_type=${encodeURIComponent(
+        `http://15.165.57.30:8081/api/loanTypeSearch/?loan_type=${encodeURIComponent(
           loan_type
         )}`,
         {
@@ -129,7 +129,7 @@ const LoanApply = (props) => {
           console.error("데이터 가져오기 오류:", error);
         });
       fetch(
-        `http://localhost:8081/api/loanTypeCnt/?loan_type=${encodeURIComponent(
+        `http://15.165.57.30:8081/api/loanTypeCnt/?loan_type=${encodeURIComponent(
           loan_type
         )}`,
         {
@@ -153,7 +153,7 @@ const LoanApply = (props) => {
   };
   // 처음 렌더링 시 전체 대출 상품 리스트 출력
   useEffect(() => {
-    fetch("http://localhost:8081/api/loanList", {
+    fetch("http://15.165.57.30:8081/api/loanList", {
       method: "GET",
     })
       .then((res) => {
@@ -170,7 +170,7 @@ const LoanApply = (props) => {
         console.error("데이터 가져오기 오류:", error);
       });
     // 전체 상품 갯수
-    fetch("http://localhost:8081/api/loanCnt", {
+    fetch("http://15.165.57.30:8081/api/loanCnt", {
       method: "GET",
     })
       .then((res) => {

@@ -19,7 +19,7 @@ const FundProductManage = () => {
   // 펀드 목록 조회
   const fetchFundsFromAPI = async () => {
     try {
-      const response = await fetch("http://localhost:8081/api/fundList"); // 백엔드 API URL
+      const response = await fetch("http://15.165.57.30:8081/api/fundList"); // 백엔드 API URL
       if (!response.ok) {
         throw new Error("Failed to fetch fund list");
       }
@@ -63,7 +63,7 @@ const FundProductManage = () => {
   // 펀드 수정
   const handleUpdateFund = async () => {
     try {
-      const response = await fetch(`http://localhost:8081/api/fundUpdate/${formData.FUND_ID}`, {
+      const response = await fetch(`http://15.165.57.30:8081/api/fundUpdate/${formData.FUND_ID}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -85,7 +85,7 @@ const FundProductManage = () => {
   // 펀드 삭제
   const handleDeleteFund = async () => {
     try {
-      const response = await fetch(`http://localhost:8081/api/fund/${formData.FUND_ID}`, {
+      const response = await fetch(`http://15.165.57.30:8081/api/fund/${formData.FUND_ID}`, {
         method: "DELETE",
       });
 

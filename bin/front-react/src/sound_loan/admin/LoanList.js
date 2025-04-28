@@ -17,7 +17,7 @@ const LoanList = (props) => {
   ]);
 
   useEffect(() => {
-    fetch("http://localhost:8081/api/loanList", {
+    fetch("http://15.165.57.30:8081/api/loanList", {
       method: "GET",
     })
       .then((res) => {

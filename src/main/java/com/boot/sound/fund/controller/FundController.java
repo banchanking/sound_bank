@@ -25,7 +25,7 @@ public class FundController {
     
     private static final Logger logger = LoggerFactory.getLogger(FundController.class);
 
-    // 펀드상품 목록 => http://localhost:8081/api/fundList  
+    // 펀드상품 목록 => http://15.165.57.30:8081/api/fundList  
     @GetMapping("/fundList")
     public ResponseEntity<List<FundDTO>> findAll() {
     	
@@ -33,7 +33,7 @@ public class FundController {
         return new ResponseEntity<>(service.fundList(), HttpStatus.OK);		// 200
     }
     
-    // 펀드상품 등록 PostMapping => http://localhost:8081/api/fundSave
+    // 펀드상품 등록 PostMapping => http://15.165.57.30:8081/api/fundSave
     @PostMapping("/fundSave")
     public ResponseEntity<?> save(@RequestBody FundDTO funds) {
     	logger.info("<<< contoller - save >>>");
@@ -41,21 +41,21 @@ public class FundController {
     	return new ResponseEntity<>(service.saveFund(funds), HttpStatus.CREATED);	// 201 상태값 리턴
     }
     
-    // 관리자가 등록한 펀드 저장 PostMapping => http://localhost:8081/api/saveRegisteredFunds
+    // 관리자가 등록한 펀드 저장 PostMapping => http://15.165.57.30:8081/api/saveRegisteredFunds
     @PostMapping("/saveRegisteredFunds")
     public ResponseEntity<String> saveRegisteredFunds(@RequestBody List<FundDTO> funds) {
         service.saveRegisteredFunds(funds);
         return ResponseEntity.ok("Registered funds saved successfully");
     }
 
-    // 등록된 펀드 상품 목록 조회 GetMapping => http://localhost:8081/api/registeredFunds
+    // 등록된 펀드 상품 목록 조회 GetMapping => http://15.165.57.30:8081/api/registeredFunds
     @GetMapping("/registeredFunds")
     public ResponseEntity<List<FundDTO>> getRegisteredFunds() {
         List<FundDTO> funds = service.getRegisteredFunds();
         return ResponseEntity.ok(funds);
     }
     
-    // 펀드상품 상세보기 => http://localhost:8081/api/fundDetail/{fund_id} (펀드상품번호)
+    // 펀드상품 상세보기 => http://15.165.57.30:8081/api/fundDetail/{fund_id} (펀드상품번호)
     @GetMapping("/fundDetail/{fund_id}")
     public ResponseEntity<FundDTO> findById(@PathVariable Long fund_id) {
     	logger.info("<<< contoller - findById >>>");
@@ -63,7 +63,7 @@ public class FundController {
     	return new ResponseEntity<FundDTO>(service.fundDetail(fund_id), HttpStatus.OK);	// 200
     }
     
- 	// 펀드상품 수정 @PutMapping => http://localhost:8081/api/fundUpdate/{fund_id} (펀드상품번호)
+ 	// 펀드상품 수정 @PutMapping => http://15.165.57.30:8081/api/fundUpdate/{fund_id} (펀드상품번호)
     @PutMapping("/fundUpdate/{fund_id}")
     public ResponseEntity<Integer> updateFund(@PathVariable Long fund_id, @RequestBody FundDTO funds) {
     	logger.info("<<< contoller - updateFund >>>");
@@ -71,7 +71,7 @@ public class FundController {
     	return new ResponseEntity<>(service.updateFund(fund_id, funds), HttpStatus.CREATED);	// 201
     }
     
- 	// 펀드상품 삭제 DeleteMapping => http://localhost:8081/api/fund/{fund_id} (펀드상품번호)
+ 	// 펀드상품 삭제 DeleteMapping => http://15.165.57.30:8081/api/fund/{fund_id} (펀드상품번호)
     @DeleteMapping("/fund/{fund_id}")
     public ResponseEntity<String> deleteFund(@PathVariable Long fund_id) {
         logger.info("<<< controller - deleteFund >>>");

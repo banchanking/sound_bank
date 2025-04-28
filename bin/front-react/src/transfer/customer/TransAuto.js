@@ -25,7 +25,7 @@ function TransAuto() {
     }
     setForm(prev => ({ ...prev, customer_id: id }));
 
-    axios.get(`http://localhost:8081/api/accounts/allAccount/${id}`)
+    axios.get(`http://15.165.57.30:8081/api/accounts/allAccount/${id}`)
       .then(res => {
         const raw = res.data;
         let list = [];
@@ -43,7 +43,7 @@ function TransAuto() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:8081/api/transAuto/apply', form);
+      const res = await axios.post('http://15.165.57.30:8081/api/transAuto/apply', form);
       alert(res.data);
     } catch (err) {
       alert('요청 실패');

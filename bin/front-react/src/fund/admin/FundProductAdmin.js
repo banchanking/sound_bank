@@ -83,7 +83,7 @@ const FundProductAdmin = () => {
   // 펀드 등록
   const handleSaveFund = async () => {
     try {
-      const response = await fetch("http://localhost:8081/api/fundSave", {
+      const response = await fetch("http://15.165.57.30:8081/api/fundSave", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

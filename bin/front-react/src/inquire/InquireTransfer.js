@@ -33,7 +33,7 @@ function CheckTx() {
 
     setCustomerId(id);
 
-    axios.get(`http://localhost:8081/api/accounts/allAccount/${id}`)
+    axios.get(`http://15.165.57.30:8081/api/accounts/allAccount/${id}`)
       .then(res => {
         const raw = res.data;
         let list = [];
@@ -62,7 +62,7 @@ function CheckTx() {
 
   // 거래내역 조회 요청
   const searchTx = () => {
-    axios.get('http://localhost:8081/api/transactions', {
+    axios.get('http://15.165.57.30:8081/api/transactions', {
       params: {
         account_number: pickAcc,
         start_date: dateStart,

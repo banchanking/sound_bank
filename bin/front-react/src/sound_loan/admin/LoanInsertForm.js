@@ -55,7 +55,7 @@ const LoanInsertForm = (props) => {
       alert("대출 정보를 입력하세요.");
       return null;
     }
-    fetch("http://localhost:8081/api/loanInsert", {
+    fetch("http://15.165.57.30:8081/api/loanInsert", {
       method: "POST",
       headers: {
         "Content-Type": "application/json;charset=utf-8",

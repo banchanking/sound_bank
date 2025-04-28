@@ -22,7 +22,7 @@ const ExRate = () => {
       const formattedDate = formatDate(new Date(selectedDate));
       console.log("조회할 날짜:", formattedDate);
     
-      axios.get('http://localhost:8081/api/exchange/rates', {
+      axios.get('http://15.165.57.30:8081/api/exchange/rates', {
         params: { date: formattedDate }
       })
         .then((res) => {

@@ -26,7 +26,7 @@ function TransInstant() {
     setForm(prev => ({ ...prev, customer_id: id }));
 
     // 계좌 목록 불러오기
-    axios.get(`http://localhost:8081/api/accounts/allAccount/${id}`)
+    axios.get(`http://15.165.57.30:8081/api/accounts/allAccount/${id}`)
       .then(res => {
         const raw = res.data;
         let list = [];
@@ -46,7 +46,7 @@ function TransInstant() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:8081/api/transInstant/send', form);
+      const res = await axios.post('http://15.165.57.30:8081/api/transInstant/send', form);
       if (res.data === '비밀번호 오류') {
         alert('비밀번호가 일치하지 않습니다.');
       } else if (res.data === '이체 완료') {
