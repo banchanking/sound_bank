@@ -72,29 +72,31 @@ const DepositCancellation = () => {
     
         try {
             const account = accounts.find(acc => acc.accountNumber === selectedAccount);
-            const endpoint = account.type === '예금'
-                ? `/deposit/accounts/deposit/${selectedAccount}`
-                : `/deposit/accounts/savings/${selectedAccount}`;
     
-                await RefreshToken.delete(endpoint, {
+            const endpoint = account.type === '예금'
+                ? `/deposit/accounts/deposit/${selectedAccount}/close`
+                : `/deposit/accounts/savings/${selectedAccount}/close`;
+    
+                await RefreshToken.put(endpoint, {
+                    accountNumber: account.accountNumber,   // 🔥 추가
+                    accountPassword: password,              // 🔥 기존
+                    accountStatus: account.accountStatus,   // 🔥 추가
+                    balance: account.balance                // 🔥 추가 (선택)
+                }, {
                     headers: {
                         'Content-Type': 'application/json'
-                    },
-                    data: {
-                        accountPassword: password
                     }
                 });
                 
-                
-                
     
             alert('계좌 해지가 완료되었습니다.');
-            navigate('/deposit/accounts');
+            navigate('/');
         } catch (error) {
             console.error('계좌 해지 에러:', error);
             alert('계좌 해지에 실패했습니다.');
         }
     };
+    
     
 
     return (

@@ -86,4 +86,16 @@ public class AccountService {
         
     }
     
+    // 예적금 가입시 기본계좌에 등록
+    public void insertDepositAccount(AccountDTO accountDTO) {
+        accountDAO.insertDepositAccount(accountDTO);
+    }
+    
+ // 입출금 계좌 상태 변경 (해지)
+    public void updateAccountStatusToClosed(String accountNumber) {
+        accountDAO.updateAccountStatusToClosed(accountNumber);
+    }
+
+
+    
 }

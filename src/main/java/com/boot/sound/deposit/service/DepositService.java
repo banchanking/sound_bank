@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.boot.sound.deposit.dao.DepositDAO;
 import com.boot.sound.deposit.dto.DepositDTO;
+import com.boot.sound.inquire.account.AccountService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DepositService {
     private final DepositDAO depositDAO;
+    private final AccountService accountService;
 
     // 상품 관련 메서드
     public List<DepositDTO> getDepositProducts() {
@@ -54,11 +56,12 @@ public class DepositService {
         return depositDAO.getSavingsAccountDetail(accountId);
     }
 
-    // 계좌 생성/해지
+ // 예금 계좌 생성
     @Transactional
-    public void createDepositAccount(DepositDTO account) {
+    public String createDepositAccount(DepositDTO account) {
         // 1. 계좌번호 자동 생성
-        account.setAccountNumber(generateUniqueAccountNumber());
+        String accountNumber = generateUniqueAccountNumber();
+        account.setAccountNumber(accountNumber);
 
         // 2. 상품 이자율 복사
         DepositDTO product = depositDAO.getDepositProductDetail(account.getProductId());
@@ -71,7 +74,7 @@ public class DepositService {
         account.setAccountStatus("ACTIVE");
 
         // 4. 중복 체크
-        if (depositDAO.checkAccountNumber(account.getAccountNumber()) > 0) {
+        if (depositDAO.checkAccountNumber(accountNumber) > 0) {
             throw new RuntimeException("이미 존재하는 계좌번호입니다.");
         }
 
@@ -80,43 +83,49 @@ public class DepositService {
             throw new RuntimeException("예금 계좌 생성에 실패했습니다.");
         }
 
-        // 6. 🔥 최초 입금 거래내역 생성
+        // 6. 최초 입금 거래내역 생성
         DepositDTO transaction = new DepositDTO();
-        transaction.setAccountId(account.getId());  // 생성된 계좌 ID
-        transaction.setTransactionType("DEPOSIT");  // 거래유형: 입금
-        transaction.setTransactionAmount(account.getBalance());  // 초기 입금액
+        transaction.setAccountId(account.getId());
+        transaction.setTransactionType("DEPOSIT");
+        transaction.setTransactionAmount(account.getBalance());
         transaction.setTransactionDate(LocalDateTime.now());
-        transaction.setTransactionDescription("초기 입금"); // 메모
-        transaction.setBalance(account.getBalance()); // ⭐ 추가해야 함
+        transaction.setTransactionDescription("초기 입금");
+        transaction.setBalance(account.getBalance());
 
-        depositDAO.createDepositTransaction(transaction);  // 거래내역 저장
+        depositDAO.createDepositTransaction(transaction);
+
+        return accountNumber; // 🔥 생성한 계좌번호 리턴
     }
 
 
 
- // 적금 계좌 생성 (초기 입금 + 거래내역 저장까지)
-    @Transactional
-    public void createSavingsAccount(DepositDTO account) {
-        // 계좌번호 자동 생성 및 세팅
-        account.setAccountNumber(generateUniqueAccountNumber());
 
-        if (depositDAO.checkAccountNumber(account.getAccountNumber()) > 0) {
+ // 적금 계좌 생성
+    @Transactional
+    public String createSavingsAccount(DepositDTO account) {
+        String accountNumber = generateUniqueAccountNumber();
+        account.setAccountNumber(accountNumber);
+
+        if (depositDAO.checkAccountNumber(accountNumber) > 0) {
             throw new RuntimeException("이미 존재하는 계좌번호입니다.");
         }
         if (depositDAO.createSavingsAccount(account) != 1) {
             throw new RuntimeException("적금 계좌 생성에 실패했습니다.");
         }
 
-        // ✅ 여기 추가!!
+        // 최초 거래내역 생성
         DepositDTO transaction = new DepositDTO();
-        transaction.setAccountId(account.getId());  // 새로 생성된 적금계좌 ID
-        transaction.setTransactionType("DEPOSIT"); // 거래 타입: 입금
-        transaction.setTransactionAmount(BigDecimal.ZERO); // 적금은 초기 입금 0원
-        transaction.setBalance(BigDecimal.ZERO);           // 잔액 0원
+        transaction.setAccountId(account.getId());
+        transaction.setTransactionType("DEPOSIT");
+        transaction.setTransactionAmount(account.getMonthlyAmount());
+        transaction.setBalance(account.getMonthlyAmount());
         transaction.setTransactionDescription("적금 계좌 개설");
 
         depositDAO.createSavingsTransaction(transaction);
+
+        return accountNumber; // 🔥 생성한 계좌번호 리턴
     }
+
 
 
  // 예금 해지
@@ -133,14 +142,14 @@ public class DepositService {
             depositDAO.transferBalanceToMainAccount(customerId, balance);
         }
 
-        // 기존: 상태 변경 UPDATE
-        // 변경: 아예 계좌 삭제
-        if (depositDAO.deleteDepositAccount(accountId, accountPassword) != 1) {
+        if (depositDAO.closeDepositAccount(accountId, accountPassword) != 1) {
             throw new RuntimeException("예금 계좌 삭제에 실패했습니다.");
         }
+
+        // ✅ 기본계좌 ACCOUNT_TBL 상태 변경 추가
+        accountService.updateAccountStatusToClosed(accountId);
     }
-    
-    
+
     // 적금 해지
     @Transactional
     public void closeSavingsAccount(String accountId, String accountPassword) {
@@ -155,12 +164,14 @@ public class DepositService {
             depositDAO.transferBalanceToMainAccount(customerId, balance);
         }
 
-        // 기존: 상태 변경 UPDATE
-        // 변경: 아예 계좌 삭제
-        if (depositDAO.deleteSavingsAccount(accountId, accountPassword) != 1) {
+        if (depositDAO.closeSavingsAccount(accountId, accountPassword) != 1) {
             throw new RuntimeException("적금 계좌 삭제에 실패했습니다.");
         }
+
+        // ✅ 기본계좌 ACCOUNT_TBL 상태 변경 추가
+        accountService.updateAccountStatusToClosed(accountId);
     }
+
 
 
 

@@ -57,7 +57,7 @@
 		  CASE WHEN EXISTS (SELECT 1 FROM exchange_wallet WHERE customer_id = #{customerId})
 		       THEN '외환 지갑' ELSE NULL END AS exchange_wallet,
 		       
-		  CASE WHEN EXISTS (SELECT 1 FROM account_tbl WHERE customer_id = #{customerId})
+		          CASE WHEN EXISTS (SELECT 1 FROM account_tbl WHERE customer_id = #{customerId}  AND status = 'ACTIVE')
 		       THEN '입출금계좌' ELSE NULL END AS account_tbl,
 		       
 		  CASE WHEN EXISTS (SELECT 1 FROM fund_account_tbl WHERE customer_id = #{customerId})
@@ -66,7 +66,7 @@
 		  CASE WHEN EXISTS (SELECT 1 FROM loan_status_tbl WHERE customer_id = #{customerId} AND loan_progress = '승인')
 		       THEN '대출상품' ELSE NULL END AS loan_status_tbl,
 		       
-		  CASE WHEN EXISTS (SELECT 1 FROM deposit_account_tbl WHERE customer_id = #{customerId})
+		  CASE WHEN EXISTS (SELECT 1 FROM deposit_account_tbl WHERE customer_id = #{customerId} AND account_status = 'ACTIVE')
 		       THEN '예적금계좌' ELSE NULL END AS deposit_account_tbl
 	</select>
 

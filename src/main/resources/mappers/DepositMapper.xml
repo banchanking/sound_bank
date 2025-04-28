@@ -584,10 +584,7 @@
         WHERE product_id = #{productId}
     </update>
 
-    <!-- 예금 상품 삭제 -->
-    <delete id="deleteDepositProduct">
-        DELETE FROM DEPOSIT_PRODUCT_TBL WHERE product_id = #{productId}
-    </delete>
+
     
 	    <!-- 적금 상품 추가 -->
 	<insert id="addSavingsProduct" parameterType="com.boot.sound.deposit.dto.DepositDTO">
@@ -611,10 +608,7 @@
 	    WHERE product_id = #{productId}
 	</update>
 	
-	<!-- 적금 상품 삭제 -->
-	<delete id="deleteSavingsProduct">
-	    DELETE FROM SAVINGS_PRODUCT_TBL WHERE product_id = #{productId}
-	</delete>
+
 	
 	<!-- 계좌번호(accountNumber)로 예금 계좌 잔액 조회 -->
 <select id="getDepositAccountBalanceByAccountNumber" resultType="java.math.BigDecimal">
@@ -669,21 +663,7 @@
     WHERE sat_id = #{accountId}
 </update>
 
-<!-- 예금 계좌 삭제 -->
-<delete id="deleteDepositAccount">
-    DELETE FROM DEPOSIT_ACCOUNT_TBL
-    WHERE account_number = #{accountId}
-    AND account_password = #{accountPassword}
-    AND account_status = 'ACTIVE'
-</delete>
 
-<!-- 적금 계좌 삭제 -->
-<delete id="deleteSavingsAccount">
-    DELETE FROM SAVINGS_ACCOUNT_TBL
-    WHERE account_number = #{accountId}
-    AND account_password = #{accountPassword}
-    AND account_status = 'ACTIVE'
-</delete>
 
 <select id="getBalance" resultType="java.math.BigDecimal">
     SELECT balance
@@ -691,6 +671,17 @@
     WHERE account_number = #{accountNumber}
 </select>
 
+<!-- 예금 상품 삭제 -->
+<delete id="deleteDepositProduct">
+    DELETE FROM DEPOSIT_PRODUCT_TBL
+    WHERE product_id = #{productId}
+</delete>
+
+<!-- 적금 상품 삭제 -->
+<delete id="deleteSavingsProduct">
+    DELETE FROM SAVINGS_PRODUCT_TBL
+    WHERE product_id = #{productId}
+</delete>
 
 
 

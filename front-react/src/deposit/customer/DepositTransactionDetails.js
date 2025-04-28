@@ -155,22 +155,26 @@ const DepositTransactionDetails = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {transactions.length > 0 ? (
-                        transactions.map(tx => (
-                          <tr key={tx.id}>
-                            <td>{tx.transactionDate}</td>
-                            <td>{tx.transactionType}</td>
-                            <td>{tx.transactionAmount?.toLocaleString()}원</td>
-                            <td>{tx.balance?.toLocaleString()}원</td>
-                            <td>{tx.transactionDescription}</td>
+                        {transactions.length > 0 ? (
+                          transactions.map(tx => (
+                            <tr key={tx.id}>
+                              <td>{tx.transactionDate}</td>
+                              <td>
+                                {selectedAccount?.type === 'SAVINGS' ? '적금' : '예금'}
+                              </td>
+                              <td>{tx.transactionAmount?.toLocaleString()}원</td>
+                              <td>{tx.balance?.toLocaleString()}원</td>
+                              <td>{tx.transactionDescription}</td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan="5">거래내역이 없습니다.</td>
                           </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan="5">거래내역이 없습니다.</td>
-                        </tr>
-                      )}
-                    </tbody>
+                        )}
+                      </tbody>
+
+
                   </table>
                 </div>
               </>
