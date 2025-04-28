@@ -77,16 +77,19 @@ const DepositCancellation = () => {
                 ? `/deposit/accounts/deposit/${selectedAccount}/close`
                 : `/deposit/accounts/savings/${selectedAccount}/close`;
     
-                await RefreshToken.put(endpoint, {
-                    accountNumber: account.accountNumber,   // 🔥 추가
-                    accountPassword: password,              // 🔥 기존
-                    accountStatus: account.accountStatus,   // 🔥 추가
-                    balance: account.balance                // 🔥 추가 (선택)
-                }, {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
+                    // 디버깅 로그 추가
+            console.log('선택된 계좌:', account);
+            console.log('요청 URL:', endpoint);
+            console.log('요청 데이터:', {
+            accountPassword: password,
+            customerId : account.customerId,
+            accountId: account.id
+            
+         });
+                await RefreshToken.put(endpoint,{
+                    accountPassword: password
                 });
+                
                 
     
             alert('계좌 해지가 완료되었습니다.');

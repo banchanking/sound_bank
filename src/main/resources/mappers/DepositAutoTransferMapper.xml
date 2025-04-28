@@ -69,5 +69,13 @@
           AND balance >= #{amount}
           AND account_status = 'ACTIVE'
     </update>
+    
+    <update id="withdrawFromAccount">
+    UPDATE ACCOUNT_TBL
+    SET balance = balance - #{amount}
+    WHERE account_number = #{accountNumber}
+      AND balance >= #{amount}  
+	</update>
+    
 
 </mapper>

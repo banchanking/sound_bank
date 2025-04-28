@@ -43,18 +43,26 @@ function AccountCheck() {
     </div>
   );
 
-  const Detail = ({ item }) => (
-    <div className={styles["account-detail"]}>
-      <h4>상세 정보</h4>
-      <p><b>이름:</b> {item.account_name}</p>
-      <p><b>번호:</b> {item.account_number}</p>
-      <p><b>잔액:</b> {item.balance.toLocaleString("ko-KR")} 원</p>
-      <p><b>이자율:</b> {item.interest_rate || 0}%</p>
-      <p><b>개설일:</b> {new Date(item.open_date).toLocaleString()}</p>
-    </div>
-  );
+  const Detail = ({ item }) => {
+    // status 값에 따라 한글 레이블 지정
+    const statusLabel =
+      item.status === 'active' ? '사용중' :
+      item.status === 'closed' ? '해지' :
+      item.status;
 
-  // "이체하기" 버튼 클릭
+    return (
+      <div className={styles["account-detail"]}>
+        <h4>상세 정보</h4>
+        <p><b>이름:</b> {item.account_name}</p>
+        <p><b>번호:</b> {item.account_number}</p>
+        <p><b>상태:</b> {statusLabel}</p>
+        <p><b>잔액:</b> {item.balance.toLocaleString("ko-KR")} 원</p>
+        <p><b>이자율:</b> {item.interest_rate || 0}%</p>
+        <p><b>개설일:</b> {new Date(item.open_date).toLocaleString()}</p>
+      </div>
+    );
+  };
+
   const handleTransfer = () => {
     if (!accNum) {
       alert("이체할 계좌를 선택하세요.");
@@ -63,7 +71,6 @@ function AccountCheck() {
     navigate('/transInstant');
   };
 
-  // "입출금 계좌 해지" 버튼 클릭
   const handleCloseAccount = () => {
     if (!accNum) {
       alert("해지할 계좌를 선택하세요.");
@@ -89,7 +96,7 @@ function AccountCheck() {
       RefreshToken.post(`/accounts/closeAccount/${accNum}`)
         .then(() => {
           alert("계좌가 성공적으로 해지되었습니다.");
-          window.location.reload()
+          window.location.reload();
         })
         .catch(err => {
           console.error('계좌 해지 실패:', err);
@@ -121,9 +128,7 @@ function AccountCheck() {
         <div>
           <h3>{type} 계좌</h3>
           {data[type].length > 0 ? (
-            data[type].map(item => (
-              <Card key={item.account_number} item={item} />
-            ))
+            data[type].map(item => <Card key={item.account_number} item={item} />)
           ) : (
             <p>해당 타입의 계좌가 없습니다.</p>
           )}

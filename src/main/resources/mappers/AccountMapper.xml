@@ -26,11 +26,13 @@
   </insert>
   
   <!-- 입출금계좌 해지 -->
-  <delete id="deleteAccount" parameterType="String">
-    DELETE FROM account_tbl
+  <update id="deleteAccount">
+    UPDATE account_tbl
+    SET
+      status = 'closed'
     WHERE account_number = #{account_number}
     AND account_type = '입출금'
-</delete>
+  </update>
 
 	<!--  예금/적금 계좌 생성 -->
     <insert id="insertDepositAccount" parameterType="com.boot.sound.inquire.account.AccountDTO">

@@ -52,6 +52,7 @@
 		    a.auto_transfer_day as autoTransferDay,
 		    a.created_at as createdAt,
 		    a.updated_at as updatedAt,
+		    a.nickname,
 		    p.product_name as productName,          -- ✅ 상품명 추가
 		    p.product_type as productType,          -- ✅ 상품유형 추가
 		    p.term_months as termMonths             -- ✅ 기간(개월) 추가
@@ -77,6 +78,7 @@
 			    a.maturity_date as maturityDate,
 			    a.created_at as createdAt,
 			    a.updated_at as updatedAt,
+			    a.nickname,
 			    p.product_name as productName,          -- ✅ 상품명 추가
 			    p.product_type as productType,          -- ✅ 상품유형 추가
 			    p.term_months as termMonths             -- ✅ 기간(개월) 추가
@@ -241,7 +243,7 @@
         UPDATE DEPOSIT_ACCOUNT_TBL
         SET account_status = 'CLOSED',
             updated_at = NOW()
-        WHERE account_number   = #{accountId}
+        WHERE account_number   = #{accountId, jdbcType=VARCHAR}
         AND account_password = #{accountPassword}
         AND account_status = 'ACTIVE'
     </update>
@@ -251,7 +253,7 @@
         UPDATE SAVINGS_ACCOUNT_TBL
         SET account_status = 'CLOSED',
             updated_at = NOW()
-        WHERE account_number   = #{accountId}
+        WHERE account_number   = #{accountId, jdbcType=VARCHAR}
         AND account_password = #{accountPassword}
         AND account_status = 'ACTIVE'
     </update>
@@ -614,7 +616,7 @@
 <select id="getDepositAccountBalanceByAccountNumber" resultType="java.math.BigDecimal">
     SELECT balance
     FROM DEPOSIT_ACCOUNT_TBL
-    WHERE account_number = #{accountNumber}
+    WHERE account_number = #{accountNumber} 
 </select>
 
 	<!-- 계좌번호(accountNumber)로 적금 계좌 잔액 조회 -->
@@ -628,14 +630,14 @@
 <select id="getCustomerIdFromDepositAccount" resultType="String">
     SELECT customer_id
     FROM DEPOSIT_ACCOUNT_TBL
-    WHERE account_number  = #{accountId}
+    WHERE account_number  = #{accountNumber} 
 </select>
 
 <!-- 적금 계좌의 customer_id 가져오기 -->
 <select id="getCustomerIdFromSavingsAccount" resultType="String">
     SELECT customer_id
     FROM SAVINGS_ACCOUNT_TBL
-    WHERE account_number  = #{accountId}
+    WHERE account_number  = #{accountNumber}
 </select>
 
 <!-- customer_id 기준으로 기본 계좌에 잔액 이체 -->
@@ -682,6 +684,32 @@
     DELETE FROM SAVINGS_PRODUCT_TBL
     WHERE product_id = #{productId}
 </delete>
+
+
+
+<!-- 출금계좌 잔액 차감 -->
+<update id="withdrawFromAccount" parameterType="map">
+    UPDATE ACCOUNT_TBL
+    SET BALANCE = BALANCE - #{amount}
+    WHERE ACCOUNT_NUMBER = #{accountNumber}
+      AND BALANCE >= #{amount}
+</update>
+
+<select id="getDepositBalanceByAccountNumber" resultType="java.math.BigDecimal">
+    SELECT balance
+    FROM DEPOSIT_ACCOUNT_TBL
+    WHERE account_number = #{accountNumber}
+</select>
+
+
+
+<select id="getSavingsBalanceByAccountNumber" resultType="java.math.BigDecimal">
+    SELECT balance
+    FROM SAVINGS_ACCOUNT_TBL
+    WHERE account_number = #{accountNumber}
+</select>
+
+
 
 
 
