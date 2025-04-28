@@ -141,11 +141,7 @@ public interface DepositDAO {
 
 
 
- // 예금 계좌 삭제
-    int deleteDepositAccount(@Param("accountId") String accountId, @Param("accountPassword") String accountPassword);
 
-    // 적금 계좌 삭제
-    int deleteSavingsAccount(@Param("accountId") String accountId, @Param("accountPassword") String accountPassword);
 
     
 

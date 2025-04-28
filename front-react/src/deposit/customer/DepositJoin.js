@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getCustomerID } from "../../jwt/AxiosToken";
 import RefreshToken from "../../jwt/RefreshToken";
 import '../../Css/depositcss/DepositJoin.css';
-import { useNavigate } from 'react-router-dom';
 
 const DepositJoin = () => {
     const navigate = useNavigate();
@@ -11,6 +11,7 @@ const DepositJoin = () => {
     const [currentStep, setCurrentStep] = useState('select'); // 'select', 'agreement', 'form'
     const [amount, setAmount] = useState('');
     const [password, setPassword] = useState('');
+    const [balance, setBalance] = useState('');
     const customerId = getCustomerID();
 
     useEffect(() => {
@@ -18,15 +19,13 @@ const DepositJoin = () => {
             const goLogin = window.confirm("로그인이 필요합니다. 로그인 페이지로 이동할까요?");
             if (goLogin) {
                 navigate("/login");
-              } else {
+            } else {
                 navigate("/");
-              }
-              return;      
+            }
+            return;
         }
         fetchProducts();
     }, [customerId]);
-
-    
 
     const fetchProducts = async () => {
         try {
@@ -60,15 +59,35 @@ const DepositJoin = () => {
         }
 
         try {
-            await RefreshToken.post('/deposit/accounts/deposit', {
+            // 1단계: 예금 계좌 생성
+            const createRes = await RefreshToken.post('/deposit/accounts/deposit', {
+                customerId,
                 productId: selectedProduct.id,
                 balance: amount,
-                accountPassword: password,
-                customerId
+                accountPassword: password
+            });
+
+            const accountNumber = createRes.data.accountNumber || createRes.data.account_number;
+            if (!accountNumber) {
+                throw new Error('생성된 계좌번호를 가져오지 못했습니다.');
+            }
+
+            // 2단계: account_tbl에 추가
+            await RefreshToken.post('/accounts/createDepositAccount', {
+                accountNumber,
+                customer_id: customerId,
+                account_type: '예금',
+                account_pwd: password,
+                balance: amount,
+                interest_rate: selectedProduct.interestRate,
+                yield_rate: 0,
+                currency_type: 'KRW',
+                account_name: selectedProduct.productName,
+                open_date: new Date()
             });
 
             alert('예금 계좌가 성공적으로 개설되었습니다.');
-            window.location.href = '/deposit/accounts';
+            navigate('/deposit/accounts');
         } catch (error) {
             console.error('계좌 개설 실패:', error);
             alert('계좌 개설에 실패했습니다.');
@@ -80,6 +99,14 @@ const DepositJoin = () => {
         setSelectedProduct(null);
         setAmount('');
         setPassword('');
+    };
+
+    // 계좌번호 생성 함수
+    const generateAccountNumber = () => {
+        const prefix = "174"; // 계좌 번호 접두어
+        const middle = String(Math.floor(Math.random() * 1000000)).padStart(6, '0'); // 6자리 중간 번호
+        const suffix = String(Math.floor(Math.random() * 10000)).padStart(4, '0'); // 4자리 접미어
+        return `${prefix}${middle}${suffix}`;
     };
 
     return (

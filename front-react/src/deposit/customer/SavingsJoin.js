@@ -1,4 +1,3 @@
-// SavingsJoin.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getCustomerID } from "../../jwt/AxiosToken";
@@ -12,6 +11,7 @@ const SavingsJoin = () => {
     const [monthlyAmount, setMonthlyAmount] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(true);
+    const [balance, setBalance] = useState('');
     const customerId = getCustomerID();
 
     useEffect(() => {
@@ -19,10 +19,10 @@ const SavingsJoin = () => {
             const goLogin = window.confirm("로그인이 필요합니다. 로그인 페이지로 이동할까요?");
             if (goLogin) {
                 navigate("/login");
-              } else {
+            } else {
                 navigate("/");
-              }
-              return;      
+            }
+            return;
         }
         fetchProducts();
     }, [navigate, customerId]);
@@ -33,7 +33,7 @@ const SavingsJoin = () => {
             setProducts(response.data);
         } catch (error) {
             console.error('적금 상품 조회 에러:', error);
-            alert('적금 상품 정보를 불러오는데 실패했습니다.');
+            alert('상품 정보를 불러오는데 실패했습니다.');
         } finally {
             setLoading(false);
         }
@@ -62,7 +62,8 @@ const SavingsJoin = () => {
         }
 
         try {
-            await RefreshToken.post('/deposit/accounts/savings', {
+            // 1단계: 적금 계좌 생성
+            const createRes = await RefreshToken.post('/deposit/accounts/savings', {
                 customerId,
                 productId: selectedProduct.id,
                 interestRate: selectedProduct.interestRate,
@@ -71,8 +72,27 @@ const SavingsJoin = () => {
                 maturityDate: calcMaturityDate(selectedProduct.termMonths),
             });
 
+            const accountNumber = createRes.data.accountNumber || createRes.data.account_number;
+            if (!accountNumber) {
+                throw new Error('생성된 계좌번호를 가져오지 못했습니다.');
+            }
+
+            // 2단계: account_tbl에 추가
+            await RefreshToken.post('/accounts/createDepositAccount', {
+                accountNumber,
+                customer_id: customerId,
+                account_type: '적금',
+                account_pwd: password,
+                balance: monthlyAmount,
+                interest_rate: selectedProduct.interestRate,
+                yield_rate: 0,
+                currency_type: 'KRW',
+                account_name: selectedProduct.productName,
+                open_date: new Date()
+            });
+
             alert('적금 계좌가 성공적으로 개설되었습니다.');
-            navigate('/deposit/accounts');  // 가입 후 예적금 계좌 목록으로 이동
+            navigate('/deposit/accounts');
         } catch (error) {
             console.error('적금 계좌 개설 실패:', error);
             alert('적금 계좌 개설에 실패했습니다.');
@@ -82,7 +102,7 @@ const SavingsJoin = () => {
     const calcMaturityDate = (termMonths) => {
         const now = new Date();
         now.setMonth(now.getMonth() + termMonths);
-        return now.toISOString().split('T')[0];  // YYYY-MM-DD 포맷
+        return now.toISOString().split('T')[0];
     };
 
     return (

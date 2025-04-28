@@ -68,7 +68,8 @@ const DepositChange = () => {
         console.error('비밀번호 변경 에러:', error);
         message.error('비밀번호 변경에 실패했습니다.');
     }
-        message.success('비밀번호가 변경되었습니다.');
+    alert('비밀번호가 변경되었습니다.');
+    navigate('/depositAccountInquiry');
     };
 
     const handleNicknameChange = async (values) => {
@@ -80,7 +81,8 @@ const DepositChange = () => {
             await RefreshToken.put(`/deposit/accounts/deposit/${selectedAccount.id}/nickname`, {
                 nickname: values.nickname
             });
-            message.success('별명이 변경되었습니다.');
+            alert('별명이 변경되었습니다.');
+            navigate('/depositAccountInquiry');
         } catch (error) {
             console.error('별명 변경 에러:', error);
             message.error('별명 변경에 실패했습니다.');

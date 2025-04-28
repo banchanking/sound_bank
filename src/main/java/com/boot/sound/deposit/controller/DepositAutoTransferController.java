@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/deposit/auto-transfer")
+@RequestMapping("/api/deposit/auto-transfer")
 public class DepositAutoTransferController {
 
     private final DepositAutoTransferService depositAutoTransferService;
