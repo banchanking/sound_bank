@@ -119,6 +119,14 @@
   background-color: #555;
 }
 
+.instant-balance {
+  margin: 8px 0;
+  font-weight: 600;
+  margin-left: 6px;
+  margin-top: -8px;
+  margin-bottom: 20px;
+}
+
 @keyframes instant-fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }

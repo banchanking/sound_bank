@@ -3,6 +3,7 @@ import { getAuthToken, getCustomerID, setAuthToken } from "./AxiosToken";
 
 const RefreshToken = axios.create({
   baseURL: "http://localhost:8081/api",
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json;charset=utf-8",
   },
@@ -27,6 +28,8 @@ RefreshToken.interceptors.request.use((config) => {
 
   if (token && !isRefreshEndpoint) {
     config.headers.Authorization = `Bearer ${token}`;
+  } else if (isRefreshEndpoint) {
+    delete config.headers.Authorization; // ✅ 강제로 Authorization 헤더 제거!
   }
 
   return config;
@@ -46,7 +49,6 @@ RefreshToken.interceptors.response.use(
     }
 
     const customerId = getCustomerID();
-    const role = localStorage.getItem("role");
     if (!customerId) return Promise.reject(error);
 
     if (isRefreshing) {
@@ -63,10 +65,7 @@ RefreshToken.interceptors.response.use(
 
     try {
       console.log("🚨 refresh-token 요청 customerId:", customerId);
-      const { data } = await RefreshToken.post("/refresh-token", {
-        customerId,
-        role,
-      });
+      const { data } = await RefreshToken.post("/refresh-token");
       const newAccessToken = data.accessToken || data;
 
       setAuthToken(newAccessToken);

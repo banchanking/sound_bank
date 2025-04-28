@@ -69,7 +69,7 @@ public class LoanOverdueScheduler {
     }
 
     // ✅ [2] 미납 상태에서 5일이 지나면 '연체'로 전환하는 스케줄러
-    @Scheduled(cron = "0 53 19 * * ?")
+    @Scheduled(cron = "0 52 17 * * ?")
     public void processOverdueInterestPayments() {
         log.info("\u23F0 [연체 스케줄러] 미납 내역 연체 처리 시작");
         try {
@@ -81,7 +81,7 @@ public class LoanOverdueScheduler {
     }
 
     // ✅ [3] 연체 납부 자동 이체 - 연체 상태 고객의 연체 원금+이자 자동 출금
-    @Scheduled(cron = "0 54 19 * * ?") 
+    @Scheduled(cron = "0 54 17 * * ?") 
     public void processLateRepayments() {
         log.info("\u23F0 [연체 납부 스케줄러] 연체 납부 시도 시작");
 
