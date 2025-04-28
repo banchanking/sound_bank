@@ -2,6 +2,10 @@ package com.boot.sound.inquire.account;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.boot.sound.customer.CustomerService;
+import com.boot.sound.jwt.mappers.CustomerMapper;
 
 import lombok.RequiredArgsConstructor;
 
@@ -11,6 +15,9 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class AccountService {
+	
+	private final CustomerMapper customerMapper;  
+    private final CustomerService customerService; // 회원탈퇴시 사용
 
     @Autowired
     private AccountDAO accountDAO;
@@ -65,6 +72,18 @@ public class AccountService {
         }
     }
     
-    
+    // 입출금 계좌 해지
+    @Transactional
+    public void closeAccount(String account_number) {
+        AccountDTO account = accountRepository.findByAccountNumber(account_number)
+                .orElseThrow(() -> new RuntimeException("계좌를 찾을 수 없습니다."));
+
+        if (account.getBalance().compareTo(BigDecimal.ZERO) != 0) {
+            throw new RuntimeException("잔액이 0원이 아닙니다. 타행 본인계좌로 이체 진행후 해지해주세요.");
+        }
+
+        accountDAO.deleteAccount(account_number); 
+        
+    }
     
 }
