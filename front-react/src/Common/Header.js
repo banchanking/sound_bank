@@ -139,7 +139,7 @@ const Header = () => {
               >
                 <div className="deposit-saving-row">
                   <ul>
-                    <NavDropdown.Item as={Link} to="/accountOverview">
+                    <NavDropdown.Item>
                       조회/입출금
                     </NavDropdown.Item>
                     <li>
@@ -171,7 +171,7 @@ const Header = () => {
                     </li>
                   </ul>
                   <ul>
-                    <NavDropdown.Item as={Link} to="/productSubscription">
+                    <NavDropdown.Item>
                       상품가입
                     </NavDropdown.Item>
                     <li>
@@ -203,7 +203,7 @@ const Header = () => {
                     </li>
                   </ul>
                   <ul>
-                    <NavDropdown.Item as={Link} to="/depositManagement">
+                    <NavDropdown.Item>
                       예금관리
                     </NavDropdown.Item>
                     <li>
