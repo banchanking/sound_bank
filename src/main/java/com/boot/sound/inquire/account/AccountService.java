@@ -15,8 +15,8 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class AccountService {
-	
-	private final CustomerMapper customerMapper;  
+   
+   private final CustomerMapper customerMapper;  
     private final CustomerService customerService; // 회원탈퇴시 사용
 
     @Autowired
@@ -36,10 +36,10 @@ public class AccountService {
         grouped.put("적금", new ArrayList<>());
 
         // 전체계좌 반복하며 타입별로 분류 
-        for (AccountDTO account : allAccounts) {		// 전체 계좌 목록을 하나씩 꺼내서 account라는 변수로 반복
-            String type = account.getAccount_type();	// 계좌 타입 확인
-            if (grouped.containsKey(type)) {			// 타입이 MAP에 있는 키인지 확인 
-                grouped.get(type).add(account);			// 해당타입에 바구니에 추가
+        for (AccountDTO account : allAccounts) {      // 전체 계좌 목록을 하나씩 꺼내서 account라는 변수로 반복
+            String type = account.getAccount_type();   // 계좌 타입 확인
+            if (grouped.containsKey(type)) {         // 타입이 MAP에 있는 키인지 확인 
+                grouped.get(type).add(account);         // 해당타입에 바구니에 추가
             }
         }
 
@@ -85,23 +85,5 @@ public class AccountService {
         accountDAO.deleteAccount(account_number); 
         
     }
-    
-    // 예적금 가입시 기본계좌에 등록
-    public void insertDepositAccount(AccountDTO accountDTO) {
-        accountDAO.insertDepositAccount(accountDTO);
-    }
-    
- // 입출금 계좌 상태 변경 (해지)
-    public void updateAccountStatusToClosed(String accountNumber) {
-    	 AccountDTO account = accountRepository.findByAccountNumber(accountNumber)
-                 .orElseThrow(() -> new RuntimeException("계좌를 찾을 수 없습니다."));
-
-         if (account.getBalance().compareTo(BigDecimal.ZERO) != 0) {
-             throw new RuntimeException("잔액이 0원이 아닙니다. 타행 본인계좌로 이체 진행후 해지해주세요.");
-         }
-        accountDAO.updateAccountStatusToClosed(accountNumber);
-    }
-
-
     
 }

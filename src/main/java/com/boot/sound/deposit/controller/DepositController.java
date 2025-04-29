@@ -20,14 +20,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boot.sound.deposit.dto.AccountCloseRequest;
+import com.boot.sound.deposit.dto.DepositAutoTransferDTO;
 import com.boot.sound.deposit.dto.DepositDTO;
+import com.boot.sound.deposit.dto.DepositTransactionDTO;
 import com.boot.sound.deposit.service.DepositService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+@Slf4j
 public class DepositController {
     
     private final DepositService depositService;
@@ -102,14 +106,14 @@ public class DepositController {
 
 
     //  예금 계좌 해지
-    @PutMapping("/deposit/accounts/deposit/{selectAcount}/close")
+    @PostMapping("/deposit/accounts/deposit/close")
     public ResponseEntity<?> closeDepositAccount(
-    	@PathVariable("accountId") String accountId,
-        @RequestBody DepositDTO request
+        @RequestBody DepositTransactionDTO request
     ) {
         try {
+        	String accountNumber = request.getAccountNumber();
             String accountPassword = request.getAccountPassword();
-            depositService.closeDepositAccount(accountId, accountPassword);
+            depositService.closeDepositAccount(accountNumber, accountPassword);
             return ResponseEntity.ok("예금 계좌가 성공적으로 해지되었습니다.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -117,16 +121,18 @@ public class DepositController {
     }
 
     //  적금 계좌 해지
-    @PutMapping("/deposit/accounts/savings/{selectAcount}/close")
+    @PostMapping("/deposit/accounts/savings/close")
     public ResponseEntity<?> closeSavingsAccount(
-    	@PathVariable("accountId") String accountId,
-        @RequestBody DepositDTO request
+        @RequestBody DepositTransactionDTO request
     ) {
+    	System.out.println(request);
         try {
+        	String accountNumber = request.getAccountNumber();
             String accountPassword = request.getAccountPassword();
-            depositService.closeSavingsAccount(accountId, accountPassword);
+            depositService.closeSavingsAccount(accountNumber, accountPassword);
             return ResponseEntity.ok("적금 계좌가 성공적으로 해지되었습니다.");
         } catch (Exception e) {
+        	log.error(e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

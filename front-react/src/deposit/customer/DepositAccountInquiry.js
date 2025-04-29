@@ -11,6 +11,11 @@ const DepositAccountInquiry = () => {
     const [depositAccounts, setDepositAccounts] = useState([]);
     const [savingsAccounts, setSavingsAccounts] = useState([]);
     const customerId = getCustomerID();
+    // 계좌 번호를 3자리-6자리-4자리 형식으로 포맷팅하는 함수
+    const formatAccountNumber = (accountNumber) => {
+    if (!accountNumber || accountNumber.length !== 13) return accountNumber; // 유효성 검사
+    return `${accountNumber.slice(0, 3)}-${accountNumber.slice(3, 9)}-${accountNumber.slice(9)}`;
+};
 
     const navigate = useNavigate();
 
@@ -43,7 +48,7 @@ const DepositAccountInquiry = () => {
         return (
             <Card key={account.id} className="accountCard" style={{ marginBottom: '15px' }}>
                 <Title level={4}>{account.productName}</Title>
-                <Text strong>계좌 번호: </Text><span>{account.accountNumber}</span>
+                <Text strong>계좌 번호: </Text><span>{formatAccountNumber(account.accountNumber)}</span>
                 <br />
                 <Text strong>별명: </Text><span>{account.nickname || "없음"}</span>
                 <br />

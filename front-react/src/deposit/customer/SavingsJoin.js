@@ -15,6 +15,26 @@ const SavingsJoin = () => {
     const customerId = getCustomerID();
     const [accounts, setAccounts] = useState([]);
     const [selectedWithdrawAccountNumber, setSelectedWithdrawAccountNumber] = useState('');
+    const numericMonthlyAmount = Number(monthlyAmount.replace(/,/g, ''));
+
+
+
+    const handleMonthlyAmountChange = (e) => {
+        let value = e.target.value;
+    
+        // 숫자만 남기기
+        value = value.replace(/[^0-9]/g, '');
+    
+        // 콤마 찍기
+        if (value) {
+            value = parseInt(value, 10).toLocaleString('ko-KR');
+        }
+    
+        setMonthlyAmount(value);
+    };
+    
+    
+    
 
     useEffect(() => {
         if (!customerId) {
@@ -80,30 +100,12 @@ const SavingsJoin = () => {
                 productId: selectedProduct.id,
                 interestRate: selectedProduct.interestRate,
                 accountPassword: password,
-                monthlyAmount,
+                monthlyAmount: numericMonthlyAmount, 
                 maturityDate: calcMaturityDate(selectedProduct.termMonths),
                 withdrawalAccountNumber: selectedWithdrawAccountNumber,   // ✅ 출금할 계좌
                 withdrawalAmount: monthlyAmount   // ✅ 출금할 금액 (monthlyAmount 사용!)
             });
-
-            const accountNumber = createRes.data.accountNumber || createRes.data.account_number;
-            if (!accountNumber) {
-                throw new Error('생성된 계좌번호를 가져오지 못했습니다.');
-            }
-
-            // 2단계: account_tbl에 추가
-            await RefreshToken.post('/accounts/createDepositAccount', {
-                accountNumber,
-                customer_id: customerId,
-                account_type: '적금',
-                account_pwd: password,
-                balance: monthlyAmount,
-                interest_rate: selectedProduct.interestRate,
-                yield_rate: 0,
-                currency_type: 'KRW',
-                account_name: selectedProduct.productName,
-                open_date: new Date()
-            });
+      
 
             alert('적금 계좌가 성공적으로 개설되었습니다.');
             navigate('/');
@@ -142,14 +144,14 @@ const SavingsJoin = () => {
                     {selectedProduct && (
                         <>
                             <div className="formGroup">
-                                <label>월 납입금액</label>
+                            <label>월 납입금액</label>
                                 <input
-                                    type="number"
+                                    type="text"
                                     value={monthlyAmount}
-                                    onChange={(e) => setMonthlyAmount(e.target.value)}
-                                    min={selectedProduct.minAmount}
+                                    onChange={handleMonthlyAmountChange}
                                     required
                                 />
+
                                 <div className="formHint">
                                     최소 {selectedProduct.minAmount.toLocaleString()}원 이상
                                 </div>
