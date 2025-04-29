@@ -64,7 +64,7 @@ async def predict_user(data: InvestmentRequest):
 @app.post("/predict-fund")
 async def predict_fund():
     try:
-        response = requests.get("http://15.165.57.30:8081/api/registeredFunds")
+        response = requests.get("http://3.39.177.144:8081/api/registeredFunds")
         response.raise_for_status()
         df = pd.DataFrame(response.json())
 
@@ -135,7 +135,7 @@ async def recommend_fund(data: InvestmentRequest):
         user_type = risk_types[predicted_class]
 
         # 펀드 목록 가져오기
-        response = requests.get("http://15.165.57.30:8081/api/registeredFunds")
+        response = requests.get("http://3.39.177.144:8081/api/registeredFunds")
         funds = pd.DataFrame(response.json())
 
         # 필터링

@@ -17,7 +17,7 @@ chatbot = FastAPI()
 # CORS 설정
 chatbot.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://15.165.57.30"],  # React 서버 주소 (3000번 포트) , 8000포트로 지정시 파이썬
+    allow_origins=["http://3.39.177.144"],  # React 서버 주소 (3000번 포트) , 8000포트로 지정시 파이썬
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
