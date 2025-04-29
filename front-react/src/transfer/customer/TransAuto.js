@@ -29,18 +29,14 @@ function TransAuto() {
   useEffect(() => {
     const id = getCustomerID();
     if (!id) {
-      if (!id) {
-        const goLogin = window.confirm(
-          "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
-        );
-        if (goLogin) {
-          navigate("/login");
-        } else {
-          navigate("/");
-        }
-        return;      
+      const goLogin = window.confirm("로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?");
+      if (goLogin) {
+        navigate("/login");
+      } else {
+        navigate("/");
+      }
+      return;
     }
-  }
     setForm(prev => ({ ...prev, customer_id: id }));
     RefreshToken.get(`/accounts/allAccount/${id}`)
       .then(res => {
@@ -49,6 +45,13 @@ function TransAuto() {
       })
       .catch(err => console.error('계좌 불러오기 실패:', err));
   }, [navigate]);
+
+  const getAccountTypeLabel = (type) => {
+    if (type === 'CHECKING') return '입출금';
+    if (type === 'DEPOSIT') return '예금';
+    if (type === 'SAVINGS') return '적금';
+    return type || '알수없음';
+  };
 
   const handleChange = e => {
     const { name, value } = e.target;
@@ -63,6 +66,18 @@ function TransAuto() {
 
   const change = e => {
     const { name, value } = e.target;
+
+    // 출금계좌 선택 시 예/적금이면 경고 후 이동
+    if (name === 'out_account_number') {
+      const selected = accounts.find(acc => acc.account_number === value);
+      const type = selected?.account_type;
+      if (type === 'DEPOSIT' || type === 'SAVINGS') {
+        alert('예/적금 계좌이체는 예/적금 메뉴에서 진행 가능합니다.');
+        navigate('/depositWithdrawal');
+        return;
+      }
+    }
+
     if (name === 'schedule_mode') {
       setForm(prev => ({
         ...prev,
@@ -96,22 +111,36 @@ function TransAuto() {
     }
   };
 
+  const selectedAccount = accounts.find(acc => acc.account_number === form.out_account_number);
+
   return (
     <div className={styles['auto-page']}>
       <Sidebar />
       <div className={styles['auto-wrapper']}>
-        <h2 className={`${styles['auto-title']} ${styles['auto-fadeInUp']}`}>
-          자동이체 등록
-        </h2>
+        <h2 className={`${styles['auto-title']} ${styles['auto-fadeInUp']}`}>자동이체 등록</h2>
         <form className={styles['auto-form']} onSubmit={send}>
-          <select name="out_account_number" value={form.out_account_number} onChange={change} required className={styles['auto-select']}>
+          <select
+            name="out_account_number"
+            value={form.out_account_number}
+            onChange={change}
+            required
+            className={styles['auto-select']}
+          >
             <option value="">출금 계좌 선택</option>
             {accounts.map(acc => (
               <option key={acc.account_number} value={acc.account_number}>
-                {acc.account_number} ({acc.account_type})
+                {acc.account_number} ({getAccountTypeLabel(acc.account_type)})
               </option>
             ))}
           </select>
+
+          {selectedAccount && (
+            <div style={{ marginLeft: '10px', marginTop: '-8px', marginBottom: '1px', color: '#333', fontSize: '14px', fontWeight: 'bold' }}>
+              잔액: {Number(
+                selectedAccount.balance ?? selectedAccount.account_balance ?? 0
+              ).toLocaleString('ko-KR')} 원
+            </div>
+          )}
 
           <input
             name="in_account_number"

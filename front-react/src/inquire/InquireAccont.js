@@ -33,27 +33,38 @@ function AccountCheck() {
     setAccNum(num);
   };
 
-  const Card = ({ item }) => (
-    <div
-      onClick={() => clickCard(item.account_number)}
-      className={`${styles["account-card"]} ${accNum === item.account_number ? styles["account-selected"] : ''}`}
-    >
-      <div className={styles["account-cardName"]}><strong>{item.account_name}</strong></div>
-      <div className={styles["account-cardNumber"]}>{item.account_number}</div>
-    </div>
-  );
-
+  const Card = ({ item }) => {
+    // 타입 표시용 텍스트 세팅
+    let typeLabel = '';
+    if (item.account_type === '예금') typeLabel = ' (예금)';
+    else if (item.account_type === '적금') typeLabel = ' (적금)';
+  
+    // 이름 세팅: 입출금은 account_name, 예금/적금은 nickname
+    const accountName = item.account_name || item.nickname || '이름없음';
+  
+    return (
+      <div
+        onClick={() => clickCard(item.account_number)}
+        className={`${styles["account-card"]} ${accNum === item.account_number ? styles["account-selected"] : ''}`}
+      >
+        <div className={styles["account-cardName"]}><strong>{accountName}</strong></div>
+        <div className={styles["account-cardNumber"]}>
+          {item.account_number}{typeLabel}
+        </div>
+      </div>
+    );
+  };
   const Detail = ({ item }) => {
     // status 값에 따라 한글 레이블 지정
     const statusLabel =
-      item.status === 'active' ? '사용중' :
-      item.status === 'closed' ? '해지' :
+      item.status || item.account_status === 'active' || 'ACTIVE' ? '사용중' :
+      item.status === 'closed' || 'CLOSED' ? '해지' :
       item.status;
 
     return (
       <div className={styles["account-detail"]}>
         <h4>상세 정보</h4>
-        <p><b>이름:</b> {item.account_name}</p>
+        <p><b>이름:</b> {item.account_name || item.nickname}</p>
         <p><b>번호:</b> {item.account_number}</p>
         <p><b>상태:</b> {statusLabel}</p>
         <p><b>잔액:</b> {item.balance.toLocaleString("ko-KR")} 원</p>

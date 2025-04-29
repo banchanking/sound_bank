@@ -134,7 +134,6 @@ const ExRequest = () => {
       })
       .catch((err) => {
         console.error("환전 신청 실패", err);
-        alert("거래 실패");
       });
   };
 
@@ -239,7 +238,7 @@ const ExRequest = () => {
           <p>
             거래 시간: {result.exchange_transaction_date ? result.exchange_transaction_date.replace("T", " ") : "시간 정보 없음"}
           </p>
-          <button className={styles.goWallet}>
+          <button className={styles.resultBox}>
             <a href="/exchange_wallet_status" style={{ textDecoration: "none", color: "inherit" }}>
               지갑으로 이동
             </a>

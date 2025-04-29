@@ -168,7 +168,6 @@ public class DepositService {
             throw new RuntimeException("예금 계좌 삭제에 실패했습니다.");
         }
 
-        accountService.updateAccountStatusToClosed(accountId);
     }
 
     // 적금 해지
@@ -190,7 +189,6 @@ public class DepositService {
             throw new RuntimeException("적금 계좌 삭제에 실패했습니다.");
         }
 
-        accountService.updateAccountStatusToClosed(accountId);
     }
 
 

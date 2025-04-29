@@ -36,6 +36,7 @@ const Login = () => {
         // 토큰과 고객 ID 저장
         setAuthToken(res.data.customer_token);
         setCustomerID(res.data.customerId);
+        localStorage.setItem("role", res.data.role);
 
         alert(res.data.customerId + "님 환영합니다.");
         navigate("/"); // 메인 페이지로 이동
