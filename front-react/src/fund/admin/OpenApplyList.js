@@ -15,6 +15,16 @@ const OpenApplyList = () => {
     }
   };
 
+  // 날짜 포맷팅 함수
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A"; // 날짜가 없을 경우
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // 월은 0부터 시작하므로 +1
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}/${month}/${day}`;
+  };
+
   const handleApprove = async (fundAccountId) => {
     try {
       await RefreshToken.patch(`/admin/fundAccount/${fundAccountId}/approved`);
@@ -40,7 +50,6 @@ const OpenApplyList = () => {
   }, []);
 
   return (
-
     <div className={styles.fundContainer}>
       <h2 className={styles.fundTitle}>계좌 개설신청 목록</h2>
       <table className={styles.fundTable}>
@@ -62,19 +71,29 @@ const OpenApplyList = () => {
               <td>{acc.customerId}</td>
               <td>{acc.fundAccountNumber}</td>
               <td>{acc.linkedAccountNumber}</td>
-              <td>{acc.fundOpenDate}</td>
+              <td>{formatDate(acc.fundOpenDate)}</td> {/* 날짜 포맷팅 */}
               <td>
-                {acc.status === 'PENDING'
+                {acc.status === "PENDING"
                   ? "승인 대기 중"
-                  : acc.status === 'APPROVED'
+                  : acc.status === "APPROVED"
                   ? "승인 완료"
-                  : acc.status === 'REJECTED'
+                  : acc.status === "REJECTED"
                   ? "승인 거절"
                   : acc.status}
               </td>
               <td>
-                <button onClick={() => handleApprove(acc.fundAccountId)} className={styles.fundApproveBtn}>승인</button>
-                <button onClick={() => handleReject(acc.fundAccountId)} className={styles.fundRejectBtn}>거절</button>
+                <button
+                  onClick={() => handleApprove(acc.fundAccountId)}
+                  className={styles.fundApproveBtn}
+                >
+                  승인
+                </button>
+                <button
+                  onClick={() => handleReject(acc.fundAccountId)}
+                  className={styles.fundRejectBtn}
+                >
+                  거절
+                </button>
               </td>
             </tr>
           ))}
