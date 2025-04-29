@@ -148,7 +148,6 @@ public class DepositService {
     public void closeSavingsAccount(String accountNumber, String accountPassword) {
         // 1. 적금 계좌 정보 가져오기
         DepositDTO account = depositDAO.getSavingsAccountByNumber(accountNumber);
-        System.out.println("가져온 account: " + account);
         if (account == null) {
             throw new RuntimeException("적금 계좌 정보를 찾을 수 없습니다.");
         }
@@ -181,12 +180,14 @@ public class DepositService {
         }
     }
 
+
     //  예금 이자 계산 함수 
     public BigDecimal calculateDepositInterest(String accountNumber) {
         DepositDTO account = depositDAO.getDepositAccountByNumber(accountNumber);
         BigDecimal principal = account.getBalance();
         BigDecimal rate = account.getInterestRate();
-        int months = account.getTermMonths();
+        Integer monthsVal = account.getTermMonths(); // null-safe
+        int months = (monthsVal != null) ? monthsVal : 0;
 
         if (principal == null || rate == null || months == 0) {
             return BigDecimal.ZERO;
@@ -196,6 +197,7 @@ public class DepositService {
         return principal.multiply(rate).multiply(BigDecimal.valueOf(months))
                 .divide(BigDecimal.valueOf(1200), 2, RoundingMode.DOWN);
     }
+
 
     // 적금 이자 계산 함수 
     private BigDecimal calculateSavingsInterest(DepositDTO account) {
@@ -212,6 +214,7 @@ public class DepositService {
 
         return interest.setScale(0, RoundingMode.DOWN);  // 🔥 소수점 절삭해서 원 단위로 반환
     }
+
 
     
 

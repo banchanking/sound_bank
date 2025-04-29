@@ -99,7 +99,7 @@ const DepositCancellation = () => {
                 console.log('해지 요청 데이터:', {
                     accountNumber: selectedAccount,
                     accountPassword: password,
-                  }); // ✅ 이 줄 추가!
+                  });
                   
             await RefreshToken.post(endpoint, {
                 accountNumber: selectedAccount,
