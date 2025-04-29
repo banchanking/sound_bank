@@ -1,16 +1,30 @@
+/* adminList.module.css */
+
 .adminList-container {
+  max-width: 1200px;
+  min-height: 560px;
   padding: 20px;
+  margin: 0 auto;
+  border: 1.5px solid #e2e4e7;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.4s ease;
+  background-color: #fff;
 }
 
 .adminList-title {
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 20px;
+  text-align: center;
+  animation: fadeInUp 0.4s ease;
 }
 
 .adminList-table {
   width: 100%;
   border-collapse: collapse;
+  margin-top: 10px;
+  animation: fadeInUp 0.4s ease;
 }
 
 .adminList-table th,
@@ -22,33 +36,80 @@
 
 .adminList-table th {
   background-color: #f4f4f4;
+  font-weight: 600;
+}
+
+.adminList-table td {
+  background-color: #fafafa;
 }
 
 .adminList-empty {
-  padding: 20px;
+  padding: 40px 0;
   color: #888;
   text-align: center;
   font-size: 16px;
+  animation: fadeIn 0.4s ease;
+}
+
+.adminList-manage-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
 }
 
 .adminList-manage-buttons button {
-  margin: 0 5px;
-  padding: 5px 10px;
+  width: 85px;
+  height: 30px;
   border: none;
-  border-radius: 5px;
+  border-radius: 7px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
   cursor: pointer;
+  transition: all 0.4s ease;
 }
 
+/* 수정 버튼 - 네이비 */
 .adminList-manage-buttons button:first-child {
-  background-color: #4caf50; /* 수정 버튼 - 초록 */
-  color: white;
+  background-color: #537697;
+  color: #fff;
 }
 
+.adminList-manage-buttons button:first-child:hover {
+  background-color: #6083ac;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 삭제 버튼 - 레드브라운 */
 .adminList-manage-buttons button:last-child {
-  background-color: #f44336; /* 삭제 버튼 - 빨강 */
-  color: white;
+  background-color: #984949;
+  color: #fff;
 }
 
-.adminList-manage-buttons button:hover {
-  opacity: 0.8;
+.adminList-manage-buttons button:last-child:hover {
+  background-color: #823c3c;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* fadeIn 애니메이션 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* fadeInUp 애니메이션 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
