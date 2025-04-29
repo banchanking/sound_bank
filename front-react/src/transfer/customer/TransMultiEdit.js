@@ -10,6 +10,10 @@ function TransMultiEdit() {
   const customer_id = getCustomerID();
   const token = localStorage.getItem('auth_token');
 
+  // 페이징 관련 상태
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+
   useEffect(() => {
     if (!customer_id || !token) {
       alert('로그인이 필요합니다');
@@ -63,6 +67,11 @@ function TransMultiEdit() {
       });
   };
 
+  // 페이징 계산
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentItems = list.slice(startIndex, startIndex + itemsPerPage);
+  const totalPages = Math.ceil(list.length / itemsPerPage);
+
   return (
     <div style={{ display: 'flex', minHeight: '560px' }}>
       <Sidebar />
@@ -86,7 +95,7 @@ function TransMultiEdit() {
             </tr>
           </thead>
           <tbody>
-            {list.map(item => (
+            {currentItems.map(item => (
               <tr key={item.transfer_id}>
                 <td>{item.request_date ? new Date(item.request_date).toLocaleString() : '-'}</td>
                 <td>{item.out_account_number || '-'}</td>
@@ -115,7 +124,30 @@ function TransMultiEdit() {
             ))}
           </tbody>
         </table>
+        <br/>
+        {/* 페이지네이션 */}
+        <div className={styles["multiEdit-pagination"]}>
+          {Array.from({ length: totalPages }, (_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentPage(i + 1)}
+              className={currentPage === i + 1
+                ? styles["activePage"]
+                : styles["pageButton"]}
+            >
+              {i + 1}
+            </button>
+          ))}
+          <button
+            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            className={styles["pageArrow"]}
+          >
+            ▶
+          </button>          
+        </div>
 
+        {/* 수정 모달 */}
         {editItem && (
           <div className={styles["multiEdit-modalOverlay"]}>
             <div className={styles["multiEdit-modalBox"]}>
