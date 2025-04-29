@@ -13,7 +13,8 @@ app = FastAPI()
 # CORS 설정 (모든 출처 허용)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:3000"],  # 와일드카드(*) 대신 정확한 프론트 주소만 허용
+    allow_credentials=True,                  # credentials 허용
     allow_methods=["*"],
     allow_headers=["*"],
 )
