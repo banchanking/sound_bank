@@ -30,7 +30,7 @@ fund_model = load_model(FUND_MODEL_PATH)
 class InvestmentRequest(BaseModel):
     answers: list  # 9개 질문에 대한 답변 리스트
 
-# ----------- 펀드 단일 예측용 DTO (✨추가된 부분) -----------
+# ----------- 펀드 단일 예측용 DTO -----------
 class FundSingleRequest(BaseModel):
     fund_fee_rate: float
     fund_upfront_fee: float
@@ -156,4 +156,4 @@ async def recommend_fund(data: InvestmentRequest):
 # ----------- FastAPI 실행 -----------
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000) # uvicorn Investment_AI:app --reload
+    uvicorn.run(app, host="0.0.0.0", port=8000) # uvicorn Investment_AI:app --reload --host 0.0.0.0 --port 8000
