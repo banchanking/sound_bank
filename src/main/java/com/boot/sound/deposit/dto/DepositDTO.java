@@ -21,13 +21,14 @@ public class DepositDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String nickname;
+    
 
     // 상품 관련 필드
     private String productName;
     private String productType;
     private BigDecimal minAmount;
     private BigDecimal maxAmount;
-    private int termMonths;
+    private Integer termMonths;
     private String productDescription;
 
     // 예금 계좌 필드

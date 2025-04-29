@@ -126,5 +126,16 @@ public interface DepositDAO {
     // accountId로 계좌번호 조회 후 잔액 반환
     BigDecimal getDepositAccountBalance(@Param("accountId") int accountId);
     BigDecimal getSavingsAccountBalance(@Param("accountId") int accountId);
+    
+    //  예금 계좌 상세 조회
+    DepositDTO getDepositAccountByNumber(@Param("accountNumber") String accountNumber);
+
+    // 적금 계좌 상세 조회
+    DepositDTO getSavingsAccountByNumber(@Param("accountNumber") String accountNumber);
+    
+ 
+
+
+
 
 }

@@ -119,7 +119,8 @@ public class DepositService {
 
         return account.getAccountNumber();
     }
-
+    
+    // 예금 해지
     @Transactional
     public void closeDepositAccount(String accountNumber, String accountPassword) {
         String customerId = depositDAO.getCustomerIdFromDepositAccount(accountNumber);
@@ -128,6 +129,10 @@ public class DepositService {
 
         BigDecimal balance = depositDAO.getDepositBalanceByAccountNumber(accountNumber);
         if (balance == null) throw new RuntimeException("계좌를 찾을 수 없습니다.");
+        
+        // 예금 이자 계산
+        BigDecimal interest = calculateDepositInterest(accountNumber);  
+        BigDecimal totalAmount = balance.add(interest);              
 
         if (balance.compareTo(BigDecimal.ZERO) > 0) {
             depositDAO.transferBalance(accountNumber, mainAccountNumber, balance);
@@ -137,24 +142,78 @@ public class DepositService {
             throw new RuntimeException("예금 계좌 해지 실패");
         }
     }
-
+    
+    // 적금 해지
     @Transactional
     public void closeSavingsAccount(String accountNumber, String accountPassword) {
-        String customerId = depositDAO.getCustomerIdFromSavingsAccount(accountNumber);
-        String mainAccountNumber = depositDAO.getMainAccountNumber(customerId);
-        if (mainAccountNumber == null) throw new RuntimeException("기본 계좌를 찾을 수 없습니다.");
-
-        BigDecimal balance = depositDAO.getSavingsAccountBalanceByAccountNumber(accountNumber);
-        if (balance == null) throw new RuntimeException("계좌를 찾을 수 없습니다.");
-
-        if (balance.compareTo(BigDecimal.ZERO) > 0) {
-            depositDAO.transferBalance(accountNumber, mainAccountNumber, balance);
+        // 1. 적금 계좌 정보 가져오기
+        DepositDTO account = depositDAO.getSavingsAccountByNumber(accountNumber);
+        System.out.println("가져온 account: " + account);
+        if (account == null) {
+            throw new RuntimeException("적금 계좌 정보를 찾을 수 없습니다.");
         }
 
+        String customerId = depositDAO.getCustomerIdFromSavingsAccount(accountNumber);
+        String mainAccountNumber = depositDAO.getMainAccountNumber(customerId);
+        if (mainAccountNumber == null) {
+            throw new RuntimeException("기본 계좌를 찾을 수 없습니다.");
+        }
+
+        BigDecimal balance = depositDAO.getSavingsAccountBalanceByAccountNumber(accountNumber);
+        if (balance == null) {
+            throw new RuntimeException("적금 계좌 잔액을 찾을 수 없습니다.");
+        }
+
+        // 2. 적금 이자 계산 (🔥 수정된 버전 사용)
+        BigDecimal interest = calculateSavingsInterest(account);
+
+        // 3. 총액 = 잔액 + 이자
+        BigDecimal totalAmount = balance.add(interest);
+
+        // 4. 총액을 기본 계좌로 이체
+        if (totalAmount.compareTo(BigDecimal.ZERO) > 0) {
+            depositDAO.transferBalance(accountNumber, mainAccountNumber, totalAmount);
+        }
+
+        // 5. 계좌 해지
         if (depositDAO.closeSavingsAccount(accountNumber, accountPassword) != 1) {
             throw new RuntimeException("적금 계좌 해지 실패");
         }
     }
+
+    //  예금 이자 계산 함수 
+    public BigDecimal calculateDepositInterest(String accountNumber) {
+        DepositDTO account = depositDAO.getDepositAccountByNumber(accountNumber);
+        BigDecimal principal = account.getBalance();
+        BigDecimal rate = account.getInterestRate();
+        int months = account.getTermMonths();
+
+        if (principal == null || rate == null || months == 0) {
+            return BigDecimal.ZERO;
+        }
+
+        // 원금 * 연이율 * (기간/12)
+        return principal.multiply(rate).multiply(BigDecimal.valueOf(months))
+                .divide(BigDecimal.valueOf(1200), 2, RoundingMode.DOWN);
+    }
+
+    // 적금 이자 계산 함수 
+    private BigDecimal calculateSavingsInterest(DepositDTO account) {
+        BigDecimal monthlyAmount = account.getMonthlyAmount();
+        BigDecimal interestRate = account.getInterestRate().divide(BigDecimal.valueOf(100), 5, RoundingMode.HALF_UP);
+        int termMonths = account.getTermMonths(); // 🔥 적금 가입 기간
+
+        // 총 납입액 기준 단리 이자 계산 (은행 적금 계산 방식)
+        BigDecimal sum = monthlyAmount.multiply(BigDecimal.valueOf(termMonths + 1))
+                                      .divide(BigDecimal.valueOf(2), 5, RoundingMode.HALF_UP);
+
+        BigDecimal interest = sum.multiply(interestRate)
+                                 .divide(BigDecimal.valueOf(12), 5, RoundingMode.HALF_UP);
+
+        return interest.setScale(0, RoundingMode.DOWN);  // 🔥 소수점 절삭해서 원 단위로 반환
+    }
+
+    
 
     // ===== 입출금 관련 =====
     @Transactional
@@ -359,10 +418,12 @@ public class DepositService {
     }
 
     // ===== 기타 유틸 =====
+    // 예금 잔액 조회
     public BigDecimal getDepositAccountBalanceByAccountNumber(String accountNumber) {
         return depositDAO.getDepositAccountBalanceByAccountNumber(accountNumber);
     }
 
+    // 적금 잔액 조회 
     public BigDecimal getSavingsAccountBalanceByAccountNumber(String accountNumber) {
         return depositDAO.getSavingsAccountBalanceByAccountNumber(accountNumber);
     }

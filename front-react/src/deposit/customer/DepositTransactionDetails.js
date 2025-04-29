@@ -87,24 +87,29 @@ const DepositTransactionDetails = () => {
             });
 
             if (Array.isArray(response.data)) {
-                setTransactions(response.data);
-            } else {
-                setTransactions([]);
-            }
-        } catch (error) {
-            console.error('거래내역 조회 에러:', error);
-            alert('거래내역을 불러오는 데 실패했습니다.');
-            setTransactions([]);
-        } finally {
-            setLoading(false);
-        }
-    };
+              const enriched = response.data.map(tx => ({
+                  ...tx,
+                  savedType: selectedAccount.type  //  조회 당시 타입 저장
+              }));
+              setTransactions(enriched);
+          } else {
+              setTransactions([]);
+          }
+      } catch (error) {
+          console.error('거래내역 조회 에러:', error);
+          alert('거래내역을 불러오는 데 실패했습니다.');
+          setTransactions([]);
+      } finally {
+          setLoading(false);
+      }
+  };
 
     const handleAccountChange = (e) => {
         const [type, id] = e.target.value.split('-');
         const accountId = parseInt(id, 10);
         const account = accounts.find(a => a.id === accountId && a.type.toUpperCase() === type.toUpperCase());
         setSelectedAccount(account);
+        
     };
 
     const handleDateChange = (e) => {

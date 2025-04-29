@@ -2,17 +2,15 @@ import React, { useState, useEffect } from "react";
 import { getCustomerID } from "../../jwt/AxiosToken";
 import RefreshToken from "../../jwt/RefreshToken";
 
-/**
- * DepositSavingsAutoSettings
- * 예적금 자동이체 등록 화면
- */
 const DepositSavingsAutoSettings = () => {
   const customerId = getCustomerID();
-  const [withdrawAccount, setWithdrawAccount] = useState(""); // 출금 계좌
-  const [targetAccounts, setTargetAccounts] = useState([]); // 입금(예적금) 계좌 리스트
-  const [selectedTargetAccount, setSelectedTargetAccount] = useState(""); // 선택한 입금 계좌
-  const [transferAmount, setTransferAmount] = useState(""); // 이체 금액
-  const [transferDay, setTransferDay] = useState(""); // 이체 일자
+  const [withdrawAccount, setWithdrawAccount] = useState("");
+  const [targetAccounts, setTargetAccounts] = useState([]);
+  const [selectedTargetAccount, setSelectedTargetAccount] = useState("");
+  const [transferAmount, setTransferAmount] = useState("");
+  const [transferDay, setTransferDay] = useState("");
+  const [accountPassword, setAccountPassword] = useState("");
+  const [selectedAccountType, setSelectedAccountType] = useState("");
 
   useEffect(() => {
     if (!customerId) {
@@ -23,7 +21,6 @@ const DepositSavingsAutoSettings = () => {
     fetchTargetAccounts();
   }, [customerId]);
 
-  // 출금 계좌 조회
   const fetchAccounts = async () => {
     try {
       const res = await RefreshToken.get(`/accounts/allAccount/${customerId}`);
@@ -37,31 +34,33 @@ const DepositSavingsAutoSettings = () => {
     }
   };
 
-  // 예적금 계좌 조회
   const fetchTargetAccounts = async () => {
     try {
       const depositRes = await RefreshToken.get(`/deposit/accounts/customer/${customerId}`);
       const savingsRes = await RefreshToken.get(`/savings/accounts/customer/${customerId}`);
-      const deposits = (depositRes.data || []).map(acc => ({
-        accountNumber: acc.accountNumber,
-        productName: acc.productName,
-        type: "예금"
-      }));
-      const savings = (savingsRes.data || []).map(acc => ({
-        accountNumber: acc.accountNumber,
-        productName: acc.productName,
-        type: "적금"
-      }));
-      setTargetAccounts([...deposits, ...savings]);
+
+      const allAccounts = [
+        ...depositRes.data.filter(acc => acc.accountStatus === 'ACTIVE').map(acc => ({
+          accountNumber: acc.accountNumber,
+          productName: acc.productName,
+          type: 'DEPOSIT'
+        })),
+        ...savingsRes.data.filter(acc => acc.accountStatus === 'ACTIVE').map(acc => ({
+          accountNumber: acc.accountNumber,
+          productName: acc.productName,
+          type: 'SAVINGS'
+        }))
+      ];
+
+      setTargetAccounts(allAccounts);
     } catch (error) {
       console.error("입금 계좌 조회 실패:", error);
       alert("입금 계좌를 불러오는데 실패했습니다.");
     }
   };
 
-  // 자동이체 등록 처리
   const handleRegister = async () => {
-    if (!selectedTargetAccount || !transferAmount || !transferDay) {
+    if (!selectedTargetAccount || !transferAmount || !transferDay || !accountPassword) {
       alert("모든 항목을 입력해주세요.");
       return;
     }
@@ -73,72 +72,82 @@ const DepositSavingsAutoSettings = () => {
     }
 
     try {
-      await RefreshToken.post(`/api/auto-transfer/register`, {
+      await RefreshToken.post(`/auto-transfer/register`, {
         withdrawAccountNumber: withdrawAccount,
         targetAccountNumber: selectedAccount.accountNumber,
-        targetAccountType: selectedAccount.type === "예금" ? "DEPOSIT" : "SAVINGS",
+        targetAccountType: selectedAccount.type,
         transferAmount: Number(transferAmount.replace(/,/g, "")),
         transferDay: Number(transferDay),
-        transferStatus: "ACTIVE"
+        transferStatus: "ACTIVE",
+        accountPassword: accountPassword
       });
       alert("자동이체가 등록되었습니다.");
-      // 필요시 이동 처리
     } catch (error) {
       console.error("자동이체 등록 실패:", error);
       alert("자동이체 등록에 실패했습니다.");
     }
   };
 
-  // 금액 입력 시 콤마 처리
   const handleAmountChange = (e) => {
     let value = e.target.value.replace(/[^0-9]/g, "");
-    if (value) {
-      value = parseInt(value, 10).toLocaleString();
-    }
+    if (value) value = parseInt(value, 10).toLocaleString();
     setTransferAmount(value);
   };
+
+  const handleAccountChange = (e) => {
+    const selectedValue = e.target.value;
+    setSelectedTargetAccount(selectedValue);
+    const selected = targetAccounts.find(acc => acc.accountNumber === selectedValue);
+    if (selected) setSelectedAccountType(selected.type);
+  }
 
   return (
     <div>
       <h2>예적금 자동이체 등록</h2>
-
-      <div>
-        <strong>출금 계좌:</strong> {withdrawAccount}
-      </div>
+      <div><strong>출금 계좌:</strong> {withdrawAccount}</div>
 
       <div style={{ marginTop: "10px" }}>
         <label>입금할 예적금 계좌 선택:</label>
-        <select value={selectedTargetAccount} onChange={(e) => setSelectedTargetAccount(e.target.value)}>
+        <select value={selectedTargetAccount} onChange={handleAccountChange}>
           <option value="">입금 계좌를 선택하세요</option>
           {targetAccounts.map((acc) => (
             <option key={acc.accountNumber} value={acc.accountNumber}>
-              {acc.accountNumber} - {acc.productName} ({acc.type})
+              {acc.accountNumber} - {acc.productName} ({acc.type === 'DEPOSIT' ? '예금' : '적금'})
             </option>
           ))}
         </select>
       </div>
 
-      <div style={{ marginTop: "10px" }}>
-        <label>이체 금액:</label>
-        <input
-          type="text"
-          value={transferAmount}
-          onChange={handleAmountChange}
-          placeholder="금액 입력"
-        />
-      </div>
+      {selectedAccountType && (
+        <>
+          <div style={{ marginTop: "10px" }}>
+            <label>이체 금액:</label>
+            <input type="text" value={transferAmount} onChange={handleAmountChange} placeholder="금액 입력" />
+          </div>
 
-      <div style={{ marginTop: "10px" }}>
-        <label>이체 일자 (1 ~ 28):</label>
-        <input
-          type="number"
-          min="1"
-          max="28"
-          value={transferDay}
-          onChange={(e) => setTransferDay(e.target.value)}
-          placeholder="이체일 입력"
-        />
-      </div>
+          <div style={{ marginTop: "10px" }}>
+            <label>이체 일자 (1~31일):</label>
+            <input type="number" min="1" max="31" value={transferDay} onChange={(e) => setTransferDay(e.target.value)} placeholder="이체일 입력" />
+            {transferDay === "31" && (
+              <div style={{ color: 'gray', fontSize: '13px' }}>
+                2월은 마지막 날인 28일에 출금됩니다.
+              </div>
+            )}
+          </div>
+
+          <div style={{ marginTop: "10px" }}>
+            <label>계좌 비밀번호 (4자리)</label>
+            <input type="password" value={accountPassword} maxLength={4} onChange={(e) => setAccountPassword(e.target.value)} />
+          </div>
+
+          {/* 예금/적금 선택에 따라 추가 입력 분기 가능 */}
+          {selectedAccountType === 'SAVINGS' && (
+            <div style={{ marginTop: "10px", color: "blue" }}>
+              ※ 적금 상품은 월납입형입니다. 매월 설정된 금액이 자동 이체됩니다.
+            </div>
+          )}
+        </>
+      )}
 
       <div style={{ marginTop: "20px" }}>
         <button onClick={handleRegister}>자동이체 등록</button>
