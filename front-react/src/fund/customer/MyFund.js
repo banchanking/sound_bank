@@ -10,10 +10,14 @@ const MyFund = ({ type, onClose, transactions, closedAccounts, onSellRequest }) 
 
   // 📌 type에 따라 매수/환매/해지 분기 처리
   const filtered = type === "BUY"
-    ? transactions.filter(tx => tx.fundTransactionType === "BUY")
-    : type === "SELL"
-    ? transactions.filter(tx => tx.fundTransactionType === "SELL" && tx.status === "APPROVED")
-    : closedAccounts;
+  ? transactions.filter(
+      (tx) =>
+        tx.fundTransactionType === "BUY" &&
+        (tx.status === "APPROVED" || tx.status === "PENDING") // 환매 완료된 상품 제외
+    )
+  : type === "SELL"
+  ? transactions.filter(tx => tx.fundTransactionType === "SELL" && tx.status === "APPROVED")
+  : closedAccounts;
 
   return (
     <div className={styles.fundmodalOverlay}>
