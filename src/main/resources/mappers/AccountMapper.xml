@@ -4,12 +4,53 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.boot.sound.inquire.account.AccountDAO">
 
-	<!-- 고객 계좌정보 조회 -->
-  <select id="findAllByCustomerId" resultType="com.boot.sound.inquire.account.AccountDTO" parameterType="String">
-        SELECT *
-        FROM account_tbl
-        WHERE customer_id = #{customer_id}
-    </select>
+	<!-- 입출금 계좌 조회 -->
+	  <select id="findAllByCustomerId" resultType="com.boot.sound.inquire.account.AccountDTO" parameterType="String">
+	    SELECT 
+	      account_number,
+	      balance,
+	      account_name,
+	      interest_rate,
+	      open_date,
+	      status,
+	      account_type
+	    FROM account_tbl
+	    WHERE customer_id = #{customer_id}
+	  </select>
+
+	<!-- deposit_account_tbl: 예금 계좌 -->
+	<select id="findDepositAccounts" resultType="com.boot.sound.inquire.account.AccountDTO" parameterType="String">
+		select
+		  a.account_number,
+	      a.balance,
+	      a.nickname as account_name,
+	      a.interest_rate,
+	      a.created_at as open_date,
+	      a.account_status as account_status,
+	      b.account_type
+	 	from deposit_account_tbl a, deposit_product_tbl b
+		where a.customer_id = #{customer_id}
+		and a.account_status = 'ACTIVE'
+		and b.account_type = 'DEPOSIT' 
+		and a.product_id = b.product_id
+	</select>
+
+	<!-- savings_account_tbl: 적금 계좌 -->
+	<select id="findSavingsAccounts" resultType="com.boot.sound.inquire.account.AccountDTO" parameterType="String">
+		select
+		  a.account_number,
+	      a.balance,
+	      a.nickname as account_name,
+	      a.interest_rate,
+	      a.created_at as open_date,
+	      a.account_status as status,
+	      b.account_type
+	 	from savings_account_tbl a, savings_product_tbl b
+		where a.customer_id = #{customer_id}
+		and a.account_status = 'ACTIVE'
+		and b.account_type = 'SAVINGS' 
+		and a.product_id = b.product_id
+	</select>
 
 	<!-- 계좌정보 저장 -->
 	 <insert id="insertAccount">
