@@ -48,4 +48,10 @@ public class DepositDTO {
     // 비밀번호 변경 관련 필드
     private String oldPassword;
     private String newPassword;
+    
+    // 출금용 계좌번호 (초기 입금할 때 사용)
+    private String withdrawalAccountNumber;
+
+
+
 } 

@@ -36,7 +36,7 @@ const SavingsProduct = () => {
             setEditingId(record.id);
         } else {
             form.resetFields();
-            form.setFieldsValue({ productType: 'INSTALLMENT' });  // 적금은 기본 상품유형 INSTALLMENT
+            form.setFieldsValue({ productType: '' });  // 적금은 기본 상품유형 INSTALLMENT
             setEditingId(null);
         }
         setIsModalVisible(true);
@@ -93,6 +93,7 @@ const SavingsProduct = () => {
                 };
                 return typeMap[type] || type;
             }
+            
         },
         {
             title: '이자율',
@@ -189,9 +190,11 @@ const SavingsProduct = () => {
                             label="상품유형"
                             rules={[{ required: true, message: '상품유형을 선택해주세요' }]}
                         >
-                            <Select disabled>
-                                <Option value="INSTALLMENT">적금</Option>
-                            </Select>
+                           <Select>
+                            <Option value="REGULAR">정기적금</Option>
+                            <Option value="FIXED">자유적금</Option>
+                           </Select>
+
                         </Form.Item>
 
                         <Form.Item

@@ -33,5 +33,47 @@
     WHERE account_number = #{account_number}
     AND account_type = '입출금'
   </update>
+
+	<!--  예금/적금 계좌 생성 -->
+    <insert id="insertDepositAccount" parameterType="com.boot.sound.inquire.account.AccountDTO">
+        INSERT INTO ACCOUNT_TBL (
+            ACCOUNT_NUMBER,
+            CUSTOMER_ID,
+            ACCOUNT_TYPE,
+            BALANCE,
+            INTEREST_RATE,
+            YIELD_RATE,
+            CURRENCY_TYPE,
+            ACCOUNT_NAME,
+            OPEN_DATE,
+            STATUS,
+            ACCOUNT_PWD
+        ) VALUES (
+            #{accountNumber},
+            #{customer_id},
+            #{account_type},
+            #{balance},
+            #{interest_rate},
+            #{yield_rate},
+            #{currency_type},
+            #{account_name},
+            #{open_date},
+            'ACTIVE',
+            #{account_pwd}
+        )
+    </insert>
+    
+    <!-- 예금계좌 해지시 상태변경  -->
+    <update id="updateAccountStatusToClosed">
+    UPDATE ACCOUNT_TBL
+    SET STATUS = 'CLOSED',
+        CLOSE_DATE = NOW(),
+        UPDATED_AT = NOW()
+    WHERE ACCOUNT_NUMBER = #{accountNumber}
+</update>
+    
+
+
+
   
 </mapper>

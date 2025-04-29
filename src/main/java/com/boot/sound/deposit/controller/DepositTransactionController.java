@@ -73,4 +73,13 @@ public class DepositTransactionController {
         int result = depositTransactionService.savingsDeposit(transaction);
         return ResponseEntity.ok(result);
     }
+    
+    // 적금 출금 처리
+    @PostMapping("/deposit/transactions/savings/withdraw")
+    public ResponseEntity<Integer> savingsWithdraw(@RequestBody DepositTransactionDTO transaction) {
+        int result = depositTransactionService.savingsWithdraw(transaction);
+        return ResponseEntity.ok(result);
+    }
+    
+
 } 

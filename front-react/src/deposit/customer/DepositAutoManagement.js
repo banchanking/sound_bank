@@ -94,16 +94,23 @@ const DepositAutoManagement = () => {
   return (
     <div className="depositContainer">
       <Card title="자동이체 관리">
-        <Table
-          columns={columns}
-          dataSource={autoTransfers}
-          loading={loading}
-          rowKey="id"
-          pagination={{ pageSize: 10, showTotal: (total) => `총 ${total}건` }}
-        />
+        {autoTransfers.length === 0 ? (
+          <div>현재 조회 가능한 계좌가 없습니다.</div>
+        ) : (
+          <Table
+              columns={columns}
+              dataSource={autoTransfers.filter(account => account.accountStatus === 'ACTIVE')}
+              loading={loading}
+              rowKey="id"
+              pagination={{ pageSize: 10, showTotal: (total) => `총 ${total}건` }}
+            />
+
+
+        )}
       </Card>
     </div>
   );
+  
 };
 
 export default DepositAutoManagement;

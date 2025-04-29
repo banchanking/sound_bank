@@ -107,71 +107,83 @@ const DepositTransactionDetails = () => {
 
     return (
         <div className="depositContainer">
-            <div className="depositCard">
+          <div className="depositCard">
+            {accounts.length === 0 ? (
+              <div>현재 조회 가능한 계좌가 없습니다.</div>
+            ) : (
+              <>
                 <div className="depositProductHeader">
-                    <h2>예적금 거래내역 조회</h2>
+                  <h2>예적금 거래내역 조회</h2>
                 </div>
-
-                {/* 계좌 선택 */}
+      
                 <div style={{ marginBottom: '20px' }}>
                     <label>계좌 선택</label>
-                    <select onChange={handleAccountChange} value={selectedAccount ? `${selectedAccount.type}-${selectedAccount.id}` : ''}>
-                        <option value="">계좌를 선택하세요</option>
-                        {accounts.map(acc => (
-                            <option key={`${acc.type}-${acc.id}`} value={`${acc.type}-${acc.id}`}>
-                                [{acc.type === 'DEPOSIT' ? '예금' : '적금'}] {acc.accountNumber}
-                            </option>
-                        ))}
+                    <select onChange={handleAccountChange} value={selectedAccount ? `${selectedAccount.type}-${selectedAccount.id}` : ''} required>
+                      <option value="">계좌를 선택하세요</option>
+                      {accounts
+                        .filter(acc => acc.accountStatus === 'ACTIVE')
+                        .map(acc => (
+                          <option key={`${acc.type}-${acc.id}`} value={`${acc.type}-${acc.id}`}>
+                            [{acc.type === 'DEPOSIT' ? '예금' : '적금'}] {acc.accountNumber} - {acc.productName} - {acc.balance.toLocaleString()}원
+                          </option>
+                      ))}
                     </select>
-                </div>
+                  </div>
 
-                {/* 날짜 선택 */}
+
+      
                 <div style={{ marginBottom: '20px' }}>
-                    <label>조회 시작일</label>
-                    <input type="date" name="start" value={dateRange.start} onChange={handleDateChange} />
-                    <label>조회 종료일</label>
-                    <input type="date" name="end" value={dateRange.end} onChange={handleDateChange} />
+                  <label>조회 시작일</label>
+                  <input type="date" name="start" value={dateRange.start} onChange={handleDateChange} />
+                  <label>조회 종료일</label>
+                  <input type="date" name="end" value={dateRange.end} onChange={handleDateChange} />
                 </div>
-
-                {/* 검색 버튼 */}
+      
                 <button className="depositBtn" onClick={handleSearch}>
-                    조회
+                  조회
                 </button>
-
-                {/* 거래내역 테이블 */}
+      
                 <div className="depositTableContainer">
-                    <table className="depositTable">
-                        <thead>
-                            <tr>
-                                <th>거래일시</th>
-                                <th>거래구분</th>
-                                <th>거래금액</th>
-                                <th>잔액</th>
-                                <th>거래내용</th>
+                  <table className="depositTable">
+                    <thead>
+                      <tr>
+                        <th>거래일시</th>
+                        <th>거래구분</th>
+                        <th>거래금액</th>
+                        <th>잔액</th>
+                        <th>거래내용</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {transactions.length > 0 ? (
+                          transactions.map(tx => (
+                            <tr key={tx.id}>
+                              <td>{tx.transactionDate}</td>
+                              <td>
+                                {selectedAccount?.type === 'SAVINGS' ? '적금' : '예금'}
+                              </td>
+                              <td>{tx.transactionAmount?.toLocaleString()}원</td>
+                              <td>{tx.balance?.toLocaleString()}원</td>
+                              <td>{tx.transactionDescription}</td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {transactions.length > 0 ? (
-                                transactions.map(tx => (
-                                    <tr key={tx.id}>
-                                        <td>{tx.transactionDate}</td>
-                                        <td>{tx.transactionType}</td>
-                                        <td>{tx.transactionAmount?.toLocaleString()}원</td>
-                                        <td>{tx.balance?.toLocaleString()}원</td>
-                                        <td>{tx.transactionDescription}</td>
-                                    </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan="5">거래내역이 없습니다.</td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan="5">거래내역이 없습니다.</td>
+                          </tr>
+                        )}
+                      </tbody>
+
+
+                  </table>
                 </div>
-            </div>
+              </>
+            )}
+          </div>
         </div>
-    );
+      );
+      
+      
 };
 
 export default DepositTransactionDetails;
