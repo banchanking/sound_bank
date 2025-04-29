@@ -5,6 +5,8 @@ import styles from '../../Css/transfer/MultiAdmin.module.css';
 function TransMultiApprove() {
   const [groupedList, setGroupedList] = useState([]);
   const [selectedKey, setSelectedKey] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
   const token = localStorage.getItem('auth_token');
   const [loading, setLoading] = useState(false);
 
@@ -76,6 +78,9 @@ function TransMultiApprove() {
       .catch(() => alert('반려 실패'));
   };
 
+  const totalPages = Math.ceil(groupedList.length / itemsPerPage);
+  const currentItems = groupedList.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   return (
     <div className={styles['multiAdmin-approveWrap']}>
       <h2>다건이체 승인 관리</h2>
@@ -91,7 +96,7 @@ function TransMultiApprove() {
           </tr>
         </thead>
         <tbody>
-          {groupedList.map(group => (
+          {currentItems.map(group => (
             <React.Fragment key={group.key}>
               <tr>
                 <td>{group.customer_id}</td>
@@ -174,6 +179,29 @@ function TransMultiApprove() {
           ))}
         </tbody>
       </table>
+
+      {/* 페이지네이션 (화살표 없음) */}
+      <div className={styles["multiAdmin-pagination"]}>
+        {Array.from({ length: totalPages }, (_, i) => (
+          <button
+            key={i}
+            onClick={() => setCurrentPage(i + 1)}
+            className={currentPage === i + 1
+              ? styles["activePage"]
+              : styles["pageButton"]}
+          >
+            {i + 1}
+          </button>
+        ))}
+
+      <button
+        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+        disabled={currentPage === totalPages}
+        className={styles["pageArrow"]}
+      >
+        ▶
+      </button>
+      </div>
 
       {loading && <div className={styles['multiAdmin-loading']}>처리중...</div>}
     </div>
