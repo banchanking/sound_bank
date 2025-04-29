@@ -4,6 +4,8 @@ import styles from '../../Css/transfer/AdminLimit.module.css';
 
 function AdminLimit() {
   const [requests, setRequests] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   const handleAction = (item, action) => {
     const { transfer_id, requested_limit } = item;
@@ -67,6 +69,9 @@ function AdminLimit() {
       });
   }, []);
 
+  const totalPages = Math.ceil(requests.length / itemsPerPage);
+  const currentItems = requests.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   return (
     <div className={styles['limitAdmin-container']}>
       <div className={styles['limitAdmin-content']}>
@@ -83,7 +88,7 @@ function AdminLimit() {
             </tr>
           </thead>
           <tbody>
-            {requests.map((item, index) => (
+            {currentItems.map((item, index) => (
               <tr key={index}>
                 <td>{item.customer_id}</td>
                 <td>{item.out_account_number}</td>
@@ -126,6 +131,29 @@ function AdminLimit() {
             ))}
           </tbody>
         </table>
+
+        {/* 페이지네이션 (화살표 없이 숫자 버튼만) */}
+        <div className={styles["limitAdmin-pagination"]}>
+          {Array.from({ length: totalPages }, (_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentPage(i + 1)}
+              className={currentPage === i + 1
+                ? styles["activePage"]
+                : styles["pageButton"]}
+            >
+              {i + 1}
+            </button>
+          ))}
+
+          <button
+            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            className={styles["pageArrow"]}
+          >
+            ▶
+          </button>
+        </div>
       </div>
     </div>
   );
