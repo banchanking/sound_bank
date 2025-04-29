@@ -57,6 +57,12 @@
 		WHERE customer_id = #{customerId}
 	</delete>
 	
+	<update id="logout">
+		update admin_tbl
+		set refresh_token = null
+		where customer_id = #{customerId}
+	</update>
+	
 	
 	
   
