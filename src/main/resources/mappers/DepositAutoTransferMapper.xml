@@ -8,7 +8,7 @@
     <!-- 오늘 날짜에 맞는 자동이체 리스트 조회 -->
     <select id="getTodayAutoTransfers" resultType="com.boot.sound.deposit.dto.DepositAutoTransferDTO">
         SELECT *
-        FROM AUTO_TRANSFER_TBL
+        FROM DEPOSIT_AUTO_TRANSFER_TBL
         WHERE transfer_day = #{today}
           AND transfer_status = 'ACTIVE'
     </select>
@@ -37,23 +37,32 @@
 
     <!-- 자동이체 등록 -->
     <insert id="createAutoTransfer">
-        INSERT INTO AUTO_TRANSFER_TBL
+        INSERT INTO DEPOSIT_AUTO_TRANSFER_TBL
         (withdraw_account_number, target_account_number, target_account_type, transfer_amount, transfer_day, transfer_status, created_at)
         VALUES
         (#{withdrawAccountNumber}, #{targetAccountNumber}, #{targetAccountType}, #{transferAmount}, #{transferDay}, #{transferStatus}, now())
     </insert>
 
     <!-- 고객의 자동이체 리스트 조회 -->
-    <select id="getCustomerAutoTransfers" resultType="com.boot.sound.deposit.dto.DepositAutoTransferDTO">
-        SELECT *
-        FROM AUTO_TRANSFER_TBL
-        WHERE withdraw_account_number = #{withdrawAccountNumber}
-          AND transfer_status = 'ACTIVE'
-    </select>
+   <select id="getCustomerAutoTransfers" resultType="com.boot.sound.deposit.dto.DepositAutoTransferDTO">
+    SELECT 
+        id,
+        withdraw_account_number AS withdrawAccountNumber,
+        target_account_number AS targetAccountNumber,
+        target_account_type AS targetAccountType,
+        transfer_amount AS transferAmount,
+        transfer_day AS transferDay,
+        transfer_status AS transferStatus,
+        created_at AS createdAt
+    FROM DEPOSIT_AUTO_TRANSFER_TBL
+    WHERE withdraw_account_number = #{withdrawAccountNumber}
+      AND transfer_status = 'ACTIVE'
+</select>
+
 
     <!-- 자동이체 삭제 -->
     <delete id="deleteAutoTransfer">
-        DELETE FROM AUTO_TRANSFER_TBL
+        DELETE FROM DEPOSIT_AUTO_TRANSFER_TBL
         WHERE id = #{id}
     </delete>
 

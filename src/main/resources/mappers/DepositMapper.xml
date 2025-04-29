@@ -753,6 +753,23 @@
 </update>
 
 
+<!--  예금 계좌 상세 조회 -->
+<select id="getDepositAccountByNumber" resultType="com.boot.sound.deposit.dto.DepositDTO">
+    SELECT account_number, balance, interest_rate
+    FROM DEPOSIT_ACCOUNT_TBL
+    WHERE account_number = #{accountNumber}
+</select>
+
+<!--  적금 계좌 상세 조회 -->
+<select id="getSavingsAccountByNumber" resultType="com.boot.sound.deposit.dto.DepositDTO">
+    SELECT account_number, interest_rate, monthly_amount, term_months
+    FROM SAVINGS_ACCOUNT_TBL
+    WHERE account_number = #{accountNumber}
+</select>
+
+
+
+
 
 
 

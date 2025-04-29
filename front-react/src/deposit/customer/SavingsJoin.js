@@ -10,55 +10,36 @@ const SavingsJoin = () => {
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [monthlyAmount, setMonthlyAmount] = useState('');
     const [password, setPassword] = useState('');
-    const [loading, setLoading] = useState(true);
-    const [balance, setBalance] = useState('');
-    const customerId = getCustomerID();
+    const [calcResult, setCalcResult] = useState(null);
     const [accounts, setAccounts] = useState([]);
     const [selectedWithdrawAccountNumber, setSelectedWithdrawAccountNumber] = useState('');
-    const numericMonthlyAmount = Number(monthlyAmount.replace(/,/g, ''));
+    const [currentStep, setCurrentStep] = useState('select');
 
-
+    const customerId = getCustomerID();
 
     const handleMonthlyAmountChange = (e) => {
-        let value = e.target.value;
-    
-        // 숫자만 남기기
-        value = value.replace(/[^0-9]/g, '');
-    
-        // 콤마 찍기
-        if (value) {
-            value = parseInt(value, 10).toLocaleString('ko-KR');
-        }
-    
+        let value = e.target.value.replace(/[^0-9]/g, '');
+        if (value) value = parseInt(value, 10).toLocaleString('ko-KR');
         setMonthlyAmount(value);
     };
-    
-    
-    
 
     useEffect(() => {
         if (!customerId) {
             const goLogin = window.confirm("로그인이 필요합니다. 로그인 페이지로 이동할까요?");
-            if (goLogin) {
-                navigate("/login");
-            } else {
-                navigate("/");
-            }
+            if (goLogin) navigate("/login");
+            else navigate("/");
             return;
         }
         fetchProducts();
         fetchAccounts();
-    }, [navigate, customerId]);
+    }, [customerId]);
 
     const fetchProducts = async () => {
         try {
             const response = await RefreshToken.get('/deposit/products/savings');
             setProducts(response.data);
         } catch (error) {
-            console.error('적금 상품 조회 에러:', error);
-            alert('상품 정보를 불러오는데 실패했습니다.');
-        } finally {
-            setLoading(false);
+            alert('적금 상품을 불러오는데 실패했습니다.');
         }
     };
 
@@ -67,50 +48,56 @@ const SavingsJoin = () => {
             const res = await RefreshToken.get(`/accounts/allAccount/${customerId}`);
             setAccounts(res.data['입출금'] || []);
         } catch (error) {
-            console.error('입출금 계좌 조회 실패:', error);
+            alert('입출금 계좌를 불러오는데 실패했습니다.');
         }
     };
 
-    const handleProductChange = (e) => {
-        const productId = parseInt(e.target.value);
-        const product = products.find(p => p.id === productId);
+    const handleProductClick = (product) => {
         setSelectedProduct(product);
+        setCurrentStep('agreement');
+    };
+
+    const handleAgree = () => {
+        setCurrentStep('form');
+    };
+
+    const calculateSavings = () => {
+        if (!monthlyAmount || !selectedProduct) return;
+        const monthly = Number(monthlyAmount.replace(/,/g, ''));
+        const months = selectedProduct.termMonths;
+        const rate = selectedProduct.interestRate / 100;
+        const taxRate = 0.154;
+
+        const totalPrincipal = monthly * months;
+        const interest = (monthly * months * (months + 1) / 24) * rate;
+        const afterTaxInterest = interest * (1 - taxRate);
+        const maturityAmount = totalPrincipal + afterTaxInterest;
+
+        setCalcResult({
+            totalPrincipal: Math.floor(totalPrincipal),
+            interest: Math.floor(interest),
+            afterTaxInterest: Math.floor(afterTaxInterest),
+            maturityAmount: Math.floor(maturityAmount)
+        });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!selectedProduct) {
-            alert('적금 상품을 선택해주세요.');
-            return;
-        }
-        if (!monthlyAmount || monthlyAmount < selectedProduct.minAmount) {
-            alert(`최소 ${selectedProduct.minAmount.toLocaleString()}원 이상 납입해야 합니다.`);
-            return;
-        }
-        if (!password || password.length !== 4) {
-            alert('계좌 비밀번호를 4자리로 입력해주세요.');
-            return;
-        }
-
         try {
-            // 1단계: 적금 계좌 생성
-            const createRes = await RefreshToken.post('/deposit/accounts/savings', {
+            await RefreshToken.post('/deposit/accounts/savings', {
                 customerId,
                 productId: selectedProduct.id,
                 interestRate: selectedProduct.interestRate,
                 accountPassword: password,
-                monthlyAmount: numericMonthlyAmount, 
+                monthlyAmount: Number(monthlyAmount.replace(/,/g, '')),
                 maturityDate: calcMaturityDate(selectedProduct.termMonths),
-                withdrawalAccountNumber: selectedWithdrawAccountNumber,   // ✅ 출금할 계좌
-                withdrawalAmount: monthlyAmount   // ✅ 출금할 금액 (monthlyAmount 사용!)
+                withdrawalAccountNumber: selectedWithdrawAccountNumber,
+                withdrawalAmount: Number(monthlyAmount.replace(/,/g, ''))
             });
-      
-
             alert('적금 계좌가 성공적으로 개설되었습니다.');
             navigate('/');
         } catch (error) {
-            console.error('적금 계좌 개설 실패:', error);
             alert('적금 계좌 개설에 실패했습니다.');
         }
     };
@@ -123,75 +110,106 @@ const SavingsJoin = () => {
 
     return (
         <div className="depositContainer">
-            <div className="depositCard">
-                <div className="depositProductHeader">
-                    <h2>적금 상품 가입</h2>
-                </div>
-
-                <form onSubmit={handleSubmit} className="depositForm">
-                    <div className="formGroup">
-                        <label>적금 상품 선택</label>
-                        <select value={selectedProduct?.id || ''} onChange={handleProductChange} required>
-                            <option value="">상품 선택</option>
-                            {products.map(product => (
-                                <option key={product.id} value={product.id}>
-                                    {product.productName} - {product.interestRate}%
-                                </option>
-                            ))}
-                        </select>
+            {currentStep === 'select' && (
+                <>
+                    <div className="depositProductHeader">
+                        <h2>적금 상품 선택</h2>
                     </div>
+                    <div className="productList">
+                        {products.map(product => (
+                            <div key={product.id} className="productCard" onClick={() => handleProductClick(product)}>
+                                <h3>{product.productName}</h3>
+                                <p>이자율: {product.interestRate}%</p>
+                                <p>기간: {product.termMonths}개월</p>
+                                <p>최소금액: {product.minAmount.toLocaleString()}원</p>
+                            </div>
+                        ))}
+                    </div>
+                </>
+            )}
 
-                    {selectedProduct && (
-                        <>
-                            <div className="formGroup">
-                            <label>월 납입금액</label>
+            {currentStep === 'agreement' && selectedProduct && (
+                <div className="depositCard">
+                    <div className="depositProductHeader">
+                        <h2>가입 동의</h2>
+                    </div>
+                    <div>
+                        <h3>상품명</h3>
+                        <p>{selectedProduct.productName}</p>
+                        <h3>상품 설명</h3>
+                        <p>{selectedProduct.productDescription || '상품 설명이 없습니다.'}</p>
+                        <h3>약관</h3>
+                        <p>본 상품은 예금자 보호법에 따라 보호됩니다.</p>
+                    </div>
+                    <div style={{ marginTop: '20px' }}>
+                        <button className="depositBtn" onClick={handleAgree}>동의하고 가입하기</button>
+                        <button className="depositBtn" style={{ marginLeft: '10px', backgroundColor: '#aaa' }} onClick={() => setCurrentStep('select')}>취소</button>
+                    </div>
+                </div>
+            )}
+
+            
+
+            {currentStep === 'form' && selectedProduct && (
+                <div className="depositCard">
+                    <div className="depositProductHeader">
+                        <h2>가입 정보 입력</h2>
+                    </div>
+                    <form onSubmit={handleSubmit} className="depositForm">
+                    <div className="formGroup">
+                            <label>월 납입 금액</label>
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
                                 <input
-                                    type="text"
-                                    value={monthlyAmount}
-                                    onChange={handleMonthlyAmountChange}
-                                    required
+                                type="text"
+                                value={monthlyAmount}
+                                onChange={handleMonthlyAmountChange}
+                                required
                                 />
-
+                                <span style={{ marginLeft: '5px' }}>원</span>
+                                
+                            </div>
+                            {selectedProduct && (
                                 <div className="formHint">
                                     최소 {selectedProduct.minAmount.toLocaleString()}원 이상
                                 </div>
+                                )}
+
                             </div>
 
-                            <div className="formGroup">
-                                <label>출금 계좌 선택</label>
-                                <select
-                                    value={selectedWithdrawAccountNumber}
-                                    onChange={(e) => setSelectedWithdrawAccountNumber(e.target.value)}
-                                    required
-                                >
-                                    <option value="">출금할 입출금 계좌를 선택하세요</option>
-                                    {accounts.map(acc => (
-                                        <option key={acc.account_number} value={acc.account_number}>
-                                            {acc.account_name} ({acc.account_number}) - 잔액: {acc.balance.toLocaleString()}원
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
+                        <div className="formGroup">
+                            <label>적금 계산기</label>
+                            <button type="button" className="depositBtn" onClick={calculateSavings} style={{ marginBottom: '10px' }}>계산하기</button>
+                            {calcResult && (
+                                <div>
+                                    <div>총 납입금액: {calcResult.totalPrincipal.toLocaleString()}원</div>
+                                    <div>세전 이자: {calcResult.interest.toLocaleString()}원</div>
+                                    <div>세후 이자: {calcResult.afterTaxInterest.toLocaleString()}원</div>
+                                    <div>만기 수령액: {calcResult.maturityAmount.toLocaleString()}원</div>
+                                </div>
+                            )}
+                        </div>
 
+                        <div className="formGroup">
+                            <label>출금 계좌 선택</label>
+                            <select value={selectedWithdrawAccountNumber} onChange={(e) => setSelectedWithdrawAccountNumber(e.target.value)} required>
+                                <option value="">출금할 입출금 계좌를 선택하세요</option>
+                                {accounts.map(acc => (
+                                    <option key={acc.account_number} value={acc.account_number}>
+                                        {acc.account_name} ({acc.account_number}) - 잔액: {acc.balance.toLocaleString()}원
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
 
-                            <div className="formGroup">
-                                <label>계좌 비밀번호 (4자리)</label>
-                                <input
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    maxLength={4}
-                                    required
-                                />
-                            </div>
+                        <div className="formGroup">
+                            <label>계좌 비밀번호 (4자리)</label>
+                            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} maxLength={4} required />
+                        </div>
 
-                            <button type="submit" className="depositBtn" disabled={loading}>
-                                적금 계좌 개설
-                            </button>
-                        </>
-                    )}
-                </form>
-            </div>
+                        <button type="submit" className="depositBtn">적금 계좌 개설</button>
+                    </form>
+                </div>
+            )}
         </div>
     );
 };
