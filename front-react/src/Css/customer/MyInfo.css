@@ -1,11 +1,15 @@
+/* myinfo.module.css */
+
 .myinfo-container {
+  max-width: 700px;
+  margin: 40px auto;
   padding: 40px;
   background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-  max-width: 700px;
-  margin: 0 auto;
+  border: 1.5px solid #e2e4e7;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   font-family: "Pretendard", sans-serif;
+  animation: fadeIn 0.4s ease;
 }
 
 .myinfo-title {
@@ -14,28 +18,33 @@
   margin-bottom: 30px;
   border-bottom: 2px solid #222;
   padding-bottom: 10px;
+  text-align: center;
+  animation: fadeInUp 0.4s ease;
 }
 
 .myinfo-table {
   width: 100%;
   border-collapse: collapse;
+  margin-top: 20px;
+  animation: fadeInUp 0.4s ease;
 }
 
 .myinfo-table th,
 .myinfo-table td {
-  border: 1px solid #ddd;
+  border: 1px solid #ccc;
   padding: 12px 16px;
   text-align: left;
 }
 
 .myinfo-table th {
-  background-color: #f8f8f8;
-  width: 180px;
-  font-weight: 500;
+  background-color: #f4f4f4;
+  font-weight: 600;
   color: #333;
+  width: 180px;
 }
 
 .myinfo-table td {
+  background-color: #fafafa;
   color: #555;
 }
 
@@ -45,37 +54,45 @@
 }
 
 .myinfo-button {
-  padding: 10px 20px;
+  padding: 12px 24px;
   font-size: 16px;
-  background-color: #4a4a4a;
+  background-color: #313131;
   color: #fff;
   border: none;
-  border-radius: 8px;
+  border-radius: 7px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.4s ease;
 }
 
 .myinfo-button:hover {
-  background-color: #333;
+  background-color: #555;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* 주소 영역 전체 래퍼 */
+/* 주소 입력 전체 그룹 */
 .address-group {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  margin-top: 20px;
 }
 
-/* 각 주소 input 공통 스타일 */
+/* 각 주소 input 스타일 */
 .address-group input[type="text"] {
   padding: 10px;
   border: 1px solid #ccc;
-  border-radius: 6px;
+  border-radius: 7px;
   font-size: 14px;
   width: 100%;
+  transition: border-color 0.3s;
 }
 
-/* 우편번호 + 버튼 정렬 */
+.address-group input[type="text"]:focus {
+  border-color: #537697;
+  outline: none;
+}
+
+/* 우편번호 입력 + 버튼 정렬 */
 .address-zipcode-row {
   display: flex;
   gap: 10px;
@@ -88,13 +105,53 @@
 .address-zipcode-row button {
   padding: 10px 14px;
   font-size: 14px;
-  background-color: #4a4a4a;
+  background-color: #537697;
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 7px;
   cursor: pointer;
+  transition: all 0.4s ease;
 }
 
 .address-zipcode-row button:hover {
-  background-color: #333;
+  background-color: #6083ac;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.codeButton {
+  padding: 10px 14px;
+  font-size: 14px;
+  background-color: #333333 !important;
+  color: white;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all 0.4s ease;
+}
+
+.codeButton:hover {
+  background-color: #555 !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* fadeIn 애니메이션 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* fadeInUp 애니메이션 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

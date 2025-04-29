@@ -8,6 +8,7 @@ export default function Orb({
   hoverIntensity = 0.2,
   rotateOnHover = true,
   forceHoverState = false,
+  // <Orb forceHoverState={isListening} />   음성인식될때  물결움직임 - 추가확인 필요
 }) {
   const ctnDom = useRef(null);
 
