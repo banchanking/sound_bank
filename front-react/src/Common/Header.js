@@ -13,7 +13,7 @@ const Header = () => {
   useEffect(() => {
     const customerId = localStorage.getItem("customerId");
     setLoginStatus(!!customerId);
-  }, []);
+  }, [location.pathname]);
 
   const logout = () => {
     RefreshToken.post(
@@ -33,6 +33,7 @@ const Header = () => {
         localStorage.removeItem("role");
         alert("로그아웃 되었습니다.");
         navigate("/");
+        window.location.reload();
       })
       .catch((error) => {
         console.log(error);
