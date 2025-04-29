@@ -14,32 +14,30 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
- import com.boot.sound.jwt.config.UserAuthProvider;
+import com.boot.sound.admin.service.AdminService;
+import com.boot.sound.jwt.config.UserAuthProvider;
 import com.boot.sound.jwt.dto.CredentialsDTO;
 import com.boot.sound.jwt.dto.SignUpDTO;
 import com.boot.sound.jwt.dto.UpdateDTO;
 import com.boot.sound.jwt.mappers.CustomerMapper;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
 @CrossOrigin
 @Slf4j
 public class CustomerController {
 
-    @Autowired
-    private CustomerService service;
-     private UserAuthProvider provider;
-     private CustomerMapper customerMapper;
-    
-    public CustomerController(CustomerService service,UserAuthProvider provider,CustomerMapper customerMapper) {
-    	super();
-    	this.service = service;
-    	this.provider = provider;
-    	this.customerMapper = customerMapper;
-    }
 
+    private final CustomerService service;
+     private final UserAuthProvider provider;
+     private final CustomerMapper customerMapper;
+     private final AdminService adminService;
+    
+   
     @GetMapping({"", "/"})
 	public String index() {
 		System.out.println("<<< index >>>");
@@ -146,9 +144,22 @@ public class CustomerController {
    public ResponseEntity<?>logout(@RequestBody Map<String, String> request, HttpServletResponse response){
 
 	   String customerId = request.get("customerId");
-	   System.out.println("요청ID:"+customerId);
+	   String role = request.get("role");
+	   
+	   try {
 	   provider.deleteRefreshTokenCookie(response);
-	   return new ResponseEntity<>(service.logout(customerId),HttpStatus.OK);
+		   if(role=="CUSTOMER") {
+			   service.logout(customerId);
+		   }
+		   else {
+			   adminService.logout(customerId);
+		   }
+		   return ResponseEntity.ok("로그아웃되었습니다");
+	   }catch(Exception e) {
+		   e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                             .body("로그아웃 중 오류가 발생했습니다"); 
+	   }
    }
    
    // 회원탈퇴

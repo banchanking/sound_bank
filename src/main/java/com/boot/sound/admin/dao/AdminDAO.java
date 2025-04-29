@@ -25,4 +25,6 @@ public interface AdminDAO {
 	public Boolean update(AdminDTO dto);
 	
 	public Boolean delete(AdminDTO dto);
+	
+	public Boolean logout(String customerId);
 }
