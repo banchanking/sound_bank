@@ -51,6 +51,12 @@ public class DepositDTO {
     
     // 출금용 계좌번호 (초기 입금할 때 사용)
     private String withdrawalAccountNumber;
+    
+    // 자동이체
+    private String withdrawAccountNumber;
+    private String targetAccountNumber;
+    private BigDecimal transferAmount;
+
 
 
 

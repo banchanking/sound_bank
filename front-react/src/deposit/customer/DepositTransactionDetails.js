@@ -11,6 +11,27 @@ const DepositTransactionDetails = () => {
     const [dateRange, setDateRange] = useState({ start: '', end: '' });
     const [transactions, setTransactions] = useState([]);
     const [loading, setLoading] = useState(true);
+        // 계좌 번호를 3자리-6자리-4자리 형식으로 포맷팅하는 함수
+        const formatAccountNumber = (accountNumber) => {
+          if (!accountNumber || accountNumber.length !== 13) return accountNumber; // 유효성 검사
+          return `${accountNumber.slice(0, 3)}-${accountNumber.slice(3, 9)}-${accountNumber.slice(9)}`;
+      };
+
+    const formatDate = (dateArray) => {
+      if (!dateArray || !Array.isArray(dateArray) || dateArray.length < 6) return '';
+  
+      const [year, month, day, hour, minute, second] = dateArray;
+  
+      const formattedMonth = String(month).padStart(2, '0');
+      const formattedDay = String(day).padStart(2, '0');
+      const formattedHour = String(hour).padStart(2, '0');
+      const formattedMinute = String(minute).padStart(2, '0');
+      const formattedSecond = String(second).padStart(2, '0');
+  
+      return `${year}-${formattedMonth}-${formattedDay} ${formattedHour}:${formattedMinute}:${formattedSecond}`;
+  };
+  
+  
 
     useEffect(() => {
         const customerId = getCustomerID();
@@ -124,7 +145,7 @@ const DepositTransactionDetails = () => {
                         .filter(acc => acc.accountStatus === 'ACTIVE')
                         .map(acc => (
                           <option key={`${acc.type}-${acc.id}`} value={`${acc.type}-${acc.id}`}>
-                            [{acc.type === 'DEPOSIT' ? '예금' : '적금'}] {acc.accountNumber} - {acc.productName} - {acc.balance.toLocaleString()}원
+                            [{acc.type === 'DEPOSIT' ? '예금' : '적금'}] {formatAccountNumber(acc.accountNumber)} - {acc.productName} - {acc.balance.toLocaleString()}원
                           </option>
                       ))}
                     </select>
@@ -158,7 +179,8 @@ const DepositTransactionDetails = () => {
                         {transactions.length > 0 ? (
                           transactions.map(tx => (
                             <tr key={tx.id}>
-                              <td>{tx.transactionDate}</td>
+                              <td>{formatDate(tx.transactionDate)}</td>
+
                               <td>
                                 {selectedAccount?.type === 'SAVINGS' ? '적금' : '예금'}
                               </td>

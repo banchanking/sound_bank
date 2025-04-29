@@ -11,6 +11,11 @@ const DepositCancellation = () => {
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(true);
     const customerId = getCustomerID();
+    // 계좌 번호를 3자리-6자리-4자리 형식으로 포맷팅하는 함수
+    const formatAccountNumber = (accountNumber) => {
+        if (!accountNumber || accountNumber.length !== 13) return accountNumber; // 유효성 검사
+        return `${accountNumber.slice(0, 3)}-${accountNumber.slice(3, 9)}-${accountNumber.slice(9)}`;
+    };
 
     useEffect(() => {
         if (!customerId) {
@@ -72,28 +77,31 @@ const DepositCancellation = () => {
     
         try {
             const account = accounts.find(acc => acc.accountNumber === selectedAccount);
-    
+                
             const endpoint = account.type === '예금'
-                ? `/deposit/accounts/deposit/${selectedAccount}/close`
-                : `/deposit/accounts/savings/${selectedAccount}/close`;
+                ? `/deposit/accounts/deposit/close`
+                : `/deposit/accounts/savings/close`;
     
                     // 디버깅 로그 추가
             console.log('선택된 계좌:', account);
             console.log('요청 URL:', endpoint);
-            console.log('요청 데이터:', {
+            console.log('요청 데이터:', {               
             accountPassword: password,
-            customerId : account.customerId,
-            accountId: account.id
+            accountNumber:selectedAccount,
             
          });
-                await RefreshToken.put(endpoint,{
-                    accountPassword: password
-                });
+                await RefreshToken.post(endpoint,{
+                    accountNumber:selectedAccount,
+                    accountPassword: password,
+                }).then((res)=>{
+                    console.log(res.data)
+                    alert('계좌 해지가 완료되었습니다.');
+                    navigate('/');
+                })
                 
                 
     
-            alert('계좌 해지가 완료되었습니다.');
-            navigate('/');
+
         } catch (error) {
             console.error('계좌 해지 에러:', error);
             alert('계좌 해지에 실패했습니다.');
@@ -126,7 +134,7 @@ const DepositCancellation = () => {
                                     .filter(account => account.accountStatus === 'ACTIVE')
                                     .map(account => (
                                         <option key={account.accountNumber} value={account.accountNumber}>
-                                        {account.accountNumber} - {account.productName} - {account.balance.toLocaleString()}원
+                                        {formatAccountNumber(account.accountNumber)} - {account.productName} - {account.balance.toLocaleString()}원
                                         </option>
                                     ))}
                                 </select>

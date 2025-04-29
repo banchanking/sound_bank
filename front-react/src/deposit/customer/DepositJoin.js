@@ -13,7 +13,26 @@ const DepositJoin = () => {
     const [currentStep, setCurrentStep] = useState('select');
     const [amount, setAmount] = useState('');
     const [password, setPassword] = useState('');
+    const numericAmount = Number(amount.replace(/,/g, ''));
+
+    
+
+
     const customerId = getCustomerID();
+
+        const handleAmountChange = (e) => {
+            let value = e.target.value;
+    
+            // 숫자만 남기기
+            value = value.replace(/[^0-9]/g, '');
+    
+           // 콤마 찍기
+    if (value) {
+        value = parseInt(value, 10).toLocaleString('ko-KR');
+    }
+
+    setAmount(value);
+        };
 
     useEffect(() => {
         if (!customerId) {
@@ -79,30 +98,11 @@ const DepositJoin = () => {
             const createRes = await RefreshToken.post('/deposit/accounts/deposit', {
                 customerId,
                 productId: selectedProduct.id,
-                balance: amount,
+                balance: numericAmount,
                 accountPassword: password,
                 withdrawalAccountNumber: selectedWithdrawAccountNumber      
             });
             
-
-            const accountNumber = createRes.data.accountNumber || createRes.data.account_number;
-            if (!accountNumber) {
-                throw new Error('생성된 계좌번호를 가져오지 못했습니다.');
-            }
-
-            // 2단계: account_tbl에 추가
-            await RefreshToken.post('/accounts/createDepositAccount', {
-                accountNumber,
-                customer_id: customerId,
-                account_type: '예금',
-                account_pwd: password,
-                balance: amount,
-                interest_rate: selectedProduct.interestRate,
-                yield_rate: 0,
-                currency_type: 'KRW',
-                account_name: selectedProduct.productName,
-                open_date: new Date()
-            });
 
             alert('예금 계좌가 성공적으로 개설되었습니다.');
             navigate('/');
@@ -171,12 +171,11 @@ const DepositJoin = () => {
                     </div>
                     <form onSubmit={handleSubmit} className="depositForm">
                         <div className="formGroup">
-                            <label>초기 입금액</label>
+                        <label>초기 입금액</label>
                             <input
-                                type="number"
+                                type="text"
                                 value={amount}
-                                onChange={(e) => setAmount(e.target.value)}
-                                min={selectedProduct.minAmount}
+                                onChange={handleAmountChange}
                                 required
                             />
                             <div className="formHint">

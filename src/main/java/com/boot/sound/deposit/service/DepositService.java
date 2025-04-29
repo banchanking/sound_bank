@@ -77,12 +77,10 @@ public class DepositService {
             throw new RuntimeException("이미 존재하는 계좌번호입니다.");
         }
 
-
         // 5. ✅ 먼저 출금 계좌에서 초기입금액만큼 빼기
         if (depositDAO.withdrawFromAccount(account.getWithdrawalAccountNumber(), account.getBalance()) != 1) {
             throw new RuntimeException("출금 계좌 잔액 차감 실패");
         }
-
 
         // 6. 예금계좌 생성
         if (depositDAO.createDepositAccount(account) != 1) {
@@ -116,23 +114,16 @@ public class DepositService {
 
         if (depositDAO.withdrawFromAccount(account.getWithdrawalAccountNumber(), account.getMonthlyAmount()) != 1) {
             throw new RuntimeException("출금 계좌 잔액 차감 실패");
-            
-            
+                
         }
-        
         if (depositDAO.checkAccountNumber(accountNumber) > 0) {
             throw new RuntimeException("이미 존재하는 계좌번호입니다.");
-        }
-        
+        }    
         account.setAccountStatus("ACTIVE");
         
         if (depositDAO.createSavingsAccount(account) != 1) {
             throw new RuntimeException("적금 계좌 생성에 실패했습니다.");
         }
-       
-        
-        
-
         // 최초 거래내역 생성
         DepositDTO transaction = new DepositDTO();
         transaction.setAccountId(account.getId());
@@ -150,48 +141,55 @@ public class DepositService {
 
  // 예금 해지
     @Transactional
-    public void closeDepositAccount(String accountId, String accountPassword) {
-        String customerId = depositDAO.getCustomerIdFromDepositAccount(accountId);
-        System.out.println("넘어온 accountId = " + accountId);
+    public void closeDepositAccount(String accountNumber, String accountPassword) {
+        String customerId = depositDAO.getCustomerIdFromDepositAccount(accountNumber);
+        String mainAccountNumber = depositDAO.getMainAccountNumber(customerId);
 
-        BigDecimal balance = depositDAO.getDepositBalanceByAccountNumber(accountId); // O
+        if (mainAccountNumber == null) {
+            throw new RuntimeException("기본 계좌를 찾을 수 없습니다.");
+        }
+
+        BigDecimal balance = depositDAO.getDepositBalanceByAccountNumber(accountNumber);
 
         if (balance == null) {
             throw new RuntimeException("계좌를 찾을 수 없습니다.");
         }
 
         if (balance.compareTo(BigDecimal.ZERO) > 0) {
-            depositDAO.transferBalanceToMainAccount(customerId, balance);
+            depositDAO.transferBalance(accountNumber, mainAccountNumber, balance);
         }
 
-        if (depositDAO.closeDepositAccount(accountId, accountPassword) != 1) {
+        if (depositDAO.closeDepositAccount(accountNumber, accountPassword) != 1) {
             throw new RuntimeException("예금 계좌 삭제에 실패했습니다.");
         }
-
-        accountService.updateAccountStatusToClosed(accountId);
     }
+
 
     // 적금 해지
     @Transactional
-    public void closeSavingsAccount(String accountId, String accountPassword) {
-        String customerId = depositDAO.getCustomerIdFromSavingsAccount(accountId);
+    public void closeSavingsAccount(String accountNumber, String accountPassword) {
+        String customerId = depositDAO.getCustomerIdFromSavingsAccount(accountNumber);
+        String mainAccountNumber = depositDAO.getMainAccountNumber(customerId);
 
-        BigDecimal balance = depositDAO.getDepositBalanceByAccountNumber(accountId); // O
+        if (mainAccountNumber == null) {
+            throw new RuntimeException("기본 계좌를 찾을 수 없습니다.");
+        }
+
+        BigDecimal balance = depositDAO.getSavingsAccountBalanceByAccountNumber(accountNumber);
 
         if (balance == null) {
             throw new RuntimeException("계좌를 찾을 수 없습니다.");
         }
 
         if (balance.compareTo(BigDecimal.ZERO) > 0) {
-            depositDAO.transferBalanceToMainAccount(customerId, balance);
+            depositDAO.transferBalance(accountNumber, mainAccountNumber, balance);
         }
 
-        if (depositDAO.closeSavingsAccount(accountId, accountPassword) != 1) {
+        if (depositDAO.closeSavingsAccount(accountNumber, accountPassword) != 1) {
             throw new RuntimeException("적금 계좌 삭제에 실패했습니다.");
         }
-
-        accountService.updateAccountStatusToClosed(accountId);
     }
+
 
 
 
@@ -205,29 +203,30 @@ public class DepositService {
         }
     }
 
+    // 자동이체 실행
     @Transactional
     public void processAutoTransfers() {
         int today = LocalDate.now().getDayOfMonth();
-        List<DepositDTO> accounts = depositDAO.getAutoTransferAccounts(today);
-        
-        for (DepositDTO account : accounts) {
+        List<DepositDTO> autoTransfers = depositDAO.getAutoTransferList(today);
+
+        for (DepositDTO transfer : autoTransfers) {
             try {
-                depositDAO.executeAutoTransfer(account.getId(), account.getAutoTransferAmount());
-                
-                DepositDTO transaction = new DepositDTO();
-                transaction.setAccountId(account.getId());
-                transaction.setTransactionType("AUTO_TRANSFER");
-                transaction.setTransactionAmount(account.getAutoTransferAmount());
-                transaction.setTransactionDate(LocalDateTime.now());
-                transaction.setTransactionDescription("자동이체");
-                
-                depositDAO.createDepositTransaction(transaction);
+                // ⭐ 자동이체 출금 (새 메서드 사용)
+                depositDAO.autoWithdrawFromBasicAccount(transfer.getWithdrawAccountNumber(), transfer.getTransferAmount());
+
+                // 입금
+                depositDAO.depositToDepositAccount(transfer.getTargetAccountNumber(), transfer.getTransferAmount());
+
+                // 거래내역 기록 (추가로 필요하면)
+                depositDAO.createDepositTransaction(transfer);
+
             } catch (Exception e) {
-                // 로그 기록
-                continue;
+                throw new RuntimeException("자동이체 실패: " + e.getMessage());
             }
         }
     }
+
+
 
     // 만기 처리 관련
     @Transactional

@@ -80,8 +80,6 @@ public interface DepositDAO {
 
     // 기타
     int checkAccountNumber(@Param("accountNumber") String accountNumber);
-    BigDecimal getDepositAccountBalance(@Param("accountId") String accountId);
-    BigDecimal getSavingsAccountBalance(@Param("accountId") String accountId);
     int changeDepositAccountPassword(@Param("accountId") int accountId, @Param("oldPassword") String oldPassword, @Param("newPassword") String newPassword);
     int changeSavingsAccountPassword(@Param("accountId") int accountId, @Param("oldPassword") String oldPassword, @Param("newPassword") String newPassword);
     
@@ -109,22 +107,22 @@ public interface DepositDAO {
     BigDecimal getSavingsAccountBalanceByAccountNumber(@Param("accountNumber") String accountNumber);
     
     
-    BigDecimal getDepositAccountBalance(long accountId);   // 잔액 조회
-    BigDecimal getSavingsAccountBalance(long accountId);   // 적금 잔액 조회
+    BigDecimal getDepositAccountBalance(String accountNumber);   // 잔액 조회
+    BigDecimal getSavingsAccountBalance(String accountNumber);   // 적금 잔액 조회
 
     // 예금해지
-    int closeDepositAccount(@Param("accountId") String accountId, @Param("accountPassword") String accountPassword);
+    int closeDepositAccount(@Param("accountNumber") String accountNumber, @Param("accountPassword") String accountPassword);
     // 적금해지
-    int closeSavingsAccount(@Param("accountId") String accountId, @Param("accountPassword") String accountPassword);
+    int closeSavingsAccount(@Param("accountNumber") String accountNumber, @Param("accountPassword") String accountPassword);
 
     // customer_id 가져오기 (예금)
-    String getCustomerIdFromDepositAccount(@Param("accountId") String accountId);
+    String getCustomerIdFromDepositAccount(@Param("accountNumber") String accountNumber);
 
     // customer_id 가져오기 (적금)
-    String getCustomerIdFromSavingsAccount(@Param("accountId") String accountId);
+    String getCustomerIdFromSavingsAccount(@Param("accountNumber") String accountNumber);
 
     // 기본 계좌로 잔액 이체
-    int transferBalanceToMainAccount(@Param("customerId") String customerId, @Param("balance") BigDecimal balance);
+    int transferBalanceToMainAccount(@Param("accountNumber") String accountNumber, @Param("balance") BigDecimal balance);
 
     
     // 예금 계좌 잔액 이체
@@ -147,16 +145,28 @@ public interface DepositDAO {
  // 출금계좌 잔액 차감
     int decreaseBalance(@Param("accountNumber") String accountNumber, @Param("amount") BigDecimal amount);
 
-
-    
-//    BigDecimal getDepositBalanceByAccountNumber(@Param("accountNumber") String accountNumber);
-//    BigDecimal getSavingsBalanceByAccountNumber(@Param("accountNumber") String accountNumber);
     
     BigDecimal getDepositBalanceByAccountNumber(@Param("accountNumber") String accountNumber);
     BigDecimal getSavingsBalanceByAccountNumber(@Param("accountNumber") String accountNumber);
 
+    String getMainAccountNumber(@Param("customerId") String customerId);
+
+    
+    int transferBalance(@Param("fromAccountNumber") String fromAccountNumber,
+            @Param("toAccountNumber") String toAccountNumber,
+            @Param("amount") BigDecimal amount);
 
 
+ // 자동이체 리스트 조회
+    List<DepositDTO> getAutoTransferList(@Param("today") int today);
 
+    // 출금 처리
+ // 자동이체 출금 (새 메서드)
+    int autoWithdrawFromBasicAccount(@Param("accountNumber") String accountNumber, @Param("amount") BigDecimal amount);
+
+    // 입금 처리
+    int depositToDepositAccount(@Param("accountNumber") String accountNumber, @Param("amount") BigDecimal amount);
+
+    
 
 } 
