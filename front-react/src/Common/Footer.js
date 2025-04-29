@@ -15,7 +15,6 @@ const Footer = () => {
             혁신적인 금융 서비스로 당신의 미래를 설계합니다.
           </p>
         </div>
-
         <div className="footer-links">
           <div className="link-group">
             <h4 className="link-title">회사</h4>
@@ -28,17 +27,17 @@ const Footer = () => {
           <div className="link-group">
             <h4 className="link-title">고객센터</h4>
             <ul>
-              <li><Link to="/#">FAQ</Link></li>
-              <li><Link to="/#">문의</Link></li>
-              <li><Link to="/#">이용약관</Link></li>
+              <li><Link to="/faq">FAQ</Link></li>
+              <li><Link to="/chatbot">챗봇</Link></li>
+              <li><Link to="/businesshour">이용시간</Link></li>
             </ul>
           </div>
           <div className="link-group">
             <h4 className="link-title">서비스</h4>
             <ul>
-              <li><Link to="/#">예적금</Link></li>
-              <li><Link to="/#">대출</Link></li>
-              <li><Link to="/#">펀드</Link></li>
+              <li><Link to="/ex_rate">외환</Link></li>
+              <li><Link to="/loanApply">대출</Link></li>
+              <li><Link to="/openAccount">펀드</Link></li>
             </ul>
           </div>
         </div>
