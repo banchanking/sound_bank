@@ -225,7 +225,7 @@ const Join = () => {
               <label>아이디</label>
               <div className={styles.rowGroup1}>
                 <input type="text" name="customer_id" value={form.customer_id} onChange={handleChange} required />
-                <button type="button" onClick={confirmId}>중복확인</button>
+                <button className={styles.idButton} type="button" onClick={confirmId}>중복확인</button>
               </div>
             </div>
             <div>
@@ -253,7 +253,7 @@ const Join = () => {
               <label>주소</label>
               <div className={styles.addressGroup}>
                 <input type="text" name="sample6_postcode" className={styles.postcode} value={form.sample6_postcode} readOnly />
-                <button type="button" className={styles.searchBtn} onClick={execDaumPostcode}>우편번호 찾기</button>
+                <button type="button" className={styles.searchCodeBtn} onClick={execDaumPostcode}>우편번호 찾기</button>
                 <div className={styles.row2}>
                   <input type="text" name="sample6_address" value={form.sample6_address} readOnly />
                 </div>
@@ -271,7 +271,7 @@ const Join = () => {
               <input type="text" name="customer_hp2" className={styles.shortInput} value={form.customer_hp2} onChange={handleChange} />
               -
               <input type="text" name="customer_hp3" className={styles.shortInput} value={form.customer_hp3} onChange={handleChange} />
-              <button type="button" onClick={handleSendSMS}>휴대폰 인증</button>
+              <button className={styles.phoneButton} type="button" onClick={handleSendSMS}>휴대폰 인증</button>
             </div>
             {isPhoneVerified && (
               <span style={{ color: "green", fontSize: "14px", marginLeft: "10px" }}>
@@ -319,9 +319,9 @@ const Join = () => {
               </select>
             </div>
             <div className={styles.bottomButton}>
-              <button type="submit">회원가입</button>
-              <button type="button" onClick={handleReset}>초기화</button>
-              <button type="button" onClick={() => window.location.href = '/'}>가입취소</button>
+              <button className={styles.joinSendBtn}type="submit">회원가입</button>
+              <button className={styles.joinSendBtn}type="button" onClick={handleReset}>초기화</button>
+              <button className={styles.joinSendBtn}type="button" onClick={() => window.location.href = '/'}>가입취소</button>
             </div>
           </form>
         </div>

@@ -67,7 +67,7 @@ Command Prompt로 이동후 (Launch Profile ∨ 버튼)
 (base) D:\DEV\workspace_springBoot_ict04\sound_bank\front-react> 라고 돼있는지 확인
 
 cd front-react/src/fund/data로 이동
-python Investment_AI.py 실행
+uvicorn Investment_AI:app --reload 실행
 
 기다린다...
 

@@ -1,211 +1,189 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Card, Select, DatePicker, Button, Tag, message } from 'antd';
-import { useNavigate, useParams } from 'react-router-dom';
-import { getCustomerID, refreshAccessToken, setAuthToken } from "../../jwt/AxiosToken";
+import { useNavigate } from 'react-router-dom';
+import { getCustomerID } from "../../jwt/AxiosToken";
 import RefreshToken from "../../jwt/RefreshToken";
 import '../../Css/depositcss/DepositTransactionDetails.css';
 
-const { RangePicker } = DatePicker;
-
 const DepositTransactionDetails = () => {
     const navigate = useNavigate();
-    const { accountId } = useParams();
     const [accounts, setAccounts] = useState([]);
     const [selectedAccount, setSelectedAccount] = useState(null);
-    const [dateRange, setDateRange] = useState([]);
+    const [dateRange, setDateRange] = useState({ start: '', end: '' });
     const [transactions, setTransactions] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [accountType, setAccountType] = useState('deposit');
 
     useEffect(() => {
-        const customer_id = getCustomerID();
-        if (!customer_id) {
-            const goLogin = window.confirm(
-                "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
-            );
+        const customerId = getCustomerID();
+        if (!customerId) {
+            const goLogin = window.confirm("로그인이 필요합니다. 로그인하시겠습니까?");
             if (goLogin) {
                 navigate("/login");
-            }
-            return;
+              } else {
+                navigate("/");
+              }
+              return;      
         }
         fetchAccounts();
     }, [navigate]);
 
+    
+
     const fetchAccounts = async () => {
         try {
             const customerId = getCustomerID();
-            if (!customerId) {
-                const goLogin = window.confirm(
-                    "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
-                );
-                if (goLogin) {
-                    navigate("/login");
-                }
-                return;
-            }
-
-            const [depositResponse, savingsResponse] = await Promise.all([
+            const [depositRes, savingsRes] = await Promise.all([
                 RefreshToken.get(`/deposit/accounts/customer/${customerId}`),
                 RefreshToken.get(`/savings/accounts/customer/${customerId}`)
             ]);
+
             const allAccounts = [
-                ...depositResponse.data.map(acc => ({ ...acc, type: '예금' })),
-                ...savingsResponse.data.map(acc => ({ ...acc, type: '적금' }))
+                ...depositRes.data.map(acc => ({ ...acc, type: 'DEPOSIT' })),
+                ...savingsRes.data.map(acc => ({ ...acc, type: 'SAVINGS' }))
             ];
             setAccounts(allAccounts);
-            setLoading(false);
         } catch (error) {
             console.error('계좌 조회 에러:', error);
-            if (error.response?.status === 401) {
-                const goLogin = window.confirm(
-                    "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
-                );
-                if (goLogin) {
-                    navigate("/login");
-                }
-            } else {
-                message.error('계좌 정보를 불러오는데 실패했습니다.');
-            }
-            setLoading(false);
-        }
-    };
-
-    const fetchTransactions = async () => {
-        try {
-            setLoading(true);
-            const endpoint = accountType === 'deposit'
-                ? `/deposit/accounts/deposit/${accountId}/transactions`
-                : `/deposit/accounts/savings/${accountId}/transactions`;
-            
-            const response = await RefreshToken.get(endpoint, {
-                params: {
-                    startDate: dateRange[0].format('YYYY-MM-DD'),
-                    endDate: dateRange[1].format('YYYY-MM-DD')
-                }
-            });
-            setTransactions(response.data);
-        } catch (error) {
-            console.error('거래내역 조회 에러:', error);
-            alert('거래내역을 불러오는데 실패했습니다.');
+            alert('계좌 목록을 불러올 수 없습니다.');
         } finally {
             setLoading(false);
         }
     };
 
-    const handleAccountChange = (value) => {
-        console.log('선택된 계좌:', value);
-        setSelectedAccount(value);
+    const fetchTransactions = async () => {
+        if (!selectedAccount || !dateRange.start || !dateRange.end) return;
+
+        try {
+            setLoading(true);
+            const endpoint = selectedAccount.type === 'DEPOSIT'
+                ? `/deposit/accounts/deposit/${selectedAccount.id}/transactions`
+                : `/deposit/accounts/savings/${selectedAccount.id}/transactions`;
+
+            const response = await RefreshToken.get(endpoint, {
+                params: {
+                    startDate: dateRange.start,
+                    endDate: dateRange.end
+                }
+            });
+
+            if (Array.isArray(response.data)) {
+                setTransactions(response.data);
+            } else {
+                setTransactions([]);
+            }
+        } catch (error) {
+            console.error('거래내역 조회 에러:', error);
+            alert('거래내역을 불러오는 데 실패했습니다.');
+            setTransactions([]);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const handleDateChange = (dates) => {
-        console.log('선택된 날짜 범위:', dates);
-        setDateRange(dates);
+    const handleAccountChange = (e) => {
+        const [type, id] = e.target.value.split('-');
+        const accountId = parseInt(id, 10);
+        const account = accounts.find(a => a.id === accountId && a.type.toUpperCase() === type.toUpperCase());
+        setSelectedAccount(account);
+    };
+
+    const handleDateChange = (e) => {
+        const { name, value } = e.target;
+        setDateRange(prev => ({
+            ...prev,
+            [name]: value
+        }));
     };
 
     const handleSearch = () => {
-        if (!selectedAccount) {
-            message.error('계좌를 선택해주세요.');
+        if (!selectedAccount || !dateRange.start || !dateRange.end) {
+            alert('계좌와 날짜를 모두 선택해주세요.');
             return;
         }
-        if (!dateRange || dateRange.length !== 2) {
-            message.error('날짜 범위를 선택해주세요.');
-            return;
-        }
+        console.log('요청보낼 AccountID:', selectedAccount.id);
+        console.log('요청보낼 타입:', selectedAccount.type);
+        console.log('조회날짜:', dateRange);
         fetchTransactions();
     };
 
-    const handleExport = () => {
-        // 엑셀 다운로드 로직 구현
-        console.log('엑셀 다운로드');
-    };
-
-    const columns = [
-        {
-            title: '거래일시',
-            dataIndex: 'transactionDate',
-            key: 'transactionDate',
-        },
-        {
-            title: '거래구분',
-            dataIndex: 'transactionType',
-            key: 'transactionType',
-            render: (type) => (
-                <Tag color={type === '입금' ? 'green' : 'red'}>
-                    {type}
-                </Tag>
-            ),
-        },
-        {
-            title: '거래금액',
-            dataIndex: 'amount',
-            key: 'amount',
-            render: (amount) => `${amount.toLocaleString()}원`,
-        },
-        {
-            title: '잔액',
-            dataIndex: 'balance',
-            key: 'balance',
-            render: (balance) => `${balance.toLocaleString()}원`,
-        },
-        {
-            title: '거래내용',
-            dataIndex: 'description',
-            key: 'description',
-        },
-        {
-            title: '거래점',
-            dataIndex: 'branch',
-            key: 'branch',
-        },
-    ];
-
     return (
         <div className="depositContainer">
-            <h2 className="depositTitle">예적금 거래내역</h2>
-            <Card>
-                <div className="depositTransactionTable">
-                    <Select
-                        style={{ width: 300, marginRight: 16 }}
-                        placeholder="계좌 선택"
-                        onChange={handleAccountChange}
-                        value={selectedAccount}
-                        loading={loading}
-                    >
-                        {accounts.map(account => (
-                            <Select.Option key={account.accountNumber} value={account.accountNumber}>
-                                {account.accountNumber} ({account.type} - {account.productName})
-                            </Select.Option>
-                        ))}
-                    </Select>
-                    <RangePicker
-                        style={{ marginRight: 16 }}
-                        onChange={handleDateChange}
-                        value={dateRange}
-                    />
-                    <Button
-                        type="primary"
-                        onClick={handleSearch}
-                        style={{ marginRight: 8 }}
-                    >
-                        조회
-                    </Button>
-                    <Button
-                        onClick={handleExport}
-                    >
-                        엑셀다운로드
-                    </Button>
+          <div className="depositCard">
+            {accounts.length === 0 ? (
+              <div>현재 조회 가능한 계좌가 없습니다.</div>
+            ) : (
+              <>
+                <div className="depositProductHeader">
+                  <h2>예적금 거래내역 조회</h2>
                 </div>
+      
+                <div style={{ marginBottom: '20px' }}>
+                    <label>계좌 선택</label>
+                    <select onChange={handleAccountChange} value={selectedAccount ? `${selectedAccount.type}-${selectedAccount.id}` : ''} required>
+                      <option value="">계좌를 선택하세요</option>
+                      {accounts
+                        .filter(acc => acc.accountStatus === 'ACTIVE')
+                        .map(acc => (
+                          <option key={`${acc.type}-${acc.id}`} value={`${acc.type}-${acc.id}`}>
+                            [{acc.type === 'DEPOSIT' ? '예금' : '적금'}] {acc.accountNumber} - {acc.productName} - {acc.balance.toLocaleString()}원
+                          </option>
+                      ))}
+                    </select>
+                  </div>
 
-                <Table
-                    columns={columns}
-                    dataSource={transactions}
-                    rowKey="transactionId"
-                    loading={loading}
-                    pagination={{ pageSize: 10 }}
-                />
-            </Card>
+
+      
+                <div style={{ marginBottom: '20px' }}>
+                  <label>조회 시작일</label>
+                  <input type="date" name="start" value={dateRange.start} onChange={handleDateChange} />
+                  <label>조회 종료일</label>
+                  <input type="date" name="end" value={dateRange.end} onChange={handleDateChange} />
+                </div>
+      
+                <button className="depositBtn" onClick={handleSearch}>
+                  조회
+                </button>
+      
+                <div className="depositTableContainer">
+                  <table className="depositTable">
+                    <thead>
+                      <tr>
+                        <th>거래일시</th>
+                        <th>거래구분</th>
+                        <th>거래금액</th>
+                        <th>잔액</th>
+                        <th>거래내용</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {transactions.length > 0 ? (
+                          transactions.map(tx => (
+                            <tr key={tx.id}>
+                              <td>{tx.transactionDate}</td>
+                              <td>
+                                {selectedAccount?.type === 'SAVINGS' ? '적금' : '예금'}
+                              </td>
+                              <td>{tx.transactionAmount?.toLocaleString()}원</td>
+                              <td>{tx.balance?.toLocaleString()}원</td>
+                              <td>{tx.transactionDescription}</td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan="5">거래내역이 없습니다.</td>
+                          </tr>
+                        )}
+                      </tbody>
+
+
+                  </table>
+                </div>
+              </>
+            )}
+          </div>
         </div>
-    );
+      );
+      
+      
 };
 
 export default DepositTransactionDetails;

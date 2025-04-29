@@ -1,185 +1,180 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Select, Button, Card, message, InputNumber, Modal } from 'antd';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { getCustomerID } from "../../jwt/AxiosToken";
 import RefreshToken from "../../jwt/RefreshToken";
 import '../../Css/depositcss/DepositWithdrawal.css';
 
-const { Option } = Select;
-
 const DepositWithdrawal = () => {
     const navigate = useNavigate();
-    const { accountId } = useParams();
-    const [form] = Form.useForm();
     const [accounts, setAccounts] = useState([]);
     const [selectedAccount, setSelectedAccount] = useState(null);
     const [accountBalance, setAccountBalance] = useState(0);
-    const [loading, setLoading] = useState(true);
+    const [amount, setAmount] = useState('');
+    const [password, setPassword] = useState('');
+    const [accountType, setAccountType] = useState('DEPOSIT');
     const customerId = getCustomerID();
-    const [accountType, setAccountType] = useState('deposit');
 
-    useEffect(() => {
-        if (!customerId) {
-            const goLogin = window.confirm(
-                "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
-            );
-            if (goLogin) {
-                navigate("/login");
-            }
-            return;
-        }
-        fetchAccounts();
-    }, [navigate, customerId]);
+            useEffect(() => {
+                 const customerId = getCustomerID();
+                 if (!customerId) {
+                     const goLogin = window.confirm("로그인이 필요합니다. 로그인하시겠습니까?");
+                     if (goLogin) {
+                        navigate("/login");
+                      } else {
+                        navigate("/");
+                      }
+                      return;      
+                 }
+                 fetchAccounts();
+             }, [navigate]);
 
     const fetchAccounts = async () => {
         try {
-            const response = await RefreshToken.get(`/deposit/accounts/customer/${customerId}`);
-            setAccounts(response.data);
+            const [depositRes, savingsRes] = await Promise.all([
+                RefreshToken.get(`/deposit/accounts/customer/${customerId}`),
+                RefreshToken.get(`/savings/accounts/customer/${customerId}`)
+            ]);
+            const allAccounts = [
+                ...depositRes.data.map(acc => ({ ...acc, type: 'DEPOSIT' })),
+                ...savingsRes.data.map(acc => ({ ...acc, type: 'SAVINGS' }))
+            ];
+            setAccounts(allAccounts);
         } catch (error) {
             console.error('계좌 조회 에러:', error);
-            message.error('계좌 정보를 불러오는데 실패했습니다.');
+            alert('계좌 목록을 불러오는 데 실패했습니다.');
         }
     };
 
-    const handleAccountChange = async (accountNumber) => {
-        setSelectedAccount(accountNumber);
-        try {
-            const response = await RefreshToken.get(`/deposit/accounts/${accountNumber}`);
-            setAccountBalance(response.data.balance);
-            form.setFieldsValue({ balance: response.data.balance });
-            setAccountType(response.data.productType);
-        } catch (error) {
-            console.error('계좌 잔액 조회 에러:', error);
-            message.error('계좌 잔액을 불러오는데 실패했습니다.');
+    const handleAccountChange = async (e) => {
+        const [type, id] = e.target.value.split('-');
+        const accountId = parseInt(id, 10);
+        const selected = accounts.find(acc => acc.id === accountId && acc.type === type);
+
+        if (selected) {
+            setSelectedAccount(selected);
+            setAccountType(type);
+
+            try {
+                const url = type === 'DEPOSIT'
+                    ? `/deposit/accounts/balance/${selected.accountNumber}`
+                    : `/deposit/accounts/savings/balance/${selected.accountNumber}`;
+
+                const response = await RefreshToken.get(url);
+                setAccountBalance(response.data);
+            } catch (error) {
+                console.error('잔액 조회 에러:', error);
+                alert('잔액을 불러오는 데 실패했습니다.');
+            }
         }
     };
 
-    const handleWithdrawal = async (values) => {
-        try {
-            const endpoint = accountType === 'deposit'
-                ? `/deposit/accounts/deposit/${selectedAccount}/withdraw`
-                : `/deposit/accounts/savings/${selectedAccount}/withdraw`;
-            
-            await RefreshToken.post(endpoint, {
-                transactionAmount: values.amount,
-                accountPassword: values.password
-            });
-            
-            message.success('출금이 완료되었습니다.');
-            form.resetFields();
-            fetchAccounts();
-        } catch (error) {
-            console.error('출금 에러:', error);
-            message.error('출금에 실패했습니다.');
+    const handleTransaction = async (type) => {
+        if (!selectedAccount) {
+            alert('계좌를 선택하세요.');
+            return;
         }
-    };
-
-    const handleSubmit = async (values) => {
-        if (values.amount > accountBalance) {
-            message.error('출금 금액이 잔액보다 큽니다.');
+        if (!amount || amount <= 0) {
+            alert('금액을 입력하세요.');
+            return;
+        }
+        if (!password || password.length !== 4) {
+            alert('비밀번호를 4자리 입력하세요.');
             return;
         }
 
-        setLoading(true);
         try {
-            await handleWithdrawal(values);
-        } finally {
-            setLoading(false);
-        }
-    };
+            const endpoint = accountType === 'DEPOSIT'
+                ? `/deposit/accounts/deposit/${selectedAccount.id}/${type}`
+                : `/deposit/accounts/savings/${selectedAccount.id}/${type}`;
 
-    const showConfirm = () => {
-        Modal.confirm({
-            title: '출금 확인',
-            content: '정말 출금하시겠습니까?',
-            okText: '확인',
-            cancelText: '취소',
-            onOk: () => form.submit()
-        });
+            await RefreshToken.post(endpoint, {
+                transactionAmount: amount,
+                accountPassword: password
+            });
+
+            alert(`${type === 'deposit' ? '입금' : '출금'}이 완료되었습니다.`);
+            setAmount('');
+            setPassword('');
+            fetchAccounts();
+        } catch (error) {
+            console.error(`${type === 'deposit' ? '입금' : '출금'} 요청 실패:`, error);
+            alert(`${type === 'deposit' ? '입금' : '출금'}에 실패했습니다.`);
+        }
     };
 
     return (
         <div className="depositContainer">
-            <h2 className="depositTitle">예금 출금</h2>
-            <Card>
-                <Form
-                    form={form}
-                    layout="vertical"
-                    onFinish={handleSubmit}
-                >
-                    <Form.Item
-                        name="accountNumber"
-                        label="출금계좌"
-                        rules={[{ required: true, message: '출금계좌를 선택해주세요' }]}
-                    >
-                        <Select
-                            placeholder="출금계좌 선택"
-                            onChange={handleAccountChange}
-                        >
-                            {accounts.map(account => (
-                                <Option key={account.accountNumber} value={account.accountNumber}>
-                                    {account.accountNumber} ({account.productName})
-                                </Option>
+            <div className="depositCard">
+                <div className="depositProductHeader">
+                    <h2>예적금 입출금</h2>
+                </div>
+
+                <form className="depositForm" onSubmit={(e) => e.preventDefault()}>
+                    <div className="formGroup">
+                        <label>계좌 선택</label>
+                        <select onChange={handleAccountChange} required>
+                            <option value="">계좌 선택</option>
+                            {accounts.map(acc => (
+                                <option key={`${acc.type}-${acc.id}`} value={`${acc.type}-${acc.id}`}>
+                                    [{acc.type === 'DEPOSIT' ? '예금' : '적금'}] {acc.accountNumber}
+                                </option>
                             ))}
-                        </Select>
-                    </Form.Item>
+                        </select>
+                    </div>
 
-                    <Form.Item
-                        name="balance"
-                        label="계좌잔액"
-                    >
-                        <InputNumber
-                            style={{ width: '100%' }}
-                            disabled
-                            formatter={value => `${value.toLocaleString()}원`}
-                        />
-                    </Form.Item>
+                    {selectedAccount && (
+                        <>
+                            <div className="formGroup">
+                                <label>현재 잔액</label>
+                                <input type="text" value={`${accountBalance.toLocaleString()}원`} disabled />
+                            </div>
 
-                    <Form.Item
-                        name="amount"
-                        label="출금금액"
-                        rules={[
-                            { required: true, message: '출금금액을 입력해주세요' },
-                            { type: 'number', min: 1, message: '출금금액은 1원 이상이어야 합니다' }
-                        ]}
-                    >
-                        <InputNumber
-                            style={{ width: '100%' }}
-                            min={1}
-                            step={1000}
-                            formatter={value => `${value.toLocaleString()}원`}
-                            parser={value => value.replace(/\원\s?|(,*)/g, '')}
-                        />
-                    </Form.Item>
+                            <div className="formGroup">
+                                <label>금액</label>
+                                <input
+                                        type="text"
+                                        value={amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                                        onChange={(e) => {
+                                            const rawValue = e.target.value.replace(/,/g, ""); // 콤마 제거하고
+                                            if (!isNaN(rawValue)) { // 숫자면만
+                                                setAmount(rawValue); // 상태에 숫자만 저장
+                                            }
+                                        }}
+                                        required
+                                    />
+                            </div>
 
-                    <Form.Item
-                        name="password"
-                        label="계좌비밀번호"
-                        rules={[{ required: true, message: '계좌비밀번호를 입력해주세요' }]}
-                    >
-                        <Input.Password placeholder="계좌비밀번호 4자리" maxLength={4} />
-                    </Form.Item>
+                            <div className="formGroup">
+                                <label>계좌 비밀번호 (4자리)</label>
+                                <input
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    maxLength={4}
+                                    required
+                                />
+                            </div>
 
-                    <Form.Item
-                        name="description"
-                        label="출금사유"
-                    >
-                        <Input.TextArea rows={2} placeholder="출금사유를 입력해주세요" />
-                    </Form.Item>
-
-                    <Form.Item>
-                        <Button
-                            type="primary"
-                            htmlType="button"
-                            onClick={showConfirm}
-                            loading={loading}
-                            style={{ width: '100%' }}
-                        >
-                            출금하기
-                        </Button>
-                    </Form.Item>
-                </Form>
-            </Card>
+                            <div className="formGroup" style={{ display: 'flex', gap: '10px' }}>
+                                <button
+                                    type="button"
+                                    className="depositBtn"
+                                    onClick={() => handleTransaction('deposit')}
+                                >
+                                    입금하기
+                                </button>
+                                <button
+                                    type="button"
+                                    className="depositBtn"
+                                    onClick={() => handleTransaction('withdraw')}
+                                >
+                                    출금하기
+                                </button>
+                            </div>
+                        </>
+                    )}
+                </form>
+            </div>
         </div>
     );
 };

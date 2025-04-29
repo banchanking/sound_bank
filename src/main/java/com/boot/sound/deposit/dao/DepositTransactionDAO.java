@@ -40,4 +40,8 @@ public interface DepositTransactionDAO {
     // 적금 계좌 잔액 업데이트
     int updateSavingsAccountBalance(@Param("accountNumber") String accountNumber, 
                                   @Param("balance") BigDecimal balance);
+
+	BigDecimal getDepositAccountBalance(String accountNumber);
+
+	BigDecimal getSavingsAccountBalance(String accountNumber);
 } 

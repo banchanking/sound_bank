@@ -27,20 +27,42 @@ public interface DepositDAO {
     // 계좌 생성/해지
     int createDepositAccount(DepositDTO dto);
     int createSavingsAccount(DepositDTO dto);
-    int closeDepositAccount(@Param("accountId") int accountId, @Param("accountPassword") String accountPassword);
-    int closeSavingsAccount(@Param("accountId") int accountId, @Param("accountPassword") String accountPassword);
 
-    // 입출금
-    int deposit(@Param("accountId") int accountId, @Param("transactionAmount") BigDecimal transactionAmount);
-    int withdraw(@Param("accountId") int accountId, @Param("transactionAmount") BigDecimal transactionAmount);
-    int depositSavings(@Param("accountId") int accountId, @Param("transactionAmount") BigDecimal transactionAmount);
-    int withdrawSavings(@Param("accountId") int accountId, @Param("transactionAmount") BigDecimal transactionAmount);
+ // 예금 계좌 비밀번호 조회
+    String getDepositAccountPassword(@Param("accountId") int accountId);
+    
+
+    // 적금 계좌 비밀번호 조회
+    String getSavingsAccountPassword(@Param("accountId") int accountId);
+
+ // 예금 계좌 입금
+    int deposit(@Param("accountId") int accountId, @Param("amount") BigDecimal amount);
+
+    // 예금 계좌 출금
+    int withdraw(@Param("accountId") int accountId, @Param("amount") BigDecimal amount);
+
+    // 적금 계좌 입금
+    int depositSavings(@Param("accountId") int accountId, @Param("amount") BigDecimal amount);
+
+    // 적금 계좌 출금
+    int withdrawSavings(@Param("accountId") int accountId, @Param("amount") BigDecimal amount);
+
+
 
     // 거래 내역
     int createDepositTransaction(@Param("transaction") DepositDTO transaction);
     int createSavingsTransaction(@Param("transaction") DepositDTO transaction);
-    List<DepositDTO> getDepositTransactions(@Param("accountId") int accountId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
-    List<DepositDTO> getSavingsTransactions(@Param("accountId") int accountId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    List<DepositDTO> getDepositTransactions(
+            @Param("accountId") int accountId, 
+            @Param("startDate") LocalDateTime startDate, 
+            @Param("endDate") LocalDateTime endDate
+        );
+
+    List<DepositDTO> getSavingsTransactions(
+            @Param("accountId") int accountId, 
+            @Param("startDate") LocalDateTime startDate, 
+            @Param("endDate") LocalDateTime endDate
+        );
 
     // 자동이체
     int setAutoTransfer(@Param("accountId") int accountId, @Param("enabled") boolean enabled, @Param("amount") BigDecimal amount, @Param("transferDay") int transferDay);
@@ -58,8 +80,8 @@ public interface DepositDAO {
 
     // 기타
     int checkAccountNumber(@Param("accountNumber") String accountNumber);
-    BigDecimal getDepositAccountBalance(@Param("accountId") int accountId);
-    BigDecimal getSavingsAccountBalance(@Param("accountId") int accountId);
+    BigDecimal getDepositAccountBalance(@Param("accountId") String accountId);
+    BigDecimal getSavingsAccountBalance(@Param("accountId") String accountId);
     int changeDepositAccountPassword(@Param("accountId") int accountId, @Param("oldPassword") String oldPassword, @Param("newPassword") String newPassword);
     int changeSavingsAccountPassword(@Param("accountId") int accountId, @Param("oldPassword") String oldPassword, @Param("newPassword") String newPassword);
     
@@ -70,8 +92,71 @@ public interface DepositDAO {
     int addSavingsProduct(DepositDTO dto);
 
     // 예금 상품 수정
-    int updateDepositProduct(int productId, DepositDTO dto);
+    int updateDepositProduct(@Param("productId") int productId, @Param("dto") DepositDTO dto);
+
+    // 예금 상품 삭제
+    int deleteDepositProduct(@Param("productId") String productId);
     
-    // 예금 상품 삭제 
-    int deleteDepositProduct(int productId);
+    
+    // 적금 상품 수정
+    int updateSavingsProduct(@Param("productId") int productId, @Param("dto") DepositDTO dto);
+
+    // 적금 상품 삭제
+    int deleteSavingsProduct(@Param("productId") String productId);
+    
+    BigDecimal getDepositAccountBalanceByAccountNumber(@Param("accountNumber") String accountNumber);
+    
+    BigDecimal getSavingsAccountBalanceByAccountNumber(@Param("accountNumber") String accountNumber);
+    
+    
+    BigDecimal getDepositAccountBalance(long accountId);   // 잔액 조회
+    BigDecimal getSavingsAccountBalance(long accountId);   // 적금 잔액 조회
+
+    // 예금해지
+    int closeDepositAccount(@Param("accountId") String accountId, @Param("accountPassword") String accountPassword);
+    // 적금해지
+    int closeSavingsAccount(@Param("accountId") String accountId, @Param("accountPassword") String accountPassword);
+
+    // customer_id 가져오기 (예금)
+    String getCustomerIdFromDepositAccount(@Param("accountId") String accountId);
+
+    // customer_id 가져오기 (적금)
+    String getCustomerIdFromSavingsAccount(@Param("accountId") String accountId);
+
+    // 기본 계좌로 잔액 이체
+    int transferBalanceToMainAccount(@Param("customerId") String customerId, @Param("balance") BigDecimal balance);
+
+    
+    // 예금 계좌 잔액 이체
+    int transferDepositBalanceToAccount(@Param("accountNumber") String accountNumber, @Param("balance") BigDecimal balance);
+
+    // 적금 계좌 잔액 이체 (이것도 같이)
+    int transferSavingsBalanceToAccount(@Param("accountNumber") String accountNumber, @Param("balance") BigDecimal balance);
+    
+    // 예금 별명 변경
+    int updateNickname(@Param("accountId") String accountId, @Param("nickname") String nickname);
+    
+ // 적금 별명 업데이트
+    int updateSavingsNickname(@Param("accountId") String accountId, @Param("nickname") String nickname);
+
+
+ // 출금계좌 잔액 차감
+    int withdrawFromAccount(@Param("accountNumber") String accountNumber, @Param("amount") BigDecimal amount);
+
+
+ // 출금계좌 잔액 차감
+    int decreaseBalance(@Param("accountNumber") String accountNumber, @Param("amount") BigDecimal amount);
+
+
+    
+//    BigDecimal getDepositBalanceByAccountNumber(@Param("accountNumber") String accountNumber);
+//    BigDecimal getSavingsBalanceByAccountNumber(@Param("accountNumber") String accountNumber);
+    
+    BigDecimal getDepositBalanceByAccountNumber(@Param("accountNumber") String accountNumber);
+    BigDecimal getSavingsBalanceByAccountNumber(@Param("accountNumber") String accountNumber);
+
+
+
+
+
 } 

@@ -14,4 +14,14 @@ public interface AccountDAO {
 	
     public void insertAccount(AccountDTO account);
     
+    // 입출금 계좌 해지
+    public void deleteAccount(String account_number);
+    
+    // 예적금 가입시 기본계좌에 등록
+    public void insertDepositAccount(AccountDTO account);
+    
+    // 입출금 계좌 상태 변경 (해지)
+    void updateAccountStatusToClosed(String accountNumber);
+
+    
 }

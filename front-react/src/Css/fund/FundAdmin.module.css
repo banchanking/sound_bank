@@ -350,6 +350,16 @@
   transition: border-color 0.3s ease;
 }
 
+.disabledButton {
+  background: #ccc;
+  color: #555;
+  font-weight: bold;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: not-allowed;
+}
+
 /* fadeInUp 애니메이션 */
 @keyframes fadeInUp {
   from {

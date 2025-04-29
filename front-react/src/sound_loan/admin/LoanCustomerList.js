@@ -27,9 +27,13 @@ const LoanCustomerList = () => {
   };
 
   const handleSearch = () => {
-    const filtered = loanStatus.filter((loan) =>
-      loan.customerId.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filtered = loanStatus.filter((loan) => {
+      const lowerSearchTerm = searchTerm.toLowerCase();
+      return (
+        loan.customerId.toLowerCase().includes(lowerSearchTerm) ||
+        loan.loanProgress.toLowerCase().includes(lowerSearchTerm)
+      );
+    });
     setFilteredList(filtered);
     setCurrentPage(1);
   };
@@ -99,7 +103,7 @@ const LoanCustomerList = () => {
       <div className="loanCustomer-searchBar">
         <input
           type="text"
-          placeholder="고객 아이디를 입력하세요"
+          placeholder="고객 아이디 / 대출진행상태"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
