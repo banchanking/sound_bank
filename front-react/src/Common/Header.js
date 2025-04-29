@@ -75,9 +75,16 @@ const Header = () => {
   }, [localStorage.getItem("customerId")]);
 
   const logout = () => {
-    RefreshToken.post("/logout", {
-      customerId: localStorage.getItem("customerId"),
-    })
+    RefreshToken.post(
+      "/logout",
+      {
+        customerId: localStorage.getItem("customerId"),
+        role: localStorage.getItem("role"),
+      },
+      {
+        withCredentials: true,
+      }
+    )
       .then((res) => {
         console.log(res.data);
         localStorage.removeItem("auth_token");
@@ -139,9 +146,7 @@ const Header = () => {
               >
                 <div className="deposit-saving-row">
                   <ul>
-                    <NavDropdown.Item>
-                      조회/입출금
-                    </NavDropdown.Item>
+                    <NavDropdown.Item>조회/입출금</NavDropdown.Item>
                     <li>
                       <NavDropdown.Item
                         className="sub-item"
@@ -171,9 +176,7 @@ const Header = () => {
                     </li>
                   </ul>
                   <ul>
-                    <NavDropdown.Item>
-                      상품가입
-                    </NavDropdown.Item>
+                    <NavDropdown.Item>상품가입</NavDropdown.Item>
                     <li>
                       <NavDropdown.Item
                         className="sub-item"
@@ -203,9 +206,7 @@ const Header = () => {
                     </li>
                   </ul>
                   <ul>
-                    <NavDropdown.Item>
-                      예금관리
-                    </NavDropdown.Item>
+                    <NavDropdown.Item>예금관리</NavDropdown.Item>
                     <li>
                       <NavDropdown.Item
                         className="sub-item"
@@ -265,9 +266,7 @@ const Header = () => {
               >
                 <div className="deposit-saving-row">
                   <ul>
-                    <NavDropdown.Item>
-                      조회
-                    </NavDropdown.Item>
+                    <NavDropdown.Item>조회</NavDropdown.Item>
                     <li>
                       <NavDropdown.Item
                         className="sub-item"
@@ -298,9 +297,7 @@ const Header = () => {
                   </ul>
 
                   <ul>
-                    <NavDropdown.Item>
-                      이체
-                    </NavDropdown.Item>
+                    <NavDropdown.Item>이체</NavDropdown.Item>
                     <li>
                       <NavDropdown.Item
                         className="sub-item"

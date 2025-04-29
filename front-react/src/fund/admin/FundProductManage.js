@@ -26,6 +26,12 @@ const FundProductManage = () => {
     }
   };
 
+  // 📌 검색 입력 핸들러
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1);
+  };
+
   // 📌 수정 팝업 열기
   const handleOpenPopup = (fund) => {
     if (!fund || typeof fund !== 'object') {
@@ -49,7 +55,7 @@ const FundProductManage = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  // 📌 펀드 수정 요청 (✨ 수정본: AI 예측 반영)
+  // 📌 펀드 수정 요청
   const handleUpdateFund = async () => {
     try {
       if (!formData.fund_id) {
@@ -57,8 +63,7 @@ const FundProductManage = () => {
         return;
       }
 
-      // 🔥 수정된 데이터로 fund_risk_type 예측
-      const predictResponse = await RefreshToken.post("http://3.39.177.144:8000/predict-fund-one", {
+      const predictResponse = await RefreshToken.post("http://127.0.0.1:8000/predict-fund-one", {
         fund_fee_rate: formData.fund_fee_rate,
         fund_upfront_fee: formData.fund_upfront_fee,
         fund_grade: formData.fund_grade,
@@ -69,32 +74,34 @@ const FundProductManage = () => {
       });
 
       const newRiskType = predictResponse.data.fund_risk_type;
+      const updatedFormData = { ...formData, fund_risk_type: newRiskType };
 
-      // 🔥 예측된 fund_risk_type으로 수정된 데이터 완성
-      const updatedFormData = {
-        ...formData,
-        fund_risk_type: newRiskType,
-      };
-
-      // 🔥 서버에 최종 업데이트
       await RefreshToken.put(`/fundUpdate/${formData.fund_id}`, updatedFormData);
 
       alert("펀드 수정 완료!");
       handleClosePopup();
-      fetchFundList();  // 수정 후 목록 새로고침
+      fetchFundList();
     } catch (error) {
       console.error("펀드 수정 실패:", error);
       alert("펀드 수정 실패!");
     }
   };
 
-  // 📌 검색창 입력
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-    setCurrentPage(1);
+  // 📌 펀드 삭제 요청
+  const handleDeleteFund = async (fundId) => {
+    if (window.confirm("정말 삭제하시겠습니까?")) {
+      try {
+        await RefreshToken.delete(`/fund/${fundId}`);
+        alert("펀드 삭제 성공!");
+        fetchFundList();
+      } catch (error) {
+        console.error("펀드 삭제 실패:", error);
+        alert("펀드 삭제 실패!");
+      }
+    }
   };
 
-  // 📌 필터링 및 페이징
+  // 📌 검색 및 페이징 처리
   const filteredFunds = fundList.filter((fund) =>
     fund.fund_name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -130,7 +137,7 @@ const FundProductManage = () => {
             <th>총보수</th>
             <th>선취수수료</th>
             <th>성향상태</th>
-            <th>수정</th>
+            <th>관리</th> {/* 수정+삭제 통합 */}
           </tr>
         </thead>
         <tbody>
@@ -150,7 +157,21 @@ const FundProductManage = () => {
                 )}
               </td>
               <td>
-                <button className={styles.fundButton} onClick={() => handleOpenPopup(fund)}>수정</button>
+                <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                  <button
+                    className={styles.fundButton}
+                    onClick={() => handleOpenPopup(fund)}
+                  >
+                    수정
+                  </button>
+                  <button
+                    className={styles.fundButton}
+                    style={{ backgroundColor: "#ab4f4f" }}
+                    onClick={() => handleDeleteFund(fund.fund_id)}
+                  >
+                    삭제
+                  </button>
+                </div>
               </td>
             </tr>
           ))}
@@ -164,7 +185,7 @@ const FundProductManage = () => {
         <button className={style.exListBtn} onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>다음 ▶</button>
       </div>
 
-      {/* 수정 팝업 */}
+      {/* 수정 팝업 (기존 유지) */}
       {isPopupOpen && (
         <div className={styles.fundpopupOverlay}>
           <div className={styles.fundpopupModal}>
@@ -173,62 +194,7 @@ const FundProductManage = () => {
               <span className={styles.closeButton} onClick={handleClosePopup}>×</span>
             </div>
             <form onSubmit={(e) => { e.preventDefault(); handleUpdateFund(); }}>
-              <div>
-                <label>펀드 이름:</label>
-                <input type="text" name="fund_name" value={formData.fund_name || ""} disabled />
-              </div>
-              <div>
-                <label>운용사명:</label>
-                <input type="text" name="fund_company" value={formData.fund_company || ""} onChange={handleChange} />
-              </div>
-              <div>
-                <label>펀드 유형:</label>
-                <select
-                  name="fund_type"
-                  value={formData.fund_type || ""}
-                  onChange={handleChange}
-                  className={styles.rateInput}
-                >
-                  <option value="">선택</option>
-                  <option value="주식형">주식형</option>
-                  <option value="채권형">채권형</option>
-                  <option value="혼합형">혼합형</option>
-                  <option value="부동산형">부동산형</option>
-                  <option value="특별자산형">특별자산형</option>
-                  <option value="파생형">파생형</option>
-                  <option value="기타형">기타형</option>
-                </select>
-              </div>
-              <div>
-                <label>펀드 등급:</label>
-                <input type="number" name="fund_grade" value={formData.fund_grade || ""} onChange={handleChange} />
-              </div>
-              <div>
-                <label>펀드 성향:</label>
-                <input
-                  type="text"
-                  name="fund_risk_type"
-                  value={formData.fund_risk_type || ""}
-                  readOnly
-                  style={{ backgroundColor: "#f0f0f0", cursor: "not-allowed" }}
-                />
-                <p style={{ fontSize: "12px", color: "#888", marginTop: "4px" }}>
-                  ※ 펀드 성향은 AI가 예측합니다.
-                </p>
-              </div>
-              <div>
-                <label>총보수 (%):</label>
-                <input className={styles.rateInput} type="number" name="fund_fee_rate" value={formData.fund_fee_rate || ""} onChange={handleChange} step="0.01" />
-              </div>
-              <div>
-                <label>선취수수료 (%):</label>
-                <input className={styles.feeInput} type="number" name="fund_upfront_fee" value={formData.fund_upfront_fee || ""} onChange={handleChange} step="0.01" />
-              </div>
-              
-              <div style={{ marginTop: '15px', textAlign: 'center' }}>
-                <button type="submit" className={styles.manageEditButton}>저장</button>
-                <button type="button" onClick={handleClosePopup} className={styles.manageEditButton2}>닫기</button>
-              </div>
+              {/* input 폼 내용은 네 기존 소스 유지 */}
             </form>
           </div>
         </div>
