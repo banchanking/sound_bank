@@ -57,7 +57,7 @@ const FundProductManage = () => {
         return;
       }
 
-      const predictResponse = await RefreshToken.post("http://127.0.0.1:8000/predict-fund-one", {
+      const predictResponse = await RefreshToken.post("http://3.39.177.144:8000/predict-fund-one", {
         fund_fee_rate: formData.fund_fee_rate,
         fund_upfront_fee: formData.fund_upfront_fee,
         fund_grade: formData.fund_grade,
