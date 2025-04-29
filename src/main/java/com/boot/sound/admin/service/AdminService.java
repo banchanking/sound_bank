@@ -75,4 +75,9 @@ public class AdminService {
     public Boolean delete(AdminDTO dto) {
     	return dao.delete(dto);
     }
+    
+    @Transactional
+    public Boolean logout(String customerId) {
+    	return dao.logout(customerId);
+    }
 }
