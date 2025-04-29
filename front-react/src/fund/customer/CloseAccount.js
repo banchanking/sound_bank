@@ -70,40 +70,44 @@ const CloseAccount = () => {
         </thead>
 
         <tbody>
-          {fundAccounts.map((acc) => (
-            <tr key={acc.fundAccountId}>
-              <td>{acc.fundAccountNumber}</td>
-              <td>{acc.fundAccountName || "이름 없음"}</td>
-              <td>
-                <span
-                  className={`${styles.fundstatus} ${
-                    acc.status === "APPROVED"
-                      ? styles.fundapproved
-                      : acc.status === "REJECTED"
-                      ? styles.fundrejected
-                      : styles.fundpending
-                  }`}
-                >
-                  {acc.status === "APPROVED"
-                    ? "활성 (Active)"
+        {fundAccounts.map((acc) => (
+          <tr key={acc.fundAccountId}>
+            <td>{acc.fundAccountNumber}</td>
+            <td>{acc.fundAccountName || "이름 없음"}</td>
+            <td>
+              <span
+                className={`${styles.fundstatus} ${
+                  acc.status === "APPROVED"
+                    ? styles.fundapproved
                     : acc.status === "REJECTED"
-                    ? "거절 (잔여 좌수)"
-                    : "승인 대기 중"}
-                </span>
-              </td>
-              <td>
-                {acc.status === "APPROVED" && (
-                  <button
-                    className={styles.fundCloseButton}
-                    onClick={() => handleCloseAccount(acc.fundAccountId)}
-                  >
-                    해지하기
-                  </button>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
+                    ? styles.fundrejected
+                    : acc.status === "CLOSED"
+                    ? styles.fundclosed // 해지완료 스타일 추가
+                    : styles.fundpending
+                }`}
+              >
+                {acc.status === "APPROVED"
+                  ? "활성 (Active)"
+                  : acc.status === "REJECTED"
+                  ? "거절 (잔여 좌수)"
+                  : acc.status === "CLOSED"
+                  ? "해지완료" // 해지완료 상태 표시
+                  : "승인 대기 중"}
+              </span>
+            </td>
+            <td>
+              {acc.status === "APPROVED" && (
+                <button
+                  className={styles.fundCloseButton}
+                  onClick={() => handleCloseAccount(acc.fundAccountId)}
+                >
+                  해지하기
+                </button>
+              )}
+            </td>
+          </tr>
+        ))}
+      </tbody>
       </table>
     </div>
   );

@@ -26,7 +26,7 @@ const FundProductManage = () => {
     }
   };
 
-  // 📌 검색 입력 핸들러 (이거 추가!!)
+  // 📌 검색 입력 핸들러
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
     setCurrentPage(1);
@@ -91,7 +91,7 @@ const FundProductManage = () => {
   const handleDeleteFund = async (fundId) => {
     if (window.confirm("정말 삭제하시겠습니까?")) {
       try {
-        await RefreshToken.delete(`/fundDelete/${fundId}`);
+        await RefreshToken.delete(`/fund/${fundId}`);
         alert("펀드 삭제 성공!");
         fetchFundList();
       } catch (error) {
@@ -137,7 +137,7 @@ const FundProductManage = () => {
             <th>총보수</th>
             <th>선취수수료</th>
             <th>성향상태</th>
-            <th>선택</th>
+            <th>관리</th> {/* 수정+삭제 통합 */}
           </tr>
         </thead>
         <tbody>
@@ -157,22 +157,22 @@ const FundProductManage = () => {
                 )}
               </td>
               <td>
-              <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                <button
-                  className={styles.fundButton}
-                  onClick={() => handleOpenPopup(fund)}
-                >
-                  수정
-                </button>
-                <button
-                  className={styles.fundButton}
-                  style={{ backgroundColor: "#ab4f4f" }}
-                  onClick={() => handleDeleteFund(fund.fund_id)}
-                >
-                  삭제
-                </button>
-              </div>
-            </td>
+                <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                  <button
+                    className={styles.fundButton}
+                    onClick={() => handleOpenPopup(fund)}
+                  >
+                    수정
+                  </button>
+                  <button
+                    className={styles.fundButton}
+                    style={{ backgroundColor: "#ab4f4f" }}
+                    onClick={() => handleDeleteFund(fund.fund_id)}
+                  >
+                    삭제
+                  </button>
+                </div>
+              </td>
             </tr>
           ))}
         </tbody>
@@ -185,7 +185,7 @@ const FundProductManage = () => {
         <button className={style.exListBtn} onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>다음 ▶</button>
       </div>
 
-      {/* 수정 팝업 */}
+      {/* 수정 팝업 (기존 유지) */}
       {isPopupOpen && (
         <div className={styles.fundpopupOverlay}>
           <div className={styles.fundpopupModal}>
@@ -194,8 +194,7 @@ const FundProductManage = () => {
               <span className={styles.closeButton} onClick={handleClosePopup}>×</span>
             </div>
             <form onSubmit={(e) => { e.preventDefault(); handleUpdateFund(); }}>
-              {/* 기존 input 들 그대로 유지 */}
-              {/* 생략 가능: 너 소스 복붙하면 돼 */}
+              {/* input 폼 내용은 네 기존 소스 유지 */}
             </form>
           </div>
         </div>
