@@ -18,7 +18,7 @@ const Notice = () => {
 
   const fetchNotices = async (category) => {
     try {
-      const response = await axios.get(`http://15.165.57.30:8000/notices/category/${category}`);
+      const response = await axios.get(`http://3.39.177.144:8000/notices/category/${category}`);
       setNotices(response.data);
     } catch (error) {
       console.error("Error fetching notices:", error);

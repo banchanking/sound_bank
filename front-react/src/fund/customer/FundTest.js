@@ -141,7 +141,7 @@ const FundTest = () => {
       console.log("Submitting payload:", payload); // 디버깅용 로그
 
       // 서버로 POST 요청
-      const response = await axios.post("http://15.165.57.30:8000/predict-user/", payload);
+      const response = await axios.post("http://3.39.177.144:8000/predict-user/", payload);
       console.log("Server response:", response.data); // 디버깅용 로그
 
       // 결과를 결과 페이지로 이동

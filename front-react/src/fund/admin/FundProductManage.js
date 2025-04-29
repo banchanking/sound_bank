@@ -58,7 +58,7 @@ const FundProductManage = () => {
       }
 
       // 🔥 수정된 데이터로 fund_risk_type 예측
-      const predictResponse = await RefreshToken.post("http://15.165.57.30:8000/predict-fund-one", {
+      const predictResponse = await RefreshToken.post("http://3.39.177.144:8000/predict-fund-one", {
         fund_fee_rate: formData.fund_fee_rate,
         fund_upfront_fee: formData.fund_upfront_fee,
         fund_grade: formData.fund_grade,

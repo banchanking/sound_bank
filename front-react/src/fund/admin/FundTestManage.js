@@ -13,7 +13,7 @@ const FundTestManage = () => {
   const handleRetrain = async () => {
     try {
       setLoading(true);
-      const response = await RefreshToken.post("http://15.165.57.30:8000/retrain");
+      const response = await RefreshToken.post("http://3.39.177.144:8000/retrain");
       setMessage(response.data.message);
     } catch (error) {
       console.error("AI모델 재학습 요청 실패:", error);
@@ -27,7 +27,7 @@ const FundTestManage = () => {
   const handlePredictFund = async () => {
     try {
       setLoading(true);
-      const response = await RefreshToken.post("http://15.165.57.30:8000/predict-fund");
+      const response = await RefreshToken.post("http://3.39.177.144:8000/predict-fund");
       console.log("예측 결과:", response.data);
       alert("펀드 성향 예측 완료!");
       setMessage("펀드 성향 예측 완료!");
