@@ -87,7 +87,7 @@ const Join = () => {
       return;
     }
     try {
-      const res = await axios.get(`http://15.165.57.30:8081/api/idConfirmAction.do?customer_id=${form.customer_id}`);
+      const res = await axios.get(`http://3.39.177.144:8081/api/idConfirmAction.do?customer_id=${form.customer_id}`);
       const { available, message } = res.data;
       alert(message);
       setForm(prev => ({ ...prev, hiddenUserid: available ? '1' : '0' }));
@@ -126,7 +126,7 @@ const Join = () => {
     };
 
     try {
-      await axios.post('http://15.165.57.30:8081/api/joinAction.do', requestData);
+      await axios.post('http://3.39.177.144:8081/api/joinAction.do', requestData);
       alert('계좌개설 성공.\nSoundBank 이용해 주셔서 감사합니다.');
       window.location.href = '/login';
     } catch (error) {
@@ -137,7 +137,7 @@ const Join = () => {
   const handleSendSMS = async () => {
     const phoneNumber = `${form.customer_hp1}${form.customer_hp2}${form.customer_hp3}`;
     try {
-      const res = await axios.post('http://15.165.57.30:8081/api/sms/signup/request', {
+      const res = await axios.post('http://3.39.177.144:8081/api/sms/signup/request', {
         customer_phone_number: phoneNumber
       });
   
