@@ -760,12 +760,29 @@
     WHERE account_number = #{accountNumber}
 </select>
 
+
+
 <!--  적금 계좌 상세 조회 -->
-<select id="getSavingsAccountByNumber" resultType="com.boot.sound.deposit.dto.DepositDTO">
+<!-- <select id="getSavingsAccountByNumber" resultType="com.boot.sound.deposit.dto.DepositDTO">
     SELECT account_number, interest_rate, monthly_amount, term_months
     FROM SAVINGS_ACCOUNT_TBL
     WHERE account_number = #{accountNumber}
 </select>
+ -->
+ 
+ <resultMap id="SavingsAccountMap" type="com.boot.sound.deposit.dto.DepositDTO">
+    <result column="account_number" property="accountNumber"/>
+    <result column="interest_rate" property="interestRate"/>
+    <result column="monthly_amount" property="monthlyAmount"/>
+    <result column="term_months" property="termMonths"/>
+</resultMap>
+
+<select id="getSavingsAccountByNumber" resultMap="SavingsAccountMap">
+    SELECT account_number, interest_rate, monthly_amount, term_months
+    FROM SAVINGS_ACCOUNT_TBL
+    WHERE account_number = #{accountNumber}
+</select>
+ 
 
 
 
