@@ -17,14 +17,14 @@ import com.boot.sound.deposit.service.DepositTransactionService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/deposit/transactions")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class DepositTransactionController {
     
     private final DepositTransactionService depositTransactionService;
 
     // 예금 거래 내역 조회
-    @GetMapping("/deposit")
+    @GetMapping("/deposit/transactions/deposit")
     public List<DepositTransactionDTO> getDepositTransactions(
             @RequestParam String accountNumber,
             @RequestParam String startDate,
@@ -33,7 +33,7 @@ public class DepositTransactionController {
     }
 
     // 적금 거래 내역 조회
-    @GetMapping("/savings")
+    @GetMapping("/deposit/transactions/savings")
     public List<DepositTransactionDTO> getSavingsTransactions(
             @RequestParam String accountNumber,
             @RequestParam String startDate,
@@ -42,35 +42,44 @@ public class DepositTransactionController {
     }
 
     // 예금 거래 내역 상세 조회
-    @GetMapping("/deposit/{transactionId}")
+    @GetMapping("/deposit/transactions/deposit/{transactionId}")
     public DepositTransactionDTO getDepositTransactionDetail(@PathVariable int transactionId) {
         return depositTransactionService.getDepositTransactionDetail(transactionId);
     }
 
     // 적금 거래 내역 상세 조회
-    @GetMapping("/savings/{transactionId}")
+    @GetMapping("/deposit/transactions/savings/{transactionId}")
     public DepositTransactionDTO getSavingsTransactionDetail(@PathVariable int transactionId) {
         return depositTransactionService.getSavingsTransactionDetail(transactionId);
     }
 
     // 예금 입금 처리
-    @PostMapping("/deposit")
+    @PostMapping("/deposit/transactions/deposit")
     public ResponseEntity<Integer> deposit(@RequestBody DepositTransactionDTO transaction) {
         int result = depositTransactionService.deposit(transaction);
         return ResponseEntity.ok(result);
     }
     
     // 예금 출금 처리
-    @PostMapping("/withdraw")
+    @PostMapping("/deposit/transactions/withdraw")
     public ResponseEntity<Integer> withdraw(@RequestBody DepositTransactionDTO transaction) {
         int result = depositTransactionService.withdraw(transaction);
         return ResponseEntity.ok(result);
     }
     
     // 적금 입금 처리
-    @PostMapping("/savings/deposit")
+    @PostMapping("/deposit/transactions/savings/deposit")
     public ResponseEntity<Integer> savingsDeposit(@RequestBody DepositTransactionDTO transaction) {
         int result = depositTransactionService.savingsDeposit(transaction);
         return ResponseEntity.ok(result);
     }
+    
+    // 적금 출금 처리
+    @PostMapping("/deposit/transactions/savings/withdraw")
+    public ResponseEntity<Integer> savingsWithdraw(@RequestBody DepositTransactionDTO transaction) {
+        int result = depositTransactionService.savingsWithdraw(transaction);
+        return ResponseEntity.ok(result);
+    }
+    
+
 } 

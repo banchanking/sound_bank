@@ -6,34 +6,38 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
- import com.boot.sound.jwt.config.UserAuthProvider;
+import com.boot.sound.admin.service.AdminService;
+import com.boot.sound.jwt.config.UserAuthProvider;
 import com.boot.sound.jwt.dto.CredentialsDTO;
 import com.boot.sound.jwt.dto.SignUpDTO;
 import com.boot.sound.jwt.dto.UpdateDTO;
 import com.boot.sound.jwt.mappers.CustomerMapper;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
 @CrossOrigin
+@Slf4j
 public class CustomerController {
 
-    @Autowired
-    private CustomerService service;
-     private UserAuthProvider provider;
-     private CustomerMapper customerMapper;
-    
-    public CustomerController(CustomerService service,UserAuthProvider provider,CustomerMapper customerMapper) {
-    	super();
-    	this.service = service;
-    	this.provider = provider;
-    	this.customerMapper = customerMapper;
-    }
 
+    private final CustomerService service;
+     private final UserAuthProvider provider;
+     private final CustomerMapper customerMapper;
+     private final AdminService adminService;
+    
+   
     @GetMapping({"", "/"})
 	public String index() {
 		System.out.println("<<< index >>>");
@@ -79,26 +83,41 @@ public class CustomerController {
     }
 
     // 로그인
-    @PostMapping("/login.do")
-    public ResponseEntity<?> login(@RequestBody CredentialsDTO dto) {
+    @PostMapping("/login.do")	
+    public ResponseEntity<?> login(@RequestBody CredentialsDTO dto,  HttpServletResponse response) {
         System.out.println(dto);
         // 로그인한 사용자 정보 가져오기
         CustomerDTO customer = service.login(dto);
+        
+        if (customer == null) {
+            // ✨ 탈퇴 고객 응답
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("message", "signOut user"));
+        }
         // Access Token 및 Refresh Token 생성
         String accessToken = provider.createToken(customer.getCustomerId());
         String refresh_token = provider.createRefreshToken(customer.getCustomerId());
+        
+        // ✅ 쿠키에 refreshToken 심기
+        Cookie refreshTokenCookie = new Cookie("refreshToken", refresh_token);
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(false); // HTTPS 환경에서는 true
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60); // 7일
+        
+        response.addCookie(refreshTokenCookie);
 
         // Refresh Token DB에 저장
         customerMapper.saveRefreshToken(customer.getCustomerId(), refresh_token);
 
-        // 클라이언트에게 Access Token, Refresh Token 및 Customer ID 전달
-        Map<String, String> response = new HashMap<>();
-        response.put("customer_token", accessToken);
-        response.put("customerId", customer.getCustomerId()); // Customer ID 추가
+        
 
-        System.out.println(accessToken);
-        System.out.println(refresh_token);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(Map.of(
+                "customer_token", accessToken,
+                "customerId", customer.getCustomerId(),
+                "role","CUSTOMER"
+            ));
        
     }
     
@@ -118,6 +137,29 @@ public class CustomerController {
    public ResponseEntity<Boolean> checkPassword(@RequestBody CredentialsDTO request) {
        boolean isValid = service.checkPassword(request);
        return new ResponseEntity<>(isValid, HttpStatus.OK);
+   }
+   
+   // 로그아웃
+   @PostMapping("/logout")
+   public ResponseEntity<?>logout(@RequestBody Map<String, String> request, HttpServletResponse response){
+
+	   String customerId = request.get("customerId");
+	   String role = request.get("role");
+	   
+	   try {
+	   provider.deleteRefreshTokenCookie(response);
+		   if(role=="CUSTOMER") {
+			   service.logout(customerId);
+		   }
+		   else {
+			   adminService.logout(customerId);
+		   }
+		   return ResponseEntity.ok("로그아웃되었습니다");
+	   }catch(Exception e) {
+		   e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                             .body("로그아웃 중 오류가 발생했습니다"); 
+	   }
    }
    
    // 회원탈퇴

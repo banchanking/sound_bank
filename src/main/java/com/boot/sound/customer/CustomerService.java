@@ -18,12 +18,15 @@ import com.boot.sound.transfer.transLimit.TransLimitDAO;
 import com.boot.sound.transfer.transLimit.TransLimitDTO;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import com.boot.sound.jwt.config.EncryptionUtils; // 암호화 유틸 불러오기
 import java.math.BigDecimal;
 import java.nio.CharBuffer;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -31,6 +34,7 @@ import java.util.Random;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class CustomerService {
 
     @Autowired
@@ -159,6 +163,7 @@ public class CustomerService {
 // =====================================================================================
 
     // 로그인
+    @Transactional
     public CustomerDTO login(CredentialsDTO dto) {
         System.out.println("<<< CustomerService - login() >>>");
 
@@ -166,10 +171,21 @@ public class CustomerService {
                 .orElseThrow(() -> new AppException("UnKnown user", HttpStatus.NOT_FOUND));
 
         if (encoder.matches(CharBuffer.wrap(dto.getCustomer_password()), user.getCustomer_password())) {
-            return user;
+            if (customerMapper.selectSignOut(dto.getCustomerId()) > 0) {
+                return user;
+            } else {
+                log.warn("탈퇴한 고객이 로그인 시도: {}", dto.getCustomerId());
+                return null;  
+            }
         }
 
         throw new AppException("Invalid password", HttpStatus.BAD_REQUEST);
+    }
+    
+    // 로그아웃
+    @Transactional
+    public Boolean logout(String customerId) {
+    	return customerMapper.logout(customerId);
     }
 
     // 사용자 토큰 검증
@@ -256,6 +272,7 @@ public class CustomerService {
 
         if (encoder.matches(CharBuffer.wrap(dto.getCustomer_password()), user.getCustomer_password())) {
             return true;
+        	
         }
 
         throw new AppException("Invalid password", HttpStatus.BAD_REQUEST);
@@ -266,6 +283,10 @@ public class CustomerService {
         Map<String, Object> assets = customerMapper.checkCustomerAssets(customerId);
 
         List<String> activeAssets = new ArrayList<>();
+        
+        if (assets == null) {
+            assets = new HashMap<>(); // (assets null 방지)
+        }
 
         // Map을 돌면서 상품이 존재하는 것만 뽑아오기
         assets.forEach((key, value) -> {
@@ -281,6 +302,7 @@ public class CustomerService {
 
         // 가입된 상품이 없으면 삭제 진행
         customerMapper.deleteCustomer(customerId);
+        customerMapper.logout(customerId);
         return Collections.emptyList(); // 가입된 상품 없음
     }
 

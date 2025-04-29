@@ -7,16 +7,20 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 50px 20px;
 }
 
 .container {
   background: white;
   border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   padding: 40px;
   width: 100%;
   max-width: 700px;
+  animation: fadeIn 0.5s ease;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  animation: fadeInUp 0.5s ease;
+
 }
 
 h1 {
@@ -24,6 +28,7 @@ h1 {
   font-size: 28px;
   margin-bottom: 30px;
   color: #1e1e1e;
+  animation: fadeUp 0.5s ease;
 }
 
 form > div {
@@ -58,7 +63,7 @@ button,
 input[type="button"],
 input[type="submit"],
 input[type="reset"] {
-  background-color: #3182f6;
+  background-color: #383838;
   color: white;
   padding: 8px 16px;
   border: none;
@@ -66,6 +71,16 @@ input[type="reset"] {
   font-size: 14px;
   cursor: pointer;
   transition: background-color 0.2s;
+}
+
+
+
+.idButton{
+  width: 100px;
+}
+
+.phoneButton{
+  width: 100px !important;
 }
 
 .bottomButton {
@@ -86,7 +101,7 @@ button:hover,
 input[type="button"]:hover,
 input[type="submit"]:hover,
 input[type="reset"]:hover {
-  background-color: #1e65c0;
+  background-color: #555;
 }
 
 span {
@@ -143,7 +158,7 @@ select {
 .searchBtn {
   grid-column: 2 / 3;
   white-space: nowrap;
-  background-color: #3182f6;
+  background-color: #555;
   height: 40px;
   border-radius: 10px;
   color: white;
@@ -178,6 +193,7 @@ select {
   display: flex;
   justify-content: center;
   align-items: center;
+
 }
 
 .modalContent {
@@ -206,6 +222,17 @@ select {
   color: red;
   font-size: 14px;
   margin-top: 6px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 부드러운 위로 올라오는 효과 */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @media (max-width: 600px) {

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.sound.deposit.dao.DepositAutoTransferDAO">
+
+    <!-- 자동이체 등록 -->
+    <insert id="insertAutoTransfer" parameterType="com.boot.sound.deposit.dto.DepositAutoTransferDTO">
+        INSERT INTO DEPOSIT_AUTO_TRANSFER_TBL (
+            dat_id, target_account_number, transfer_amount, transfer_day, transfer_status, created_at, updated_at
+        ) VALUES (
+            #{datId}, #{targetAccountNumber}, #{transferAmount}, #{transferDay}, 'ACTIVE', NOW(), NOW()
+        )
+    </insert>
+
+    <!-- 자동이체 수정 -->
+    <update id="updateAutoTransfer">
+        UPDATE DEPOSIT_AUTO_TRANSFER_TBL
+        SET transfer_amount = #{amount},
+            transfer_day = #{transferDay},
+            target_account_number = #{targetAccountNumber},
+            updated_at = NOW()
+        WHERE auto_transfer_id = #{autoTransferId}
+    </update>
+
+    <!-- 자동이체 해지 -->
+    <delete id="deleteAutoTransfer">
+        DELETE FROM DEPOSIT_AUTO_TRANSFER_TBL
+        WHERE auto_transfer_id = #{autoTransferId}
+    </delete>
+
+    <!-- 고객별 자동이체 조회 -->
+    <select id="getAutoTransfersByCustomerId" resultType="com.boot.sound.deposit.dto.DepositAutoTransferDTO">
+        SELECT 
+            auto_transfer_id AS id,
+            dat_id AS datId,
+            target_account_number AS targetAccountNumber,
+            transfer_amount AS transferAmount,
+            transfer_day AS transferDay,
+            transfer_status AS transferStatus,
+            created_at,
+            updated_at
+        FROM DEPOSIT_AUTO_TRANSFER_TBL
+        WHERE dat_id IN (
+            SELECT dat_id FROM DEPOSIT_ACCOUNT_TBL WHERE customer_id = #{customerId}
+        )
+    </select>
+
+    <!-- 오늘 자동이체 대상 조회 -->
+    <select id="getTodayAutoTransfers" resultType="com.boot.sound.deposit.dto.DepositAutoTransferDTO">
+        SELECT 
+            auto_transfer_id AS id,
+            dat_id AS datId,
+            target_account_number AS targetAccountNumber,
+            transfer_amount AS transferAmount,
+            transfer_day AS transferDay,
+            transfer_status AS transferStatus,
+            created_at,
+            updated_at
+        FROM DEPOSIT_AUTO_TRANSFER_TBL
+        WHERE transfer_day = #{today}
+          AND transfer_status = 'ACTIVE'
+    </select>
+
+    <!-- 예금계좌 잔액 차감 (자동이체 실행) -->
+    <update id="executeAutoTransfer">
+        UPDATE DEPOSIT_ACCOUNT_TBL
+        SET balance = balance - #{amount},
+            updated_at = NOW()
+        WHERE dat_id = #{datId}
+          AND balance >= #{amount}
+          AND account_status = 'ACTIVE'
+    </update>
+    
+    <update id="withdrawFromAccount">
+    UPDATE ACCOUNT_TBL
+    SET balance = balance - #{amount}
+    WHERE account_number = #{accountNumber}
+      AND balance >= #{amount}  
+	</update>
+    
+
+</mapper>

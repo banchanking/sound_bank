@@ -1,14 +1,15 @@
+// src/components/Main.js
 import React, { useState, useEffect } from "react";
 import BlurText from "./BlurText";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faChevronLeft,
-  faChevronRight,
-} from "@fortawesome/free-solid-svg-icons";
+import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import "../Css/Common/Main.css";
 
+import TrueFocus from "./TrueFocus";
+import Orb from "./Orb"; // Orb 컴포넌트 추가
+import { useNavigate } from "react-router-dom";
+
 const Main = () => {
-  //  배너에 사용할 이미지/텍스트 데이터 배열
   const data = [
     {
       image: "./Images/main/main1.png",
@@ -27,65 +28,56 @@ const Main = () => {
     },
   ];
 
-  //  현재 보여질 슬라이드 index 상태
   const [index, setIndex] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false); // Orb 모달 상태
+  const navigate = useNavigate();
 
-  //  배너 자동 전환 로직 (4.5초마다 다음 배너로 전환)
   useEffect(() => {
-    const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % data.length); // 0 → 1 → 2 → 0 반복
-    }, 4500);
-
-    // 컴포넌트가 사라질 때 interval 제거 (메모리 누수 방지)
-    return () => clearInterval(interval);
+    const iv = setInterval(() => setIndex(i => (i + 1) % data.length), 4500);
+    return () => clearInterval(iv);
   }, [data.length]);
 
-  // 애니메이션 종료 시 (디버깅용 로그)
-  const onAnimEnd = () => console.log("Animation Done!");
+  const next = () => setIndex(i => (i + 1) % data.length);
+  const prev = () => setIndex(i => (i - 1 + data.length) % data.length);
 
-  //  수동으로 다음 슬라이드로 넘기기
-  const next = () => setIndex((prev) => (prev + 1) % data.length);
-
-  //  수동으로 이전 슬라이드로 넘기기
-  const prev = () => setIndex((prev) => (prev - 1 + data.length) % data.length);
+  const handleFocusClick = (item) => {
+    if (item.alt === "suondAI") {
+      setIsModalOpen(true); // 마이크 클릭 시 Orb 모달 열기
+    } else if (item.alt === "chatBot") {
+      navigate("/chatBot"); // 챗봇 클릭 시 기존 이동
+    }
+  };
 
   return (
     <div className="home">
       <header
         className="banner"
         style={{
-          backgroundImage: `url(${data[index].image})`, // 현재 index에 해당하는 배경 이미지
-          backgroundSize: "cover", // 배경이 영역을 꽉 채우도록
-          backgroundPosition: "center", // 이미지 중앙 정렬
-          height: "115vh", // 화면보다 약간 크게
+          backgroundImage: `url(${data[index].image})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          height: "110vh",
         }}
       >
-        {/* 어두운 반투명 배경 오버레이 */}
-        <div className="overlay"></div>
+        <div className="overlay" />
 
-        {/* 텍스트 콘텐츠 부분 */}
         <div className="content">
-          {/* 제목 - BlurText로 애니메이션 효과 적용 */}
           <BlurText
             text={data[index].title}
             delay={150}
             animateBy="words"
             direction="top"
-            onAnimationComplete={onAnimEnd}
             className="title"
           />
 
-          {/* 설명 - BlurText로 애니메이션 효과 적용 */}
           <BlurText
             text={data[index].desc}
             delay={150}
             animateBy="words"
             direction="bottom"
-            onAnimationComplete={onAnimEnd}
             className="desc"
           />
 
-          {/* 좌우 이동 버튼 */}
           <div className="buttons">
             <button onClick={prev} className="nav">
               <FontAwesomeIcon icon={faChevronLeft} />
@@ -95,6 +87,35 @@ const Main = () => {
             </button>
           </div>
         </div>
+        
+        <div className="focus-wrapper">
+          <TrueFocus
+            items={[
+              { src: "/Images/main/soundAI.png", alt: "suondAI" },
+              { src: "/Images/main/chatAI.png", alt: "chatBot" },
+            ]}
+            manualMode={true}
+            blurAmount={3}
+            borderColor="#fff"
+            animationDuration={0.3}
+            pauseBetweenAnimations={1}
+            onItemClick={handleFocusClick}
+          />
+        </div>
+
+        {isModalOpen && (
+          <div className="orb-modal">
+            <div className="orb-background" onClick={() => setIsModalOpen(false)} />
+            <div className="orb-content">
+              <Orb
+                hoverIntensity={0.5}
+                rotateOnHover={true}
+                hue={0}
+                forceHoverState={false}
+              />
+            </div>
+          </div>
+        )}
       </header>
     </div>
   );

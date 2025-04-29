@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Select, Button, Card, message, InputNumber, Modal, Descriptions } from 'antd';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Form, Input, Select, Button, Card, message } from 'antd';
+import { useNavigate } from 'react-router-dom';
 import { getCustomerID } from "../../jwt/AxiosToken";
 import RefreshToken from "../../jwt/RefreshToken";
 import '../../Css/depositcss/DepositChange.css';
@@ -9,25 +9,25 @@ const { Option } = Select;
 
 const DepositChange = () => {
     const navigate = useNavigate();
-    const { accountId } = useParams();
     const [form] = Form.useForm();
     const [accounts, setAccounts] = useState([]);
     const [selectedAccount, setSelectedAccount] = useState(null);
-    const [loading, setLoading] = useState(true);
     const customerId = getCustomerID();
 
     useEffect(() => {
         if (!customerId) {
-            const goLogin = window.confirm(
-                "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
-            );
+            const goLogin = window.confirm("로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?");
             if (goLogin) {
                 navigate("/login");
-            }
-            return;
+              } else {
+                navigate("/");
+              }
+              return;      
         }
         fetchAccounts();
     }, [navigate, customerId]);
+
+    
 
     const fetchAccounts = async () => {
         try {
@@ -35,138 +35,152 @@ const DepositChange = () => {
             setAccounts(response.data);
         } catch (error) {
             console.error('계좌 조회 에러:', error);
-            console.error('계좌 정보를 불러오는데 실패했습니다.');
+            message.error('계좌 정보를 불러오는데 실패했습니다.');
         }
     };
 
-    const handleAccountChange = async (accountId) => {
+    const handleAccountChange = (accountId) => {
         const account = accounts.find(a => a.id === accountId);
-        setSelectedAccount(account.id);
+        setSelectedAccount(account);
         form.setFieldsValue({
-            accountId: account.id,
             password: '',
-            autoTransfer: account.autoTransfer,
-            transferAccount: account.transferAccount
+            oldPassword: '',
+            nickname: account.nickname || '',
         });
     };
 
-    const handleChange = async (values) => {
-        try {
-            await RefreshToken.put(`/deposit/accounts/deposit/${selectedAccount}/password`, {
-                accountPassword: values.newPassword
-            });
-            message.success('비밀번호가 변경되었습니다.');
-            form.resetFields();
-        } catch (error) {
-            console.error('비밀번호 변경 에러:', error);
-            message.error('비밀번호 변경에 실패했습니다.');
+    const handlePasswordChange = async (values) => {
+        if (!selectedAccount) {
+            message.error('계좌를 먼저 선택해주세요.');
+            return;
         }
+    // 보내는 데이터 확인용 로그
+    console.log('변경할 비밀번호:', values);
+
+    try {
+        await RefreshToken.put(`/deposit/accounts/deposit/${selectedAccount.id}/password`, {
+            accountId: selectedAccount.id, // 이거 같이 보내야 한다!
+            oldPassword: values.oldPassword,
+            newPassword: values.newPassword
+        });
+        
+    } catch (error) {
+        console.error('비밀번호 변경 에러:', error);
+        message.error('비밀번호 변경에 실패했습니다.');
+    }
+    alert('비밀번호가 변경되었습니다.');
+    navigate('/depositAccountInquiry');
     };
 
-    const showConfirm = () => {
-        Modal.confirm({
-            title: '예금 계좌 정보 변경 확인',
-            content: (
-                <Descriptions column={1}>
-                    <Descriptions.Item label="계좌번호">{selectedAccount?.accountNumber}</Descriptions.Item>
-                    <Descriptions.Item label="자동이체 설정">{form.getFieldValue('autoTransfer') ? '설정' : '설정안함'}</Descriptions.Item>
-                    {form.getFieldValue('autoTransfer') && (
-                        <Descriptions.Item label="이체계좌">{form.getFieldValue('transferAccount')}</Descriptions.Item>
-                    )}
-                </Descriptions>
-            ),
-            okText: '확인',
-            cancelText: '취소',
-            onOk: () => form.submit()
-        });
+    const handleNicknameChange = async (values) => {
+        if (!selectedAccount) {
+            message.error('계좌를 먼저 선택해주세요.');
+            return;
+        }
+        try {
+            await RefreshToken.put(`/deposit/accounts/deposit/${selectedAccount.id}/nickname`, {
+                nickname: values.nickname
+            });
+            alert('별명이 변경되었습니다.');
+            navigate('/depositAccountInquiry');
+        } catch (error) {
+            console.error('별명 변경 에러:', error);
+            message.error('별명 변경에 실패했습니다.');
+        }
     };
 
     return (
         <div className="depositContainer">
             <h2 className="depositTitle">예금 계좌 정보 변경</h2>
             <Card>
-                <Form
-                    form={form}
-                    layout="vertical"
-                    onFinish={handleChange}
-                >
-                    <Form.Item
-                        name="accountId"
-                        label="계좌 선택"
-                        rules={[{ required: true, message: '계좌를 선택해주세요' }]}
+                {accounts.length === 0 ? (
+                    <div>현재 조회 가능한 계좌가 없습니다.</div>
+                ) : (
+                    <Form
+                        form={form}
+                        layout="vertical"
                     >
-                        <Select
-                            placeholder="계좌를 선택해주세요"
-                            onChange={handleAccountChange}
-                        >
-                            {accounts.map(account => (
-                                <Option key={account.id} value={account.id}>
-                                    {account.accountNumber} - {account.productName}
-                                </Option>
-                            ))}
-                        </Select>
-                    </Form.Item>
-
-                    {selectedAccount && (
-                        <>
-                            <Form.Item
-                                name="password"
-                                label="계좌비밀번호"
-                                rules={[
-                                    { required: true, message: '계좌비밀번호를 입력해주세요' },
-                                    { len: 4, message: '비밀번호는 4자리여야 합니다' }
-                                ]}
+                        <Form.Item
+                            name="accountId"
+                            label="계좌 선택"
+                            rules={[{ required: true, message: '계좌를 선택해주세요' }]}
                             >
-                                <Input.Password placeholder="계좌비밀번호 4자리" maxLength={4} />
+                            <Select
+                                placeholder="계좌를 선택해주세요"
+                                onChange={handleAccountChange}
+                            >
+                                {accounts
+                                .filter(account => account.accountStatus === 'ACTIVE')
+                                .map(account => (
+                                    <Option key={account.id} value={account.id}>
+                                    {account.accountNumber} - {account.productName} - {account.balance.toLocaleString()}원
+                                    </Option>
+                                ))}
+                            </Select>
                             </Form.Item>
 
-                            <Form.Item
-                                name="autoTransfer"
-                                valuePropName="checked"
-                                label="자동이체 설정"
-                            >
-                                <Select>
-                                    <Option value={false}>설정안함</Option>
-                                    <Option value={true}>설정</Option>
-                                </Select>
-                            </Form.Item>
-
-                            <Form.Item
-                                noStyle
-                                shouldUpdate={(prevValues, currentValues) => prevValues.autoTransfer !== currentValues.autoTransfer}
-                            >
-                                {({ getFieldValue }) =>
-                                    getFieldValue('autoTransfer') ? (
-                                        <Form.Item
-                                            name="transferAccount"
-                                            label="이체계좌"
-                                            rules={[{ required: true, message: '이체계좌를 선택해주세요' }]}
-                                        >
-                                            <Select placeholder="이체계좌 선택">
-                                                {/* 이체계좌 목록은 API로 받아와야 함 */}
-                                            </Select>
-                                        </Form.Item>
-                                    ) : null
-                                }
-                            </Form.Item>
-
-                            <Form.Item>
-                                <Button
-                                    type="primary"
-                                    htmlType="button"
-                                    onClick={showConfirm}
-                                    loading={loading}
-                                    style={{ width: '100%' }}
+    
+                        {selectedAccount && (
+                            <>
+                                {/* 기존 비밀번호와 새 비밀번호 변경 */}
+                                <Form.Item
+                                    name="oldPassword"
+                                    label="기존 비밀번호 (4자리)"
+                                    rules={[
+                                        { required: true, message: '기존 비밀번호를 입력해주세요' },
+                                        { len: 4, message: '비밀번호는 4자리여야 합니다' }
+                                    ]}
                                 >
-                                    변경하기
-                                </Button>
-                            </Form.Item>
-                        </>
-                    )}
-                </Form>
+                                    <Input.Password maxLength={4} placeholder="기존 비밀번호 입력" />
+                                </Form.Item>
+    
+                                <Form.Item
+                                    name="newPassword"
+                                    label="새 비밀번호 (4자리)"
+                                    rules={[
+                                        { required: true, message: '새 비밀번호를 입력해주세요' },
+                                        { len: 4, message: '비밀번호는 4자리여야 합니다' }
+                                    ]}
+                                >
+                                    <Input.Password maxLength={4} placeholder="새 비밀번호 입력" />
+                                </Form.Item>
+    
+                                <Form.Item>
+                                    <Button
+                                        type="primary"
+                                        onClick={() => form.validateFields(['oldPassword', 'newPassword']).then(handlePasswordChange)}
+                                        style={{ width: '100%', marginBottom: '10px' }}
+                                    >
+                                        비밀번호 변경
+                                    </Button>
+                                </Form.Item>
+    
+                                {/* 계좌 별명 변경 */}
+                                <Form.Item
+                                    name="nickname"
+                                    label="계좌 별명 (선택)"
+                                    rules={[{ max: 20, message: '별명은 최대 20자까지 가능합니다' }]}
+                                >
+                                    <Input placeholder="예: 월급통장, 비상금통장" />
+                                </Form.Item>
+    
+                                <Form.Item>
+                                    <Button
+                                        type="primary"
+                                        onClick={() => form.validateFields(['nickname']).then(handleNicknameChange)}
+                                        style={{ width: '100%' }}
+                                    >
+                                        별명 변경
+                                    </Button>
+                                </Form.Item>
+                            </>
+                        )}
+                    </Form>
+                )}
             </Card>
         </div>
     );
+    
 };
 
 export default DepositChange;
