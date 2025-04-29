@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,9 +50,10 @@ public class DepositController {
     }
 
     // 예금 계좌 목록 조회
-    @GetMapping("/deposit/accounts/deposit/{customerId}")
-    public List<DepositDTO> getDepositAccounts(@PathVariable String customerId) {
-        return depositService.getDepositAccounts(customerId);
+    @GetMapping("/deposit/accounts/deposit")
+    public ResponseEntity<?> getDepositAccounts(@RequestParam String customerId) {
+        System.out.println(customerId);
+    	return new ResponseEntity<>( depositService.getDepositAccounts(customerId),HttpStatus.CREATED);
     }
 
     // 적금 계좌 목록 조회

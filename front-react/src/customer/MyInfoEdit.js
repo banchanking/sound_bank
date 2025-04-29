@@ -233,7 +233,7 @@ const MyInfoEdit = ({ onCancel }) => {
                     value={form.sample6_postcode || ""}
                     readOnly
                   />
-                  <button type="button" onClick={execDaumPostcode}>
+                  <button className="codeButton" type="button" onClick={execDaumPostcode}>
                     우편번호 찾기
                   </button>
                 </div>

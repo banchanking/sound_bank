@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import RefreshToken from '../../jwt/RefreshToken'; 
+import RefreshToken from '../../jwt/RefreshToken';
 import Sidebar from './Sidebar';
 import styles from '../../Css/transfer/TransMulti.module.css';
 import { getCustomerID } from '../../jwt/AxiosToken';
@@ -18,18 +18,14 @@ function TransMulti() {
 
   useEffect(() => {
     if (!customer_id) {
-      if (!customer_id) {
-        const goLogin = window.confirm(
-          "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
-        );
-        if (goLogin) {
-          navigate("/login");
-        } else {
-          navigate("/");
-        }
-        return;      
+      const goLogin = window.confirm("로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?");
+      if (goLogin) {
+        navigate("/login");
+      } else {
+        navigate("/");
+      }
+      return;
     }
-  }
 
     RefreshToken.get(`/accounts/allAccount/${customer_id}`, {
       headers: { Authorization: `Bearer ${token}` }
@@ -42,8 +38,26 @@ function TransMulti() {
       .catch(err => console.error('계좌 불러오기 실패:', err));
   }, []);
 
+  const getAccountTypeLabel = (type) => {
+    if (type === 'CHECKING') return '입출금';
+    if (type === 'DEPOSIT') return '예금';
+    if (type === 'SAVINGS') return '적금';
+    return type || '알수없음';
+  };
+
   const changeForm = (e) => {
     const { name, value } = e.target;
+
+    if (name === 'out_account_number') {
+      const selected = accounts.find(acc => acc.account_number === value);
+      const type = selected?.account_type;
+      if (type === 'DEPOSIT' || type === 'SAVINGS') {
+        alert('예/적금 계좌이체는 예/적금 메뉴에서 진행 가능합니다.');
+        navigate('/depositWithdrawal');
+        return;
+      }
+    }
+
     setForm(prev => ({ ...prev, [name]: value }));
   };
 
@@ -116,6 +130,8 @@ function TransMulti() {
     }
   };
 
+  const selectedAccount = accounts.find(acc => acc.account_number === form.out_account_number);
+
   return (
     <div style={{ display: 'flex', minHeight: '600px' }}>
       <Sidebar />
@@ -130,14 +146,23 @@ function TransMulti() {
             name="out_account_number"
             value={form.out_account_number}
             onChange={changeForm}
+            required
           >
             <option value="">출금 계좌 선택</option>
             {accounts.map(acc => (
               <option key={acc.account_number} value={acc.account_number}>
-                {acc.account_number} ({acc.account_type})
+                {acc.account_number} ({getAccountTypeLabel(acc.account_type)})
               </option>
             ))}
           </select>
+
+          {selectedAccount && (
+            <div style={{ marginLeft: '10px', marginTop: '10px', color: '#333', fontSize: '14px', fontWeight: 'bold' }}>
+              잔액: {Number(
+                selectedAccount.balance ?? selectedAccount.account_balance ?? 0
+              ).toLocaleString('ko-KR')} 원
+            </div>
+          )}
 
           <label style={{ marginTop: '16px' }}>계좌 비밀번호</label>
           <input

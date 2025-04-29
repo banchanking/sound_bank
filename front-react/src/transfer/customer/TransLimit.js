@@ -19,18 +19,15 @@ function TransLimit() {
   useEffect(() => {
     const id = getCustomerID();
     if (!id) {
-      if (!id) {
-        const goLogin = window.confirm(
-          "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
-        );
-        if (goLogin) {
-          navigate("/login");
-        } else {
-          navigate("/");
-        }
-        return;      
+      const goLogin = window.confirm("로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?");
+      if (goLogin) {
+        navigate("/login");
+      } else {
+        navigate("/");
+      }
+      return;
     }
-  }
+
     setCustomerId(id);
 
     RefreshToken.get(`/accounts/allAccount/${id}`)
@@ -50,6 +47,15 @@ function TransLimit() {
     const raw = e.target.value.replace(/[^0-9]/g, '');
     setRequestedLimit(raw);
     setDisplayLimit(raw ? Number(raw).toLocaleString('ko-KR') : '');
+  };
+
+  const getAccountTypeLabel = (type) => {
+    if (!type) return '';
+    const t = type.toUpperCase();
+    if (t === 'CHECKING') return '입출금';
+    if (t === 'DEPOSIT') return '예금';
+    if (t === 'SAVINGS') return '적금';
+    return type;
   };
 
   const handleSubmit = (e) => {
@@ -99,7 +105,7 @@ function TransLimit() {
             <option value="">-- 계좌 선택 --</option>
             {accounts.map((acc, idx) => (
               <option key={idx} value={acc.account_number}>
-                {acc.account_number}
+                {acc.account_number} ({getAccountTypeLabel(acc.account_type || acc.dat_account_type)})
               </option>
             ))}
           </select>
