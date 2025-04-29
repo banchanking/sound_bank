@@ -100,16 +100,16 @@ public class CustomerController {
         String refresh_token = provider.createRefreshToken(customer.getCustomerId());
         
         // ✅ 쿠키에 refreshToken 심기
-        Cookie refreshTokenCookie = new Cookie("refreshToken", refresh_token);
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(false); // HTTPS 환경에서는 true
-        refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60); // 7일
+        // Cookie refreshTokenCookie = new Cookie("refreshToken", refresh_token);
+        // refreshTokenCookie.setHttpOnly(true);
+        // refreshTokenCookie.setSecure(false); // HTTPS 환경에서는 true
+        // refreshTokenCookie.setPath("/");
+        // refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60); // 7일
         
-        response.addCookie(refreshTokenCookie);
+        // response.addCookie(refreshTokenCookie);
 
         // Refresh Token DB에 저장
-        customerMapper.saveRefreshToken(customer.getCustomerId(), refresh_token);
+        // customerMapper.saveRefreshToken(customer.getCustomerId(), refresh_token);
 
         
 
