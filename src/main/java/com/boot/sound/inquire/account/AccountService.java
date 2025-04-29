@@ -23,17 +23,16 @@ public class AccountService {
     private AccountDAO accountDAO;
     private final AccountRepository accountRepository;
 
+ // 입출금, 예금, 적금 따로 조회해서 그룹핑
     public Map<String, List<AccountDTO>> getAccountsGroupedByType(String customer_id) {
-        List<AccountDTO> allAccounts = accountDAO.findAllByCustomerId(customer_id);
+        List<AccountDTO> demandDepositAccounts = accountDAO.findAllByCustomerId(customer_id); // 입출금
+        List<AccountDTO> depositAccounts = accountDAO.findDepositAccounts(customer_id);       // 예금
+        List<AccountDTO> savingsAccounts = accountDAO.findSavingsAccounts(customer_id);       // 적금
 
-        // 타입별로 그룹핑
-        // LinkedHashMap > 순서 유지를 위해 쓰임 
         Map<String, List<AccountDTO>> grouped = new LinkedHashMap<>();
-        
-        // 키 값 설정한 빈바구니 미리 만들어둠 
-        grouped.put("입출금", new ArrayList<>());
-        grouped.put("예금", new ArrayList<>());
-        grouped.put("적금", new ArrayList<>());
+        grouped.put("입출금", demandDepositAccounts);
+        grouped.put("예금", depositAccounts);
+        grouped.put("적금", savingsAccounts);
 
         // 전체계좌 반복하며 타입별로 분류 
         for (AccountDTO account : allAccounts) {      // 전체 계좌 목록을 하나씩 꺼내서 account라는 변수로 반복

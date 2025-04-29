@@ -1,4 +1,3 @@
-// ✅ TransHistory.js - 모달에 닫기 버튼 추가
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import RefreshToken from "../../jwt/RefreshToken";
@@ -42,7 +41,13 @@ const TransHistory = () => {
   const fetchTransactions = async () => {
     const customerId = localStorage.getItem("customerId");
     const res = await RefreshToken.get(`/fundTrade/all/${customerId}`);
-    setTransactions(res.data);
+    
+    // 환매 완료된 상품을 제외하고, 환매 진행 중이거나 승인 대기 중인 상품만 필터링
+    const filteredTransactions = res.data.filter(
+      (tx) => tx.status !== "COMPLETED"
+    );
+  
+    setTransactions(filteredTransactions);
   };
 
   const fetchClosedAccounts = async () => {
