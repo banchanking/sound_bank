@@ -8,14 +8,9 @@ import { Card, Row, Col, Typography, Divider, Tag } from "antd";
 const { Title, Text } = Typography;
 
 const DepositAccountInquiry = () => {
-    const [depositAccounts, setDepositAccounts] = useState([]);
-    const [savingsAccounts, setSavingsAccounts] = useState([]);
-    const customerId = getCustomerID();
-    // 계좌 번호를 3자리-6자리-4자리 형식으로 포맷팅하는 함수
-    const formatAccountNumber = (accountNumber) => {
-    if (!accountNumber || accountNumber.length !== 13) return accountNumber; // 유효성 검사
-    return `${accountNumber.slice(0, 3)}-${accountNumber.slice(3, 9)}-${accountNumber.slice(9)}`;
-};
+  const [depositAccounts, setDepositAccounts] = useState([]);
+  const [savingsAccounts, setSavingsAccounts] = useState([]);
+  const customerId = getCustomerID();
 
   const navigate = useNavigate();
 
@@ -51,24 +46,7 @@ const DepositAccountInquiry = () => {
       .catch((err) => console.error("적금 계좌 조회 실패:", err));
   }, [customerId]);
 
-    const renderAccountInfo = (account) => {
-        return (
-            <Card key={account.id} className="accountCard" style={{ marginBottom: '15px' }}>
-                <Title level={4}>{account.productName}</Title>
-                <Text strong>계좌 번호: </Text><span>{formatAccountNumber(account.accountNumber)}</span>
-                <br />
-                <Text strong>별명: </Text><span>{account.nickname || "없음"}</span>
-                <br />
-                <Text strong>잔액: </Text><span>{account.balance.toLocaleString()} 원</span>
-                <br />
-                <Text strong>상태: </Text>
-                <Tag color={account.accountStatus === 'ACTIVE' ? 'green' : 'red'}>
-                    {account.accountStatus === 'ACTIVE' ? '활성' : '비활성'}
-                </Tag>
-            </Card>
-        );
-    };
-
+  const renderAccountInfo = (account) => {
     return (
       <Card
         key={account.id}

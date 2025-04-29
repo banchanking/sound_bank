@@ -667,11 +667,11 @@
 
 
 
-<select id="getBalance" resultType="java.math.BigDecimal">
+<!-- <select id="getBalance" resultType="java.math.BigDecimal">
     SELECT balance
     FROM deposit_accounts
     WHERE account_number = #{accountNumber}
-</select>
+</select> -->
 
 <!-- 예금 상품 삭제 -->
 <delete id="deleteDepositProduct">
