@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
-@CrossOrigin
+@CrossOrigin("http://3.39.177.144", allowCredentials = "true")
 @Slf4j
 public class CustomerController {
 
