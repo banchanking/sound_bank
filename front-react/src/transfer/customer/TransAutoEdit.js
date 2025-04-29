@@ -8,6 +8,8 @@ function TransAutoEdit() {
   const [list, setList] = useState([]);
   const [editItem, setEditItem] = useState(null);
   const [displayAmount, setDisplayAmount] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
 
   useEffect(() => {
     const id = getCustomerID();
@@ -68,6 +70,9 @@ function TransAutoEdit() {
     }
   };
 
+  const totalPages = Math.ceil(list.length / itemsPerPage);
+  const currentItems = list.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   return (
     <div className={styles['autoEdit-page']}>
       <Sidebar />
@@ -87,7 +92,7 @@ function TransAutoEdit() {
             </tr>
           </thead>
           <tbody>
-            {list.map(item => (
+            {currentItems.map(item => (
               <tr key={item.transfer_id}>
                 <td>{item.out_account_number}</td>
                 <td>{item.in_account_number}</td>
@@ -113,6 +118,28 @@ function TransAutoEdit() {
             ))}
           </tbody>
         </table>
+
+        {/* 페이지네이션 */}
+        <div className={styles["autoEdit-pagination"]}>
+          {Array.from({ length: totalPages }, (_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentPage(i + 1)}
+              className={currentPage === i + 1
+                ? styles["activePage"]
+                : styles["pageButton"]}
+            >
+              {i + 1}
+            </button>
+          ))}
+          <button
+            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            className={styles["pageArrow"]}
+          >
+            ▶
+          </button>
+        </div>
 
         {editItem && (
           <div className={styles['autoEdit-modalOverlay']}>
