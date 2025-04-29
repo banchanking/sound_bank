@@ -5,3 +5,5 @@ package.json 에서 react react, react-dom 18버전이어야 rsuite가 작동
 ## [npm i]
 
 ## npm i react-router-dom
+
+# FastAPI 실행 uvicorn Investment_AI:app --reload
