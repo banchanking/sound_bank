@@ -14,19 +14,24 @@ const DepositWithdrawal = () => {
     const [accountType, setAccountType] = useState('DEPOSIT');
     const customerId = getCustomerID();
 
-            useEffect(() => {
-                 const customerId = getCustomerID();
-                 if (!customerId) {
-                     const goLogin = window.confirm("로그인이 필요합니다. 로그인하시겠습니까?");
-                     if (goLogin) {
-                        navigate("/login");
-                      } else {
-                        navigate("/");
-                      }
-                      return;      
-                 }
-                 fetchAccounts();
-             }, [navigate]);
+    // 계좌 번호를 3자리-6자리-4자리 형식으로 포맷팅하는 함수
+    const formatAccountNumber = (accountNumber) => {
+        if (!accountNumber || accountNumber.length !== 13) return accountNumber; // 유효성 검사
+        return `${accountNumber.slice(0, 3)}-${accountNumber.slice(3, 9)}-${accountNumber.slice(9)}`;
+    };
+
+    useEffect(() => {
+        if (!customerId) {
+            const goLogin = window.confirm("로그인이 필요합니다. 로그인하시겠습니까?");
+            if (goLogin) {
+                navigate("/login");
+            } else {
+                navigate("/");
+            }
+            return;
+        }
+        fetchAccounts();
+    }, [navigate]);
 
     const fetchAccounts = async () => {
         try {
@@ -34,10 +39,17 @@ const DepositWithdrawal = () => {
                 RefreshToken.get(`/deposit/accounts/customer/${customerId}`),
                 RefreshToken.get(`/savings/accounts/customer/${customerId}`)
             ]);
+
+            // 상태가 ACTIVE인 계좌만 필터링
             const allAccounts = [
-                ...depositRes.data.map(acc => ({ ...acc, type: 'DEPOSIT' })),
-                ...savingsRes.data.map(acc => ({ ...acc, type: 'SAVINGS' }))
+                ...depositRes.data
+                    .filter(acc => acc.accountStatus === 'ACTIVE') // 예금 계좌 필터링
+                    .map(acc => ({ ...acc, type: 'DEPOSIT' })),
+                ...savingsRes.data
+                    .filter(acc => acc.accountStatus === 'ACTIVE') // 적금 계좌 필터링
+                    .map(acc => ({ ...acc, type: 'SAVINGS' }))
             ];
+
             setAccounts(allAccounts);
         } catch (error) {
             console.error('계좌 조회 에러:', error);
@@ -116,7 +128,7 @@ const DepositWithdrawal = () => {
                             <option value="">계좌 선택</option>
                             {accounts.map(acc => (
                                 <option key={`${acc.type}-${acc.id}`} value={`${acc.type}-${acc.id}`}>
-                                    [{acc.type === 'DEPOSIT' ? '예금' : '적금'}] {acc.accountNumber}
+                                    [{acc.type === 'DEPOSIT' ? '예금' : '적금'}] {formatAccountNumber(acc.accountNumber)}
                                 </option>
                             ))}
                         </select>
@@ -132,16 +144,16 @@ const DepositWithdrawal = () => {
                             <div className="formGroup">
                                 <label>금액</label>
                                 <input
-                                        type="text"
-                                        value={amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                                        onChange={(e) => {
-                                            const rawValue = e.target.value.replace(/,/g, ""); // 콤마 제거하고
-                                            if (!isNaN(rawValue)) { // 숫자면만
-                                                setAmount(rawValue); // 상태에 숫자만 저장
-                                            }
-                                        }}
-                                        required
-                                    />
+                                    type="text"
+                                    value={amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                                    onChange={(e) => {
+                                        const rawValue = e.target.value.replace(/,/g, "");
+                                        if (!isNaN(rawValue)) {
+                                            setAmount(rawValue);
+                                        }
+                                    }}
+                                    required
+                                />
                             </div>
 
                             <div className="formGroup">
