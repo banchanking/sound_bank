@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getCustomerID } from "../../jwt/AxiosToken";
 import RefreshToken from "../../jwt/RefreshToken";
+import "../../Css/depositcss/DepositAutosettings.css"; // 사뱅스타일 적용
 
 const DepositSavingsAutoSettings = () => {
   const customerId = getCustomerID();
@@ -99,16 +100,16 @@ const DepositSavingsAutoSettings = () => {
     setSelectedTargetAccount(selectedValue);
     const selected = targetAccounts.find(acc => acc.accountNumber === selectedValue);
     if (selected) setSelectedAccountType(selected.type);
-  }
+  };
 
   return (
-    <div>
-      <h2>예적금 자동이체 등록</h2>
-      <div><strong>출금 계좌:</strong> {withdrawAccount}</div>
-
-      <div style={{ marginTop: "10px" }}>
-        <label>입금할 예적금 계좌 선택:</label>
-        <select value={selectedTargetAccount} onChange={handleAccountChange}>
+    <div className="autoTransfer-container">
+      <h2 className="autoTransfer-title">예적금 자동이체 등록</h2>
+      <div className="autoTransfer-label"><strong>출금 계좌:</strong> {withdrawAccount}</div>
+      <br />
+      <div className="autoTransfer-field">
+        <label className="autoTransfer-label2">입금할 예적금 계좌 선택</label>
+        <select value={selectedTargetAccount} onChange={handleAccountChange} className="autoTransfer-select">
           <option value="">입금 계좌를 선택하세요</option>
           {targetAccounts.map((acc) => (
             <option key={acc.accountNumber} value={acc.accountNumber}>
@@ -120,37 +121,36 @@ const DepositSavingsAutoSettings = () => {
 
       {selectedAccountType && (
         <>
-          <div style={{ marginTop: "10px" }}>
-            <label>이체 금액:</label>
-            <input type="text" value={transferAmount} onChange={handleAmountChange} placeholder="금액 입력" />
+          <div className="autoTransfer-field">
+            <label className="autoTransfer-label3">이체 금액</label>
+            <input type="text" value={transferAmount} onChange={handleAmountChange} className="autoTransfer-input" placeholder="금액 입력" />
           </div>
 
-          <div style={{ marginTop: "10px" }}>
-            <label>이체 일자 (1~31일):</label>
-            <input type="number" min="1" max="31" value={transferDay} onChange={(e) => setTransferDay(e.target.value)} placeholder="이체일 입력" />
+          <div className="autoTransfer-field">
+            <label className="autoTransfer-label3">이체 일자 (1~31일)</label>
+            <input type="number" min="1" max="31" value={transferDay} onChange={(e) => setTransferDay(e.target.value)} className="autoTransfer-input" placeholder="이체일 입력" />
             {transferDay === "31" && (
-              <div style={{ color: 'gray', fontSize: '13px' }}>
+              <div className="autoTransfer-hint">
                 2월은 마지막 날인 28일에 출금됩니다.
               </div>
             )}
           </div>
 
-          <div style={{ marginTop: "10px" }}>
-            <label>계좌 비밀번호 (4자리)</label>
-            <input type="password" value={accountPassword} maxLength={4} onChange={(e) => setAccountPassword(e.target.value)} />
+          <div className="autoTransfer-field">
+            <label className="autoTransfer-label3">계좌 비밀번호 (4자리)</label>
+            <input type="password" value={accountPassword} maxLength={4} onChange={(e) => setAccountPassword(e.target.value)} className="autoTransfer-input" />
           </div>
 
-          {/* 예금/적금 선택에 따라 추가 입력 분기 가능 */}
           {selectedAccountType === 'SAVINGS' && (
-            <div style={{ marginTop: "10px", color: "blue" }}>
+            <div className="autoTransfer-notice">
               ※ 적금 상품은 월납입형입니다. 매월 설정된 금액이 자동 이체됩니다.
             </div>
           )}
         </>
       )}
 
-      <div style={{ marginTop: "20px" }}>
-        <button onClick={handleRegister}>자동이체 등록</button>
+      <div className="autoTransfer-submit">
+        <button onClick={handleRegister} className="autoTransfer-btn">자동이체 등록</button>
       </div>
     </div>
   );
