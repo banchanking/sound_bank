@@ -69,6 +69,9 @@ function TransLimitEdit() {
 
   const totalPages = Math.ceil(list.length / itemsPerPage);
   const currentItems = list.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const pageGroup = Math.floor((currentPage - 1) / 10);
+  const startPage = pageGroup * 10 + 1;
+  const endPage = Math.min(startPage + 9, totalPages);
 
   return (
     <div style={{ display: 'flex', minHeight: '600px' }}>
@@ -120,26 +123,26 @@ function TransLimitEdit() {
           </tbody>
         </table>
 
-        {/* 페이지네이션 */}
-        <div className={styles["limitEdit-pagination"]}>
-          {Array.from({ length: totalPages }, (_, i) => (
+        <div className={styles.pageButtonArea}>
+          {startPage > 1 && (
+            <button className={styles.pageArrow} onClick={() => setCurrentPage(startPage - 1)}>
+              &lt;
+            </button>
+          )}
+          {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map(num => (
             <button
-              key={i}
-              onClick={() => setCurrentPage(i + 1)}
-              className={currentPage === i + 1
-                ? styles["activePage"]
-                : styles["pageButton"]}
+              key={num}
+              onClick={() => setCurrentPage(num)}
+              className={`${styles.pageButton} ${currentPage === num ? styles.activePage : ''}`}
             >
-              {i + 1}
+              {num}
             </button>
           ))}
-          <button
-            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-            className={styles["pageArrow"]}
-          >
-            ▶
-          </button>          
+          {endPage < totalPages && (
+            <button className={styles.pageArrow} onClick={() => setCurrentPage(endPage + 1)}>
+              &gt;
+            </button>
+          )}
         </div>
 
         {editItem && (
