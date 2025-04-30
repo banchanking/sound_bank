@@ -153,8 +153,9 @@ const DepositTransactionDetails = () => {
                                     .filter(acc => acc.accountStatus === 'ACTIVE')
                                     .map(acc => (
                                         <option key={`${acc.type}-${acc.id}`} value={`${acc.type}-${acc.id}`}>
-                                            [{acc.type === 'DEPOSIT' ? '예금' : '적금'}] {formatAccountNumber(acc.accountNumber)} - {acc.productName} - {acc.balance.toLocaleString()}원
-                                        </option>
+                                            [{acc.type === 'DEPOSIT' ? '예금' : '적금'}] {formatAccountNumber(acc.accountNumber)} - {acc.productName} - {Number(acc?.balance ?? 0).toLocaleString()}원
+                                            </option>
+
                                     ))}
                             </select>
                         </div>
@@ -190,21 +191,22 @@ const DepositTransactionDetails = () => {
                                 </thead>
                                 <tbody>
                                     {transactions.length > 0 ? (
-                                        transactions.map(tx => (
-                                            <tr key={tx.id}>
-                                                <td>{formatDate(tx.transactionDate)}</td>
-                                                <td>{selectedAccount?.type === 'SAVINGS' ? '적금' : '예금'}</td>
-                                                <td>{tx.transactionAmount?.toLocaleString()}원</td>
-                                                <td>{tx.balance?.toLocaleString()}원</td>
-                                                <td>{tx.transactionDescription}</td>
-                                            </tr>
+                                        transactions.map((tx, idx) => (
+                                        <tr key={tx?.id ?? idx}>
+                                            <td>{formatDate(tx?.transactionDate)}</td>
+                                            <td>{selectedAccount?.type === 'SAVINGS' ? '적금' : '예금'}</td>
+                                            <td>{Number(tx?.transactionAmount ?? 0).toLocaleString()}원</td>
+                                            <td>{Number(tx?.balance ?? 0).toLocaleString()}원</td> 
+                                            <td>{tx?.transactionDescription || '없음'}</td>
+                                        </tr>
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan="5">거래내역이 없습니다.</td>
+                                        <td colSpan="5">거래내역이 없습니다.</td>
                                         </tr>
                                     )}
-                                </tbody>
+                                    </tbody>
+
                             </table>
                         </div>
                     </>

@@ -36,6 +36,10 @@ public interface DepositAutoTransferDAO {
     // 자동이체 삭제
     void deleteAutoTransfer(@Param("id") Long id);
     
+    // 자동이체 수정
+    void updateAutoTransfer(DepositAutoTransferDTO transferDTO);
+
+    
  
 
 }
