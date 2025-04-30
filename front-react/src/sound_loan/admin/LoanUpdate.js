@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import styles from "../../Css/loan/LoanUpdate.module.css";
 import RefreshToken from "../../jwt/RefreshToken";
 
-const LoanUpdate = ({ loan_id }) => {
+const LoanUpdate = ({ loan_id, onEdit }) => {
   const formRef = useRef();
   const navigate = useNavigate();
 
@@ -64,7 +64,7 @@ const LoanUpdate = ({ loan_id }) => {
     RefreshToken.put("/loanUpdate/" + loan_id, loan)
       .then(() => {
         alert("수정되었습니다.");
-        navigate("/loanList");
+        onEdit();
       })
       .catch((error) => {
         console.log("실패", error);
