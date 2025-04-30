@@ -70,7 +70,7 @@ const DepositAccountInquiry = () => {
         <span>{account.interestRate ? `${account.interestRate}%` : '없음'}</span>
         <br />
         <Text strong>잔액: </Text>
-        <span>{account.balance.toLocaleString()} 원</span>
+        <span>{account.balance !== null && account.balance !== undefined ? account.balance.toLocaleString() : '0'} 원</span>
         <br />
         <Text strong>상태: </Text>
         <Tag color={account.accountStatus === "ACTIVE" ? "green" : "red"}>
@@ -104,13 +104,13 @@ const DepositAccountInquiry = () => {
         <div>현재 조회 가능한 적금 계좌가 없습니다.</div>
       ) : (
         <Row gutter={[16, 16]}>
-                    {savingsAccounts
-              .filter((account) => account.accountStatus === "ACTIVE")
-              .map((account) => (
-                <Col span={8} key={account.id}>
-                  {renderAccountInfo(account, "SAVINGS")}
-                </Col>
-            ))}
+                  {savingsAccounts
+            .filter((account) => account.accountStatus === "ACTIVE")
+            .map((account) => (
+              <Col span={8} key={account.id}>
+                {renderAccountInfo(account, "SAVINGS")}
+              </Col>
+          ))}
         </Row>
       )}
     </div>
