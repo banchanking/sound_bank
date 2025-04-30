@@ -162,7 +162,7 @@
         WHERE sat_id = #{accountId}
     </select>
 
-    <!-- 예금 계좌 생성 (수정: useGeneratedKeys 추가) -->
+    <!-- 예금 계좌 생성  -->
     <insert id="createDepositAccount" parameterType="com.boot.sound.deposit.dto.DepositDTO"
             useGeneratedKeys="true" keyProperty="id">
         INSERT INTO DEPOSIT_ACCOUNT_TBL (
@@ -189,8 +189,8 @@
             #{autoTransferEnabled},
             #{autoTransferAmount},
             #{autoTransferDay},
-            NOW(),
-            NOW()
+            CURRENT_TIMESTAMP,
+            CURRENT_TIMESTAMP
         )
     </insert>
 
@@ -243,7 +243,7 @@
         UPDATE DEPOSIT_ACCOUNT_TBL
         SET account_status = 'CLOSED',
             updated_at = NOW()
-        WHERE account_number   = #{accountId, jdbcType=VARCHAR}
+        WHERE account_number   = #{accountNumber}
         AND account_password = #{accountPassword}
         AND account_status = 'ACTIVE'
     </update>
@@ -253,7 +253,7 @@
         UPDATE SAVINGS_ACCOUNT_TBL
         SET account_status = 'CLOSED',
             updated_at = NOW()
-        WHERE account_number   = #{accountId, jdbcType=VARCHAR}
+        WHERE account_number   = #{accountNumber}
         AND account_password = #{accountPassword}
         AND account_status = 'ACTIVE'
     </update>
@@ -565,9 +565,9 @@
 	<!-- 예금 상품 추가 -->
 	<insert id="addDepositProduct" parameterType="com.boot.sound.deposit.dto.DepositDTO">
 	    INSERT INTO DEPOSIT_PRODUCT_TBL
-	    (product_name, product_type, interest_rate, min_amount, max_amount, term_months, description, created_at, updated_at)
+	    (product_name, product_type, interest_rate, min_amount, max_amount, term_months, description, created_at, updated_at, account_type)
 	    VALUES
-	    (#{productName}, #{productType}, #{interestRate}, #{minAmount}, #{maxAmount}, #{termMonths}, #{productDescription}, NOW(), NOW())
+	    (#{productName}, #{productType}, #{interestRate}, #{minAmount}, #{maxAmount}, #{termMonths}, #{productDescription}, NOW(), NOW(),'DEPOSIT')
 	</insert>
 
 
@@ -591,9 +591,9 @@
 	    <!-- 적금 상품 추가 -->
 	<insert id="addSavingsProduct" parameterType="com.boot.sound.deposit.dto.DepositDTO">
 	    INSERT INTO SAVINGS_PRODUCT_TBL
-	    (product_name, product_type, interest_rate, min_amount, max_amount, term_months, description, created_at, updated_at)
+	    (product_name, product_type, interest_rate, min_amount, max_amount, term_months, description, created_at, updated_at,account_type)
 	    VALUES
-	    (#{productName}, #{productType}, #{interestRate}, #{minAmount}, #{maxAmount}, #{termMonths}, #{productDescription}, NOW(), NOW())
+	    (#{productName}, #{productType}, #{interestRate}, #{minAmount}, #{maxAmount}, #{termMonths}, #{productDescription}, NOW(), NOW(),'SAVINGS')
 	</insert>
 	
 	<!-- 적금 상품 수정 -->
@@ -628,14 +628,14 @@
 
 <!-- 예금 계좌의 customer_id 가져오기 -->
 <select id="getCustomerIdFromDepositAccount" resultType="String">
-    SELECT customer_id
+    SELECT customer_id 
     FROM DEPOSIT_ACCOUNT_TBL
     WHERE account_number  = #{accountNumber} 
 </select>
 
 <!-- 적금 계좌의 customer_id 가져오기 -->
 <select id="getCustomerIdFromSavingsAccount" resultType="String">
-    SELECT customer_id
+    SELECT customer_id 
     FROM SAVINGS_ACCOUNT_TBL
     WHERE account_number  = #{accountNumber}
 </select>
@@ -644,7 +644,7 @@
 <update id="transferBalanceToMainAccount">
     UPDATE ACCOUNT_TBL
     SET balance = balance + #{balance}
-    WHERE customer_id = #{customerId}
+    WHERE account_number = #{accountNumber}
     AND status = 'ACTIVE'
 </update>
 
@@ -667,11 +667,11 @@
 
 
 
-<select id="getBalance" resultType="java.math.BigDecimal">
+<!-- <select id="getBalance" resultType="java.math.BigDecimal">
     SELECT balance
     FROM deposit_accounts
     WHERE account_number = #{accountNumber}
-</select>
+</select> -->
 
 <!-- 예금 상품 삭제 -->
 <delete id="deleteDepositProduct">
@@ -695,19 +695,99 @@
       AND BALANCE >= #{amount}
 </update>
 
+<select id="getSavingsBalanceByAccountNumber" resultType="java.math.BigDecimal">
+    SELECT balance
+    FROM savings_account_tbl
+    WHERE account_number = #{accountNumber}
+</select>
+
 <select id="getDepositBalanceByAccountNumber" resultType="java.math.BigDecimal">
     SELECT balance
     FROM DEPOSIT_ACCOUNT_TBL
     WHERE account_number = #{accountNumber}
 </select>
 
+<!-- 기본 계좌(accountNumber) 조회 -->
+<select id="getMainAccountNumber" resultType="String">
+    SELECT account_number
+    FROM account_tbl
+    WHERE customer_id = #{customerId}     
+    LIMIT 1
+</select>
+
+<!-- fromAccount 에서 출금하고, toAccount로 입금 -->
+<update id="transferBalance">
+    UPDATE account_tbl
+    SET balance = CASE
+        WHEN account_number = #{fromAccountNumber} THEN balance - #{amount}
+        WHEN account_number = #{toAccountNumber} THEN balance + #{amount}
+        ELSE balance
+    END
+    WHERE account_number IN (#{fromAccountNumber}, #{toAccountNumber});
+</update>
+
+<!-- 오늘 날짜에 해당하는 자동이체 대상 조회 -->
+<select id="getAutoTransferList" resultType="com.boot.sound.deposit.dto.DepositDTO">
+    SELECT 
+        withdraw_account_number AS withdrawAccountNumber,
+        target_account_number AS targetAccountNumber,
+        transfer_amount AS transferAmount
+    FROM AUTO_TRANSFER_TBL
+    WHERE transfer_day = #{today}
+      AND transfer_status = 'ACTIVE'
+</select>
+
+<!-- 출금 처리 (ACCOUNT_TBL) -->
+<update id="autoWithdrawFromBasicAccount">
+    UPDATE ACCOUNT_TBL
+    SET balance = balance - #{amount}
+    WHERE account_number = #{accountNumber}
+      AND balance >= #{amount}
+</update>
+
+<!-- 입금 처리 (DEPOSIT_ACCOUNT_TBL) -->
+<update id="depositToDepositAccount">
+    UPDATE DEPOSIT_ACCOUNT_TBL
+    SET balance = balance + #{amount}
+    WHERE account_number = #{accountNumber}
+</update>
 
 
-<select id="getSavingsBalanceByAccountNumber" resultType="java.math.BigDecimal">
-    SELECT balance
+<!--  예금 계좌 상세 조회 -->
+<select id="getDepositAccountByNumber" resultType="com.boot.sound.deposit.dto.DepositDTO">
+    SELECT account_number, balance, interest_rate
+    FROM DEPOSIT_ACCOUNT_TBL
+    WHERE account_number = #{accountNumber}
+</select>
+
+
+
+<!--  적금 계좌 상세 조회 -->
+<!-- <select id="getSavingsAccountByNumber" resultType="com.boot.sound.deposit.dto.DepositDTO">
+    SELECT account_number, interest_rate, monthly_amount, term_months
     FROM SAVINGS_ACCOUNT_TBL
     WHERE account_number = #{accountNumber}
 </select>
+ -->
+ 
+ <resultMap id="SavingsAccountMap" type="com.boot.sound.deposit.dto.DepositDTO">
+    <result column="account_number" property="accountNumber"/>
+    <result column="interest_rate" property="interestRate"/>
+    <result column="monthly_amount" property="monthlyAmount"/>
+    <result column="term_months" property="termMonths"/>
+</resultMap>
+
+<select id="getSavingsAccountByNumber" resultMap="SavingsAccountMap">
+    SELECT account_number, interest_rate, monthly_amount, term_months
+    FROM SAVINGS_ACCOUNT_TBL
+    WHERE account_number = #{accountNumber}
+</select>
+ 
+
+
+
+
+
 
 
 
