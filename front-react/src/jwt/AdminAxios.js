@@ -69,7 +69,6 @@ AdminAxios.interceptors.response.use(
         "http://15.165.57.30:8081/api/refresh-token",
         {
           customerId,
-          role,
         }
       );
       const newAccessToken = data.accessToken || data;
