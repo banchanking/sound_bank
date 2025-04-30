@@ -18,6 +18,7 @@ const DepositComparison = () => {
     const [productType, setProductType] = useState('ALL');
     const customerId = getCustomerID();
 
+
     useEffect(() => {
         if (!customerId) {
             const goLogin = window.confirm("로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?");
