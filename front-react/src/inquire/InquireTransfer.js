@@ -13,6 +13,8 @@ function CheckTx() {
   const [txType, setTxType] = useState('전체');
   const [txResultList, setTxResultList] = useState([]);
   const [customerId, setCustomerId] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
 
   const getFormattedDate = (dateObj) => dateObj.toISOString().slice(0, 10);
 
@@ -27,18 +29,11 @@ function CheckTx() {
   useEffect(() => {
     const id = getCustomerID();
     if (!id) {
-      if (!id) {
-        const goLogin = window.confirm(
-          "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
-        );
-        if (goLogin) {
-          navigate("/login");
-        } else {
-          navigate("/");
-        }
-        return;      
+      const goLogin = window.confirm("로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?");
+      if (goLogin) navigate("/login");
+      else navigate("/");
+      return;
     }
-  }
     setCustomerId(id);
 
     RefreshToken.get(`/accounts/allAccount/${id}`)
@@ -72,11 +67,19 @@ function CheckTx() {
     })
       .then((response) => {
         setTxResultList(response.data);
+        setCurrentPage(1);
       })
       .catch((error) => {
         console.error('거래내역 조회 실패:', error);
       });
   };
+
+  const pagedTxList = txResultList.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const totalPages = Math.ceil(txResultList.length / itemsPerPage);
+
+  const pageGroup = Math.floor((currentPage - 1) / 10);
+  const startPage = pageGroup * 10 + 1;
+  const endPage = Math.min(startPage + 9, totalPages);
 
   return (
     <div className={styles["transfer-wrapper"]}>
@@ -136,12 +139,12 @@ function CheckTx() {
             </tr>
           </thead>
           <tbody>
-            {txResultList.length === 0 ? (
+            {pagedTxList.length === 0 ? (
               <tr>
                 <td colSpan="5" className={styles["transfer-noData"]}>거래내역이 없습니다.</td>
               </tr>
             ) : (
-              txResultList.map(tx => (
+              pagedTxList.map(tx => (
                 <tr key={tx.transaction_id}>
                   <td>{formatFullDate(tx.transaction_date)}</td>
                   <td>{tx.transaction_type}</td>
@@ -153,6 +156,38 @@ function CheckTx() {
             )}
           </tbody>
         </table>
+
+        {txResultList.length > 0 && (
+          <div className={styles.pageButtonArea}>
+
+            {startPage > 1 && (
+              <button
+                className={styles.pageArrow}
+                onClick={() => setCurrentPage(startPage - 1)}
+              >
+                &lt;
+              </button>
+            )}
+
+            {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map(num => (
+              <button
+                key={num}
+                className={`${styles.pageButton} ${currentPage === num ? styles.activePage : ""}`}
+                onClick={() => setCurrentPage(num)}
+              >
+                {num}
+              </button>
+            ))}
+            {endPage < totalPages && (
+              <button
+                className={styles.pageArrow}
+                onClick={() => setCurrentPage(endPage + 1)}
+              >
+                &gt;
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
