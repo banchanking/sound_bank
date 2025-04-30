@@ -48,7 +48,7 @@ const DepositAccountInquiry = () => {
       .catch((err) => console.error("적금 계좌 조회 실패:", err));
   }, [customerId]);
 
-  const renderAccountInfo = (account) => {
+  const renderAccountInfo = (account, type) => {
     return (
       <Card
         key={account.id}
@@ -59,11 +59,15 @@ const DepositAccountInquiry = () => {
         <Text strong>계좌 번호: </Text>
         <span>{account.accountNumber}</span>
         <br />
-        <Text strong>별명: </Text>
-        <span>{account.nickname || "없음"}</span>
-        <br />
+        {type === "DEPOSIT" && (
+          <>
+            <Text strong>별명: </Text>
+            <span>{account.nickname || "없음"}</span>
+            <br />
+          </>
+        )}
         <Text strong>이자율: </Text>
-        <span>{account.interestRate ? `${account.interestRate}%` : '없음'}</span> 
+        <span>{account.interestRate ? `${account.interestRate}%` : '없음'}</span>
         <br />
         <Text strong>잔액: </Text>
         <span>{account.balance.toLocaleString()} 원</span>
@@ -75,7 +79,7 @@ const DepositAccountInquiry = () => {
       </Card>
     );
   };
-
+  
   return (
     <div className="depositContainer">
       <Title level={3}>예금 계좌 목록</Title>
@@ -84,11 +88,11 @@ const DepositAccountInquiry = () => {
       ) : (
         <Row gutter={[16, 16]}>
           {depositAccounts
-            .filter((account) => account.accountStatus === "ACTIVE")
-            .map((account) => (
-              <Col span={8} key={account.id}>
-                {renderAccountInfo(account)}
-              </Col>
+              .filter((account) => account.accountStatus === "ACTIVE")
+              .map((account) => (
+                <Col span={8} key={account.id}>
+                  {renderAccountInfo(account, "DEPOSIT")}
+                </Col>
             ))}
         </Row>
       )}
@@ -100,12 +104,12 @@ const DepositAccountInquiry = () => {
         <div>현재 조회 가능한 적금 계좌가 없습니다.</div>
       ) : (
         <Row gutter={[16, 16]}>
-          {savingsAccounts
-            .filter((account) => account.accountStatus === "ACTIVE")
-            .map((account) => (
-              <Col span={8} key={account.id}>
-                {renderAccountInfo(account)}
-              </Col>
+                    {savingsAccounts
+              .filter((account) => account.accountStatus === "ACTIVE")
+              .map((account) => (
+                <Col span={8} key={account.id}>
+                  {renderAccountInfo(account, "SAVINGS")}
+                </Col>
             ))}
         </Row>
       )}
