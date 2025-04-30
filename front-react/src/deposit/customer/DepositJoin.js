@@ -22,13 +22,12 @@ const DepositJoin = () => {
         if (value) value = parseInt(value, 10).toLocaleString('ko-KR');
         setAmount(value);   
     };
-    
+
     const handleCalcAmountChange = (e) => {
         let value = e.target.value.replace(/[^0-9]/g, '');
         if (value) value = parseInt(value, 10).toLocaleString('ko-KR');
         setCalcAmount(value);  
     };
-    
 
     useEffect(() => {
         if (!customerId) {
@@ -125,15 +124,15 @@ const DepositJoin = () => {
     };
 
     return (
-        <div className="depositContainer">
+        <div className="deposit-container">
             {currentStep === 'select' && (
                 <>
-                    <div className="depositProductHeader">
+                    <div className="deposit-header">
                         <h2>예금 상품 선택</h2>
                     </div>
-                    <div className="productList">
+                    <div className="deposit-product-list">
                         {products.map(product => (
-                            <div key={product.id} className="productCard" onClick={() => handleProductClick(product)}>
+                            <div key={product.id} className="deposit-product-card" onClick={() => handleProductClick(product)}>
                                 <h3>{product.productName}</h3>
                                 <p>이자율: {product.interestRate}%</p>
                                 <p>기간: {product.termMonths}개월</p>
@@ -145,61 +144,73 @@ const DepositJoin = () => {
             )}
 
             {currentStep === 'agreement' && selectedProduct && (
-                <div className="depositCard">
-                    <div className="depositProductHeader">
+                <div className="deposit-card">
+                    <div className="deposit-header">
                         <h2>가입 동의</h2>
                     </div>
-                    <div>
-                        <h3>상품명</h3>
-                        <p>{selectedProduct.productName}</p>
-                        <h3>상품 설명</h3>
-                        <p>{selectedProduct.productDescription || "상품 설명이 없습니다."}</p>
-                        <h3>약관</h3>
-                        <p>본 상품은 예금자 보호법에 따라 보호됩니다. 금리 변동 등에 주의하시기 바랍니다.</p>
-                    </div>
-                    <div style={{ marginTop: '20px' }}>
-                        <button className="depositBtn" onClick={handleAgree}>동의하고 가입하기</button>
-                        <button className="depositBtn" style={{ marginLeft: '10px', backgroundColor: '#aaa' }} onClick={handleCancel}>취소</button>
+                    <table className="deposit-agree-table">
+                        <tbody>
+                            <tr>
+                                <th>상품명</th>
+                                <td>{selectedProduct.productName}</td>
+                            </tr>
+                            <tr>
+                                <th>상품 설명</th>
+                                <td>{selectedProduct.productDescription || '상품 설명이 없습니다.'}</td>
+                            </tr>
+                            <tr>
+                                <th>약관</th>
+                                <td>본 상품은 예금자 보호법에 따라 보호됩니다. 금리 변동 등에 주의하시기 바랍니다.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div className="deposit-agree-buttons">
+                        <button className="deposit-btn-primary" onClick={handleAgree}>동의하고 가입하기</button>
+                        <button className="deposit-btn-cancel" onClick={handleCancel}>취소</button>
                     </div>
                 </div>
             )}
 
             {currentStep === 'form' && selectedProduct && (
-                <div className="depositCard">
-                    <div className="depositProductHeader">
+                <div className="deposit-card">
+                    <div className="deposit-header">
                         <h2>가입 정보 입력</h2>
                     </div>
-                    <form onSubmit={handleSubmit} className="depositForm">
-                        <div className="formGroup">
-                            <label>초기 입금액</label>
-                            <div style={{ display: 'flex', alignItems: 'center' }}>
-                                <input type="text" value={amount} onChange={handleAmountChange} required />
-                                <span style={{ marginLeft: '5px' }}>원</span>
-                            </div>
-                            <div className="formHint">최소 입금액: {selectedProduct.minAmount.toLocaleString()}원</div>
-                        </div>
-
-                        <div className="formGroup">
-                            <label>예금 계산기</label>
-                            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-                                <input type="text" value={calcAmount} onChange={handleCalcAmountChange} placeholder="금액 입력" />
-                                <span style={{ marginLeft: '5px' }}>원</span>
-                            </div>
-                            <div>이자율: {selectedProduct.interestRate}%</div>
-                            <div>예치기간: {selectedProduct.termMonths}개월</div>
-                            <button type="button" onClick={calculateInterest}>계산하기</button>
-                            {calcResult && (
-                                <div style={{ marginTop: '10px' }}>
-                                    <div>총 이자 (세전): {calcResult.interest.toLocaleString()}원</div>
-                                    <div>세후 수령 이자: {calcResult.afterTaxInterest.toLocaleString()}원</div>
-                                    <div>총 수령액: {calcResult.total.toLocaleString()}원</div>
+                    <form onSubmit={handleSubmit} className="deposit-form">
+                        <div className="deposit-flex-inputs">
+                            <div className="deposit-flex-column deposit-form-group">
+                                <label>초기 입금액</label>
+                                <div className="deposit-input-group">
+                                    <input type="text" value={amount} onChange={handleAmountChange} className="deposit-input" required />
+                                    <span className="deposit-unit">원</span>
                                 </div>
-                            )}
+                                <div className="deposit-hint">최소 입금액: {selectedProduct.minAmount.toLocaleString()}원</div>
+                            </div>
+
+                            <div className="deposit-flex-column deposit-form-group">
+                                <label>예금 계산기</label>
+                                <div className="deposit-input-group">
+                                    <input type="text" value={calcAmount} onChange={handleCalcAmountChange} className="deposit-input" placeholder="금액 입력" />
+                                    <span className="deposit-unit">원</span>
+                                </div>
+                                <div className="deposit-rate-info">
+                                    <div>이자율: {selectedProduct.interestRate}%</div>
+                                    <div>예치기간: {selectedProduct.termMonths}개월</div>
+                                </div>
+                                <button type="button" onClick={calculateInterest} className="deposit-btn-primary">계산하기</button>
+                                {calcResult && (
+                                    <div className="deposit-calc-result">
+                                        <div>총 이자 (세전): {calcResult.interest.toLocaleString()}원</div>
+                                        <div>세후 수령 이자: {calcResult.afterTaxInterest.toLocaleString()}원</div>
+                                        <div>총 수령액: {calcResult.total.toLocaleString()}원</div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
-                        <div className="formGroup">
+                        <div className="deposit-form-group">
                             <label>출금 계좌 선택</label>
-                            <select value={selectedWithdrawAccountNumber} onChange={(e) => setSelectedWithdrawAccount(e.target.value)} required>
+                            <select value={selectedWithdrawAccountNumber} onChange={(e) => setSelectedWithdrawAccount(e.target.value)} className="deposit-select" required>
                                 <option value="">출금할 입출금 계좌를 선택하세요</option>
                                 {accounts.map(acc => (
                                     <option key={acc.account_number} value={acc.account_number}>
@@ -209,13 +220,15 @@ const DepositJoin = () => {
                             </select>
                         </div>
 
-                        <div className="formGroup">
+                        <div className="deposit-form-group">
                             <label>계좌 비밀번호 (4자리)</label>
-                            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} maxLength={4} required />
+                            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} maxLength={4} className="deposit-inputPassword" required />
                         </div>
 
-                        <button type="submit" className="depositBtn">가입 완료</button>
-                        <button type="button" className="depositBtn" style={{ backgroundColor: '#aaa', marginLeft: '10px' }} onClick={handleCancel}>취소</button>
+                        <div className="deposit-submit-buttons">
+                            <button type="submit" className="deposit-btn-primary2">가입 완료</button>
+                            <button type="button" className="deposit-btn-cancel" onClick={handleCancel}>취소</button>
+                        </div>
                     </form>
                 </div>
             )}
