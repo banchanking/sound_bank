@@ -784,6 +784,50 @@
 </select>
  
 
+<!-- 기본 계좌용 account_id 조회 -->
+<select id="getMainAccountIdByCustomerId" resultType="int" parameterType="string">
+    SELECT customer_id
+    FROM account_tbl
+    WHERE customer_id = #{customerId}
+</select>
+
+<!--  예금 입출금 거래시 거래내역 -->
+<insert id="createDepositTransactionDirect" parameterType="com.boot.sound.deposit.dto.DepositDTO">
+    INSERT INTO DEPOSIT_TRANSACTION_TBL (
+        dat_id,
+        transaction_type,
+        amount,
+        balance,
+        description,
+        transaction_date
+    ) VALUES (
+        #{accountId},
+        #{transactionType},
+        #{transactionAmount},
+        #{balance},
+        #{transactionDescription},
+        #{transactionDate}
+    )
+</insert>
+
+<!-- 적금 입출금 거래시 거래내역 -->
+<insert id="createSavingsTransactionDirect" parameterType="com.boot.sound.deposit.dto.DepositDTO">
+    INSERT INTO SAVINGS_TRANSACTION_TBL (
+        sat_id,
+        transaction_type,
+        amount,
+        balance,
+        description,
+        transaction_date
+    ) VALUES (
+        #{accountId},
+        #{transactionType},
+        #{transactionAmount},
+        #{balance},
+        #{transactionDescription},
+        #{transactionDate}
+    )
+</insert>
 
 
 

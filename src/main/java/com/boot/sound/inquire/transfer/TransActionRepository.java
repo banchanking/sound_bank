@@ -16,23 +16,23 @@ public interface TransActionRepository extends JpaRepository<TransActionDTO, Int
     @Query("SELECT t FROM TransActionDTO t WHERE t.account_number = :account_number")
     List<TransActionDTO> findByAccountNumber(@Param("account_number") String account_number);
 
-    // 2. 계좌번호 + 날짜 범위로 거래내역 조회 (예: 2025-01-01 ~ 2025-03-30 사이)
-    @Query("SELECT t FROM TransActionDTO t WHERE t.account_number = :account_number AND t.transaction_date BETWEEN :start_date AND :end_date")
+ // 2. 계좌번호 + 날짜 범위로 거래내역 조회 (최신순 정렬)
+    @Query("SELECT t FROM TransActionDTO t WHERE t.account_number = :account_number AND t.transaction_date BETWEEN :start_date AND :end_date ORDER BY t.transaction_date DESC")
     List<TransActionDTO> findByAccountAndDate(
         @Param("account_number") String account_number,
         @Param("start_date") Date start_date,
         @Param("end_date") Date end_date
     );
 
-    // 3. 계좌번호 + 날짜 범위 + 거래유형으로 조회 (예: 출금만 보기)
-    @Query("SELECT t FROM TransActionDTO t WHERE t.account_number = :account_number AND t.transaction_date BETWEEN :start_date AND :end_date AND t.transaction_type = :transaction_type")
+    // 3. 계좌번호 + 날짜 범위 + 거래유형으로 조회 (최신순 정렬)
+    @Query("SELECT t FROM TransActionDTO t WHERE t.account_number = :account_number AND t.transaction_date BETWEEN :start_date AND :end_date AND t.transaction_type = :transaction_type ORDER BY t.transaction_date DESC")
     List<TransActionDTO> findByAccountDateAndType(
         @Param("account_number") String account_number,
         @Param("start_date") Date start_date,
         @Param("end_date") Date end_date,
         @Param("transaction_type") String transaction_type
     );
-    
+
     // 하루 이체 총합 계산 (계좌 여러 개 대상)
     @Query("SELECT COALESCE(SUM(t.amount), 0) " +
             "FROM TransActionDTO t " +

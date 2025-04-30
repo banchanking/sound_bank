@@ -54,7 +54,7 @@
 	
 	<select id="checkCustomerAssets" parameterType="string" resultType="map">
 		SELECT
-		  CASE WHEN EXISTS (SELECT 1 FROM exchange_wallet WHERE customer_id = #{customerId})
+		  CASE WHEN EXISTS (SELECT 1 FROM exchange_wallet WHERE customer_id = #{customerId} AND STATUS = 'ACTIVE')
 		       THEN '외환 지갑' ELSE NULL END AS exchange_wallet,
 		       
 		          CASE WHEN EXISTS (SELECT 1 FROM account_tbl WHERE customer_id = #{customerId}  AND status = 'ACTIVE')

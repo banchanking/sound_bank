@@ -72,6 +72,10 @@ function AdminLimit() {
   const totalPages = Math.ceil(requests.length / itemsPerPage);
   const currentItems = requests.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
+  const pageGroup = Math.floor((currentPage - 1) / 10);
+  const startPage = pageGroup * 10 + 1;
+  const endPage = Math.min(startPage + 9, totalPages);
+
   return (
     <div className={styles['limitAdmin-container']}>
       <div className={styles['limitAdmin-content']}>
@@ -132,27 +136,32 @@ function AdminLimit() {
           </tbody>
         </table>
 
-        {/* 페이지네이션 (화살표 없이 숫자 버튼만) */}
         <div className={styles["limitAdmin-pagination"]}>
-          {Array.from({ length: totalPages }, (_, i) => (
+          {startPage > 1 && (
             <button
-              key={i}
-              onClick={() => setCurrentPage(i + 1)}
-              className={currentPage === i + 1
-                ? styles["activePage"]
-                : styles["pageButton"]}
+              onClick={() => setCurrentPage(startPage - 1)}
+              className={styles.pageArrow}
             >
-              {i + 1}
+              &lt;
+            </button>
+          )}
+          {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map(num => (
+            <button
+              key={num}
+              onClick={() => setCurrentPage(num)}
+              className={currentPage === num ? styles.activePage : styles.pageButton}
+            >
+              {num}
             </button>
           ))}
-
-          <button
-            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-            className={styles["pageArrow"]}
-          >
-            ▶
-          </button>
+          {endPage < totalPages && (
+            <button
+              onClick={() => setCurrentPage(endPage + 1)}
+              className={styles.pageArrow}
+            >
+              &gt;
+            </button>
+          )}
         </div>
       </div>
     </div>

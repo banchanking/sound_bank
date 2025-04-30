@@ -10,6 +10,10 @@ function TransMultiApprove() {
   const token = localStorage.getItem('auth_token');
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    fetchApproveList();
+  }, []);
+
   const fetchApproveList = () => {
     RefreshToken.get('/multiAdmin/approveList', {
       headers: { Authorization: `Bearer ${token}` }
@@ -39,10 +43,6 @@ function TransMultiApprove() {
         alert('요청 목록 불러오기 실패');
       });
   };
-
-  useEffect(() => {
-    fetchApproveList();
-  }, []);
 
   const handleApprove = (group) => {
     setLoading(true);
@@ -79,6 +79,9 @@ function TransMultiApprove() {
   };
 
   const totalPages = Math.ceil(groupedList.length / itemsPerPage);
+  const pageGroup = Math.floor((currentPage - 1) / 10);
+  const startPage = pageGroup * 10 + 1;
+  const endPage = Math.min(startPage + 9, totalPages);
   const currentItems = groupedList.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
@@ -102,47 +105,23 @@ function TransMultiApprove() {
                 <td>{group.customer_id}</td>
                 <td>{group.out_account_number}</td>
                 <td>{group.request_date ? new Date(Number(group.request_date)).toLocaleString() : '-'}</td>
-                <td>
-                  {group.status === '대기' ? '대기'
-                    : group.status === '승인' ? '승인됨'
-                    : '반려됨'}
-                </td>
+                <td>{group.status === '대기' ? '대기' : group.status === '승인' ? '승인됨' : '반려됨'}</td>
                 <td>
                   {group.status === '대기' ? (
                     <>
-                      <button
-                        onClick={() => setSelectedKey(group.key)}
-                        className={styles['multiAdmin-btnDetail']}
-                      >
-                        상세
-                      </button>
-                      <button
-                        onClick={() => handleApprove(group)}
-                        className={styles['multiAdmin-btnApprove']}
-                      >
-                        승인
-                      </button>
-                      <button
-                        onClick={() => handleReject(group)}
-                        className={styles['multiAdmin-btnReject']}
-                      >
-                        반려
-                      </button>
+                      <button onClick={() => setSelectedKey(group.key)} className={styles['multiAdmin-btnDetail']}>상세</button>
+                      <button onClick={() => handleApprove(group)} className={styles['multiAdmin-btnApprove']}>승인</button>
+                      <button onClick={() => handleReject(group)} className={styles['multiAdmin-btnReject']}>반려</button>
                     </>
                   ) : group.status === '승인' ? (
                     <div>
                       승인일:<br />
-                      {group.approval_date
-                        ? new Date(group.approval_date).toLocaleString()
-                        : '-'}
+                      {group.approval_date ? new Date(group.approval_date).toLocaleString() : '-'}
                     </div>
                   ) : (
                     <div>
                       반려일:<br />
-                      {group.approval_date
-                        ? new Date(group.approval_date).toLocaleString()
-                        : '-'}
-                      <br />
+                      {group.approval_date ? new Date(group.approval_date).toLocaleString() : '-'}<br />
                       사유: {group.reject_reason || '-'}
                     </div>
                   )}
@@ -180,28 +159,25 @@ function TransMultiApprove() {
         </tbody>
       </table>
 
-      {/* 페이지네이션 (화살표 없음) */}
-      <div className={styles["multiAdmin-pagination"]}>
-        {Array.from({ length: totalPages }, (_, i) => (
-          <button
-            key={i}
-            onClick={() => setCurrentPage(i + 1)}
-            className={currentPage === i + 1
-              ? styles["activePage"]
-              : styles["pageButton"]}
-          >
-            {i + 1}
-          </button>
-        ))}
-
-      <button
-        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-        disabled={currentPage === totalPages}
-        className={styles["pageArrow"]}
-      >
-        ▶
-      </button>
-      </div>
+      {groupedList.length > 0 && (
+        <div className={styles.pageButtonArea}>
+          {startPage > 1 && (
+            <button className={styles.pageArrow} onClick={() => setCurrentPage(startPage - 1)}>&lt;</button>
+          )}
+          {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map(num => (
+            <button
+              key={num}
+              onClick={() => setCurrentPage(num)}
+              className={`${styles.pageButton} ${currentPage === num ? styles.activePage : ''}`}
+            >
+              {num}
+            </button>
+          ))}
+          {endPage < totalPages && (
+            <button className={styles.pageArrow} onClick={() => setCurrentPage(endPage + 1)}>&gt;</button>
+          )}
+        </div>
+      )}
 
       {loading && <div className={styles['multiAdmin-loading']}>처리중...</div>}
     </div>
