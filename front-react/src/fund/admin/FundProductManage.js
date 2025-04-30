@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import styles from "../../Css/fund/FundAdmin.module.css";
 import style from "../../Css/exchange/ExList.module.css";
 import RefreshToken from "../../jwt/RefreshToken";
+import axios from "axios"; 
 
 const ITEMS_PER_PAGE = 10;
 
@@ -57,7 +58,7 @@ const FundProductManage = () => {
         return;
       }
 
-      const predictResponse = await RefreshToken.post("http://127.0.0.1:8000/predict-fund-one", {
+      const predictResponse = await axios.post("http://127.0.0.1:8000/predict-fund-one", {
         fund_fee_rate: formData.fund_fee_rate,
         fund_upfront_fee: formData.fund_upfront_fee,
         fund_grade: formData.fund_grade,
