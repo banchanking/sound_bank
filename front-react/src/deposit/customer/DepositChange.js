@@ -84,6 +84,7 @@ const DepositChange = () => {
         }
         try {
             await RefreshToken.put(`/deposit/accounts/deposit/${selectedAccount.id}/nickname`, {
+                accountId: selectedAccount.id,  
                 nickname: values.nickname
             });
             alert('별명이 변경되었습니다.');
@@ -118,8 +119,8 @@ const DepositChange = () => {
                                 .filter(account => account.accountStatus === 'ACTIVE')
                                 .map(account => (
                                     <Option key={account.id} value={account.id}>
-                                    {formatAccountNumber(account.accountNumber)} - {account.productName} - {account.balance.toLocaleString()}원
-                                    </Option>
+                                        {formatAccountNumber(account.accountNumber)} - {account.productName} - {(account.balance ?? 0).toLocaleString()}원
+                                        </Option>
                                 ))}
                             </Select>
                             </Form.Item>
