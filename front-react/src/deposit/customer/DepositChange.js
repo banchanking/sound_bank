@@ -13,6 +13,11 @@ const DepositChange = () => {
     const [accounts, setAccounts] = useState([]);
     const [selectedAccount, setSelectedAccount] = useState(null);
     const customerId = getCustomerID();
+    // 계좌 번호를 3자리-6자리-4자리 형식으로 포맷팅하는 함수
+    const formatAccountNumber = (accountNumber) => {
+        if (!accountNumber || accountNumber.length !== 13) return accountNumber; // 유효성 검사
+        return `${accountNumber.slice(0, 3)}-${accountNumber.slice(3, 9)}-${accountNumber.slice(9)}`;
+    };
 
     useEffect(() => {
         if (!customerId) {
@@ -113,7 +118,7 @@ const DepositChange = () => {
                                 .filter(account => account.accountStatus === 'ACTIVE')
                                 .map(account => (
                                     <Option key={account.id} value={account.id}>
-                                    {account.accountNumber} - {account.productName} - {account.balance.toLocaleString()}원
+                                    {formatAccountNumber(account.accountNumber)} - {account.productName} - {account.balance.toLocaleString()}원
                                     </Option>
                                 ))}
                             </Select>

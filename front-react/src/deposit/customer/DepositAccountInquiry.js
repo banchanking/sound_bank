@@ -14,6 +14,8 @@ const DepositAccountInquiry = () => {
 
   const navigate = useNavigate();
 
+  
+
   useEffect(() => {
     if (!customerId) {
       const goLogin = window.confirm(
@@ -59,6 +61,9 @@ const DepositAccountInquiry = () => {
         <br />
         <Text strong>별명: </Text>
         <span>{account.nickname || "없음"}</span>
+        <br />
+        <Text strong>이자율: </Text>
+        <span>{account.interestRate ? `${account.interestRate}%` : '없음'}</span> 
         <br />
         <Text strong>잔액: </Text>
         <span>{account.balance.toLocaleString()} 원</span>

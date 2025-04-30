@@ -1,22 +1,33 @@
 package com.boot.sound.deposit.dto;
 
+import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import lombok.Data;
-
+/**
+ * DepositAutoTransferDTO
+ * 자동이체 등록/조회에 사용되는 데이터 전송 객체
+ */
 @Data
 public class DepositAutoTransferDTO {
-    
-    private int id;                 // 자동이체 PK (auto_transfer_id)
-    private int datId;              // 예금계좌 PK (dat_id)
-    private String targetAccountNumber; // 이체 대상 계좌번호
-    private BigDecimal transferAmount;  // 이체 금액
-    private int transferDay;        // 매월 이체일 (1~28)
-    private String transferStatus;  // 상태 (ACTIVE, INACTIVE)
-    
-    private LocalDateTime createdAt; // 생성일
-    private LocalDateTime updatedAt; // 수정일
+    // 출금할 기본 입출금 계좌 번호
+    private String withdrawAccountNumber;
 
-    // (필요 시 추가 가능)
+    // 입금할 예적금 계좌 번호
+    private String targetAccountNumber;
+
+    // 입금할 계좌 타입 (DEPOSIT: 예금 / SAVINGS: 적금)
+    private String targetAccountType;
+
+    // 이체할 금액
+    private BigDecimal transferAmount;
+
+    // 매월 며칠에 이체할지 (1 ~ 28)
+    private Integer transferDay;
+
+    // 이체 상태 (ACTIVE / INACTIVE)
+    private String transferStatus;
+
+    // 자동이체 등록 시각
+    private LocalDateTime createdAt;
 }
