@@ -121,7 +121,7 @@ const SavingsJoin = () => {
                 <h3>{product.productName}</h3>
                 <p>이자율: {product.interestRate}%</p>
                 <p>기간: {product.termMonths}개월</p>
-                <p>최소금액: {product.minAmount.toLocaleString()}원</p>
+                <p>최소금액: {(product.minAmount ?? 0).toLocaleString()}원</p>
               </div>
             ))}
           </div>
@@ -183,7 +183,7 @@ const SavingsJoin = () => {
                 </div>
                 {selectedProduct && (
                   <div className="deposit-hint">
-                    최소 {selectedProduct.minAmount.toLocaleString()}원 이상
+                    최소 {(selectedProduct.minAmount ?? 0).toLocaleString()}원 이상
                   </div>
                 )}
               </div>
@@ -192,13 +192,14 @@ const SavingsJoin = () => {
                 <label>적금 계산기</label>
                 <button type="button" className="deposit-btn-primary" onClick={calculateSavings}>계산하기</button>
                 {calcResult && (
-                  <div className="deposit-calc-result">
-                    <div>총 납입금액: {calcResult.totalPrincipal.toLocaleString()}원</div>
-                    <div>세전 이자: {calcResult.interest.toLocaleString()}원</div>
-                    <div>세후 이자: {calcResult.afterTaxInterest.toLocaleString()}원</div>
-                    <div>만기 수령액: {calcResult.maturityAmount.toLocaleString()}원</div>
-                  </div>
-                )}
+                      <div className="deposit-calc-result">
+                        <div>총 납입금액: {(calcResult.totalPrincipal ?? 0).toLocaleString()}원</div>
+                        <div>세전 이자: {(calcResult.interest ?? 0).toLocaleString()}원</div>
+                        <div>세후 이자: {(calcResult.afterTaxInterest ?? 0).toLocaleString()}원</div>
+                        <div>만기 수령액: {(calcResult.maturityAmount ?? 0).toLocaleString()}원</div>
+                      </div>
+                    )}
+
               </div>
             </div>
 
@@ -213,9 +214,10 @@ const SavingsJoin = () => {
                 <option value="">출금할 입출금 계좌를 선택하세요</option>
                 {accounts.map(acc => (
                   <option key={acc.account_number} value={acc.account_number}>
-                    {acc.account_name} ({acc.account_number}) - 잔액: {acc.balance.toLocaleString()}원
+                    {acc.account_name} ({acc.account_number}) - 잔액: {(acc.balance ?? 0).toLocaleString()}원
                   </option>
                 ))}
+
               </select>
             </div>
 

@@ -65,5 +65,19 @@
         DELETE FROM DEPOSIT_AUTO_TRANSFER_TBL
         WHERE id = #{id}
     </delete>
+    
+    <!-- 자동이체 수정 -->
+   <update id="updateAutoTransfer">
+       UPDATE DEPOSIT_AUTO_TRANSFER_TBL
+       SET 
+           target_account_number = #{targetAccountNumber},
+           target_account_type = #{targetAccountType},
+           transfer_amount = #{transferAmount},
+           transfer_day = #{transferDay},
+           transfer_status = #{transferStatus}
+       WHERE id = #{id}
+   </update>
+    
+    
 
 </mapper>

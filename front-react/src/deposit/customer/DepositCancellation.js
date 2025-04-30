@@ -153,7 +153,7 @@ const DepositCancellation = () => {
                                 <option value="">계좌 선택</option>
                                 {accounts.map(account => (
                                     <option key={account.accountNumber} value={account.accountNumber}>
-                                        {formatAccountNumber(account.accountNumber)} - {account.productName} - {account.balance.toLocaleString()}원
+                                        {formatAccountNumber(account.accountNumber)} - {account.productName} - {(account.balance != null ? account.balance.toString() : '0')}원
                                     </option>
                                 ))}
                             </select>

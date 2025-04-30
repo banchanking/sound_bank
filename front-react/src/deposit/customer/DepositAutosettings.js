@@ -1,7 +1,10 @@
+
+
 import React, { useState, useEffect } from "react";
 import { getCustomerID } from "../../jwt/AxiosToken";
 import RefreshToken from "../../jwt/RefreshToken";
 import "../../Css/depositcss/DepositAutosettings.css"; // 사뱅스타일 적용
+import { useNavigate } from "react-router-dom";
 
 const DepositSavingsAutoSettings = () => {
   const customerId = getCustomerID();
@@ -12,7 +15,7 @@ const DepositSavingsAutoSettings = () => {
   const [transferDay, setTransferDay] = useState("");
   const [accountPassword, setAccountPassword] = useState("");
   const [selectedAccountType, setSelectedAccountType] = useState("");
-
+  const navigate = useNavigate();
   useEffect(() => {
     if (!customerId) {
       alert("로그인이 필요합니다.");
@@ -72,6 +75,8 @@ const DepositSavingsAutoSettings = () => {
       return;
     }
 
+
+
     try {
       await RefreshToken.post(`/auto-transfer/register`, {
         withdrawAccountNumber: withdrawAccount,
@@ -83,6 +88,7 @@ const DepositSavingsAutoSettings = () => {
         accountPassword: accountPassword
       });
       alert("자동이체가 등록되었습니다.");
+      navigate("/depositAutoManagement");
     } catch (error) {
       console.error("자동이체 등록 실패:", error);
       alert("자동이체 등록에 실패했습니다.");

@@ -1,13 +1,11 @@
 package com.boot.sound.deposit.controller;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.boot.sound.deposit.dto.DepositAutoTransferDTO;
 import com.boot.sound.deposit.dto.DepositDTO;
 import com.boot.sound.deposit.dto.DepositTransactionDTO;
 import com.boot.sound.deposit.service.DepositService;
@@ -36,7 +33,7 @@ public class DepositController {
     
     private final DepositService depositService;
 
- // 예금 상품 목록 조회
+    // 예금 상품 목록 조회
     @GetMapping("/deposit/products/deposit")
     public ResponseEntity<?> getDepositProducts() {
         return new ResponseEntity<>(depositService.getDepositProducts(), HttpStatus.OK);
@@ -72,17 +69,18 @@ public class DepositController {
         return new ResponseEntity<>(depositService.getSavingsProductDetail(productId), HttpStatus.OK);
     }
 
-    // 예금 계좌 상세 조회
+ // 예금 계좌 상세 조회 (accountId가 String이라면 String으로)
     @GetMapping("/deposit/accounts/deposit/detail/{accountId}")
     public ResponseEntity<?> getDepositAccountDetail(@PathVariable int accountId) {
         return new ResponseEntity<>(depositService.getDepositAccountDetail(accountId), HttpStatus.OK);
     }
 
-    // 적금 계좌 상세 조회
+    // 적금 계좌 상세 조회 (accountId가 String이라면 String으로)
     @GetMapping("/deposit/accounts/savings/detail/{accountId}")
     public ResponseEntity<?> getSavingsAccountDetail(@PathVariable int accountId) {
         return new ResponseEntity<>(depositService.getSavingsAccountDetail(accountId), HttpStatus.OK);
     }
+
 
     // 예금계좌생성
     @PostMapping("/deposit/accounts/deposit")
@@ -131,6 +129,7 @@ public class DepositController {
             depositService.deposit(accountId, request.getTransactionAmount(), request.getAccountPassword());
             return new ResponseEntity<>("입금이 성공적으로 처리되었습니다.", HttpStatus.OK);
         } catch (Exception e) {
+        	e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -142,6 +141,7 @@ public class DepositController {
             depositService.withdraw(accountId, request.getTransactionAmount(), request.getAccountPassword());
             return new ResponseEntity<>("출금이 성공적으로 처리되었습니다.", HttpStatus.OK);
         } catch (Exception e) {
+        	e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -153,6 +153,7 @@ public class DepositController {
             depositService.depositSavings(accountId, request.getTransactionAmount(), request.getAccountPassword());
             return new ResponseEntity<>("적금 계좌 입금이 성공적으로 처리되었습니다.", HttpStatus.OK);
         } catch (Exception e) {
+        	e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -164,6 +165,7 @@ public class DepositController {
             depositService.withdrawSavings(accountId, request.getTransactionAmount(), request.getAccountPassword());
             return new ResponseEntity<>("적금 계좌 출금이 성공적으로 처리되었습니다.", HttpStatus.OK);
         } catch (Exception e) {
+        	e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -194,49 +196,6 @@ public class DepositController {
         }
     }
 
-    // 예금 계좌 자동이체 설정
-    @PutMapping("/deposit/accounts/deposit/{accountId}/auto-transfer")
-    public ResponseEntity<?> setAutoTransfer(@PathVariable int accountId, @RequestBody DepositDTO request) {
-        try {
-            depositService.setAutoTransfer(accountId, request.isAutoTransferEnabled(), request.getAutoTransferAmount(), request.getAutoTransferDay());
-            return new ResponseEntity<>("자동이체 설정이 성공적으로 변경되었습니다.", HttpStatus.OK);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-    // 자동이체 처리 (스케줄러용)
-    @PostMapping("/deposit/auto-transfer/process")
-    public ResponseEntity<?> processAutoTransfers() {
-        try {
-            depositService.processAutoTransfers();
-            return new ResponseEntity<>("자동이체가 성공적으로 실행되었습니다.", HttpStatus.OK);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-    // 적금 만기 처리 (스케줄러용)
-    @PostMapping("/deposit/savings/maturity/process")
-    public ResponseEntity<?> processMaturity() {
-        try {
-            depositService.processMaturity();
-            return new ResponseEntity<>("적금 만기 처리가 성공적으로 실행되었습니다.", HttpStatus.OK);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-    // 이자 계산 및 지급 (스케줄러용)
-    @PostMapping("/deposit/interest/payment")
-    public ResponseEntity<?> payInterest() {
-        try {
-            depositService.payInterest();
-            return new ResponseEntity<>("이자 지급이 성공적으로 실행되었습니다.", HttpStatus.OK);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
 
     // 예금 계좌 비밀번호 변경
     @PutMapping("/deposit/accounts/deposit/{accountId}/password")
