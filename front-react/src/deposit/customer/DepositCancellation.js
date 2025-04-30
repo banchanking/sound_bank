@@ -59,25 +59,43 @@ const DepositCancellation = () => {
 
     useEffect(() => {
         if (!selectedAccount) return;
+    
+        // 선택된 계좌 객체를 찾는다
         const acc = accounts.find(a => a.accountNumber === selectedAccount);
+    
+        // 계좌 정보가 없거나 이자율, 기간 정보가 없으면 종료
         if (!acc || !acc.interestRate || !acc.termMonths) return;
-
+    
+        // 연이율(%)을 소수점으로 변환
         const rate = acc.interestRate / 100;
+    
+        // 예치 기간 (개월 수)
         const months = acc.termMonths;
+    
+        // 원금 (현재 잔액)
         const principal = acc.balance;
+    
+        // 이자에 적용할 세율 (15.4%)
         const taxRate = 0.154;
-
+    
+        // 세전 이자 = 원금 * 연이율 * (개월 / 12)
         const interest = principal * rate * (months / 12);
+    
+        // 세후 이자 = 세전 이자 * (1 - 세율)
         const afterTax = interest * (1 - taxRate);
+    
+        // 최종 수령액 = 원금 + 세후 이자
         const total = principal + afterTax;
-
+    
+        // 계산된 결과 상태로 저장
         setCalculatedInfo({
             principal,
-            interest: Math.floor(interest),
-            afterTax: Math.floor(afterTax),
-            total: Math.floor(total)
+            interest: Math.floor(interest),     
+            afterTax: Math.floor(afterTax),     
+            total: Math.floor(total)            
         });
     }, [selectedAccount, accounts]);
+    
 
     const handleCancellation = async (e) => {
         e.preventDefault();

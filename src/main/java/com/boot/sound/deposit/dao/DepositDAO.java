@@ -133,9 +133,15 @@ public interface DepositDAO {
     // 적금 계좌 상세 조회
     DepositDTO getSavingsAccountByNumber(@Param("accountNumber") String accountNumber);
     
- 
+    // 기본 계좌 account_tbl 기준 account_id 조회
+    Integer getMainAccountIdByCustomerId(@Param("customerId") String customerId);
 
 
+    // 예금 거래내역 직접 등록용 ( 입출금시 거래내역 저장 )
+    int createDepositTransactionDirect(@Param("transaction") DepositDTO transaction);
+
+    // 적금 거래내역 직접 등록용 ( 입출금시 거래내역 저장 )
+    int createSavingsTransactionDirect(@Param("transaction") DepositDTO transaction);
 
 
 }

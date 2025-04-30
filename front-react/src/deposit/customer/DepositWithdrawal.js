@@ -69,7 +69,7 @@ const DepositWithdrawal = () => {
             try {
                 const url = type === 'DEPOSIT'
                     ? `/deposit/accounts/balance/${selected.accountNumber}`
-                    : `/deposit/accounts/savings/balance/${selected.accountNumber}`;
+                    : `/savings/accounts/balance/${selected.accountNumber}`;
 
                 const response = await RefreshToken.get(url);
                 setAccountBalance(response.data);
@@ -98,9 +98,13 @@ const DepositWithdrawal = () => {
             const endpoint = accountType === 'DEPOSIT'
                 ? `/deposit/accounts/deposit/${selectedAccount.id}/${type}`
                 : `/deposit/accounts/savings/${selectedAccount.id}/${type}`;
+                console.log("보내는 데이터:", {
+                    transactionAmount: Number(amount),
+                    accountPassword: password
+                  });
 
             await RefreshToken.post(endpoint, {
-                transactionAmount: amount,
+                transactionAmount: Number(amount),
                 accountPassword: password
             });
 
