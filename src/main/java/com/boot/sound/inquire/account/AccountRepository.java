@@ -14,7 +14,7 @@ import javax.transaction.Transactional;
 @Repository
 public interface AccountRepository extends CrudRepository<AccountDTO, String> {
 
-	// 고객 소유한 전체 계좌 조회 (DTO 전체 반환)
+   // 고객 소유한 전체 계좌 조회 (DTO 전체 반환)
     @Query("SELECT a FROM AccountDTO a WHERE a.customer_id = :customer_id")
     List<AccountDTO> findAccountsByCustomerId(@Param("customer_id") String customer_id);
 
@@ -22,10 +22,10 @@ public interface AccountRepository extends CrudRepository<AccountDTO, String> {
     @Query("SELECT a.accountNumber FROM AccountDTO a WHERE a.customer_id = :customer_id")
     List<String> findAccountNumbersByCustomerId(@Param("customer_id") String customer_id);
 
-	
-	// 이체부분-> 
+   
+   // 이체부분-> 
 
-	// 출금 - 잔액 감소 (잔액이 충분할 때만)
+   // 출금 - 잔액 감소 (잔액이 충분할 때만)
     @Modifying 
     @Transactional 
     @Query("UPDATE AccountDTO a SET a.balance = a.balance - :money WHERE a.accountNumber = :acc AND a.balance >= :money")
