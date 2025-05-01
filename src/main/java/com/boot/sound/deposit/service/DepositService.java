@@ -214,6 +214,11 @@ public class DepositService {
         if (depositDAO.createSavingsAccount(account) != 1) {
             throw new RuntimeException("적금 계좌 생성 실패");
         }
+        
+        // 적금 계좌 생성시 금액 입금
+        if (depositDAO.updateSavingsBalance(account.getAccountNumber(), account.getMonthlyAmount()) != 1) {
+            throw new RuntimeException("적금 계좌 잔액 갱신 실패");
+        }
 
         // 적금 거래내역 등록
         DepositDTO transaction = new DepositDTO();
