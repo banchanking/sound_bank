@@ -67,7 +67,9 @@ Command Prompt로 이동후 (Launch Profile ∨ 버튼)
 (base) D:\DEV\workspace_springBoot_ict04\sound_bank\front-react> 라고 돼있는지 확인
 
 cd front-react/src/fund/data로 이동
-uvicorn Investment_AI:app --reload 실행
+# ------------- FastAPI 서버 실행 방법 -----------
+# 개발 환경 (테스트) uvicorn Investment_AI:app --reload --host 0.0.0.0 --port 8000
+# 운영 환경 (배포) uvicorn Investment_AI:app --host 0.0.0.0 --port 8000
 
 기다린다...
 

@@ -1,5 +1,3 @@
-// TransInstant.js
-
 import React, { useEffect, useState } from 'react';
 import RefreshToken from '../../jwt/RefreshToken';
 import styles from '../../Css/transfer/TransInstant.module.css';
@@ -52,6 +50,20 @@ function TransInstant() {
 
   const handleChange = e => {
     const { name, value } = e.target;
+
+    if (name === 'out_account_number') {
+      const selected = accounts.find(acc =>
+        (acc.account_number || acc.dat_account_num) === value
+      );
+      const type = selected?.account_type || selected?.dat_account_type;
+
+      if (type === 'DEPOSIT' || type === 'SAVINGS') {
+        alert('예/적금 계좌이체는 예/적금 메뉴에서 진행 가능합니다.');
+        navigate('/depositWithdrawal'); // 예/적금 이체 페이지로 이동
+        return;
+      }
+    }
+
     if (name === 'amount') {
       const raw = value.replace(/[^\d.]/g, '');
       const [intPart] = raw.split('.');
@@ -99,10 +111,16 @@ function TransInstant() {
       });
   };
 
-  // 선택된 출금계좌 객체 찾기
   const selectedAccount = accounts.find(acc =>
     (acc.account_number || acc.dat_account_num) === form.out_account_number
   );
+
+  const getAccountTypeLabel = (type) => {
+    if (type === 'CHECKING') return '입출금';
+    if (type === 'DEPOSIT') return '예금';
+    if (type === 'SAVINGS') return '적금';
+    return type || '알수없음';
+  };
 
   return (
     <div style={{ display: 'flex' }}>
@@ -124,7 +142,8 @@ function TransInstant() {
                 key={acc.account_number || acc.dat_account_num}
                 value={acc.account_number || acc.dat_account_num}
               >
-                {acc.account_number || acc.dat_account_num} ({acc.account_type || acc.dat_account_type})
+                {(acc.account_number || acc.dat_account_num)} (
+                {getAccountTypeLabel(acc.account_type || acc.dat_account_type)})
               </option>
             ))}
           </select>

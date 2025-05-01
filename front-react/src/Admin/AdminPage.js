@@ -39,9 +39,7 @@ import AdminEdit from "./AdminEdit";
 const AdminPage = () => {
   const location = useLocation();
   const [activeMenuIndex, setActiveMenuIndex] = useState(null);
-  const [selectedComponent, setSelectedComponent] = useState(
-    location.state?.component || "AdminList"
-  );
+  const [selectedComponent, setSelectedComponent] = useState("AdminList");
   const [selectedLoanId, setSelectedLoanId] = useState(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const [selectedAdmin, setSelectedAdmin] = useState(null);
@@ -160,7 +158,12 @@ const AdminPage = () => {
       case "LoanDetail":
         return <LoanDetail loan_id={selectedLoanId} />;
       case "LoanUpdate":
-        return <LoanUpdate loan_id={selectedLoanId} />;
+        return (
+          <LoanUpdate
+            loan_id={selectedLoanId}
+            onEdit={() => setSelectedComponent("LoanList")}
+          />
+        );
       case "LoanInterestList":
         return <LoanInterestList />;
       case "LoanCustomerList":
@@ -175,7 +178,7 @@ const AdminPage = () => {
       case "FundProductManage":
         return <FundProductManage />;
       case "FundTestManage":
-        return <FundTestManage />;
+        return <FundTestManage onRefresh={refreshInterest} />;
       case "FindFundCustomer":
         return <FindFundCustomer />;
       case "OpenApplyList":

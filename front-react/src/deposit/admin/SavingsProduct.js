@@ -36,7 +36,6 @@ const SavingsProduct = () => {
             setEditingId(record.id);
         } else {
             form.resetFields();
-            form.setFieldsValue({ productType: '' });  // 적금은 기본 상품유형 INSTALLMENT
             setEditingId(null);
         }
         setIsModalVisible(true);
@@ -48,9 +47,13 @@ const SavingsProduct = () => {
         setEditingId(null);
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (values) => {
         try {
-            const values = await form.validateFields();
+            // 👇 상품유형을 소문자로 변환
+            values.productType = values.productType.toLowerCase();
+    
+            console.log("제출할 데이터:", values);
+    
             if (editingId) {
                 await RefreshToken.put(`/deposit/products/savings/${editingId}`, values);
                 window.alert('적금 상품이 수정되었습니다.');
@@ -65,6 +68,7 @@ const SavingsProduct = () => {
             window.alert('적금 상품 저장에 실패했습니다.');
         }
     };
+    
 
     const handleDelete = async (id) => {
         try {
@@ -89,11 +93,14 @@ const SavingsProduct = () => {
             key: 'productType',
             render: (type) => {
                 const typeMap = {
-                    INSTALLMENT: '적금'
+                    installment: '적금',
+                    housing: '주택청약적금',
+                    pension: '연금적금',
+                    youth: '청년적금',
+                    fixed: '정기적금'
                 };
-                return typeMap[type] || type;
+                return typeMap[type?.toLowerCase()] || type;
             }
-            
         },
         {
             title: '이자율',
@@ -124,20 +131,8 @@ const SavingsProduct = () => {
             key: 'action',
             render: (_, record) => (
                 <Space>
-                    <Button
-                        type="primary"
-                        icon={<EditOutlined />}
-                        onClick={() => showModal(record)}
-                    >
-                        수정
-                    </Button>
-                    <Button
-                        danger
-                        icon={<DeleteOutlined />}
-                        onClick={() => handleDelete(record.id)}
-                    >
-                        삭제
-                    </Button>
+                    <Button type="primary" icon={<EditOutlined />} onClick={() => showModal(record)}>수정</Button>
+                    <Button danger icon={<DeleteOutlined />} onClick={() => handleDelete(record.id)}>삭제</Button>
                 </Space>
             ),
         },
@@ -169,89 +164,42 @@ const SavingsProduct = () => {
                 <Modal
                     title={editingId ? '상품 수정' : '상품 추가'}
                     visible={isModalVisible}
-                    onOk={handleSubmit}
+                    onOk={() => form.submit()}  
                     onCancel={handleCancel}
                     width={600}
                 >
-                    <Form
-                        form={form}
-                        layout="vertical"
-                    >
-                        <Form.Item
-                            name="productName"
-                            label="상품명"
-                            rules={[{ required: true, message: '상품명을 입력해주세요' }]}
-                        >
+                    <Form form={form} layout="vertical"onFinish={handleSubmit}>
+                        <Form.Item name="productName" label="상품명" rules={[{ required: true }]}>
                             <Input />
                         </Form.Item>
 
-                        <Form.Item
-                            name="productType"
-                            label="상품유형"
-                            rules={[{ required: true, message: '상품유형을 선택해주세요' }]}
-                        >
-                           <Select>
-                            <Option value="REGULAR">정기적금</Option>
-                            <Option value="FIXED">자유적금</Option>
-                           </Select>
-
+                        <Form.Item name="productType" label="상품유형" rules={[{ required: true }]}>
+                            <Select placeholder="상품 유형 선택">
+                                <Option value="installment">적금</Option>
+                                <Option value="housing">주택청약적금</Option>
+                                <Option value="pension">연금적금</Option>
+                                <Option value="youth">청년적금</Option>
+                                <Option value="fixed">정기적금</Option>
+                            </Select>
                         </Form.Item>
 
-                        <Form.Item
-                            name="interestRate"
-                            label="이자율"
-                            rules={[{ required: true, message: '이자율을 입력해주세요' }]}
-                        >
-                            <InputNumber
-                                min={0}
-                                max={100}
-                                step={0.01}
-                                formatter={(value) => `${value}%`}
-                                parser={(value) => value.replace('%', '')}
-                            />
+                        <Form.Item name="interestRate" label="이자율" rules={[{ required: true }]}>
+                            <InputNumber min={0} max={100} step={0.01} formatter={v => `${v}%`} parser={v => v.replace('%', '')} />
                         </Form.Item>
 
-                        <Form.Item
-                            name="minAmount"
-                            label="최소금액"
-                            rules={[{ required: true, message: '최소금액을 입력해주세요' }]}
-                        >
-                            <InputNumber
-                                min={0}
-                                step={10000}
-                                formatter={(value) => `${value.toLocaleString()}원`}
-                                parser={(value) => value.replace(/\원\s?|(,*)/g, '')}
-                            />
+                        <Form.Item name="minAmount" label="최소금액" rules={[{ required: true }]}>
+                            <InputNumber min={0} step={10000} formatter={v => `${v.toLocaleString()}원`} parser={v => v.replace(/\원\s?|(,*)/g, '')} />
                         </Form.Item>
 
-                        <Form.Item
-                            name="maxAmount"
-                            label="최대금액"
-                            rules={[{ required: true, message: '최대금액을 입력해주세요' }]}
-                        >
-                            <InputNumber
-                                min={0}
-                                step={10000}
-                                formatter={(value) => `${value.toLocaleString()}원`}
-                                parser={(value) => value.replace(/\원\s?|(,*)/g, '')}
-                            />
+                        <Form.Item name="maxAmount" label="최대금액" rules={[{ required: true }]}>
+                            <InputNumber min={0} step={10000} formatter={v => `${v.toLocaleString()}원`} parser={v => v.replace(/\원\s?|(,*)/g, '')} />
                         </Form.Item>
 
-                        <Form.Item
-                            name="termMonths"
-                            label="기간(개월)"
-                            rules={[{ required: true, message: '기간을 입력해주세요' }]}
-                        >
-                            <InputNumber
-                                min={1}
-                                max={60}
-                            />
+                        <Form.Item name="termMonths" label="기간(개월)" rules={[{ required: true }]}>
+                            <InputNumber min={1} max={60} />
                         </Form.Item>
 
-                        <Form.Item
-                            name="productDescription"
-                            label="상품설명"
-                        >
+                        <Form.Item name="productDescription" label="상품설명">
                             <Input.TextArea />
                         </Form.Item>
                     </Form>
