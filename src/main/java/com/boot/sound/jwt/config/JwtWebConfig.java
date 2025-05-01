@@ -31,8 +31,9 @@ public class JwtWebConfig {
 		
 		System.out.println("<<< WebConfig-1 >>>");
 		config.setAllowCredentials(true);
-		config.addAllowedOrigin("http://15.165.57.30:80");
-		config.addAllowedOrigin("http://15.165.57.30");
+		//config.addAllowedOrigin("http://15.165.57.30:80");
+		//config.addAllowedOrigin("http://15.165.57.30");
+	        config.addAllowedOrigin("https://sound-bank.duckdns.org");
 		config.setAllowCredentials(true);
 		config.setAllowedHeaders(Arrays.asList(
 					HttpHeaders.AUTHORIZATION,
