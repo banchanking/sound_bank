@@ -8,7 +8,7 @@ const VoiceBot = () => {
 
   // WebSocket 연결 및 첫 인사
   useEffect(() => {
-    const ws = new WebSocket("ws://15.165.57.30:8002/ws");
+    const ws = new WebSocket("wss://sound-bank.duckdns.org:8002/ws");
     console.log("웹소켓이 연결되었습니다."); // 확인용 로그
 
     ws.onopen = () => {
@@ -21,7 +21,7 @@ const VoiceBot = () => {
       ]);
 
       // 첫 인사 음성 재생
-      const welcomeAudio = new Audio("http://15.165.57.30:8002/static/welcome.mp3");
+      const welcomeAudio = new Audio("https://sound-bank.duckdns.org/static/welcome.mp3");
       welcomeAudio.play().catch((err) => console.error("Audio play error:", err));
 
       // WebSocket 연결이 완료되었음을 메시지로 UI에 반영
@@ -36,7 +36,7 @@ const VoiceBot = () => {
       if (data.type === "text") {
         setMessages((prev) => [...prev, { sender: "bot", text: data.text }]);
       } else if (data.type === "audio") {
-        const audio = new Audio("http://15.165.57.30:8002" + data.audio_path);
+        const audio = new Audio("https://sound-bank.duckdns.org" + data.audio_path);
         audio.play();
       }
     };
@@ -73,7 +73,7 @@ const VoiceBot = () => {
 
         setMessages((prev) => [...prev, { sender: "user", text: "음성 메시지 전송됨" }]);
 
-        const res = await fetch("http://15.165.57.30:8002/upload-audio", {
+        const res = await fetch("https://sound-bank.duckdns.org/upload-audio", {
           method: "POST",
           body: formData,
         });
@@ -84,7 +84,7 @@ const VoiceBot = () => {
         }
 
         if (result.audio_path) {
-          const audio = new Audio("http://15.165.57.30:8002" + result.audio_path);
+          const audio = new Audio("https://sound-bank.duckdns.org" + result.audio_path);
           audio.play();
         }
         if (result.answer) {

@@ -14,7 +14,7 @@ app = FastAPI()
 # CORS 설정: React 앱 도메인만 허용
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://15.165.57.30:3000"],  # 프론트엔드 주소
+    allow_origins=["https://sound-bank.duckdns.org"],  # 프론트엔드 주소
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -2,7 +2,7 @@ import axios from "axios";
 import { getAuthToken, getCustomerID, setAuthToken } from "./AxiosToken";
 
 const RefreshToken = axios.create({
-  baseURL: "http://15.165.57.30:8081/api",
+  baseURL: "https://sound-bank.duckdns.org/api",
   withCredentials: true,
   headers: {
     "Content-Type": "application/json;charset=utf-8",

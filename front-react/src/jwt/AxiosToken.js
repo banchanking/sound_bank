@@ -55,7 +55,7 @@ export const refreshAccessToken = async () => {
 
   try {
     const response = await axios.post(
-      "http://15.165.57.30:8081/api/refresh-token",
+      "https://sound-bank.duckdns.org/api/refresh-token",
       {
         customerId: customerId
       }

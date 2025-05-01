@@ -23,7 +23,7 @@ const Login = () => {
     e.preventDefault();
     axios
       .post(
-        "http://15.165.57.30:8081/api/login.do",
+        "https://sound-bank.duckdns.org/api/login.do",
         {
           customerId: form.customerId,
           customer_password: form.customer_password,
