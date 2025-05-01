@@ -152,7 +152,10 @@
   margin-bottom: 2rem;
   text-align: center;
 }
+.fundTableResult td{
+  width: 50% ;
 
+}
 
 .fundTable {
     width: 100%;
@@ -182,6 +185,7 @@
 }
 
 /* 차트 팝업 */
+/* 차트 팝업 */
 .popupOverlay {
   position: fixed;
   top: 0;
@@ -209,6 +213,7 @@
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
   position: relative;
 }
+
 
 .popupHeader {
   display: flex;
