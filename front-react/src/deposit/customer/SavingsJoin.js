@@ -171,6 +171,9 @@ const SavingsJoin = () => {
           <div className="deposit-header">
             <h2>가입 정보 입력</h2>
           </div>
+          <div className="deposit-selected-product" style={{ marginBottom: '15px', fontWeight: 'bold' }}>
+          선택한 상품: {selectedProduct.productName}
+          </div>
           <form onSubmit={handleSubmit} className="deposit-form">
             <div className="deposit-flex-inputs">
               <div className="deposit-flex-column deposit-form-group">
