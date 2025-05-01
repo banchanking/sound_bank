@@ -133,6 +133,7 @@
 /* 테이블 */
 .fundtestresultcontainer {
   display: flex;
+  min-height: 590px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -145,7 +146,7 @@
 }
 
 .fundtesttitle {
-  font-size: 1rem;
+  font-size: rem;
   font-weight: 70;
   color: #000;
   margin-bottom: 2rem;
@@ -190,11 +191,15 @@
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
+  overflow: auto;
   align-items: center;
   z-index: 9999;
 }
 
 .popupChart {
+  margin-top: 200px;
+  margin-bottom: 50px;
+  border: 1.5px solid #ffffff;
   background: white;
   padding: 1.5rem;
   border-radius: 16px;
