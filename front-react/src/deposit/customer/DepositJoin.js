@@ -20,13 +20,13 @@ const DepositJoin = () => {
     const handleAmountChange = (e) => {
         let value = e.target.value.replace(/[^0-9]/g, '');
         if (value) value = parseInt(value, 10).toLocaleString('ko-KR');
-        setAmount(value);   
+        setAmount(value);
     };
 
     const handleCalcAmountChange = (e) => {
         let value = e.target.value.replace(/[^0-9]/g, '');
         if (value) value = parseInt(value, 10).toLocaleString('ko-KR');
-        setCalcAmount(value);  
+        setCalcAmount(value);
     };
 
     useEffect(() => {
@@ -44,7 +44,7 @@ const DepositJoin = () => {
         try {
             const response = await RefreshToken.get('/deposit/products/deposit');
             setProducts(response.data);
-        } catch (error) {
+        } catch {
             alert('상품 정보를 불러오는데 실패했습니다.');
         }
     };
@@ -53,7 +53,7 @@ const DepositJoin = () => {
         try {
             const response = await RefreshToken.get(`/accounts/allAccount/${customerId}`);
             setAccounts(response.data['입출금'] || []);
-        } catch (error) {
+        } catch {
             alert('입출금 계좌를 불러오는데 실패했습니다.');
         }
     };
@@ -63,9 +63,7 @@ const DepositJoin = () => {
         setCurrentStep('agreement');
     };
 
-    const handleAgree = () => {
-        setCurrentStep('form');
-    };
+    const handleAgree = () => setCurrentStep('form');
 
     const calculateInterest = () => {
         if (!calcAmount || !selectedProduct) return;
@@ -88,7 +86,7 @@ const DepositJoin = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!amount || Number(amount.replace(/,/g, '')) < selectedProduct.minAmount) {
-            alert(`최소 ${selectedProduct.minAmount.toLocaleString()}원 이상 입금해야 합니다.`);
+            alert(`최소 ${selectedProduct.minAmount?.toLocaleString() ?? 0}원 이상 입금해야 합니다.`);
             return;
         }
         if (!password || password.length !== 4) {
@@ -109,7 +107,7 @@ const DepositJoin = () => {
             });
             alert('예금 계좌가 성공적으로 개설되었습니다.');
             navigate('/');
-        } catch (error) {
+        } catch {
             alert('계좌 개설에 실패했습니다.');
         }
     };
@@ -132,11 +130,15 @@ const DepositJoin = () => {
                     </div>
                     <div className="deposit-product-list">
                         {products.map(product => (
-                            <div key={product.id} className="deposit-product-card" onClick={() => handleProductClick(product)}>
+                            <div
+                                key={product.id}
+                                className="deposit-product-card"
+                                onClick={() => handleProductClick(product)}
+                            >
                                 <h3>{product.productName}</h3>
                                 <p>이자율: {product.interestRate}%</p>
                                 <p>기간: {product.termMonths}개월</p>
-                                <p>최소금액: {product.minAmount.toLocaleString()}원</p>
+                                <p>최소금액: {product.minAmount?.toLocaleString() ?? '0'}원</p>
                             </div>
                         ))}
                     </div>
@@ -181,28 +183,50 @@ const DepositJoin = () => {
                             <div className="deposit-flex-column deposit-form-group">
                                 <label>초기 입금액</label>
                                 <div className="deposit-input-group">
-                                    <input type="text" value={amount} onChange={handleAmountChange} className="deposit-input" required />
+                                    <input
+                                        type="text"
+                                        value={amount}
+                                        onChange={handleAmountChange}
+                                        className="deposit-input"
+                                        required
+                                    />
                                     <span className="deposit-unit">원</span>
                                 </div>
-                                <div className="deposit-hint">최소 입금액: {selectedProduct.minAmount.toLocaleString()}원</div>
+                                <div className="deposit-hint">
+                                    최소 입금액: {selectedProduct.minAmount?.toLocaleString() ?? '0'}원
+                                </div>
                             </div>
 
                             <div className="deposit-flex-column deposit-form-group">
                                 <label>예금 계산기</label>
                                 <div className="deposit-input-group">
-                                    <input type="text" value={calcAmount} onChange={handleCalcAmountChange} className="deposit-input" placeholder="금액 입력" />
+                                    <input
+                                        type="text"
+                                        value={calcAmount}
+                                        onChange={handleCalcAmountChange}
+                                        className="deposit-input"
+                                        placeholder="금액 입력"
+                                    />
                                     <span className="deposit-unit">원</span>
                                 </div>
                                 <div className="deposit-rate-info">
                                     <div>이자율: {selectedProduct.interestRate}%</div>
                                     <div>예치기간: {selectedProduct.termMonths}개월</div>
                                 </div>
-                                <button type="button" onClick={calculateInterest} className="deposit-btn-primary">계산하기</button>
+                                <button type="button" onClick={calculateInterest} className="deposit-btn-primary">
+                                    계산하기
+                                </button>
                                 {calcResult && (
                                     <div className="deposit-calc-result">
-                                        <div>총 이자 (세전): {calcResult.interest.toLocaleString()}원</div>
-                                        <div>세후 수령 이자: {calcResult.afterTaxInterest.toLocaleString()}원</div>
-                                        <div>총 수령액: {calcResult.total.toLocaleString()}원</div>
+                                        <div>
+                                            총 이자 (세전): {calcResult.interest?.toLocaleString() ?? '0'}원
+                                        </div>
+                                        <div>
+                                            세후 수령 이자: {calcResult.afterTaxInterest?.toLocaleString() ?? '0'}원
+                                        </div>
+                                        <div>
+                                            총 수령액: {calcResult.total?.toLocaleString() ?? '0'}원
+                                        </div>
                                     </div>
                                 )}
                             </div>
@@ -210,11 +234,24 @@ const DepositJoin = () => {
 
                         <div className="deposit-form-group">
                             <label>출금 계좌 선택</label>
-                            <select value={selectedWithdrawAccountNumber} onChange={(e) => setSelectedWithdrawAccount(e.target.value)} className="deposit-select" required>
+                            <select
+                                value={selectedWithdrawAccountNumber}
+                                onChange={e => setSelectedWithdrawAccount(e.target.value)}
+                                className="deposit-select"
+                                required
+                            >
                                 <option value="">출금할 입출금 계좌를 선택하세요</option>
                                 {accounts.map(acc => (
-                                    <option key={acc.account_number} value={acc.account_number}>
-                                        {acc.account_name} ({acc.account_number}) - 잔액: {acc.balance.toLocaleString()}원
+                                    <option
+                                        key={acc.account_number || acc.accountNumber}
+                                        value={acc.account_number || acc.accountNumber}
+                                    >
+                                        {/* 계좌명/번호/잔액도 안전하게 렌더링 */}
+                                        {(acc.account_name || acc.accountName || '')}
+                                        {' ('}
+                                        {(acc.account_number || acc.accountNumber) || ''}
+                                        {') - 잔액: '}
+                                        {(acc.balance != null ? acc.balance.toLocaleString() : '0')}원
                                     </option>
                                 ))}
                             </select>
@@ -222,7 +259,14 @@ const DepositJoin = () => {
 
                         <div className="deposit-form-group">
                             <label>계좌 비밀번호 (4자리)</label>
-                            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} maxLength={4} className="deposit-inputPassword" required />
+                            <input
+                                type="password"
+                                value={password}
+                                onChange={e => setPassword(e.target.value)}
+                                maxLength={4}
+                                className="deposit-inputPassword"
+                                required
+                            />
                         </div>
 
                         <div className="deposit-submit-buttons">

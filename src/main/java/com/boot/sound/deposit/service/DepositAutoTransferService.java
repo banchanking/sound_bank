@@ -47,6 +47,11 @@ public class DepositAutoTransferService {
     public void deleteAutoTransfer(Long id) {
         autoTransferDAO.deleteAutoTransfer(id);
     }
+    
+    // 자동이체 수정
+    public void updateAutoTransfer(DepositAutoTransferDTO transferDTO) {
+        autoTransferDAO.updateAutoTransfer(transferDTO);
+    }
 
     /**
      * 오늘 실행할 자동이체 처리
