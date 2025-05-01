@@ -26,9 +26,10 @@ public interface DepositDAO {
 
     
     // 예금 상품 수정     
-    int updateDepositProduct(int productId, DepositDTO product);
-
+    //int updateDepositProduct(int productId, DepositDTO product);
+    int updateDepositProduct(@Param("productId") int productId, @Param("product") DepositDTO product);
     
+
     // 예금 상품 삭제 
     int deleteDepositProduct(String productId);
 
@@ -44,8 +45,8 @@ public interface DepositDAO {
 
     
     // 적금 상품 수정     
-    int updateSavingsProduct(int productId, DepositDTO product);
-
+    //int updateSavingsProduct(int productId, DepositDTO product);
+    int updateSavingsProduct(@Param("productId") int productId, @Param("product") DepositDTO product);
     // 적금 상품 삭제
     int deleteSavingsProduct(String productId);
     

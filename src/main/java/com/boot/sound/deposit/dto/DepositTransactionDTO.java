@@ -18,6 +18,7 @@ public class DepositTransactionDTO {
     private String referenceNumber;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String productType;           
     
     private String accountPassword;
 } 

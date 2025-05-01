@@ -247,6 +247,9 @@ public class DepositController {
     @PostMapping("/deposit/products/deposit")
     public ResponseEntity<?> createDepositProduct(@RequestBody DepositDTO product) {
         try {
+        	
+            System.out.println("상품명: " + product.getProductName());
+            System.out.println("상품유형: " + product.getProductType()); // ✅ 이거 꼭 확인
             depositService.addDepositProduct(product);
             return new ResponseEntity<>("예금 상품이 성공적으로 추가되었습니다.", HttpStatus.CREATED);
         } catch (Exception e) {
@@ -280,6 +283,9 @@ public class DepositController {
     @PostMapping("/deposit/products/savings")
     public ResponseEntity<?> createSavingsProduct(@RequestBody DepositDTO product) {
         try {
+        	
+            System.out.println("상품명: " + product.getProductName());
+            System.out.println("상품유형: " + product.getProductType()); // ✅ 이거 꼭 확인
             depositService.addSavingsProduct(product);
             return new ResponseEntity<>("적금 상품이 성공적으로 추가되었습니다.", HttpStatus.CREATED);
         } catch (Exception e) {
