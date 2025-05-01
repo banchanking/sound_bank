@@ -112,9 +112,21 @@ public interface DepositDAO {
     /** 고객의 적금 계좌 목록 조회 */
     List<DepositDTO> getSavingsAccounts(@Param("customerId") String customerId);
     
+    
+    // 출금계좌 잔액 증가
+    int depositToBasicAccount (@Param("accountNumber") String accountNumber,
+    		@Param("amount") BigDecimal amount,  @Param("customerId") String customerId);
+    
     // 출금계좌 잔액 차감
     int withdrawFromBasicAccount(@Param("accountNumber") String accountNumber,
-            @Param("amount") BigDecimal amount);
+            @Param("amount") BigDecimal amount,  @Param("customerId") String customerId);
+
+    // 기본 계좌 조회
+    String getBasicAccountNumber(@Param("customerId") String customerId);
+
+    
+    // 기본계좌 잔액조회
+    BigDecimal getBasicAccountBalanceByAccountNumber(@Param("accountNumber") String accountNumber);
 
 
 
