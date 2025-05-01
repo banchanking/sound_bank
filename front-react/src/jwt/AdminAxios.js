@@ -2,7 +2,7 @@ import axios from "axios";
 import { getAuthToken, getCustomerID, setAuthToken } from "./AxiosToken";
 
 const AdminAxios = axios.create({
-  baseURL: "https://sound-bank.duckdns.org/admin",
+  baseURL: "https://sound-bank.duckdns.org/api",
   withCredentials: true,
   headers: {
     "Content-Type": "application/json;charset=utf-8",
@@ -65,7 +65,7 @@ AdminAxios.interceptors.response.use(
 
     try {
       console.log("🚨 refresh-token 요청 customerId:", customerId);
-      const { data } = await axios.post(
+      const { data } = await AdminAxios.post(
         "https://sound-bank.duckdns.org/api/refresh-token",
         {
           customerId,
