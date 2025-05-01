@@ -13,6 +13,13 @@ const DepositWithdrawal = () => {
     const [password, setPassword] = useState('');
     const [accountType, setAccountType] = useState('DEPOSIT');
     const customerId = getCustomerID();
+    const [basicAccountNumber, setBasicAccountNumber] = useState(null);
+
+    const fetchBasicAccount = async () => {
+    const res = await RefreshToken.get(`/account/basic/${customerId}`);
+    setBasicAccountNumber(res.data); // 기본 계좌번호 설정
+    };
+
 
     // 계좌 번호를 3자리-6자리-4자리 형식으로 포맷팅하는 함수
     const formatAccountNumber = (accountNumber) => {
@@ -30,7 +37,12 @@ const DepositWithdrawal = () => {
             }
             return;
         }
-        fetchAccounts();
+
+        const init = async () => {
+        fetchBasicAccount();
+        fetchAccounts();        
+    };
+    init();
     }, [navigate]);
 
     const fetchAccounts = async () => {
@@ -100,12 +112,14 @@ const DepositWithdrawal = () => {
                 : `/deposit/accounts/savings/${selectedAccount.id}/${type}`;
                 console.log("보내는 데이터:", {
                     transactionAmount: Number(amount),
-                    accountPassword: password
+                    accountPassword: password,
+                    withdrawalAccountNumber: basicAccountNumber 
                   });
 
             await RefreshToken.post(endpoint, {
                 transactionAmount: Number(amount),
-                accountPassword: password
+                accountPassword: password,
+                withdrawalAccountNumber: basicAccountNumber 
             });
 
             alert(`${type === 'deposit' ? '입금' : '출금'}이 완료되었습니다.`);
@@ -129,13 +143,13 @@ const DepositWithdrawal = () => {
                     <div className="formGroup">
                         <label>계좌 선택</label>
                         <select onChange={handleAccountChange} required>
-                            <option value="">계좌 선택</option>
-                            {accounts.map(acc => (
-                                <option key={`${acc.type}-${acc.id}`} value={`${acc.type}-${acc.id}`}>
-                                    [{acc.type === 'DEPOSIT' ? '예금' : '적금'}] {formatAccountNumber(acc.accountNumber)}
-                                </option>
-                            ))}
-                        </select>
+                                <option value="">계좌 선택</option>
+                                {accounts.map(acc => (
+                                    <option key={`${acc.type}-${acc.id}`} value={`${acc.type}-${acc.id}`}>
+                                    [{acc.type === 'DEPOSIT' ? '예금' : '적금'}] {formatAccountNumber(acc.accountNumber)} - {acc.productName}
+                                    </option>
+                                ))}
+                                </select>
                     </div>
 
                     {selectedAccount && (

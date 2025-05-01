@@ -105,24 +105,20 @@
     WHERE ACCOUNT_NUMBER = #{acc}
   </update>
 
-  <!-- 거래내역 저장 (출금/입금 따로 기록) -->
-	<!-- 출금 저장 -->
-	<insert id="saveTransactionOut">
-	  INSERT INTO transaction_tbl (
-	    ACCOUNT_NUMBER, CUSTOMER_NAME, ACCOUNT_TYPE, TRANSACTION_TYPE, AMOUNT, CURRENCY, COMMENT, TRANSACTION_DATE
-	  ) 
-	  VALUES (
-	    #{out_account_number}, #{customer_name}, #{out_account_type}, '출금', #{amount}, 'KRW', #{memo}, NOW()
-	  );
-	</insert>
-	
-	<!-- 입금 저장 -->
-	<insert id="saveTransactionIn">
-	  INSERT INTO transaction_tbl (
-	    ACCOUNT_NUMBER, CUSTOMER_NAME, ACCOUNT_TYPE, TRANSACTION_TYPE, AMOUNT, CURRENCY, COMMENT, TRANSACTION_DATE
-	  ) 
-	  VALUES (
-	    #{in_account_number}, #{customer_name}, #{in_account_type}, '입금', #{amount}, 'KRW', #{memo}, NOW()
-	  );
-	</insert>	
+  <!-- 거래내역 저장-->
+<insert id="insertBasicAccountTransaction">
+  INSERT INTO transaction_tbl (
+    ACCOUNT_NUMBER, CUSTOMER_NAME, ACCOUNT_TYPE,
+    TRANSACTION_TYPE, AMOUNT, CURRENCY, COMMENT, TRANSACTION_DATE
+  )
+  SELECT
+    #{accountNumber}, c.customer_name, '입출금',
+    CASE WHEN #{amount} &lt; 0 THEN '출금' ELSE '입금' END,
+    ABS(#{amount}), 'KRW', #{memo}, NOW()
+  FROM customer_tbl c
+  WHERE c.customer_id = (
+    SELECT customer_id FROM account_tbl WHERE account_number = #{accountNumber}
+  )
+</insert>
+
 </mapper>
