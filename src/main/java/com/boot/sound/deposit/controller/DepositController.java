@@ -1,5 +1,6 @@
 package com.boot.sound.deposit.controller;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -69,7 +70,7 @@ public class DepositController {
         return new ResponseEntity<>(depositService.getSavingsProductDetail(productId), HttpStatus.OK);
     }
 
- // 예금 계좌 상세 조회 (accountId가 String이라면 String으로)
+    // 예금 계좌 상세 조회 (accountId가 String이라면 String으로)
     @GetMapping("/deposit/accounts/deposit/detail/{accountId}")
     public ResponseEntity<?> getDepositAccountDetail(@PathVariable int accountId) {
         return new ResponseEntity<>(depositService.getDepositAccountDetail(accountId), HttpStatus.OK);
@@ -125,8 +126,9 @@ public class DepositController {
     // 예금 계좌 입금
     @PostMapping("/deposit/accounts/deposit/{accountId}/deposit")
     public ResponseEntity<?> deposit(@PathVariable int accountId, @RequestBody DepositDTO request) {
+    	System.out.println("✅ Controller - withdrawalAccountNumber: " + request.getWithdrawalAccountNumber());
         try {
-            depositService.deposit(accountId, request.getTransactionAmount(), request.getAccountPassword());
+            depositService.deposit(accountId, request.getTransactionAmount(), request.getAccountPassword(), request.getWithdrawalAccountNumber());
             return new ResponseEntity<>("입금이 성공적으로 처리되었습니다.", HttpStatus.OK);
         } catch (Exception e) {
         	e.printStackTrace();
@@ -138,7 +140,7 @@ public class DepositController {
     @PostMapping("/deposit/accounts/deposit/{accountId}/withdraw")
     public ResponseEntity<?> withdraw(@PathVariable int accountId, @RequestBody DepositDTO request) {
         try {
-            depositService.withdraw(accountId, request.getTransactionAmount(), request.getAccountPassword());
+            depositService.withdraw(accountId, request.getTransactionAmount(), request.getAccountPassword(), request.getWithdrawalAccountNumber());
             return new ResponseEntity<>("출금이 성공적으로 처리되었습니다.", HttpStatus.OK);
         } catch (Exception e) {
         	e.printStackTrace();
@@ -150,7 +152,7 @@ public class DepositController {
     @PostMapping("/deposit/accounts/savings/{accountId}/deposit")
     public ResponseEntity<?> depositSavings(@PathVariable int accountId, @RequestBody DepositDTO request) {
         try {
-            depositService.depositSavings(accountId, request.getTransactionAmount(), request.getAccountPassword());
+            depositService.depositSavings(accountId, request.getTransactionAmount(), request.getAccountPassword(), request.getWithdrawalAccountNumber());
             return new ResponseEntity<>("적금 계좌 입금이 성공적으로 처리되었습니다.", HttpStatus.OK);
         } catch (Exception e) {
         	e.printStackTrace();
@@ -162,7 +164,7 @@ public class DepositController {
     @PostMapping("/deposit/accounts/savings/{accountId}/withdraw")
     public ResponseEntity<?> withdrawSavings(@PathVariable int accountId, @RequestBody DepositDTO request) {
         try {
-            depositService.withdrawSavings(accountId, request.getTransactionAmount(), request.getAccountPassword());
+            depositService.withdrawSavings(accountId, request.getTransactionAmount(), request.getAccountPassword(), request.getWithdrawalAccountNumber());
             return new ResponseEntity<>("적금 계좌 출금이 성공적으로 처리되었습니다.", HttpStatus.OK);
         } catch (Exception e) {
         	e.printStackTrace();
@@ -346,6 +348,26 @@ public class DepositController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    
+    // 기본 계좌번호 조회
+    @GetMapping("/account/basic/{customerId}")
+    public ResponseEntity<String> getBasicAccountNumber(@PathVariable String customerId) {
+        String accountNumber = depositService.getBasicAccountNumberByCustomerId(customerId);
+        if (accountNumber != null) {
+            return ResponseEntity.ok(accountNumber);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("기본 계좌 없음");
+        }
+    }
+    
+    // 기본계좌 잔액조회
+    @GetMapping("/account/balance/basic/{accountNumber}")
+    public ResponseEntity<BigDecimal> getBasicAccountBalance(@PathVariable String accountNumber) {
+        BigDecimal balance = depositService.getBasicAccountBalance(accountNumber);
+        return ResponseEntity.ok(balance);
+    }
+
+
     
  
 
