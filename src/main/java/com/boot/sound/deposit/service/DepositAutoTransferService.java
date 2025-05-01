@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.boot.sound.deposit.dao.DepositAutoTransferDAO;
 import com.boot.sound.deposit.dto.DepositAutoTransferDTO;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -62,20 +63,45 @@ public class DepositAutoTransferService {
         List<DepositAutoTransferDTO> autoTransfers = autoTransferDAO.getTodayAutoTransfers(today);
 
         for (DepositAutoTransferDTO transfer : autoTransfers) {
-            // 기본 입출금 계좌 출금
-            int withdrawResult = autoTransferDAO.withdrawFromBasicAccount(transfer.getWithdrawAccountNumber(), transfer.getTransferAmount());
+            String fromAccount = transfer.getWithdrawAccountNumber();
+            String toAccount = transfer.getTargetAccountNumber();
+            BigDecimal amount = transfer.getTransferAmount();
+            String type = transfer.getTargetAccountType();
+
+            System.out.println("✅ 자동이체 실행");
+            System.out.println("출금계좌: " + fromAccount + ", 입금계좌: " + toAccount + ", 금액: " + amount + ", 타입: " + type);
+
+            // 출금
+            int withdrawResult = autoTransferDAO.withdrawFromBasicAccount(fromAccount, amount);
             if (withdrawResult == 0) {
-                throw new RuntimeException("출금 실패: 계좌 " + transfer.getWithdrawAccountNumber());
+                throw new RuntimeException("출금 실패: 계좌 " + fromAccount);
             }
 
-            // 입금 대상에 따라 입금 (예금 or 적금)
-            if ("DEPOSIT".equals(transfer.getTargetAccountType())) {
-                autoTransferDAO.depositToDepositAccount(transfer.getTargetAccountNumber(), transfer.getTransferAmount());
-            } else if ("SAVINGS".equals(transfer.getTargetAccountType())) {
-                autoTransferDAO.depositToSavingsAccount(transfer.getTargetAccountNumber(), transfer.getTransferAmount());
+            // 입금
+            if ("DEPOSIT".equals(type)) {
+                autoTransferDAO.depositToDepositAccount(toAccount, amount);
+            } else if ("SAVINGS".equals(type)) {
+                autoTransferDAO.depositToSavingsAccount(toAccount, amount);
             } else {
-                throw new RuntimeException("알 수 없는 입금 계좌 타입: " + transfer.getTargetAccountType());
+                throw new RuntimeException("알 수 없는 입금 계좌 타입: " + type);
+            }
+
+            // ✅ 메모 설정 (타입별)
+            String withdrawMemo = "DEPOSIT".equals(type) ? "예금 자동이체 출금" : "적금 자동이체 출금";
+            String depositMemo  = "DEPOSIT".equals(type) ? "예금 자동이체 입금" : "적금 자동이체 입금";
+
+            // ✅ 기본 계좌 거래내역 insert (단일 쿼리 방식)
+            autoTransferDAO.insertBasicAccountTransaction(fromAccount, amount.negate(), withdrawMemo);
+            autoTransferDAO.insertBasicAccountTransaction(toAccount, amount, depositMemo);
+
+            // ✅ 예금/적금 거래내역 insert
+            if ("DEPOSIT".equals(type)) {
+                autoTransferDAO.insertDepositTransaction(toAccount, amount, "자동이체 입금");
+            } else if ("SAVINGS".equals(type)) {
+                autoTransferDAO.insertSavingsTransaction(toAccount, amount, "자동이체 입금");
             }
         }
     }
+
+
 }

@@ -21,6 +21,7 @@ public class DepositDTO {
     private String accountPassword; // 계좌 비밀번호
     private BigDecimal balance; // 잔액
     private String accountStatus; // 계좌 상태 (ACTIVE, CLOSED 등)
+    private BigDecimal amount;  // 금액
 
     // 거래 관련
     private String transactionType; // 거래 유형 (DEPOSIT, WITHDRAW 등)
@@ -40,7 +41,13 @@ public class DepositDTO {
     private int id; // 계좌, 상품 ID
     private int accountId;
     private String withdrawalAccountNumber;
-    private int satId; // 적금 계좌 ID
+    private Integer satId; // 적금 계좌 ID
+    
+    private String productType;           // 상품 유형
+    private BigDecimal minAmount;         // 최소 금액
+    private BigDecimal maxAmount;         // 최대 금액
+
+    
     
     
 

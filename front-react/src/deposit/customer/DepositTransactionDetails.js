@@ -25,29 +25,38 @@ const DepositTransactionDetails = () => {
 
     useEffect(() => {
         const customerId = getCustomerID();
+        console.log("🔍 useEffect 실행됨, customerId:", customerId);
+
         if (!customerId) {
             const goLogin = window.confirm("로그인이 필요합니다. 로그인하시겠습니까?");
             if (goLogin) navigate("/login");
             else navigate("/");
             return;
         }
+
         fetchAccounts();
     }, [navigate]);
 
     const fetchAccounts = async () => {
         try {
             const customerId = getCustomerID();
+            console.log("📡 fetchAccounts 실행, customerId:", customerId);
+
             const [depositRes, savingsRes] = await Promise.all([
                 RefreshToken.get(`/deposit/accounts/customer/${customerId}`),
                 RefreshToken.get(`/savings/accounts/customer/${customerId}`)
             ]);
+
+            console.log('✅ 예금 계좌:', depositRes.data);
+            console.log('✅ 적금 계좌:', savingsRes.data);
+
             const allAccounts = [
                 ...depositRes.data.map(acc => ({ ...acc, type: 'DEPOSIT' })),
                 ...savingsRes.data.map(acc => ({ ...acc, type: 'SAVINGS' }))
             ];
             setAccounts(allAccounts);
         } catch (error) {
-            console.error('계좌 조회 에러:', error);
+            console.error('❌ 계좌 조회 에러:', error.response?.data || error.message);
             alert('계좌 목록을 불러올 수 없습니다.');
         } finally {
             setLoading(false);
@@ -56,8 +65,11 @@ const DepositTransactionDetails = () => {
 
     const fetchTransactions = async () => {
         if (!selectedAccount || !dateRange.start || !dateRange.end) return;
+
         try {
             setLoading(true);
+            console.log("📥 거래내역 조회 요청:", selectedAccount, dateRange);
+
             const endpoint = selectedAccount.type === 'DEPOSIT'
                 ? `/deposit/accounts/deposit/${selectedAccount.id}/transactions`
                 : `/deposit/accounts/savings/${selectedAccount.id}/transactions`;
@@ -69,6 +81,8 @@ const DepositTransactionDetails = () => {
                 }
             });
 
+            console.log("📄 거래내역 응답:", response.data);
+
             if (Array.isArray(response.data)) {
                 const enriched = response.data.map(tx => ({
                     ...tx,
@@ -79,7 +93,7 @@ const DepositTransactionDetails = () => {
                 setTransactions([]);
             }
         } catch (error) {
-            console.error('거래내역 조회 에러:', error);
+            console.error('❌ 거래내역 조회 에러:', error.response?.data || error.message);
             alert('거래내역을 불러오는 데 실패했습니다.');
             setTransactions([]);
         } finally {
@@ -91,6 +105,7 @@ const DepositTransactionDetails = () => {
         const [type, id] = e.target.value.split('-');
         const accountId = parseInt(id, 10);
         const account = accounts.find(a => a.id === accountId && a.type.toUpperCase() === type.toUpperCase());
+        console.log("🌀 계좌 선택됨:", account);
         setSelectedAccount(account);
     };
 
@@ -107,6 +122,7 @@ const DepositTransactionDetails = () => {
             alert('계좌와 날짜를 모두 선택해주세요.');
             return;
         }
+        console.log("🔎 조회 버튼 클릭됨");
         fetchTransactions();
     };
 
@@ -132,10 +148,12 @@ const DepositTransactionDetails = () => {
 
         const format = (date) => date.toISOString().split('T')[0];
         setDateRange({ start: format(startDate), end: format(now) });
+        console.log("📆 날짜 프리셋 설정됨:", format(startDate), "→", format(now));
     };
 
     return (
         <div className="depositContainer">
+            {console.log("🧩 컴포넌트 렌더링됨")}
             <div className="depositCard">
                 {accounts.length === 0 ? (
                     <div>현재 조회 가능한 계좌가 없습니다.</div>
@@ -153,9 +171,8 @@ const DepositTransactionDetails = () => {
                                     .filter(acc => acc.accountStatus === 'ACTIVE')
                                     .map(acc => (
                                         <option key={`${acc.type}-${acc.id}`} value={`${acc.type}-${acc.id}`}>
-                                            [{acc.type === 'DEPOSIT' ? '예금' : '적금'}] {formatAccountNumber(acc.accountNumber)} - {acc.productName} - {Number(acc?.balance ?? 0).toLocaleString()}원
-                                            </option>
-
+                                            [{acc.type === 'DEPOSIT' ? '예금' : '적금'}] {formatAccountNumber(acc.accountNumber)} - {acc.productName || '상품명 없음'} - {Number(acc?.balance ?? 0).toLocaleString()}원
+                                        </option>
                                     ))}
                             </select>
                         </div>
@@ -192,21 +209,20 @@ const DepositTransactionDetails = () => {
                                 <tbody>
                                     {transactions.length > 0 ? (
                                         transactions.map((tx, idx) => (
-                                        <tr key={tx?.id ?? idx}>
-                                            <td>{formatDate(tx?.transactionDate)}</td>
-                                            <td>{selectedAccount?.type === 'SAVINGS' ? '적금' : '예금'}</td>
-                                            <td>{Number(tx?.transactionAmount ?? 0).toLocaleString()}원</td>
-                                            <td>{Number(tx?.balance ?? 0).toLocaleString()}원</td> 
-                                            <td>{tx?.transactionDescription || '없음'}</td>
-                                        </tr>
+                                            <tr key={tx?.id ?? idx}>
+                                                <td>{formatDate(tx?.transactionDate)}</td>
+                                                <td>{selectedAccount?.type === 'SAVINGS' ? '적금' : '예금'}</td>
+                                                <td>{Number(tx?.transactionAmount ?? 0).toLocaleString()}원</td>
+                                                <td>{Number(tx?.balance ?? 0).toLocaleString()}원</td>
+                                                <td>{tx?.transactionDescription || '없음'}</td>
+                                            </tr>
                                         ))
                                     ) : (
                                         <tr>
-                                        <td colSpan="5">거래내역이 없습니다.</td>
+                                            <td colSpan="5">거래내역이 없습니다.</td>
                                         </tr>
                                     )}
-                                    </tbody>
-
+                                </tbody>
                             </table>
                         </div>
                     </>
