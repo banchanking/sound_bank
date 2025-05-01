@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { getCustomerID } from "../../jwt/AxiosToken";
 import { Card, Table, Button, Modal, Form, Input, InputNumber, Select, Space } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import '../../Css/depositcss/DepositProduct.css';
@@ -51,21 +49,26 @@ const DepositProduct = () => {
 
     const handleSubmit = async () => {
         try {
-            const values = await form.validateFields();
-            if (editingId) {
-                await RefreshToken.put(`/deposit/products/deposit/${editingId}`, values);
-                window.alert('예금 상품이 수정되었습니다.');
-            } else {
-                await RefreshToken.post('/deposit/products/deposit', values);
-                window.alert('예금 상품이 추가되었습니다.');
-            }
-            fetchProducts();
-            handleCancel();
+          const values = await form.validateFields();
+      
+          values.productType = values.productType.toLowerCase();
+      
+          if (editingId) {
+            await RefreshToken.put(`/deposit/products/deposit/${editingId}`, values);
+          } else {
+            await RefreshToken.post('/deposit/products/deposit', values);
+          }
+      
+      
+          window.alert('상품 저장 완료');
+          fetchProducts();
+          handleCancel();
         } catch (error) {
-            console.error('예금 상품 저장 에러:', error);
-            window.alert('예금 상품 저장에 실패했습니다.');
+          console.error('상품 저장 에러:', error);
+          window.alert('상품 저장에 실패했습니다.');
         }
-    };
+      };
+      
 
     const handleDelete = async (id) => {
         try {
@@ -90,11 +93,10 @@ const DepositProduct = () => {
             key: 'productType',
             render: (type) => {
                 const typeMap = {
-                    REGULAR: '일반예금',
-                    FIXED: '정기예금',
-                    INSTALLMENT: '적금'
+                    regular: '일반예금',
+                    fixed: '정기예금'
                 };
-                return typeMap[type] || type;
+                return typeMap[type?.toLowerCase()] || type;
             }
         },
         {
@@ -170,7 +172,7 @@ const DepositProduct = () => {
 
                 <Modal
                     title={editingId ? '상품 수정' : '상품 추가'}
-                    visible={isModalVisible}
+                    open={isModalVisible}
                     onOk={handleSubmit}
                     onCancel={handleCancel}
                     width={600}
@@ -178,6 +180,7 @@ const DepositProduct = () => {
                     <Form
                         form={form}
                         layout="vertical"
+                        onFinish={handleSubmit}
                     >
                         <Form.Item
                             name="productName"
@@ -192,9 +195,9 @@ const DepositProduct = () => {
                             label="상품유형"
                             rules={[{ required: true, message: '상품유형을 선택해주세요' }]}
                         >
-                            <Select>
-                                <Option value="REGULAR">일반예금</Option>
-                                <Option value="FIXED">정기예금</Option>                                
+                            <Select placeholder="상품 유형을 선택하세요">
+                                <Option value="regular">일반예금</Option>
+                                <Option value="fixed">정기예금</Option>
                             </Select>
                         </Form.Item>
 

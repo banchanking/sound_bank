@@ -1,11 +1,17 @@
+// SavingsJoin.jsx (전체 소스)
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { getCustomerID } from "../../jwt/AxiosToken";
 import RefreshToken from '../../jwt/RefreshToken';
 import '../../Css/depositcss/DepositJoin.css';
 
 const SavingsJoin = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
+  const productIdFromQuery = query.get("productId");
+  const passedProduct = location.state?.product;
+
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [monthlyAmount, setMonthlyAmount] = useState('');
@@ -32,12 +38,25 @@ const SavingsJoin = () => {
     }
     fetchProducts();
     fetchAccounts();
+
+    if (passedProduct) {
+      setSelectedProduct(passedProduct);
+      setCurrentStep('agreement');
+    }
   }, [customerId]);
 
   const fetchProducts = async () => {
     try {
       const response = await RefreshToken.get('/deposit/products/savings');
       setProducts(response.data);
+
+      if (productIdFromQuery) {
+        const matched = response.data.find(p => String(p.id) === productIdFromQuery);
+        if (matched) {
+          setSelectedProduct(matched);
+          setCurrentStep('agreement');
+        }
+      }
     } catch (error) {
       alert('적금 상품을 불러오는데 실패했습니다.');
     }
@@ -133,27 +152,13 @@ const SavingsJoin = () => {
           <div className="deposit-header">
             <h2>가입 동의</h2>
           </div>
-
           <table className="deposit-agree-table">
             <tbody>
-                <tr>
-                <th>상품명</th>
-                <td>{selectedProduct.productName}</td>
-                </tr>
-                <tr>
-                <th>상품 설명</th>
-                <td>{selectedProduct.productDescription || '상품 설명이 없습니다.'}</td>
-                </tr>
-                <tr>
-                <th>약관</th>
-                <td>
-                    본 상품은 예금자 보호법에 따라 보호됩니다. 금리 변동 등에 주의하시기 바랍니다.
-                </td>
-                </tr>
+              <tr><th>상품명</th><td>{selectedProduct.productName}</td></tr>
+              <tr><th>상품 설명</th><td>{selectedProduct.productDescription || '상품 설명이 없습니다.'}</td></tr>
+              <tr><th>약관</th><td>본 상품은 예금자 보호법에 따라 보호됩니다. 금리 변동 등에 주의하시기 바랍니다.</td></tr>
             </tbody>
-            </table>
-
-
+          </table>
           <div className="deposit-agree-buttons">
             <button className="deposit-btn-primary" onClick={handleAgree}>동의하고 가입하기</button>
             <button className="deposit-btn-cancel" onClick={() => setCurrentStep('select')}>취소</button>
@@ -166,19 +171,15 @@ const SavingsJoin = () => {
           <div className="deposit-header">
             <h2>가입 정보 입력</h2>
           </div>
+          <div className="deposit-selected-product" style={{ marginBottom: '15px', fontWeight: 'bold' }}>
+          선택한 상품: {selectedProduct.productName}
+          </div>
           <form onSubmit={handleSubmit} className="deposit-form">
-
             <div className="deposit-flex-inputs">
               <div className="deposit-flex-column deposit-form-group">
                 <label>월 납입 금액</label>
                 <div className="deposit-input-group">
-                  <input
-                    type="text"
-                    value={monthlyAmount}
-                    onChange={handleMonthlyAmountChange}
-                    className="deposit-input"
-                    required
-                  />
+                  <input type="text" value={monthlyAmount} onChange={handleMonthlyAmountChange} className="deposit-input" required />
                   <span className="deposit-unit">원</span>
                 </div>
                 {selectedProduct && (
@@ -187,19 +188,17 @@ const SavingsJoin = () => {
                   </div>
                 )}
               </div>
-
               <div className="deposit-flex-column deposit-form-group">
                 <label>적금 계산기</label>
                 <button type="button" className="deposit-btn-primary" onClick={calculateSavings}>계산하기</button>
                 {calcResult && (
-                      <div className="deposit-calc-result">
-                        <div>총 납입금액: {(calcResult.totalPrincipal ?? 0).toLocaleString()}원</div>
-                        <div>세전 이자: {(calcResult.interest ?? 0).toLocaleString()}원</div>
-                        <div>세후 이자: {(calcResult.afterTaxInterest ?? 0).toLocaleString()}원</div>
-                        <div>만기 수령액: {(calcResult.maturityAmount ?? 0).toLocaleString()}원</div>
-                      </div>
-                    )}
-
+                  <div className="deposit-calc-result">
+                    <div>총 납입금액: {(calcResult.totalPrincipal ?? 0).toLocaleString()}원</div>
+                    <div>세전 이자: {(calcResult.interest ?? 0).toLocaleString()}원</div>
+                    <div>세후 이자: {(calcResult.afterTaxInterest ?? 0).toLocaleString()}원</div>
+                    <div>만기 수령액: {(calcResult.maturityAmount ?? 0).toLocaleString()}원</div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -217,7 +216,6 @@ const SavingsJoin = () => {
                     {acc.account_name} ({acc.account_number}) - 잔액: {(acc.balance ?? 0).toLocaleString()}원
                   </option>
                 ))}
-
               </select>
             </div>
 

@@ -1,6 +1,7 @@
 package com.boot.sound.deposit.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -137,6 +138,14 @@ public class DepositService {
     public List<DepositDTO> getSavingsAccounts(String customerId) {
         return depositDAO.getSavingsAccounts(customerId);
     }
+    
+    // 기본계좌 잔액조회
+    public BigDecimal getBasicAccountBalance(String accountNumber) {
+        return depositDAO.getBasicAccountBalanceByAccountNumber(accountNumber);
+    }
+
+
+    
 
     /**
      * [POST] /api/deposit/accounts/deposit
@@ -158,7 +167,7 @@ public class DepositService {
         String cleanAccountNumber = account.getWithdrawalAccountNumber().replaceAll("-", "");
 
 	     // 기본 계좌에서 출금
-        if (depositDAO.withdrawFromBasicAccount(account.getWithdrawalAccountNumber(), account.getBalance()) != 1) {
+        if (depositDAO.withdrawFromBasicAccount(account.getWithdrawalAccountNumber(), account.getBalance(), account.getCustomerId()) != 1) {
             throw new RuntimeException("출금 계좌 잔액 차감 실패");
         }
 
@@ -190,7 +199,7 @@ public class DepositService {
         account.setAccountNumber(generateUniqueAccountNumber());
 
         // 출금 계좌에서 금액 차감
-        if (depositDAO.withdrawFromBasicAccount(account.getWithdrawalAccountNumber(), account.getMonthlyAmount()) != 1) {
+        if (depositDAO.withdrawFromBasicAccount(account.getWithdrawalAccountNumber(), account.getMonthlyAmount(), account.getCustomerId()) != 1) {
             throw new RuntimeException("출금 계좌 잔액 차감 실패");
         }
 
@@ -204,6 +213,11 @@ public class DepositService {
         // 적금 계좌 생성 (account.id 자동 설정됨)
         if (depositDAO.createSavingsAccount(account) != 1) {
             throw new RuntimeException("적금 계좌 생성 실패");
+        }
+        
+        // 적금 계좌 생성시 금액 입금
+        if (depositDAO.updateSavingsBalance(account.getAccountNumber(), account.getMonthlyAmount()) != 1) {
+            throw new RuntimeException("적금 계좌 잔액 갱신 실패");
         }
 
         // 적금 거래내역 등록
@@ -245,22 +259,52 @@ public class DepositService {
     
  // 예금 입금
     @Transactional
-    public void deposit(int accountId, BigDecimal amount, String password) {
+    public void deposit(int accountId, BigDecimal amount, String password, String withdrawalAccountNumber) {
         DepositDTO account = depositDAO.getDepositAccountDetail(accountId);
         if (!account.getAccountPassword().equals(password)) {
             throw new RuntimeException("비밀번호가 일치하지 않습니다.");
         }
+        
+        System.out.println("✅ 기본계좌 출금 시도 정보");
+        // ✅ 하이픈 제거
+        if (withdrawalAccountNumber != null && !withdrawalAccountNumber.contains("-")) {
+            withdrawalAccountNumber = withdrawalAccountNumber.replaceAll("(\\d{3})(\\d{6})(\\d{4})", "$1-$2-$3");
+        }
 
+
+        System.out.println("계좌번호: " + withdrawalAccountNumber);
+        System.out.println("고객ID: " + account.getCustomerId());
+        System.out.println("출금 금액: " + amount);
+
+        // 기본 계좌에서 출금
+        int result = depositDAO.withdrawFromBasicAccount(
+        	    withdrawalAccountNumber,
+        	    amount,
+        	    account.getCustomerId()
+        	);
+        	if (result == 0) {
+        	    throw new RuntimeException("기본 계좌 잔액이 부족합니다.");
+        	}
+        	System.out.println("🔥 출금 update 결과 row 수: " + result);
+
+
+        	// 🔍 실제 DB 잔액 조회 (디버깅용)
+        	BigDecimal currentBalance = depositDAO.getBasicAccountBalanceByAccountNumber(withdrawalAccountNumber);
+        	System.out.println("🧾 출금 후 실제 기본 계좌 잔액: " + currentBalance);
+
+
+        
+        // 예금 계좌 입금
         BigDecimal newBalance = account.getBalance().add(amount);
         depositDAO.updateDepositBalance(account.getAccountNumber(), newBalance);
 
         DepositDTO transaction = new DepositDTO();
-        transaction.setAccountId(accountId);  // accountId 설정
+        transaction.setAccountId(accountId);
         transaction.setTransactionType("DEPOSIT");
         transaction.setTransactionAmount(amount);
         transaction.setBalance(newBalance);
         transaction.setTransactionDate(LocalDateTime.now());
-        transaction.setTransactionDescription("입금");
+        transaction.setTransactionDescription("기본 계좌에서 이체된 입금");
 
         depositDAO.createDepositTransaction(transaction);
     }
@@ -268,17 +312,37 @@ public class DepositService {
 
     // ✅ 예금 출금
     @Transactional
-    public void withdraw(int accountId, BigDecimal amount, String password) {
+    public void withdraw(int accountId, BigDecimal amount, String password, String withdrawalAccountNumber) {
         DepositDTO account = depositDAO.getDepositAccountDetail(accountId);
         if (!account.getAccountPassword().equals(password)) {
             throw new RuntimeException("비밀번호가 일치하지 않습니다.");
         }
+        
+        // ✅ 금액 소수점 2자리로 고정
+        amount = amount.setScale(2, RoundingMode.DOWN);
+        
+        // ✅ 하이픈 제거
+        if (withdrawalAccountNumber != null && !withdrawalAccountNumber.contains("-")) {
+            withdrawalAccountNumber = withdrawalAccountNumber.replaceAll("(\\d{3})(\\d{6})(\\d{4})", "$1-$2-$3");
+        }
+
+
         if (account.getBalance().compareTo(amount) < 0) {
             throw new RuntimeException("잔액이 부족합니다.");
         }
 
+        
+        // 예금 계좌 출금
         BigDecimal newBalance = account.getBalance().subtract(amount);
         depositDAO.updateDepositBalance(account.getAccountNumber(), newBalance);
+
+        // 기본 계좌에 입금
+        int rows = depositDAO.depositToBasicAccount(
+        		withdrawalAccountNumber, amount, account.getCustomerId()
+            );
+            if (rows == 0) {
+                throw new RuntimeException("기본 계좌 입금 실패");
+            }
 
         DepositDTO transaction = new DepositDTO();
         transaction.setAccountId(accountId);
@@ -286,58 +350,107 @@ public class DepositService {
         transaction.setTransactionAmount(amount);
         transaction.setBalance(newBalance);
         transaction.setTransactionDate(LocalDateTime.now());
-        transaction.setTransactionDescription("출금");
+        transaction.setTransactionDescription("기본 계좌로 이체된 출금");
 
         depositDAO.createDepositTransaction(transaction);
     }
+
     
- // ✅ 적금 입금
+    // ✅ 적금 입금 (기본 계좌에서 출금)
     @Transactional
-    public void depositSavings(int accountId, BigDecimal amount, String password) {
+    public void depositSavings(int accountId, BigDecimal amount, String password, String withdrawalAccountNumber) {
         DepositDTO account = depositDAO.getSavingsAccountDetail(accountId);
+        // ✅ 금액 소수점 2자리로 고정
+        amount = amount.setScale(2, RoundingMode.DOWN);
+        
+        System.out.println("=== [적금 입금 시도] ===");
+        // ✅ 하이픈 제거
+        if (withdrawalAccountNumber != null && !withdrawalAccountNumber.contains("-")) {
+            withdrawalAccountNumber = withdrawalAccountNumber.replaceAll("(\\d{3})(\\d{6})(\\d{4})", "$1-$2-$3");
+        }
+
+
+        System.out.println("accountId: " + accountId);
+        System.out.println("amount: " + amount);
+        System.out.println("입력된 비밀번호: " + password);
+
         if (!account.getAccountPassword().equals(password)) {
             throw new RuntimeException("비밀번호가 일치하지 않습니다.");
         }
+        System.out.println("✅ 기본계좌 출금 시도 정보");
+        System.out.println("계좌번호: " + withdrawalAccountNumber);
+        System.out.println("고객ID: " + account.getCustomerId());
+        System.out.println("출금 금액: " + amount);
 
+        // 기본 계좌에서 출금
+        int result = depositDAO.withdrawFromBasicAccount(
+        	    withdrawalAccountNumber,
+        	    amount,
+        	    account.getCustomerId()
+        	);
+        	if (result == 0) {
+        	    throw new RuntimeException("기본 계좌 잔액이 부족합니다.");
+        	}
+
+        // 적금 계좌 입금
         BigDecimal newBalance = account.getBalance().add(amount);
         depositDAO.updateSavingsBalance(account.getAccountNumber(), newBalance);
 
         DepositDTO transaction = new DepositDTO();
         transaction.setAccountId(accountId);
+        transaction.setSatId(account.getId());
         transaction.setTransactionType("DEPOSIT");
         transaction.setTransactionAmount(amount);
         transaction.setBalance(newBalance);
         transaction.setTransactionDate(LocalDateTime.now());
-        transaction.setTransactionDescription("적금 입금");
+        transaction.setTransactionDescription("기본 계좌에서 이체된 적금 입금");
 
         depositDAO.createSavingsTransaction(transaction);
     }
 
-    // ✅ 적금 출금
+    // ✅ 적금 출금 (기본 계좌에 입금)
     @Transactional
-    public void withdrawSavings(int accountId, BigDecimal amount, String password) {
+    public void withdrawSavings(int accountId, BigDecimal amount, String password, String withdrawalAccountNumber) {
         DepositDTO account = depositDAO.getSavingsAccountDetail(accountId);
+
         if (!account.getAccountPassword().equals(password)) {
             throw new RuntimeException("비밀번호가 일치하지 않습니다.");
         }
+        
+        // ✅ 하이픈 제거
+        if (withdrawalAccountNumber != null && !withdrawalAccountNumber.contains("-")) {
+            withdrawalAccountNumber = withdrawalAccountNumber.replaceAll("(\\d{3})(\\d{6})(\\d{4})", "$1-$2-$3");
+        }
+
 
         if (account.getBalance().compareTo(amount) < 0) {
             throw new RuntimeException("잔액이 부족합니다.");
         }
 
+        // 적금 계좌에서 출금
         BigDecimal newBalance = account.getBalance().subtract(amount);
         depositDAO.updateSavingsBalance(account.getAccountNumber(), newBalance);
 
+     // 기본 계좌에 입금
+        int rows = depositDAO.depositToBasicAccount(
+        		withdrawalAccountNumber, amount, account.getCustomerId()
+            );
+            if (rows == 0) {
+                throw new RuntimeException("기본 계좌 입금 실패");
+            }
+
         DepositDTO transaction = new DepositDTO();
         transaction.setAccountId(accountId);
+        transaction.setSatId(account.getId());
         transaction.setTransactionType("WITHDRAW");
         transaction.setTransactionAmount(amount);
         transaction.setBalance(newBalance);
         transaction.setTransactionDate(LocalDateTime.now());
-        transaction.setTransactionDescription("적금 출금");
+        transaction.setTransactionDescription("적금 출금 - 기본 계좌로 이체됨");
 
         depositDAO.createSavingsTransaction(transaction);
     }
+
 
 
     // 예금 해지
@@ -414,5 +527,11 @@ public class DepositService {
     public BigDecimal getSavingsAccountBalanceByAccountNumber(String accountNumber) {
         return depositDAO.getSavingsAccountBalanceByAccountNumber(accountNumber);
     }
+    
+    // 기본 계좌번호 조회
+    public String getBasicAccountNumberByCustomerId(String customerId) {
+        return depositDAO.getBasicAccountNumber(customerId);
+    }
+
 
 }
