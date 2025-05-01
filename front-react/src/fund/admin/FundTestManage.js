@@ -18,7 +18,7 @@ const FundTestManage = () => {
       setMessage("");
 
       // 1) FastAPI로 전체 펀드 예측 요청
-      const res = await axios.post("http://127.0.0.1:8000/predict-fund");
+      const res = await axios.post("https://sound-bank.duckdns.org/predict-fund");
       console.log("[handlePredictFund] res.data =", res.data);
 
       // 2) 바로 DB 업데이트
