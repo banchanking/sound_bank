@@ -1,67 +1,186 @@
-.depositContainer {
+.deposit-container {
+    max-width: 1200px;
+    margin: 3rem auto;
     padding: 2rem;
-    background-color: #fff;
-    border-radius: 16px;
-    box-shadow: 0 0 12px rgba(0, 0, 0, 0.06);
-    min-height: calc(100vh - 200px);
-    margin-bottom: 2rem;
-}
-
-.depositTitle {
-    font-size: 22px;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    color: #111;
-    text-align: center;
-}
-
-.depositTable {
-    width: 100%;
-    border-collapse: collapse;
-    border-radius: 12px;
-    overflow: hidden;
-    background-color: #fafafa;
-}
-
-.depositTable th {
-    background-color: #eee;
-    font-weight: 500;
-    padding: 12px;
-    color: #333;
-}
-
-.depositTable td {
-    padding: 12px;
-    text-align: center;
-    border-top: 1px solid #ddd;
-    color: #222;
-}
-
-.depositRow:nth-child(even) {
-    background-color: #f4f4f4;
-}
-
-.depositBtn {
-    padding: 6px 12px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: all 0.2s ease;
-    background-color: #000;
-    color: #fff;
-    margin-right: 8px;
-}
-
-.depositProductHeader {
+    background: #fff;
+    border: 1.5px solid #e2e4e7;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    font-family: 'Pretendard', sans-serif;
+    animation: fadeIn 0.4s ease;
+  }
+  
+  .deposit-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
-}
+  }
+  
+  .depositAddP-btn{
+    margin-bottom: 15px;
+    width: 120px;
+  }
+  .deposit-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fafafa;
+  }
+  .deposit-table tr:hover {
+    background-color: #f0f4f8;
+    transition: background-color 0.2s ease;
+  }
+  
+  .deposit-table th {
+    background: #eee;
+    padding: 12px;
+    font-weight: 600;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  .deposit-table td {
+    text-align: center;
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    font-size: 14px;
+  }
+  
+  .btnBlue {
+    background: #537697;
+    color: white;
+    border: none;
+    border-radius: 7px;
+    padding: 6px 12px;
+    margin-right: 5px;
+    cursor: pointer;
+  }
+  
+  .btnBlue:hover {
+    background: #6083ac;
+  }
+  
+  .btnRed {
+    background: #984949;
+    color: white;
+    border: none;
+    border-radius: 7px;
+    padding: 6px 12px;
+    cursor: pointer;
+  }
+  
+  .btnRed:hover {
+    background: #823c3c;
+  }
+  
+  .btnGray {
+    background: #373737;
+    color: white;
+    border: none;
+    border-radius: 7px;
+    padding: 6px 12px;
+  }
+  
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modal-box {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 14px;
+    width: 400px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+    animation: fadeIn 0.4s ease;
+  }
+  
+  .modal-box input,
+  .modal-box select,
+  .modal-box textarea {
+    width: 380px;
+    margin-bottom: 12px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  .modal-box select,
+  .modal-box textarea{
+    width: 400px;
+  }
+  
+  .modal-btns {
+    display: flex;
+    justify-content: center !important;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  
+  .pageButtonArea {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+  
+  .pageButton {
+    width: 36px;
+    height: 32px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    background: #282828;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+    margin: 0 2px;
+  }
+  
+  .pageButton:hover {
+    background: #555;
+  }
+  
+  .activePage {
+    background: #282828;
+    color: white;
+    font-weight: bold;
+    border: 1px solid #282828;
+    border-radius: 4px;
+    width: 36;
+    height: 32px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .pageArrow {
+    width: 36px;
+    height: 32px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    background: #282828;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 0 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-.depositProductHeader h2 {
-    margin: 0;
-    color: #333;
-}
-
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
