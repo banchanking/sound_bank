@@ -102,7 +102,7 @@ public class CustomerController {
         // ✅ 쿠키에 refreshToken 심기
         Cookie refreshTokenCookie = new Cookie("refreshToken", refresh_token);
         refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(false); // HTTPS 환경에서는 true
+        refreshTokenCookie.setSecure(true); // HTTPS 환경에서는 true
         refreshTokenCookie.setPath("/");
         refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60); // 7일
         

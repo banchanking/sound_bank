@@ -15,7 +15,7 @@ public class TransAutoScheduler {
 	@Autowired
 	private TransAutoService service;
 	
-	@Scheduled(cron = "0 * * * * *")
+	@Scheduled(cron = "5 * * * * *")
 	public void runAuto() {
 		// System.out.println("스케줄러 시작");
 		service.runTransAuto();
