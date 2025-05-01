@@ -21,22 +21,31 @@ function Chatbot() {
       const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       try {
         setMessages((prev) => [...prev, { type: 'user', text: question, time }]);
-
+  
         const res = await axios.post('http://localhost:8001/ask', { question });
         const { faq_answer, generated_answer } = res.data;
-
-        setMessages((prev) => [
-          ...prev,
-          { type: 'bot', text: faq_answer || '적합한 FAQ 답변이 없습니다.', time, label: 'FAQ 답변' },
-        ]);
-
-        if (generated_answer) {
+  
+        if (!faq_answer && !generated_answer) {
           setMessages((prev) => [
             ...prev,
-            { type: 'bot', text: generated_answer, time, label: 'AI 생성 답변' },
+            { type: 'bot', text: '현재 답변을 제공할 수 없습니다.', time, label: '오류' },
           ]);
+        } else {
+          if (faq_answer) {
+            setMessages((prev) => [
+              ...prev,
+              { type: 'bot', text: faq_answer, time, label: 'FAQ 답변' },
+            ]);
+          }
+  
+          if (generated_answer) {
+            setMessages((prev) => [
+              ...prev,
+              { type: 'bot', text: generated_answer, time, label: 'AI 생성 답변' },
+            ]);
+          }
         }
-
+  
         setQuestion('');
       } catch (error) {
         console.error('챗봇 오류:', error);

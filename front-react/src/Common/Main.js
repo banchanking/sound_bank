@@ -1,13 +1,12 @@
-// src/components/Main.js
 import React, { useState, useEffect } from "react";
 import BlurText from "./BlurText";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import "../Css/Common/Main.css";
-
 import TrueFocus from "./TrueFocus";
-import Orb from "./Orb"; // Orb 컴포넌트 추가
+import Orb from "./Orb";
 import { useNavigate } from "react-router-dom";
+import VoiceBot from "../customer_center/components/Voicebot";
 
 const Main = () => {
   const data = [
@@ -29,22 +28,24 @@ const Main = () => {
   ];
 
   const [index, setIndex] = useState(0);
-  const [isModalOpen, setIsModalOpen] = useState(false); // Orb 모달 상태
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const iv = setInterval(() => setIndex(i => (i + 1) % data.length), 4500);
+    const iv = setInterval(() => setIndex((i) => (i + 1) % data.length), 4500);
     return () => clearInterval(iv);
   }, [data.length]);
 
-  const next = () => setIndex(i => (i + 1) % data.length);
-  const prev = () => setIndex(i => (i - 1 + data.length) % data.length);
+  const next = () => setIndex((i) => (i + 1) % data.length);
+  const prev = () => setIndex((i) => (i - 1 + data.length) % data.length);
 
   const handleFocusClick = (item) => {
-    if (item.alt === "suondAI") {
-      setIsModalOpen(true); // 마이크 클릭 시 Orb 모달 열기
+    setSelectedItem(item.alt);
+    if (item.alt === "soundAI") {
+      setIsModalOpen(true);
     } else if (item.alt === "chatBot") {
-      navigate("/chatBot"); // 챗봇 클릭 시 기존 이동
+      navigate("/chatBot");
     }
   };
 
@@ -60,7 +61,6 @@ const Main = () => {
         }}
       >
         <div className="overlay" />
-
         <div className="content">
           <BlurText
             text={data[index].title}
@@ -69,7 +69,6 @@ const Main = () => {
             direction="top"
             className="title"
           />
-
           <BlurText
             text={data[index].desc}
             delay={150}
@@ -77,7 +76,6 @@ const Main = () => {
             direction="bottom"
             className="desc"
           />
-
           <div className="buttons">
             <button onClick={prev} className="nav">
               <FontAwesomeIcon icon={faChevronLeft} />
@@ -87,11 +85,10 @@ const Main = () => {
             </button>
           </div>
         </div>
-        
         <div className="focus-wrapper">
           <TrueFocus
             items={[
-              { src: "/Images/main/soundAI.png", alt: "suondAI" },
+              { src: "/Images/main/soundAI.png", alt: "soundAI" },
               { src: "/Images/main/chatAI.png", alt: "chatBot" },
             ]}
             manualMode={true}
@@ -102,7 +99,6 @@ const Main = () => {
             onItemClick={handleFocusClick}
           />
         </div>
-
         {isModalOpen && (
           <div className="orb-modal">
             <div className="orb-background" onClick={() => setIsModalOpen(false)} />
@@ -113,6 +109,7 @@ const Main = () => {
                 hue={0}
                 forceHoverState={false}
               />
+              <VoiceBot isModalOpen={isModalOpen} selectedItem={selectedItem} />
             </div>
           </div>
         )}
