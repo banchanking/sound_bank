@@ -2,13 +2,10 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import os
 from dotenv import load_dotenv
-import google.generativeai as ai
 import numpy as np
 import pandas as pd
 from pydantic import BaseModel
 from sklearn.metrics.pairwise import cosine_similarity
-from transformers import BertTokenizer, BertModel
-import torch
 from sentence_transformers import SentenceTransformer
 
 # FastAPI 설정
@@ -17,7 +14,7 @@ chatbot = FastAPI()
 # CORS 설정
 chatbot.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # React 서버 주소 (3000번 포트) , 8000포트로 지정시 파이썬
+    allow_origins=["*"],  # React 서버 주소(3000번 포트)로 설정 가능
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
@@ -27,13 +24,6 @@ chatbot.add_middleware(
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))  # chat_python 폴더
 ENV_PATH = os.path.join(BASE_DIR, ".env")
 load_dotenv(ENV_PATH)
-
-# API 키 설정
-api_key = os.getenv("GOOGLE_API_KEY")
-if api_key is None:
-    raise ValueError("GOOGLE_API_KEY 환경 변수가 설정되지 않았습니다.")
-
-ai.configure(api_key=api_key)
 
 # FAQ 데이터
 faq_data = {
@@ -67,8 +57,7 @@ faq_data = {
         "비대면 실명확인 절차는 무엇인가요?",
         "통장 양도 요청을 받았습니다. 어떻게 하나요?",
         "인증 오류 발생 시 어떻게 하나요?",
-        " ",
-        "",
+        "안녕 하세요."
     ],
     "answer": [
         "예금에 넣은 돈의 90~100% 한도로 대출 가능하며, 대출금리는 예금금리+1.0%포인트로 저렴합니다. 신용등급 영향도 적습니다.",
@@ -95,65 +84,46 @@ faq_data = {
         "인터넷뱅킹에서 '이체한도 변경' 메뉴를 통해 변경 가능합니다. 단, 비대면 한도 초과 시 영업점 방문이 필요할 수 있습니다.",
         "이체 수수료는 거래 조건에 따라 다르며, 동일 은행 내 이체는 무료, 타행 이체는 500원~1,000원 수준입니다.",
         "공동명의 통장은 공동명의인 전원의 동의가 필요하며, 이체 시 공동명의인 전원이 기명날인한 거래확인서가 필요합니다.",
-        "은행마다 다르지만, 일반적으로 10년 이상 거래 내역은 조회가 어려울 수 있습니다. 영업점에 문의하세요.",
-        "즉시 고객센터로 연락해 지급정지를 신청하고, 경찰청(112)에 신고해야 합니다.",
-        "만 14세 이상 가능하며, 신분증(주민등록증 또는 운전면허증)과 본인 계좌번호를 통해 본인확인을 진행합니다.",
-        "통장 양도는 불법이며, 100% 사기입니다. 절대 응하지 말고, 피해 발생 시 고객센터로 지급정지 신청 후 경찰에 신고하세요.",
-        "신분증 상태, 네트워크 연결을 확인 후 재시도하세요. 지속적인 오류 시 고객센터로 문의하세요.😊",
-        "질문을 해주세요😊",
-        "",
+        "은행마다 다르지만, 일반적으로 10년 이상 거래 내역은 제공되지 않으며, 일정 기간 이후에는 대출금융기관에 보관됩니다.",
+        "모바일뱅킹, 인터넷뱅킹, 전화뱅킹, ATM기기 등을 통해 실시간으로 서비스 이용이 가능합니다.",
+        "각종 금융사고 발생 시 고객센터로 문의 후 빠르게 대응하는 것이 중요합니다. 필요한 정보와 신고 절차는 해당 금융기관에 문의하세요.",
+        "비대면 실명확인 방법은 휴대폰 인증, 공인인증서, 신분증을 활용한 사진 인식 등의 방법이 있습니다.",
+        "통장의 양도는 법적으로 금지된 행위이며, 해당 통장의 금액을 양도하려면 예금자 본인만 가능하며 다른 사람에게 양도할 수 없습니다.",
+        "인증 오류 발생 시 고객센터 또는 해당 금융기관에 문의해 조치를 받거나, 인증서를 재발급받아야 할 수 있습니다.",
+        "안녕하세요! 무엇을 도와드릴까요?"
     ]
 }
 
-faq_df = pd.DataFrame(faq_data)
+# SentenceTransformer 모델 로딩
+model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
 
-# BERT 임베딩 모델 로드
-tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')   #다국어지원
-model = BertModel.from_pretrained('bert-base-multilingual-cased')
-bert_model = SentenceTransformer('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2') #BERT 모델
+# FAQ 데이터 임베딩
+faq_embeddings = model.encode(faq_data['question'])
 
-
-
-
-# FAQ 질문을 BERT 임베딩으로 변환
-def get_bert_embedding(text):
-    tokens = tokenizer(text, return_tensors="pt", padding=True, truncation=True, max_length=512)
-    with torch.no_grad():
-        output = model(**tokens)
-    return output.last_hidden_state.mean(dim=1).squeeze().numpy()
-
-faq_embeddings = np.array([get_bert_embedding(q) for q in faq_df["question"]])
-
-# FastAPI 경로 설정
-class UserRequest(BaseModel):
+# 질문 및 답변을 위한 Pydantic 모델
+class Query(BaseModel):
     question: str
 
-@chatbot.get("/")
-async def read_root():
-    return {"message": "Welcome to the FastAPI server!"}
+# 질문에 대해 가장 유사한 답변 찾기
+@chatbot.post("/ask")
+async def ask_question(query: Query):
+    user_question = query.question
+    user_embedding = model.encode([user_question])
+    similarity_scores = cosine_similarity(user_embedding, faq_embeddings)[0]
+    best_match_index = int(np.argmax(similarity_scores))
+    best_score = similarity_scores[best_match_index]
 
-@chatbot.post("/ask/")
-async def ask_question(user_request: UserRequest):
-    user_question = user_request.question
+    if best_score < 0.6:
+        return {
+            "faq_answer": None,
+            "generated_answer": None
+        }
 
-    # 사용자의 질문을 BERT 임베딩으로 변환
-    user_embedding = get_bert_embedding(user_question).reshape(1, -1)
+    # FAQ 기반 응답
+    faq_answer = faq_data["answer"][best_match_index]
 
-    # 코사인 유사도 계산
-    cosine_similarities = cosine_similarity(user_embedding, faq_embeddings)
-    most_similar_index = cosine_similarities.argmax()
-
-    # 가장 유사한 질문의 답변을 가져오기
-    answer = faq_df.iloc[most_similar_index]['answer']
-
-    try:
-        # Google Generative AI 모델로 추가적인 답변 생성
-        response = ai.GenerativeModel('gemini-1.5-flash').generate_content(user_question)
-        generated_answer = response.text
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Google AI 에러: {str(e)}")
-
+    # 여기서는 예시로 AI 생성 답변은 없다고 가정
     return {
-        "faq_answer": answer,
-        "generated_answer": generated_answer
+        "faq_answer": faq_answer,
+        "generated_answer": None
     }
