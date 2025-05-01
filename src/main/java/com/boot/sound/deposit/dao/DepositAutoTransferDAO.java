@@ -1,32 +1,65 @@
 package com.boot.sound.deposit.dao;
 
-import java.math.BigDecimal;
-import java.util.List;
-import com.boot.sound.deposit.dto.DepositAutoTransferDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.boot.sound.deposit.dto.DepositAutoTransferDTO;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+/**
+ * DepositAutoTransferDAO
+ * 자동이체 관련 DB 작업 인터페이스
+ */
 @Mapper
 public interface DepositAutoTransferDAO {
 
-    // 자동이체 등록
-    int insertAutoTransfer(DepositAutoTransferDTO dto);
-
-    // 자동이체 수정
-    int updateAutoTransfer(@Param("autoTransferId") int autoTransferId,
-                            @Param("amount") BigDecimal amount,
-                            @Param("transferDay") int transferDay,
-                            @Param("targetAccountNumber") String targetAccountNumber);
-
-    // 자동이체 해지
-    int deleteAutoTransfer(@Param("autoTransferId") int autoTransferId);
-
-    // 고객별 자동이체 목록 조회
-    List<DepositAutoTransferDTO> getAutoTransfersByCustomerId(@Param("customerId") String customerId);
-
-    // 자동이체 대상 조회 (스케줄러용)
+    // 오늘 이체해야 할 자동이체 리스트 조회
     List<DepositAutoTransferDTO> getTodayAutoTransfers(@Param("today") int today);
 
-    // 자동이체 실행 (잔액 차감)
-    int executeAutoTransfer(@Param("datId") int datId, @Param("amount") BigDecimal amount);
+    // 기본 입출금 계좌에서 출금
+    int withdrawFromBasicAccount(@Param("accountNumber") String accountNumber, @Param("amount") BigDecimal amount);
+
+    // 예금 계좌로 입금
+    int depositToDepositAccount(@Param("accountNumber") String accountNumber, @Param("amount") BigDecimal amount);
+
+    // 적금 계좌로 입금
+    int depositToSavingsAccount(@Param("accountNumber") String accountNumber, @Param("amount") BigDecimal amount);
+
+    // 자동이체 등록
+    void createAutoTransfer(DepositAutoTransferDTO transferDTO);
+
+    // 고객의 자동이체 리스트 조회
+    List<DepositAutoTransferDTO> getCustomerAutoTransfers(@Param("withdrawAccountNumber") String withdrawAccountNumber);
+
+    // 자동이체 삭제
+    void deleteAutoTransfer(@Param("id") Long id);
+    
+    // 자동이체 수정
+    void updateAutoTransfer(DepositAutoTransferDTO transferDTO);
+    
+    // 기본 계좌 거래내역 기록 (단일 쿼리)
+    int insertBasicAccountTransaction(@Param("accountNumber") String accountNumber,
+                                      @Param("amount") BigDecimal amount,
+                                      @Param("memo") String memo);
+
+    
+    // 예금 거래내역 저장
+    int insertDepositTransaction(@Param("accountNumber") String accountNumber,
+            @Param("amount") BigDecimal amount,
+            @Param("description") String description);
+
+    // 적금 거래내역 저장
+    int insertSavingsTransaction(@Param("accountNumber") String accountNumber,
+            @Param("amount") BigDecimal amount,
+            @Param("description") String description);
+
+    
+
+
+
+    
+ 
+
 }

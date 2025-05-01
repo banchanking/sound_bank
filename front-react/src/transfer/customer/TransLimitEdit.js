@@ -8,6 +8,8 @@ function TransLimitEdit() {
   const [list, setList] = useState([]);
   const [editItem, setEditItem] = useState(null);
   const [displayLimit, setDisplayLimit] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
 
   const customer_id = getCustomerID();
   const token = localStorage.getItem('auth_token');
@@ -65,6 +67,12 @@ function TransLimitEdit() {
       });
   };
 
+  const totalPages = Math.ceil(list.length / itemsPerPage);
+  const currentItems = list.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const pageGroup = Math.floor((currentPage - 1) / 10);
+  const startPage = pageGroup * 10 + 1;
+  const endPage = Math.min(startPage + 9, totalPages);
+
   return (
     <div style={{ display: 'flex', minHeight: '600px' }}>
       <Sidebar />
@@ -82,7 +90,7 @@ function TransLimitEdit() {
             </tr>
           </thead>
           <tbody>
-            {list.map(item => (
+            {currentItems.map(item => (
               <tr key={item.transfer_id}>
                 <td>{item.out_account_number}</td>
                 <td>{Number(item.requested_limit).toLocaleString()}원</td>
@@ -114,6 +122,28 @@ function TransLimitEdit() {
             ))}
           </tbody>
         </table>
+
+        <div className={styles.pageButtonArea}>
+          {startPage > 1 && (
+            <button className={styles.pageArrow} onClick={() => setCurrentPage(startPage - 1)}>
+              &lt;
+            </button>
+          )}
+          {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map(num => (
+            <button
+              key={num}
+              onClick={() => setCurrentPage(num)}
+              className={`${styles.pageButton} ${currentPage === num ? styles.activePage : ''}`}
+            >
+              {num}
+            </button>
+          ))}
+          {endPage < totalPages && (
+            <button className={styles.pageArrow} onClick={() => setCurrentPage(endPage + 1)}>
+              &gt;
+            </button>
+          )}
+        </div>
 
         {editItem && (
           <div className={styles['limitEdit-editModalOverlay']}>

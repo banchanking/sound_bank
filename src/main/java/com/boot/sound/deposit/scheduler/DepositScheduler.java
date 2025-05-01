@@ -1,33 +1,29 @@
-//package com.boot.sound.deposit.scheduler;
-//
-//import org.springframework.scheduling.annotation.Scheduled;
-//import org.springframework.stereotype.Component;
-//
-//import com.boot.sound.deposit.service.DepositService;
-//
-//import lombok.RequiredArgsConstructor;
-//
-//@Component
-//@RequiredArgsConstructor
-//public class DepositScheduler {
-//    
-//    private final DepositService depositService;
-//
-//    // 매일 자정에 자동이체 처리
-//    @Scheduled(cron = "0 0 0 * * *")
-//    public void processAutoTransfers() {
-//        depositService.processAutoTransfers();
-//    }
-//
-//    // 매일 자정에 적금 만기 처리
-//    @Scheduled(cron = "0 0 0 * * *")
-//    public void processMaturity() {
-//        depositService.processMaturity();
-//    }
-//
-//    // 매월 1일 자정에 이자 지급
-//    @Scheduled(cron = "0 0 0 1 * *")
-//    public void payInterest() {
-//        depositService.payInterest();
-//    }
-//} 
+package com.boot.sound.deposit.scheduler;
+
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import com.boot.sound.deposit.service.DepositAutoTransferService;
+
+/**
+ * DepositScheduler
+ * 매일 자동으로 자동이체를 실행하는 스케줄러
+ */
+@Component
+@RequiredArgsConstructor
+public class DepositScheduler {
+
+    private final DepositAutoTransferService autoTransferService;
+
+    /**
+     * 매일 새벽 2시에 자동이체 실행
+     */
+    @Scheduled(cron = "* * 2 * * *")
+    public void runAutoTransfers() {
+        autoTransferService.processTodayAutoTransfers();
+    }
+    
+    
+}

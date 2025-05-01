@@ -5,8 +5,14 @@ import styles from '../../Css/transfer/MultiAdmin.module.css';
 function TransMultiApprove() {
   const [groupedList, setGroupedList] = useState([]);
   const [selectedKey, setSelectedKey] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
   const token = localStorage.getItem('auth_token');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchApproveList();
+  }, []);
 
   const fetchApproveList = () => {
     RefreshToken.get('/multiAdmin/approveList', {
@@ -37,10 +43,6 @@ function TransMultiApprove() {
         alert('요청 목록 불러오기 실패');
       });
   };
-
-  useEffect(() => {
-    fetchApproveList();
-  }, []);
 
   const handleApprove = (group) => {
     setLoading(true);
@@ -76,6 +78,12 @@ function TransMultiApprove() {
       .catch(() => alert('반려 실패'));
   };
 
+  const totalPages = Math.ceil(groupedList.length / itemsPerPage);
+  const pageGroup = Math.floor((currentPage - 1) / 10);
+  const startPage = pageGroup * 10 + 1;
+  const endPage = Math.min(startPage + 9, totalPages);
+  const currentItems = groupedList.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   return (
     <div className={styles['multiAdmin-approveWrap']}>
       <h2>다건이체 승인 관리</h2>
@@ -91,53 +99,29 @@ function TransMultiApprove() {
           </tr>
         </thead>
         <tbody>
-          {groupedList.map(group => (
+          {currentItems.map(group => (
             <React.Fragment key={group.key}>
               <tr>
                 <td>{group.customer_id}</td>
                 <td>{group.out_account_number}</td>
                 <td>{group.request_date ? new Date(Number(group.request_date)).toLocaleString() : '-'}</td>
-                <td>
-                  {group.status === '대기' ? '대기'
-                    : group.status === '승인' ? '승인됨'
-                    : '반려됨'}
-                </td>
+                <td>{group.status === '대기' ? '대기' : group.status === '승인' ? '승인됨' : '반려됨'}</td>
                 <td>
                   {group.status === '대기' ? (
                     <>
-                      <button
-                        onClick={() => setSelectedKey(group.key)}
-                        className={styles['multiAdmin-btnDetail']}
-                      >
-                        상세
-                      </button>
-                      <button
-                        onClick={() => handleApprove(group)}
-                        className={styles['multiAdmin-btnApprove']}
-                      >
-                        승인
-                      </button>
-                      <button
-                        onClick={() => handleReject(group)}
-                        className={styles['multiAdmin-btnReject']}
-                      >
-                        반려
-                      </button>
+                      <button onClick={() => setSelectedKey(group.key)} className={styles['multiAdmin-btnDetail']}>상세</button>
+                      <button onClick={() => handleApprove(group)} className={styles['multiAdmin-btnApprove']}>승인</button>
+                      <button onClick={() => handleReject(group)} className={styles['multiAdmin-btnReject']}>반려</button>
                     </>
                   ) : group.status === '승인' ? (
                     <div>
                       승인일:<br />
-                      {group.approval_date
-                        ? new Date(group.approval_date).toLocaleString()
-                        : '-'}
+                      {group.approval_date ? new Date(group.approval_date).toLocaleString() : '-'}
                     </div>
                   ) : (
                     <div>
                       반려일:<br />
-                      {group.approval_date
-                        ? new Date(group.approval_date).toLocaleString()
-                        : '-'}
-                      <br />
+                      {group.approval_date ? new Date(group.approval_date).toLocaleString() : '-'}<br />
                       사유: {group.reject_reason || '-'}
                     </div>
                   )}
@@ -174,6 +158,26 @@ function TransMultiApprove() {
           ))}
         </tbody>
       </table>
+
+      {groupedList.length > 0 && (
+        <div className={styles.pageButtonArea}>
+          {startPage > 1 && (
+            <button className={styles.pageArrow} onClick={() => setCurrentPage(startPage - 1)}>&lt;</button>
+          )}
+          {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map(num => (
+            <button
+              key={num}
+              onClick={() => setCurrentPage(num)}
+              className={`${styles.pageButton} ${currentPage === num ? styles.activePage : ''}`}
+            >
+              {num}
+            </button>
+          ))}
+          {endPage < totalPages && (
+            <button className={styles.pageArrow} onClick={() => setCurrentPage(endPage + 1)}>&gt;</button>
+          )}
+        </div>
+      )}
 
       {loading && <div className={styles['multiAdmin-loading']}>처리중...</div>}
     </div>

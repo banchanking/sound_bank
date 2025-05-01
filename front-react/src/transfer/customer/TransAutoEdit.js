@@ -8,6 +8,8 @@ function TransAutoEdit() {
   const [list, setList] = useState([]);
   const [editItem, setEditItem] = useState(null);
   const [displayAmount, setDisplayAmount] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
 
   useEffect(() => {
     const id = getCustomerID();
@@ -68,6 +70,12 @@ function TransAutoEdit() {
     }
   };
 
+  const totalPages = Math.ceil(list.length / itemsPerPage);
+  const currentItems = list.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const pageGroup = Math.floor((currentPage - 1) / 10);
+  const startPage = pageGroup * 10 + 1;
+  const endPage = Math.min(startPage + 9, totalPages);
+
   return (
     <div className={styles['autoEdit-page']}>
       <Sidebar />
@@ -87,7 +95,7 @@ function TransAutoEdit() {
             </tr>
           </thead>
           <tbody>
-            {list.map(item => (
+            {currentItems.map(item => (
               <tr key={item.transfer_id}>
                 <td>{item.out_account_number}</td>
                 <td>{item.in_account_number}</td>
@@ -113,6 +121,35 @@ function TransAutoEdit() {
             ))}
           </tbody>
         </table>
+
+        {/* 페이지네이션 */}
+        <div className={styles.pageButtonArea}>
+          {startPage > 1 && (
+            <button
+              className={styles.pageArrow}
+              onClick={() => setCurrentPage(startPage - 1)}
+            >
+              &lt;
+            </button>
+          )}
+          {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map(num => (
+            <button
+              key={num}
+              onClick={() => setCurrentPage(num)}
+              className={currentPage === num ? styles.activePage : styles.pageButton}
+            >
+              {num}
+            </button>
+          ))}
+          {endPage < totalPages && (
+            <button
+              className={styles.pageArrow}
+              onClick={() => setCurrentPage(endPage + 1)}
+            >
+              &gt;
+            </button>
+          )}
+        </div>
 
         {editItem && (
           <div className={styles['autoEdit-modalOverlay']}>

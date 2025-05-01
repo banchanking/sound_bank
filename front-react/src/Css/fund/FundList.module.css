@@ -472,13 +472,16 @@
 }
 
 /* 버튼 하나하나 */
+/* 버튼 하나하나 */
 .aiButton {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 240px;
-  height: 50px;
+  width: 300px;
+  height: 80px;
+  margin-top: 10px;
   margin-bottom: 10px;
+  margin-left: 260px;
   background: linear-gradient(to right, #d88390, #c46d7c); 
   color: #ffffff;
   border: none;
@@ -495,6 +498,7 @@
   background: linear-gradient(to right, #c46d7c, #b85e6f);
   transform: translateY(-2px); 
 }
+
 
 
 /* 애니메이션 추가 */

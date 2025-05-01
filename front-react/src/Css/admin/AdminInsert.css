@@ -1,47 +1,76 @@
+/* adminInsert.module.css */
+
 .adminInsert-container {
-  max-width: 400px;
-  margin: 0 auto;
-  padding: 20px;
+  max-width: 450px;
+  min-height: 560px;
+  margin: 40px auto;
+  padding: 30px;
+  background: #fff;
+  border: 1.5px solid #e2e4e7;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.4s ease;
 }
 
 .adminInsert-title {
   text-align: center;
-  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 25px;
+  animation: fadeInUp 0.4s ease;
 }
 
 .adminInsert-form {
   display: flex;
   flex-direction: column;
+  gap: 20px;
+  animation: fadeInUp 0.4s ease;
 }
 
 .adminInsert-form-group {
   display: flex;
   flex-direction: column;
-  margin-bottom: 15px;
 }
 
 .adminInsert-form-group label {
-  margin-bottom: 5px;
-  font-weight: bold;
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-size: 16px;
 }
 
 .adminInsert-form-group input {
-  padding: 8px;
+  padding: 10px;
+  font-size: 15px;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 7px;
+  transition: border-color 0.3s;
+}
+
+.adminInsert-form-group input:focus {
+  border-color: #537697; /* 포커스 시 네이비 테두리 */
+  outline: none;
 }
 
 .adminInsert-submit-button {
-  padding: 10px;
-  background-color: black;
-  color: white;
+  padding: 12px;
+  font-size: 16px;
+  background-color: #3b3b3b;
+  color: #fff;
   border: none;
-  border-radius: 4px;
+  border-radius: 7px;
   cursor: pointer;
+  transition: all 0.4s ease;
+  margin-top: 10px;
 }
 
 .adminInsert-submit-button:hover {
-  background-color: black;
+  background-color: #555;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.password-check-text {
+  margin-top: 5px;
+  font-size: 13px;
 }
 
 .password-check-text.mismatch {
@@ -50,4 +79,26 @@
 
 .password-check-text.match {
   color: green;
+}
+
+/* fadeIn 애니메이션 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* fadeInUp 애니메이션 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
