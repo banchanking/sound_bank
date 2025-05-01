@@ -14,7 +14,7 @@ app = FastAPI()
 # CORS 설정: React 앱 도메인만 허용
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # 프론트엔드 주소
+    allow_origins=["http://15.165.57.30:3000"],  # 프론트엔드 주소
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -70,7 +70,7 @@ async def predict_user(data: InvestmentRequest):
 @app.post("/predict-fund")
 async def predict_fund():
     try:
-        response = requests.get("http://localhost:8081/api/registeredFunds")
+        response = requests.get("http://15.165.57.30:8081/api/registeredFunds")
         response.raise_for_status()
         df = pd.DataFrame(response.json())
 
@@ -142,7 +142,7 @@ async def retrain():
         raise HTTPException(status_code=500, detail="재학습 중 오류 발생")
 
         # 펀드 목록 가져오기
-        response = requests.get("http://localhost:8081/api/registeredFunds")
+        response = requests.get("http://15.165.57.30:8081/api/registeredFunds")
         funds = pd.DataFrame(response.json())
 
         # 필터링
