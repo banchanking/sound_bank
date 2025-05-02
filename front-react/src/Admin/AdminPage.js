@@ -35,11 +35,13 @@ import LoanDetail from "../sound_loan/admin/LoanDetail";
 import LoanUpdate from "../sound_loan/admin/LoanUpdate";
 import AdminInsert from "./AdminInsert";
 import AdminEdit from "./AdminEdit";
+import AdminCustomerList from "./AdminCustomerList";
 
 const AdminPage = () => {
   const location = useLocation();
   const [activeMenuIndex, setActiveMenuIndex] = useState(null);
-  const [selectedComponent, setSelectedComponent] = useState("AdminList");
+  const [selectedComponent, setSelectedComponent] =
+    useState("AdminCustomerList");
   const [selectedLoanId, setSelectedLoanId] = useState(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const [selectedAdmin, setSelectedAdmin] = useState(null);
@@ -55,6 +57,7 @@ const AdminPage = () => {
     if (location.state?.loan_id) {
       setSelectedLoanId(location.state.loan_id);
     }
+    console.log("!!!");
   }, [location.state]);
 
   const menuData = [
@@ -64,6 +67,7 @@ const AdminPage = () => {
       items: [
         { name: "관리자목록", component: "AdminList" },
         { name: "관리자등록", component: "AdminInsert" },
+        { name: "회원목록", component: "AdminCustomerList" },
       ],
     },
     {
@@ -136,11 +140,13 @@ const AdminPage = () => {
             onBack={() => setSelectedComponent("AdminList")}
           />
         );
+      case "DepositProduct":
+        return <DepositProduct />;
 
       // 관리자 컴포넌트 호출종료
       // 예금 컴포넌트 호출 시작
-      case "DepositProduct":
-        return <DepositProduct />;
+      case "AdminCustomerList":
+        return <AdminCustomerList />;
       case "SavingsProduct":
         return <SavingsProduct />;
       // 예금 컴포넌트 호출 종료

@@ -63,6 +63,11 @@
 		where customer_id = #{customerId}
 	</update>
 	
+	<select id="adminPageCustomerList" resultType="com.boot.sound.customer.CustomerDTO">
+		SELECT * FROM customer_tbl
+		ORDER BY customer_name
+	</select>
+	
 	
 	
   
