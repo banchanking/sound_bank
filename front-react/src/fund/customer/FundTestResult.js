@@ -46,7 +46,7 @@ const FundTestResult = () => {
             <table className={styles.fundTableResult}>
               <tbody>
                 <tr>
-                  <td>
+                  <td className="fundTableTitleTestTD123">
                     고객님의 투자성향은 <strong>{investmentType}</strong>입니다.
                   </td>
                 </tr>
