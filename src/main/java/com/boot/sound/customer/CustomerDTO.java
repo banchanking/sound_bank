@@ -54,6 +54,8 @@ public class CustomerDTO {
 
     @Column(name = "CUSTOMER_RISK_TYPE")
     private String customer_risk_type;
+    
+    private String customer_status;
 
     @javax.persistence.Transient
     private Integer current_limit;

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import RefreshToken from '../../jwt/RefreshToken';
 import '../../Css/depositcss/DepositProduct.css';
 
-function SavingsProduct() {
+function DepositProduct() {
   const [products, setProducts] = useState([]);
   const [form, setForm] = useState({
     productName: '',
@@ -24,10 +24,10 @@ function SavingsProduct() {
 
   const fetchProducts = async () => {
     try {
-      const res = await RefreshToken.get('/deposit/products/deposit');
+      const res = await RefreshToken.get('/deposit/products/deposit'); // 경로 확인 필요
       setProducts(res.data);
     } catch (err) {
-      alert('상품 조회 실패');
+      alert('예금 상품 조회 실패');
     }
   };
 
@@ -71,17 +71,17 @@ function SavingsProduct() {
         ...form,
         productType: form.productType.toLowerCase()
       });
-      alert('상품 저장 완료');
+      alert('예금 상품 저장 완료');
       fetchProducts();
       closeModal();
     } catch {
-      alert('상품 저장 실패');
+      alert('예금 상품 저장 실패');
     }
   };
 
   const handleDelete = async (id) => {
     try {
-      await RefreshToken.delete(`/deposit/products/savings/${id}`);
+      await RefreshToken.delete(`/deposit/products/deposit/${id}`);
       alert('삭제 완료');
       fetchProducts();
     } catch {
@@ -96,17 +96,14 @@ function SavingsProduct() {
   );
 
   const typeLabel = {
-    installment: '적금',
-    housing: '주택청약적금',
-    pension: '연금적금',
-    youth: '청년적금',
-    fixed: '정기적금'
+    fixed: '정기예금',
+    regular: '자유예금'
   };
 
   return (
     <div className="deposit-container">
       <div className="deposit-header">
-        <h2>적금 상품 관리</h2>
+        <h2>예금 상품 관리</h2>
       </div>
       <button className="depositAddP-btn" onClick={() => openModal()}>상품 추가</button>
 
@@ -161,11 +158,8 @@ function SavingsProduct() {
             <input name="productName" placeholder="상품명" value={form.productName} onChange={handleChange} />
             <select name="productType" value={form.productType} onChange={handleChange}>
               <option value="">유형 선택</option>
-              <option value="installment">적금</option>
-              <option value="housing">주택청약적금</option>
-              <option value="pension">연금적금</option>
-              <option value="youth">청년적금</option>
-              <option value="fixed">정기적금</option>
+              <option value="fixed">정기예금</option>
+              <option value="regular">자유예금</option>
             </select>
             <input name="interestRate" placeholder="이자율 (%)" value={form.interestRate} onChange={handleChange} />
             <input name="minAmount" placeholder="최소금액" value={form.minAmount} onChange={handleChange} />
@@ -183,4 +177,4 @@ function SavingsProduct() {
   );
 }
 
-export default SavingsProduct;
+export default DepositProduct;
