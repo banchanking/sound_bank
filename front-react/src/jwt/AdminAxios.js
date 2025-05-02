@@ -2,7 +2,7 @@ import axios from "axios";
 import { getAuthToken, getCustomerID, setAuthToken } from "./AxiosToken";
 
 const AdminAxios = axios.create({
-  baseURL: "http://localhost:8081/admin",
+  baseURL: "http://localhost:8081/api",
   withCredentials: true,
   headers: {
     "Content-Type": "application/json;charset=utf-8",

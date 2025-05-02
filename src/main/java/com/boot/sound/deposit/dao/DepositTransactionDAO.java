@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.boot.sound.deposit.dto.DepositDTO;
 import com.boot.sound.deposit.dto.DepositTransactionDTO;
 
 @Mapper
@@ -41,7 +42,22 @@ public interface DepositTransactionDAO {
     int updateSavingsAccountBalance(@Param("accountNumber") String accountNumber, 
                                   @Param("balance") BigDecimal balance);
 
-	BigDecimal getDepositAccountBalance(String accountNumber);
+
+    int closeDepositAccount(@Param("accountNumber") String accountNumber);
+    int closeSavingsAccount(@Param("accountNumber") String accountNumber);
+    int depositToBasicAccount(@Param("accountNumber") String basicAccountNumber, @Param("amount") BigDecimal amount);
+    String findBasicAccountNumberByCustomer(String customerId);
+    int insertBasicTransaction(DepositTransactionDTO dto);
 
 	BigDecimal getSavingsAccountBalance(String accountNumber);
+	BigDecimal getDepositAccountBalance(String accountNumber);
+
+	void insertAccountTransaction(DepositTransactionDTO tx);
+	
+
+	DepositTransactionDTO getDepositAccountDetailByAccountNumber(@Param("accountNumber") String accountNumber);
+
+	
+
+
 } 

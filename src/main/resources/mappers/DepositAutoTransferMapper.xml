@@ -4,6 +4,15 @@
 
 
 
+<!-- 비밀번호 체크  -->
+<select id="getAccountPassword" resultType="String">
+    SELECT account_pwd
+    FROM account_tbl
+    WHERE account_number = #{accountNumber}
+</select>
+
+
+
 
     <!-- 오늘 날짜에 맞는 자동이체 리스트 조회 -->
 		<select id="getTodayAutoTransfers" resultType="com.boot.sound.deposit.dto.DepositAutoTransferDTO">

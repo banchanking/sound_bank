@@ -25,7 +25,12 @@ const OpenAccount = () => {
           `/accounts/allAccount/${customer_id}`
         );
         const allAccounts = Object.values(res.data).flat(); // 입출금 + 예금 합침
-        setAccounts(allAccounts);
+        // DEPOSIT(예금)와 SAVINGS(적금) 계좌는 드롭다운에서 제외
+        const visibleAccounts = allAccounts.filter(acc =>
+          acc.account_type !== "DEPOSIT" &&
+          acc.account_type !== "SAVINGS"
+        );
+        setAccounts(visibleAccounts);
       } catch (err) {
         console.error("계좌 불러오기 실패:", err);
       }

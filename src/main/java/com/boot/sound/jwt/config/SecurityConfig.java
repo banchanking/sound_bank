@@ -36,7 +36,7 @@ public class SecurityConfig {
 			.authorizeHttpRequests((requests) -> requests
 					.antMatchers(HttpMethod.POST, 
 							"/api/login.do",
-							"/admin/login",
+							"/api/login",
 							"/api/refresh-token",
 							"/api/joinAction.do",
 							"/api/sms/signup/request",

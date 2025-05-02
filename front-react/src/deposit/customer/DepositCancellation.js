@@ -59,43 +59,11 @@ const DepositCancellation = () => {
 
     useEffect(() => {
         if (!selectedAccount) return;
-    
-        // 선택된 계좌 객체를 찾는다
         const acc = accounts.find(a => a.accountNumber === selectedAccount);
-    
-        // 계좌 정보가 없거나 이자율, 기간 정보가 없으면 종료
-        if (!acc || !acc.interestRate || !acc.termMonths) return;
-    
-        // 연이율(%)을 소수점으로 변환
-        const rate = acc.interestRate / 100;
-    
-        // 예치 기간 (개월 수)
-        const months = acc.termMonths;
-    
-        // 원금 (현재 잔액)
-        const principal = acc.balance;
-    
-        // 이자에 적용할 세율 (15.4%)
-        const taxRate = 0.154;
-    
-        // 세전 이자 = 원금 * 연이율 * (개월 / 12)
-        const interest = principal * rate * (months / 12);
-    
-        // 세후 이자 = 세전 이자 * (1 - 세율)
-        const afterTax = interest * (1 - taxRate);
-    
-        // 최종 수령액 = 원금 + 세후 이자
-        const total = principal + afterTax;
-    
-        // 계산된 결과 상태로 저장
-        setCalculatedInfo({
-            principal,
-            interest: Math.floor(interest),     
-            afterTax: Math.floor(afterTax),     
-            total: Math.floor(total)            
-        });
+        if (!acc || acc.interestRate == null || acc.termMonths == null) {
+            return;
+        }
     }, [selectedAccount, accounts]);
-    
 
     const handleCancellation = async (e) => {
         e.preventDefault();
@@ -108,41 +76,45 @@ const DepositCancellation = () => {
             return;
         }
 
+        const account = accounts.find(acc => acc.accountNumber === selectedAccount);
+        if (!account || account.balance == null) {
+            alert('계좌 잔액 정보를 불러올 수 없습니다.');
+            return;
+        }
+
+        const payload = {
+            accountNumber: selectedAccount,
+            accountPassword: password,
+            customerId: getCustomerID()
+        };
+
         try {
-            const account = accounts.find(acc => acc.accountNumber === selectedAccount);
             const endpoint = account.type === '예금'
                 ? `/deposit/accounts/deposit/close`
                 : `/deposit/accounts/savings/close`;
 
-                console.log('해지 요청 데이터:', {
-                    accountNumber: selectedAccount,
-                    accountPassword: password,
-                  });
-                  
-            await RefreshToken.post(endpoint, {
-                accountNumber: selectedAccount,
-                accountPassword: password,
-            });
+            await RefreshToken.post(endpoint, payload);
+
             alert('계좌 해지가 완료되었습니다.');
             navigate('/');
         } catch (error) {
             console.error('계좌 해지 에러:', error);
-            alert('계좌 해지에 실패했습니다.');
+            alert('계좌 해지에 실패했습니다: ' + (error.response?.data || '알 수 없는 오류'));
         }
     };
 
     return (
-        <div className="depositContainer">
-            <div className="depositCard">
-                <div className="depositProductHeader">
-                    <h2>예적금 계좌 해지</h2>
+        <div className="depositCancel-container">
+            <div className="depositCancel-card">
+                <div className="depositCancel-header">
+                    <h4>예적금 계좌 해지</h4>
                 </div>
 
                 {accounts.length === 0 ? (
                     <div>현재 조회 가능한 계좌가 없습니다.</div>
                 ) : (
-                    <form onSubmit={handleCancellation} className="depositForm">
-                        <div className="formGroup">
+                    <form onSubmit={handleCancellation} className="depositCancel-form">
+                        <div className="depositCancel-formGroup">
                             <label htmlFor="accountNumber">해지할 계좌</label>
                             <select
                                 id="accountNumber"
@@ -153,24 +125,19 @@ const DepositCancellation = () => {
                                 <option value="">계좌 선택</option>
                                 {accounts.map(account => (
                                     <option key={account.accountNumber} value={account.accountNumber}>
-                                        {formatAccountNumber(account.accountNumber)} - {account.productName} - {(account.balance != null ? account.balance.toString() : '0')}원
+                                        {formatAccountNumber(account.accountNumber)} - {account.productName}
                                     </option>
                                 ))}
                             </select>
                         </div>
-
                         {calculatedInfo && (
-                            <div className="formHint" style={{ marginTop: '10px' }}>
-                                <p>원금: {calculatedInfo.principal.toLocaleString()}원</p>
-                                <p>이자(세전): {calculatedInfo.interest.toLocaleString()}원</p>
-                                <p>세후 이자: {calculatedInfo.afterTax.toLocaleString()}원</p>
-                                <strong>총 수령액: {calculatedInfo.total.toLocaleString()}원</strong>
+                            <div className="depositCancel-hint">
+                                <p>해지금액: {calculatedInfo.principal.toLocaleString()}원</p>
                             </div>
                         )}
-
                         {selectedAccount && (
                             <>
-                                <div className="formGroup">
+                                <div className="depositCancel-formGroup">
                                     <label htmlFor="password">계좌 비밀번호</label>
                                     <input
                                         type="password"
@@ -181,8 +148,7 @@ const DepositCancellation = () => {
                                         required
                                     />
                                 </div>
-
-                                <button type="submit" className="depositBtn" disabled={loading}>
+                                <button type="submit" className="depositCancel-submitBtn">
                                     계좌 해지하기
                                 </button>
                             </>
