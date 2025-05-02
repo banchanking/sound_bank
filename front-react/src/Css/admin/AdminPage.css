@@ -2,6 +2,7 @@
 .adminPage-container {
   display: flex;
   height: 100vh;
+  min-height: 1500px;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
