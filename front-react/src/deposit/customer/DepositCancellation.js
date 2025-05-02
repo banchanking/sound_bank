@@ -47,6 +47,7 @@ const DepositCancellation = () => {
             setLoading(false);
         }
     };
+
     const handleAccountChange = (e) => {
         const accountNumber = e.target.value;
         setSelectedAccount(accountNumber);
@@ -58,19 +59,14 @@ const DepositCancellation = () => {
 
     useEffect(() => {
         if (!selectedAccount) return;
-    
         const acc = accounts.find(a => a.accountNumber === selectedAccount);
-         console.log("선택된 계좌 정보:", acc);
-
         if (!acc || acc.interestRate == null || acc.termMonths == null) {
-        console.warn("이자 계산할 수 없음: 필수 정보 누락");
-        return;
-    }
-
+            return;
+        }
     }, [selectedAccount, accounts]);
+
     const handleCancellation = async (e) => {
         e.preventDefault();
-    
         if (!selectedAccount) {
             alert('계좌를 선택해주세요.');
             return;
@@ -79,48 +75,46 @@ const DepositCancellation = () => {
             alert('계좌 비밀번호를 입력해주세요.');
             return;
         }
-    
+
         const account = accounts.find(acc => acc.accountNumber === selectedAccount);
         if (!account || account.balance == null) {
             alert('계좌 잔액 정보를 불러올 수 없습니다.');
             return;
         }
-    
+
         const payload = {
             accountNumber: selectedAccount,
             accountPassword: password,
             customerId: getCustomerID()
         };
-    
+
         try {
             const endpoint = account.type === '예금'
                 ? `/deposit/accounts/deposit/close`
                 : `/deposit/accounts/savings/close`;
-    
-            console.log('해지 요청 데이터:', payload);
-    
+
             await RefreshToken.post(endpoint, payload);
-    
+
             alert('계좌 해지가 완료되었습니다.');
             navigate('/');
         } catch (error) {
             console.error('계좌 해지 에러:', error);
-            console.error('서버 응답:', error.response?.data); // 👈 이 줄이 중요
             alert('계좌 해지에 실패했습니다: ' + (error.response?.data || '알 수 없는 오류'));
         }
     };
+
     return (
-        <div className="depositContainer">
-            <div className="depositCard">
-                <div className="depositProductHeader">
-                    <h2>예적금 계좌 해지</h2>
+        <div className="depositCancel-container">
+            <div className="depositCancel-card">
+                <div className="depositCancel-header">
+                    <h4>예적금 계좌 해지</h4>
                 </div>
 
                 {accounts.length === 0 ? (
                     <div>현재 조회 가능한 계좌가 없습니다.</div>
                 ) : (
-                    <form onSubmit={handleCancellation} className="depositForm">
-                        <div className="formGroup">
+                    <form onSubmit={handleCancellation} className="depositCancel-form">
+                        <div className="depositCancel-formGroup">
                             <label htmlFor="accountNumber">해지할 계좌</label>
                             <select
                                 id="accountNumber"
@@ -131,19 +125,19 @@ const DepositCancellation = () => {
                                 <option value="">계좌 선택</option>
                                 {accounts.map(account => (
                                     <option key={account.accountNumber} value={account.accountNumber}>
-                                        {formatAccountNumber(account.accountNumber)} - {account.productName} 
+                                        {formatAccountNumber(account.accountNumber)} - {account.productName}
                                     </option>
                                 ))}
                             </select>
                         </div>
                         {calculatedInfo && (
-                            <div className="formHint" style={{ marginTop: '10px' }}>
-                                <p>해지금액: {calculatedInfo.principal.toLocaleString()}원</p>                                                               
+                            <div className="depositCancel-hint">
+                                <p>해지금액: {calculatedInfo.principal.toLocaleString()}원</p>
                             </div>
                         )}
                         {selectedAccount && (
                             <>
-                                <div className="formGroup">
+                                <div className="depositCancel-formGroup">
                                     <label htmlFor="password">계좌 비밀번호</label>
                                     <input
                                         type="password"
@@ -154,7 +148,7 @@ const DepositCancellation = () => {
                                         required
                                     />
                                 </div>
-                                <button type="submit" className="depositBtn">
+                                <button type="submit" className="depositCancel-submitBtn">
                                     계좌 해지하기
                                 </button>
                             </>
