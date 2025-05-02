@@ -1,51 +1,97 @@
-.depositContainer {
-    padding: 2rem;
-    background-color: #fff;
-    border-radius: 16px;
-    box-shadow: 0 0 12px rgba(0, 0, 0, 0.06);
-}
-
-.depositTitle {
-    font-size: 22px;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    color: #111;
-    text-align: center;
-}
-
-.depositForm {
-    max-width: 500px;
+.depositChange-container {
+    max-width: 700px;
+    min-height: 610px;
     margin: 0 auto;
-    background: #fafafa;
-    border-radius: 12px;
-    padding: 2rem;
-    box-shadow: 0 0 8px rgba(0,0,0,0.04);
-}
-
-.depositForm label {
+    padding: 40px 20px;
+    animation: fadeIn 0.4s ease;
+  }
+  
+  .depositChange-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 28px;
+    color: #1a1a1a;
+    animation: fadeInUp 0.5s ease;
+  }
+  
+  .depositChange-board {
+    background: #fff;
+    padding: 36px;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    border: 1.5px solid #e2e4e7;
+    animation: fadeInUp 0.5s ease;
+  }
+  
+  .depositChange-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  
+  .depositChange-group label {
     font-weight: 500;
-    margin-bottom: 8px;
-    display: block;
-}
-
-.depositForm input,
-.depositForm select {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 16px;
-    border: 1px solid #ddd;
+    color: #333;
+  }
+  
+  .depositChange-group input,
+  .depositChange-group select {
+    padding: 10px 14px;
     border-radius: 8px;
+    border: 1px solid #ccc;
     font-size: 15px;
-}
-
-.depositBtn {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    background-color: #000;
+    transition: all 0.3s ease;
+  }
+  
+  .depositChange-group input:focus,
+  .depositChange-group select:focus {
+    border-color: #537697;
+    box-shadow: 0 0 0 2px rgba(58, 58, 60, 0.12);
+    outline: none;
+  }
+  
+  .depositChange-buttonBox {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+  }
+  
+  .btnBlack {
+    width: 150px;
+    max-width: 240px;
+    padding: 12px 24px;
+    font-size: 15px;
+    background-color: #1a1a1a;
     color: #fff;
-    transition: all 0.2s ease;
-}
-
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .btnBlack:hover {
+    background-color: #333;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
