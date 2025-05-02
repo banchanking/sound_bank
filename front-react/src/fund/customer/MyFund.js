@@ -8,7 +8,7 @@ const MyFund = ({ type, onClose, transactions, closedAccounts, onSellRequest }) 
     CLOSED: "해지된 펀드 계좌",
   };
 
-  // 📌 type에 따라 매수/환매/해지 분기 처리
+  // type에 따라 매수/환매/해지 분기 처리
   const filtered = type === "BUY"
   ? transactions.filter(
       (tx) =>
@@ -17,7 +17,7 @@ const MyFund = ({ type, onClose, transactions, closedAccounts, onSellRequest }) 
     )
   : type === "SELL"
   ? transactions.filter(tx => tx.fundTransactionType === "SELL" && tx.status === "APPROVED")
-  : closedAccounts;
+  : closedAccounts.filter(tx => tx.status === "CLOSED" || tx.status === "REJECTED");
 
   return (
     <div className={styles.fundmodalOverlay}>
@@ -46,7 +46,7 @@ const MyFund = ({ type, onClose, transactions, closedAccounts, onSellRequest }) 
                 <td>{tx.fundUnitsPurchased || "-"}</td>
                 <td>{tx.fundPricePerUnit || "-"}</td>
                 <td>
-                  {/* 📌 거래일 처리: 매수/환매는 fundTransactionDate, 해지는 closeDate */}
+                  {/* 거래일 처리: 매수/환매는 fundTransactionDate, 해지는 closeDate */}
                   {type === "CLOSED"
                     ? (Array.isArray(tx.closeDate) && tx.closeDate.length >= 3
                         ? `${tx.closeDate[0]}/${String(tx.closeDate[1]).padStart(2, '0')}/${String(tx.closeDate[2]).padStart(2, '0')}`
@@ -58,7 +58,7 @@ const MyFund = ({ type, onClose, transactions, closedAccounts, onSellRequest }) 
 
                 </td>
 
-                {/* 📌 BUY 타입일 때 (매수 내역 표시 + 환매버튼) */}
+                {/* BUY 타입일 때 (매수 내역 표시 + 환매버튼) */}
                 {type === "BUY" && (
                   <td>
                     {tx.status === "APPROVED" ? (
@@ -69,7 +69,7 @@ const MyFund = ({ type, onClose, transactions, closedAccounts, onSellRequest }) 
                   </td>
                 )}
 
-                {/* 📌 CLOSED 타입일 때 (해지 신청 흐름) */}
+                {/* CLOSED 타입일 때 (해지 신청 흐름) */}
                 {type === "CLOSED" && (
                   <td>
                     {tx.status === "REJECTED" ? (
@@ -94,11 +94,6 @@ const MyFund = ({ type, onClose, transactions, closedAccounts, onSellRequest }) 
                   </td>
                 )}
               </tr>
-        
-      
-      
-      
-      
       ))}
           </tbody>
         </table>

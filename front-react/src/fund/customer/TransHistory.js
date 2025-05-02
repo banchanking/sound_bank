@@ -88,6 +88,8 @@ const TransHistory = () => {
         fundTransactionDate: null,
         status: "PENDING",
       });
+      await fetchClosedAccounts();  // 해지완료 계좌 목록에서 삭제
+
       alert("환매 신청이 완료되었습니다.");
       setPassword("");
       setSelectedTx(null);
@@ -138,8 +140,11 @@ const TransHistory = () => {
           return (
             <div className={styles.fundmodalOverlay}>
               <div className={styles.fundmodalContent}>
-                <button className={styles.fundmodalCloseBtn} onClick={closeModal}>X</button>
-                <h3>{selectedTx.fund_name} 정산 요약</h3>
+                <button className={styles.fundmodalCloseBtn} onClick={() => {
+                  setSelectedTx(null);
+                  closeModal();
+                }}>닫기</button>
+                <h3>{selectedTx.fund_name}  정산 요약</h3>
                 <Chart
                   chartType="ColumnChart"
                   data={[

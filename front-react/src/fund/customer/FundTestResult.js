@@ -42,8 +42,8 @@ const FundTestResult = () => {
 
         return (
           <div className={styles.fundtestresultcontainer}>
-            <h1 className={styles.fundtesttitle}>투자성향 분석 결과</h1>
-            <table className={styles.fundTable}>
+            <h1 className={styles.fundTitle}>투자성향 분석 결과</h1>
+            <table className={styles.fundTableResult}>
               <tbody>
                 <tr>
                   <td>
