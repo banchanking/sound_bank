@@ -29,12 +29,13 @@ function IdAuth({ onSuccess }) {
 
         const result = await response.json();
         console.log("서버 응답:", result);
+        
 
         if (response.ok && result && result.status === "success") {
             setMessage("인증 성공: " + (result.message || "인증 완료되었습니다."));
             setExtractedData(result.extracted_data); // 추출된 데이터 저장
             // Join 컴포넌트에 인증 성공 알림
-          if (typeof onSuccess === 'function') {
+          if (typeof onSuccess === 'function') {            
             onSuccess();
           }
         } else {
@@ -103,7 +104,7 @@ function IdAuth({ onSuccess }) {
             </div>
           )}
 
-          <button className={styles["btn-blue"]} onClick={handleUpload}>
+          <button type="button" className={styles["btn-blue"]} onClick={handleUpload}>
             확인
           </button>
         </div>
