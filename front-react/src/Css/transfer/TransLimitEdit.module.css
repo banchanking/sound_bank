@@ -36,6 +36,7 @@
   background-color: #efefef;
   color: #333;
   font-weight: 600;
+  height: 50px;
 }
 
 .limitEdit-limitTable tr:hover {
