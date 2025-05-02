@@ -37,10 +37,9 @@ const Join = () => {
   const [isIdVerified, setIsIdVerified] = useState(false);
   const [messageIdAuth, setMessageIdAuth] = useState('');
   const [isIdModalOpen, setIsIdModalOpen] = useState(false);
+  const [isIdLoading, setIsIdLoading] = useState(false); // 인증 인식 중 표시
 
-
-  // 정규식: 최소 8자 이상, 영문자, 숫자, 특수문자 포함
-  const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+ 
 
     // 신분증 인증 메시지 수신
     useEffect(() => {
@@ -48,6 +47,7 @@ const Join = () => {
         if (e.data && e.data.status === 'success') {
           setIsIdVerified(true);
           setMessageIdAuth('신분증 인증 완료');
+          setIsIdLoading(false);
           setIsIdModalOpen(false);  // 모달도 자동으로 닫기
         }
       };
@@ -55,6 +55,8 @@ const Join = () => {
       return () => window.removeEventListener('message', handler);
     }, []);
 
+  // 정규식: 최소 8자 이상, 영문자, 숫자, 특수문자 포함
+  const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
   useEffect(() => {
     if (form.customer_password && form.re_password) {
       if (form.customer_password !== form.re_password) {
@@ -212,12 +214,36 @@ const Join = () => {
     setIsSMSModalOpen(false);
     alert("휴대폰 인증이 완료되었습니다.");
   };
+  
+  // 모달 오픈 전 로딩 시작 함수
+  const openIdModal = () => {
+    setIsIdLoading(true);  // 로딩 표시
+    setIsIdModalOpen(true);
+  };
 
-  const handleIdSuccess = () => {
+  // 신분증 인증 성공 시 OCR 결과를 받는다.
+  const handleIdSuccess = (ocrData) => {
     setIsIdVerified(true);
     setMessageIdAuth('신분증 인증 완료');
-    alert('신분증 인증이 완료되었습니다.');
+    setIsIdLoading(false);
     setIsIdModalOpen(false);
+    // // 주민등록번호 분리
+    // const[front, back] = (ocrData.ocr_fields_rrn || '').split('-');
+
+    // // 주소 전체 세팅
+    // const ocr_customer_name = ocrData.ocr_fields_name || '';
+    // const fullAddress = ocrData.ocr_fields_address || '';
+    // const ocrPostcode = ocrData.ocr_fields_postcode || '';    
+    
+    // setForm(prev => ({
+    //   ...prev,
+    //   customer_name: ocr_customer_name || prev.customer_name,
+    //   customer_resident1: front || prev.customer_resident1,
+    //   customer_resident2: back  || prev.customer_resident2,
+    //   sample6_postcode: ocrPostcode || prev.sample6_postcode,
+    //   sample6_address: fullAddress || prev.sample6_address
+    // }));
+    alert('신분증 인증이 완료되었습니다.');
   };
 
   const execDaumPostcode = () => {
@@ -300,6 +326,34 @@ const Join = () => {
               <input type="password" name="re_password" value={form.re_password} onChange={handleChange} />
               <span style={{ color: form.customer_password === form.re_password ? 'blue' : 'red' }}>{pwdMsg}</span>
             </div>
+
+            {/* 신분증 인증 버튼 및 모달 */}
+            <div>
+              <button
+                type="button"
+                className={styles.joinSendBtn}
+                onClick={openIdModal}
+                disabled={isIdLoading}
+              >
+                신분증 인증 *
+              </button>
+              {messageIdAuth && <span style={{ color: 'green', marginLeft: 10 }}>{messageIdAuth}</span>}
+              {isIdModalOpen && (
+                <div className={styles.idAuthModal}>
+                  {/* 인증 인식 중 UI */}
+                  {isIdLoading && (
+                    <div className={styles.loading}>
+                      <p>신분증 인증 인식중입니다...</p>
+                    </div>
+                  )}
+                  <button onClick={() => { setIsIdModalOpen(false); setIsIdLoading(false); }}>
+                    닫기
+                  </button>
+                  <IdAuth onSuccess={handleIdSuccess} />
+                </div>
+              )}
+            </div> 
+
             <div>
               <label>이름 *</label>
               <input type="text" name="customer_name" value={form.customer_name} onChange={handleChange} />
@@ -307,9 +361,9 @@ const Join = () => {
             <div>
               <label>주민번호 *</label>
               <div className={styles.rowGroup1}>
-                <input type="text" name="customer_resident1" className={styles.shortInput} value={form.customer_resident1} onChange={handleChange} />
+                <input type="text" name="customer_resident1" className={styles.shortInput} value={form.customer_resident1} onChange={handleChange} /> 
                 -
-                <input type="text" name="customer_resident2" className={styles.shortInput} value={form.customer_resident2} onChange={handleChange} />
+                <input type="text" name="customer_resident2" className={styles.shortInput} value={form.customer_resident2} onChange={handleChange} /> 
               </div>
             </div>
             <div>
@@ -341,27 +395,6 @@ const Join = () => {
                 휴대폰 인증 완료
               </span>
             )} <br/>
-            <div>
-              <button
-                type="button"
-                className={styles.joinSendBtn}
-                onClick={() => setIsIdModalOpen(true)}
-              >
-                신분증 인증 *
-              </button>       
-              {messageIdAuth && <span style={{ color: 'green', marginLeft: 10 }}>{messageIdAuth}</span>}
-              {/* 신분증 인증 모달 */}
-              {isIdModalOpen && (
-                <div>                
-                  <button onClick={() => setIsIdModalOpen(false)}>닫기</button>
-                  <IdAuth onSuccess={handleIdSuccess} />                
-                </div>
-              )}
-            </div>                        
-
-            
-            
-            
           </div>
 
           <SignupSMSModal
