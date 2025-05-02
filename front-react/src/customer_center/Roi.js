@@ -60,9 +60,9 @@ function Roi() {
       });
       const result = await response.json();
       if (response.ok && result?.status === "success") {
-        setMessage("인증 성공: " + (result.message || "성공"));
+        setMessage("인증 성공: " + (result.message || "인증 완료되었습니다."));
       } else {
-        setMessage("인증 실패: " + (result.message || "서버 응답 오류"));
+        setMessage("인증 실패: " + (result.message || "등록되지 않은 주민번호 입니다."));
       }
     } catch (error) {
       setMessage("통신 실패: " + error.message);

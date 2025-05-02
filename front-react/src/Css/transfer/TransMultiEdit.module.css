@@ -1,5 +1,7 @@
 /* 전체 wrapper */
 .multiEdit-wrapper {
+  margin-top: 50px !important;
+  margin-bottom: 50px !important;
   min-height: 580px;
   flex-grow: 1;
   padding: 36px;

@@ -5,7 +5,7 @@ import styles from '../../Css/transfer/AdminLimit.module.css';
 function AdminLimit() {
   const [requests, setRequests] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 7;
 
   const handleAction = (item, action) => {
     const { transfer_id, requested_limit } = item;

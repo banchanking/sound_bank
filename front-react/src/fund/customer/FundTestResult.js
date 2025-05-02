@@ -42,11 +42,11 @@ const FundTestResult = () => {
 
         return (
           <div className={styles.fundtestresultcontainer}>
-            <h1 className={styles.fundtesttitle}>투자성향 분석 결과</h1>
-            <table className={styles.fundTable}>
+            <h1 className={styles.fundTitle}>투자성향 분석 결과</h1>
+            <table className={styles.fundTableResult}>
               <tbody>
                 <tr>
-                  <td>
+                  <td className="fundTableTitleTestTD123">
                     고객님의 투자성향은 <strong>{investmentType}</strong>입니다.
                   </td>
                 </tr>
