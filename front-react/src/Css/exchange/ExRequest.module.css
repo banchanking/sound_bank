@@ -72,22 +72,29 @@
   }
   
   .submit:hover {
-    background-color: #555;
+    background-color: #757070;
   }
   
   /* 거래 결과 박스 */
   .resultBox {
-    margin-top: 32px;
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 16px;
-    border: 1.5px solid #e2e4e7;
+    margin-top: 12px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: 1.5px solid #ccc;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
   }
   
   .resultBox h3 {
     font-size: 18px;
     font-weight: 700;
     margin-bottom: 10px;
+  }
+
+  .resultBox button{
+    background-color: #424242;
   }
   
   .resultBox p {
@@ -108,13 +115,21 @@
   }
   
   .goWallet:hover {
-    background-color: #e6e7ea;
+    background-color:#e6e7ea;
   }
   
   .goWallet a {
-    color: #222;
-    text-decoration: none;
-    display: block;
+    /* width: 100%;
+    padding: 14px 0;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    background-color: #424242;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 3px 10px rgba(58, 58, 60, 0.12); */
   }
   
   /* 애니메이션 */
