@@ -32,4 +32,8 @@ public class DepositAutoTransferDTO {
     private LocalDateTime createdAt;
     
     private Long id;
+    
+    private String accountPassword;
+    
+
 }

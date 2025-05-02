@@ -55,6 +55,10 @@ public interface DepositAutoTransferDAO {
             @Param("amount") BigDecimal amount,
             @Param("description") String description);
 
+
+    // 비밀번호 체크 
+    String getAccountPassword(@Param("accountNumber") String accountNumber);
+
     
 
 

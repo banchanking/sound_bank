@@ -72,12 +72,13 @@ import Charge from "./customer_center/Charge";
 import MyInterest from "./sound_loan/customer/MyInterest";
 import MyLateInterest from "./sound_loan/customer/MyLateInterest";
 import MyLoanStatus from "./sound_loan/customer/MyLoanStatus";
+import MainLoanStatus from "./sound_loan/customer/MainLoanStatus";
 
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        { /*<SecurityBlocker/> F12 방지 블록방지 */}{" "}
+        {/*<SecurityBlocker/> F12 방지 블록방지 */}{" "}
         {/* Header.js의 Link연동을 위해서 BrowserRouter추가해야됨 */}
         <Header />
         <Routes>
@@ -140,6 +141,7 @@ function App() {
           <Route path="/MyInterest" element={<MyInterest />} />
           <Route path="/MyLateInterest" element={<MyLateInterest />} />
           <Route path="/MyLoanStatus" element={<MyLoanStatus />} />
+          <Route path="/MainLoanStatus" element={<MainLoanStatus />} />
           <Route
             path="/loanCreditScore/:loan_id"
             element={<LoanCreditScore />}

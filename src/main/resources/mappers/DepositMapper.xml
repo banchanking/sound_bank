@@ -189,10 +189,13 @@
 
     <!-- 예금 계좌 해지 -->
     <update id="closeDepositAccount">
-        UPDATE deposit_account_tbl
-        SET account_status = 'CLOSED', updated_at = NOW()
-        WHERE account_number = #{accountNumber} AND account_password = #{accountPassword} AND account_status = 'ACTIVE'
-    </update>
+    UPDATE deposit_account_tbl
+    SET account_status = 'CLOSED', updated_at = NOW()
+    WHERE account_number = #{accountNumber}
+      AND account_status = 'ACTIVE'
+	</update>
+
+
 
     <!-- ========== 적금 계좌 관련 ========== -->
 
@@ -252,10 +255,13 @@
 
     <!-- 적금 계좌 해지 -->
     <update id="closeSavingsAccount">
-        UPDATE savings_account_tbl
-        SET account_status = 'CLOSED', updated_at = NOW()
-        WHERE account_number = #{accountNumber} AND account_password = #{accountPassword} AND account_status = 'ACTIVE'
-    </update>
+    UPDATE savings_account_tbl
+    SET account_status = 'CLOSED', updated_at = NOW()
+    WHERE account_number = #{accountNumber}
+      AND account_status = 'ACTIVE'
+	</update>
+    
+
     
 		    <!--  계좌번호 중복 확인 -->
 		<select id="checkAccountNumber" resultType="int">
@@ -354,16 +360,17 @@
 		
 		<!-- 예금 계좌 비밀번호 변경 -->
 		<update id="changeDepositAccountPassword">
-		    UPDATE deposit_account_tbl		    
+		    UPDATE deposit_account_tbl
 		    SET account_password = #{newPassword}, updated_at = NOW()
-		    WHERE dat_id = #{accountId} AND account_password = #{oldPassword}
+		    WHERE dat_id = #{accountId}
 		</update>
 		
+
 		<!-- 적금 계좌 비밀번호 변경 -->
 		<update id="changeSavingsAccountPassword">
-		    UPDATE savings_account_tbl		    
+		    UPDATE savings_account_tbl
 		    SET account_password = #{newPassword}, updated_at = NOW()
-		    WHERE sat_id = #{accountId} AND account_password = #{oldPassword}
+		    WHERE dat_id = #{accountId}
 		</update>
 		
 		<!-- 예금 계좌 별명 변경 -->
@@ -404,6 +411,25 @@
 		</select>
 		
 		
+		<!-- 기본 계좌 조회 -->
+		<select id="findBasicAccountNumberByCustomer" resultType="String">
+		    SELECT account_number
+		    FROM account_tbl
+		    WHERE customer_id = (
+		        SELECT customer_id FROM deposit_account_tbl WHERE account_number = #{closedAccountNumber}
+		    ) AND account_status = 'ACTIVE'
+		</select>
+		
+		
+		<insert id="insertBasicTransaction" parameterType="com.boot.sound.deposit.dto.DepositDTO">
+    INSERT INTO transaction_tbl (
+        account_number, transaction_type, amount, currency,
+        comment, customer_name, account_type, transaction_date
+    ) VALUES (
+        #{accountNumber}, #{transactionType}, #{transactionAmount}, 'KRW',
+        #{transactionDescription}, #{customerId}, #{accountType}, NOW()
+    )
+</insert>
 		
 		
 		    
