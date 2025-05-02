@@ -36,6 +36,7 @@
   background-color: #efefef;
   color: #333;
   font-weight: 600;
+  height: 50px;
 }
 
 .limitEdit-limitTable tr:hover {
@@ -186,6 +187,16 @@
 }
 
 /* 페이징 공통 스타일 */
+/* 페이징 */
+
+.pageButtonGroup {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap; /* 너무 많을 경우 자동 줄바꿈 허용 */
+  margin-top: 20px;
+}
+
 .pageButton {
   width: 36px;
   height: 32px;
@@ -199,7 +210,9 @@
   align-items: center;
   justify-content: center;
   transition: background-color 0.3s ease;
+  margin: 4px;
 }
+
 
 .pageButton:hover {
   background: #555;
@@ -211,12 +224,20 @@
   font-weight: bold;
   border: 1px solid #282828;
   border-radius: 4px;
-  width: 36px;
-  height: 32px;
+  width: 40px;
+  height: 36px;
   font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.pageButtonArea {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 24px;
+  flex-wrap: wrap; /* 넘치면 다음 줄로 */
 }
 
 .pageArrow {
@@ -232,6 +253,7 @@
   align-items: center;
   justify-content: center;
   transition: background-color 0.3s ease;
+  margin: 0 2px;
 }
 
 .pageArrow:hover {
