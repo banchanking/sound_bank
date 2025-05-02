@@ -94,17 +94,17 @@ const LoanList = ({ onEdit }) => {
               <td>{loan.loan_type}</td>
               <td>
                 {loan.loan_min_amount >= 10000
-                  ? `${(loan.loan_min_amount / 10000).toLocaleString()} 억`
-                  : `${loan.loan_min_amount.toLocaleString()} 만`}
+                  ? `${(loan.loan_min_amount / 10000).toLocaleString()} 억원`
+                  : `${loan.loan_min_amount.toLocaleString()} 만원`}
               </td>
               <td>
                 {loan.loan_max_amount >= 10000
-                  ? `${(loan.loan_max_amount / 10000).toLocaleString()} 억`
-                  : `${loan.loan_max_amount.toLocaleString()} 만`}
+                  ? `${(loan.loan_max_amount / 10000).toLocaleString()} 억원`
+                  : `${loan.loan_max_amount.toLocaleString()} 만원`}
               </td>
               <td>{loan.interest_rate}%</td>
               <td>{loan.prepayment_penalty}%</td>
-              <td>{loan.loan_term}</td>
+              <td>{loan.loan_term}년</td>
               <td className={styles.loanInfo}>{loan.loan_info}</td>
               <td>
                 <button

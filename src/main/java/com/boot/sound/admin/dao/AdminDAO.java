@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 import com.boot.sound.admin.dto.AdminDTO;
 import com.boot.sound.admin.dto.AdminRequestDTO;
+import com.boot.sound.customer.CustomerDTO;
 
 @Mapper
 public interface AdminDAO {
@@ -27,4 +28,6 @@ public interface AdminDAO {
 	public Boolean delete(AdminDTO dto);
 	
 	public Boolean logout(String customerId);
+	
+	public List<CustomerDTO> adminPageCustomerList();
 }
