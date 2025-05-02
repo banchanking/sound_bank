@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import confusion_matrix
+from sklearn.utils.class_weight import compute_class_weight
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout
 from tensorflow.keras.models import load_model
@@ -36,10 +37,10 @@ def auto_label_risk_type(csv_path):
         elif "혼합" in row["fund_type"]: score += 2
         else: score += 1
 
-        if score <= 5: return "안정형"
-        elif score <= 7: return "보수형"
-        elif score <= 9: return "위험중립형"
-        elif score <= 11: return "적극형"
+        if score <= 9: return "안정형"
+        elif score <= 11: return "보수형"
+        elif score <= 13: return "위험중립형"
+        elif score <= 15: return "적극형"
         else: return "공격형"
 
     df["fund_risk_type"] = df.apply(classify_risk, axis=1)
@@ -76,6 +77,10 @@ def train_fund_model(input_file, model_file):
     # 학습/검증 분리
     X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42, test_size=0.2)
     
+    # 클래스 가중치 계산 추가
+    class_weights = compute_class_weight(class_weight="balanced", classes=np.unique(y_train), y=y_train)
+    class_weight_dict = dict(enumerate(class_weights))
+
     # 모델 구조 정의
     model = Sequential()
     model.add(Dense(64, activation="relu", input_dim=7))
@@ -85,7 +90,13 @@ def train_fund_model(input_file, model_file):
     
     # 모델 컴파일 및 학습
     model.compile(optimizer="adam", loss="sparse_categorical_crossentropy", metrics=["accuracy"])
-    history = model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=30, batch_size=16)
+    history = model.fit(
+        X_train, 
+        y_train, 
+        validation_data=(X_test, y_test), 
+        epochs=30, batch_size=16, 
+        class_weight=class_weight_dict  # 클래스 가중치 적용
+    )
 
     # 정확도 시각화
     plt.plot(history.history['accuracy'], label='Train Accuracy')
