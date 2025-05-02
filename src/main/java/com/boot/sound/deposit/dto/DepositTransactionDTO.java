@@ -18,6 +18,19 @@ public class DepositTransactionDTO {
     private String referenceNumber;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String productType;    
+    private String accountType;
+    
+    private String accountStatus;
+    private int productId;
+    private String customerName;
     
     private String accountPassword;
+    private BigDecimal totalAmount;     // 이자총액
+    private BigDecimal transactionAmount;
+    private String transactionDescription;
+
+    private String customerId;
+    
+    
 } 

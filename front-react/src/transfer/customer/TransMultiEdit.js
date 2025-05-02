@@ -10,7 +10,6 @@ function TransMultiEdit() {
   const customer_id = getCustomerID();
   const token = localStorage.getItem('auth_token');
 
-  // 페이징 관련 상태
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
@@ -39,7 +38,6 @@ function TransMultiEdit() {
       .then(() => {
         alert('삭제 완료');
         setList(list.filter(item => item.transfer_id !== id));
-        window.location.reload();
       })
       .catch(err => {
         console.error('삭제 실패:', err);
@@ -67,19 +65,22 @@ function TransMultiEdit() {
       });
   };
 
-  // 페이징 계산
+  const totalPages = Math.ceil(list.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentItems = list.slice(startIndex, startIndex + itemsPerPage);
-  const totalPages = Math.ceil(list.length / itemsPerPage);
+
+  const pageGroup = Math.floor((currentPage - 1) / 10);
+  const startPage = pageGroup * 10 + 1;
+  const endPage = Math.min(startPage + 9, totalPages);
 
   return (
     <div style={{ display: 'flex', minHeight: '560px' }}>
       <Sidebar />
 
-      <div className={styles["multiEdit-wrapper"]}>
-        <h2 className={styles["multiEdit-title"]}>다건이체 관리</h2>
+      <div className={styles['multiEdit-wrapper']}>
+        <h2 className={styles['multiEdit-title']}>다건이체 관리</h2>
 
-        <table className={styles["multiEdit-table"]}>
+        <table className={styles['multiEdit-table']}>
           <thead>
             <tr>
               <th>요청일</th>
@@ -104,17 +105,13 @@ function TransMultiEdit() {
                 <td>{item.amount?.toLocaleString('ko-KR')}원</td>
                 <td>{item.memo || '-'}</td>
                 <td>{item.status || '대기'}</td>
-                <td>
-                  {item.status === '승인' && item.transfer_date
-                    ? new Date(item.transfer_date).toLocaleString()
-                    : '-'}
-                </td>
+                <td>{item.status === '승인' && item.transfer_date ? new Date(item.transfer_date).toLocaleString() : '-'}</td>
                 <td>{item.status === '거절' ? (item.reject_reason || '-') : '-'}</td>
                 <td>
                   {item.status === '대기' ? (
-                    <div className={styles["multiEdit-buttonGroup"]}>
-                      <button onClick={() => setEditItem(item)} className={styles["multiEdit-btnBlue"]}>수정</button>
-                      <button onClick={() => deleteRow(item.transfer_id)} className={styles["multiEdit-btnRed"]}>삭제</button>
+                    <div className={styles['multiEdit-buttonGroup']}>
+                      <button onClick={() => setEditItem(item)} className={styles['multiEdit-btnBlue']}>수정</button>
+                      <button onClick={() => deleteRow(item.transfer_id)} className={styles['multiEdit-btnRed']}>삭제</button>
                     </div>
                   ) : (
                     item.approval_date ? new Date(item.approval_date).toLocaleString() : '-'
@@ -124,42 +121,39 @@ function TransMultiEdit() {
             ))}
           </tbody>
         </table>
-        <br/>
-        {/* 페이지네이션 */}
-        <div className={styles["multiEdit-pagination"]}>
-          {Array.from({ length: totalPages }, (_, i) => (
+
+        <div className={styles.pageButtonArea}>
+          {startPage > 1 && (
+            <button className={styles.pageArrow} onClick={() => setCurrentPage(startPage - 1)}>&lt;</button>
+          )}
+
+          {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map(num => (
             <button
-              key={i}
-              onClick={() => setCurrentPage(i + 1)}
-              className={currentPage === i + 1
-                ? styles["activePage"]
-                : styles["pageButton"]}
+              key={num}
+              className={`${styles.pageButton} ${currentPage === num ? styles.activePage : ''}`}
+              onClick={() => setCurrentPage(num)}
             >
-              {i + 1}
+              {num}
             </button>
           ))}
-          <button
-            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-            className={styles["pageArrow"]}
-          >
-            ▶
-          </button>          
+
+          {endPage < totalPages && (
+            <button className={styles.pageArrow} onClick={() => setCurrentPage(endPage + 1)}>&gt;</button>
+          )}
         </div>
 
-        {/* 수정 모달 */}
         {editItem && (
-          <div className={styles["multiEdit-modalOverlay"]}>
-            <div className={styles["multiEdit-modalBox"]}>
+          <div className={styles['multiEdit-modalOverlay']}>
+            <div className={styles['multiEdit-modalBox']}>
               <h3>다건이체 수정</h3>
               <label>이체 금액</label>
               <input type="number" name="amount" value={editItem.amount} onChange={change} />
               <label>메모</label>
               <input type="text" name="memo" value={editItem.memo || ''} onChange={change} />
 
-              <div className={styles["multiEdit-modalButtons"]}>
-                <button onClick={update} className={styles["multiEdit-modalBtn"]}>수정</button>
-                <button onClick={() => setEditItem(null)} className={styles["multiEdit-modalBtn"]}>취소</button>
+              <div className={styles['multiEdit-modalButtons']}>
+                <button onClick={update} className={styles['multiEdit-modalBtn']}>수정</button>
+                <button onClick={() => setEditItem(null)} className={styles['multiEdit-modalBtn']}>취소</button>
               </div>
             </div>
           </div>

@@ -30,4 +30,10 @@ public class DepositAutoTransferDTO {
 
     // 자동이체 등록 시각
     private LocalDateTime createdAt;
+    
+    private Long id;
+    
+    private String accountPassword;
+    
+
 }
