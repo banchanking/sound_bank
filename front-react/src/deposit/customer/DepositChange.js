@@ -1,192 +1,155 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Select, Button, Card, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { getCustomerID } from "../../jwt/AxiosToken";
-import RefreshToken from "../../jwt/RefreshToken";
+import RefreshToken from '../../jwt/RefreshToken';
+import { getCustomerID } from '../../jwt/AxiosToken';
 import '../../Css/depositcss/DepositChange.css';
 
-const { Option } = Select;
-
 const DepositChange = () => {
-    const navigate = useNavigate();
-    const [form] = Form.useForm();
-    const [accounts, setAccounts] = useState([]);
-    const [selectedAccount, setSelectedAccount] = useState(null);
-    const customerId = getCustomerID();
-    // 계좌 번호를 3자리-6자리-4자리 형식으로 포맷팅하는 함수
-    const formatAccountNumber = (accountNumber) => {
-        if (!accountNumber || accountNumber.length !== 13) return accountNumber; // 유효성 검사
-        return `${accountNumber.slice(0, 3)}-${accountNumber.slice(3, 9)}-${accountNumber.slice(9)}`;
-    };
+  const navigate = useNavigate();
+  const [accounts, setAccounts] = useState([]);
+  const [selectedAccount, setSelectedAccount] = useState(null);
+  const [formData, setFormData] = useState({
+    oldPassword: '',
+    newPassword: '',
+    nickname: '',
+  });
+  const customerId = getCustomerID();
 
-    useEffect(() => {
-        if (!customerId) {
-            const goLogin = window.confirm("로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?");
-            if (goLogin) {
-                navigate("/login");
-              } else {
-                navigate("/");
-              }
-              return;      
-        }
-        fetchAccounts();
-    }, [navigate, customerId]);
+  const formatAccountNumber = (accountNumber) => {
+    if (!accountNumber || accountNumber.length !== 13) return accountNumber;
+    return `${accountNumber.slice(0, 3)}-${accountNumber.slice(3, 9)}-${accountNumber.slice(9)}`;
+  };
 
-    
-
-    const fetchAccounts = async () => {
-        try {
-            const response = await RefreshToken.get(`/deposit/accounts/customer/${customerId}`);
-            setAccounts(response.data);
-        } catch (error) {
-            console.error('계좌 조회 에러:', error);
-            message.error('계좌 정보를 불러오는데 실패했습니다.');
-        }
-    };
-
-    const handleAccountChange = (accountId) => {
-        const account = accounts.find(a => a.id === accountId);
-        setSelectedAccount(account);
-        form.setFieldsValue({
-            password: '',
-            oldPassword: '',
-            nickname: account.nickname || '',
-        });
-    };
-
-    const handlePasswordChange = async (values) => {
-        if (!selectedAccount) {
-            message.error('계좌를 먼저 선택해주세요.');
-            return;
-        }
-    // 보내는 데이터 확인용 로그
-    console.log('변경할 비밀번호:', values);
-
-    try {
-        await RefreshToken.put(`/deposit/accounts/deposit/${selectedAccount.id}/password`, {
-            accountId: selectedAccount.id, // 이거 같이 보내야 한다!
-            oldPassword: values.oldPassword,
-            newPassword: values.newPassword
-        });
-        
-    } catch (error) {
-        console.error('비밀번호 변경 에러:', error);
-        message.error('비밀번호 변경에 실패했습니다.');
+  useEffect(() => {
+    if (!customerId) {
+      const goLogin = window.confirm("로그인이 필요합니다. 로그인하시겠습니까?");
+      if (goLogin) navigate("/login");
+      else navigate("/");
+      return;
     }
-    alert('비밀번호가 변경되었습니다.');
-    navigate('/depositAccountInquiry');
-    };
+    fetchAccounts();
+  }, []);
 
-    const handleNicknameChange = async (values) => {
-        if (!selectedAccount) {
-            message.error('계좌를 먼저 선택해주세요.');
-            return;
-        }
-        try {
-            await RefreshToken.put(`/deposit/accounts/deposit/${selectedAccount.id}/nickname`, {
-                accountId: selectedAccount.id,  
-                nickname: values.nickname
-            });
-            alert('별명이 변경되었습니다.');
-            navigate('/depositAccountInquiry');
-        } catch (error) {
-            console.error('별명 변경 에러:', error);
-            message.error('별명 변경에 실패했습니다.');
-        }
-    };
+  const fetchAccounts = async () => {
+    try {
+      const res = await RefreshToken.get(`/deposit/accounts/customer/${customerId}`);
+      setAccounts(res.data);
+    } catch (error) {
+      alert('계좌 목록 조회 실패');
+    }
+  };
 
-    return (
-        <div className="depositContainer">
-            <h2 className="depositTitle">예금 계좌 정보 변경</h2>
-            <Card>
-                {accounts.length === 0 ? (
-                    <div>현재 조회 가능한 계좌가 없습니다.</div>
-                ) : (
-                    <Form
-                        form={form}
-                        layout="vertical"
-                    >
-                        <Form.Item
-                            name="accountId"
-                            label="계좌 선택"
-                            rules={[{ required: true, message: '계좌를 선택해주세요' }]}
-                            >
-                            <Select
-                                placeholder="계좌를 선택해주세요"
-                                onChange={handleAccountChange}
-                            >
-                                {accounts
-                                .filter(account => account.accountStatus === 'ACTIVE')
-                                .map(account => (
-                                    <Option key={account.id} value={account.id}>
-                                        {formatAccountNumber(account.accountNumber)} - {account.productName} - {(account.balance ?? 0).toLocaleString()}원
-                                        </Option>
-                                ))}
-                            </Select>
-                            </Form.Item>
+  const handleSelectChange = (e) => {
+    const accountId = parseInt(e.target.value);
+    const selected = accounts.find(a => a.id === accountId);
+    setSelectedAccount(selected);
+    setFormData({
+      oldPassword: '',
+      newPassword: '',
+      nickname: selected?.nickname || '',
+    });
+  };
 
-    
-                        {selectedAccount && (
-                            <>
-                                {/* 기존 비밀번호와 새 비밀번호 변경 */}
-                                <Form.Item
-                                    name="oldPassword"
-                                    label="기존 비밀번호 (4자리)"
-                                    rules={[
-                                        { required: true, message: '기존 비밀번호를 입력해주세요' },
-                                        { len: 4, message: '비밀번호는 4자리여야 합니다' }
-                                    ]}
-                                >
-                                    <Input.Password maxLength={4} placeholder="기존 비밀번호 입력" />
-                                </Form.Item>
-    
-                                <Form.Item
-                                    name="newPassword"
-                                    label="새 비밀번호 (4자리)"
-                                    rules={[
-                                        { required: true, message: '새 비밀번호를 입력해주세요' },
-                                        { len: 4, message: '비밀번호는 4자리여야 합니다' }
-                                    ]}
-                                >
-                                    <Input.Password maxLength={4} placeholder="새 비밀번호 입력" />
-                                </Form.Item>
-    
-                                <Form.Item>
-                                    <Button
-                                        type="primary"
-                                        onClick={() => form.validateFields(['oldPassword', 'newPassword']).then(handlePasswordChange)}
-                                        style={{ width: '100%', marginBottom: '10px' }}
-                                    >
-                                        비밀번호 변경
-                                    </Button>
-                                </Form.Item>
-    
-                                {/* 계좌 별명 변경 */}
-                                <Form.Item
-                                    name="nickname"
-                                    label="계좌 별명 (선택)"
-                                    rules={[{ max: 20, message: '별명은 최대 20자까지 가능합니다' }]}
-                                >
-                                    <Input placeholder="예: 월급통장, 비상금통장" />
-                                </Form.Item>
-    
-                                <Form.Item>
-                                    <Button
-                                        type="primary"
-                                        onClick={() => form.validateFields(['nickname']).then(handleNicknameChange)}
-                                        style={{ width: '100%' }}
-                                    >
-                                        별명 변경
-                                    </Button>
-                                </Form.Item>
-                            </>
-                        )}
-                    </Form>
-                )}
-            </Card>
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handlePasswordSubmit = async () => {
+    if (!selectedAccount) return alert('계좌를 선택하세요');
+    if (formData.oldPassword.length !== 4 || formData.newPassword.length !== 4) {
+      return alert('비밀번호는 4자리여야 합니다.');
+    }
+    try {
+      await RefreshToken.put(`/deposit/accounts/deposit/${selectedAccount.id}/password`, {
+        accountId: selectedAccount.id,
+        oldPassword: formData.oldPassword,
+        newPassword: formData.newPassword,
+      });
+      alert('비밀번호가 변경되었습니다.');
+      navigate('/depositAccountInquiry');
+    } catch (err) {
+      alert('비밀번호 변경 실패');
+    }
+  };
+
+  const handleNicknameSubmit = async () => {
+    if (!selectedAccount) return alert('계좌를 선택하세요');
+    try {
+      await RefreshToken.put(`/deposit/accounts/deposit/${selectedAccount.id}/nickname`, {
+        accountId: selectedAccount.id,
+        nickname: formData.nickname,
+      });
+      alert('별명이 변경되었습니다.');
+      navigate('/depositAccountInquiry');
+    } catch (err) {
+      alert('별명 변경 실패');
+    }
+  };
+
+  return (
+    <div className="depositChange-container">
+      <h2 className="depositChange-title">예금 계좌 정보 변경</h2>
+
+      <div className="depositChange-board">
+        <div className="depositChange-group">
+          <label>계좌 선택</label>
+          <select onChange={handleSelectChange}>
+            <option value="">계좌를 선택하세요</option>
+            {accounts
+              .filter(acc => acc.accountStatus === 'ACTIVE')
+              .map(acc => (
+                <option key={acc.id} value={acc.id}>
+                  {formatAccountNumber(acc.accountNumber)} - {acc.productName} - {(acc.balance ?? 0).toLocaleString()}원
+                </option>
+              ))}
+          </select>
         </div>
-    );
-    
+
+        {selectedAccount && (
+          <>
+            <div className="depositChange-group">
+              <label>기존 비밀번호 (4자리)</label>
+              <input
+                type="password"
+                maxLength="4"
+                name="oldPassword"
+                value={formData.oldPassword}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="depositChange-group">
+              <label>새 비밀번호 (4자리)</label>
+              <input
+                type="password"
+                maxLength="4"
+                name="newPassword"
+                value={formData.newPassword}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="depositChange-buttonBox">
+              <button className="btnBlack" onClick={handlePasswordSubmit}>비밀번호 변경</button>
+            </div>
+
+            <div className="depositChange-group">
+              <label>계좌 별명 (선택)</label>
+              <input
+                type="text"
+                name="nickname"
+                maxLength="20"
+                value={formData.nickname}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="depositChange-buttonBox">
+              <button className="btnBlack" onClick={handleNicknameSubmit}>별명 변경</button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default DepositChange;
