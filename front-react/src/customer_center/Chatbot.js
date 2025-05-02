@@ -1,11 +1,12 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { debounce } from 'lodash';
-import styles from '../Css/customer_center/Chatbot.module.css'; // 모듈화된 사뱅스타일 CSS
+import styles from '../Css/customer_center/Chatbot.module.css'; // 모듈화된 스타일 CSS
 
 function Chatbot() {
   const [question, setQuestion] = useState('');
   const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(false); // 로딩 상태 추가
   const chatEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -14,57 +15,63 @@ function Chatbot() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages.length]); // 최적화를 위해 messages.length로 의존성 변경
 
+  // 디바운스를 통해 질문 처리
   const sendRequest = useCallback(
     debounce(async (question) => {
       const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
       try {
-        setMessages((prev) => [...prev, { type: 'user', text: question, time }]);
-  
-        const res = await axios.post('http://localhost:8001/ask', { question });
-        const { faq_answer, generated_answer } = res.data;
-  
-        if (!faq_answer && !generated_answer) {
-          setMessages((prev) => [
-            ...prev,
-            { type: 'bot', text: '현재 답변을 제공할 수 없습니다.', time, label: '오류' },
-          ]);
-        } else {
-          if (faq_answer) {
-            setMessages((prev) => [
-              ...prev,
-              { type: 'bot', text: faq_answer, time, label: 'FAQ 답변' },
-            ]);
-          }
-  
-          if (generated_answer) {
-            setMessages((prev) => [
-              ...prev,
-              { type: 'bot', text: generated_answer, time, label: 'AI 생성 답변' },
-            ]);
-          }
-        }
-  
-        setQuestion('');
-      } catch (error) {
-        console.error('챗봇 오류:', error);
-        setMessages((prev) => [
-          ...prev,
-          { type: 'bot', text: '챗봇 서버에 연결할 수 없습니다.', time, label: '오류' },
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { type: 'user', text: question, time },
         ]);
+        setLoading(true); // 로딩 시작
+
+        const response = await axios.post(
+          'http://localhost:8001/ask',
+          { question: question },
+          {
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
+
+        const { answer } = response?.data || {};
+        const answerText = answer || '현재 FAQ에 등록된 답변이 없습니다.';
+
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { type: 'bot', text: answerText, time, label: 'FAQ 답변' },
+        ]);
+
+      } catch (error) {
+        console.error(error);
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          {
+            type: 'bot',
+            text: '오류가 발생했습니다. 다시 시도해주세요.',
+            time,
+            label: '알림',
+          },
+        ]);
+      } finally {
+        setLoading(false); // 로딩 종료
       }
-    }, 500),
+    }, 1000),
     []
   );
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // 질문이 비어있지 않은 경우에만 전송
     if (question.trim()) {
       sendRequest(question);
     } else {
-      setMessages((prev) => [
-        ...prev,
+      setMessages((prevMessages) => [
+        ...prevMessages,
         {
           type: 'bot',
           text: '질문을 입력해주세요.',
@@ -73,6 +80,8 @@ function Chatbot() {
         },
       ]);
     }
+
+    setQuestion(''); // 질문 입력 후 초기화
   };
 
   return (
@@ -112,7 +121,7 @@ function Chatbot() {
           onChange={(e) => setQuestion(e.target.value)}
           placeholder="질문을 입력하세요..."
         />
-        <button type="submit">질문하기</button>
+        <button type="submit" disabled={loading}>질문하기</button>
       </form>
     </div>
   );
