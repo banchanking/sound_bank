@@ -1,222 +1,221 @@
 .depositComparison-container {
-    max-width: 1000px;
-    min-height: 560px;
-    margin: 0 auto;
-    margin-top: 50px;
-    margin-bottom: 50px;
-    padding: 36px;
-    background-color: #fff;
-    border: 1.5px solid #e2e4e7;
-    border-radius: 16px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
-    animation: fadeIn 0.4s ease;
-  }
-  
-  .depositComparison-card {
-    padding: 24px;
-  }
-  
-  .depositComparison-title {
-    font-size: 24px;
-    font-weight: 700;
-    margin-bottom: 20px !important;
-    margin-top: -10px !important;
-    text-align: center;
-    color: #1a1a1a;
-    margin-bottom: 0; /* 기존 여백 제거 */
-    animation: fadeInUp 0.4s ease;
-  }
-  
-  .depositComparison-header {
-    display: flex;
-    flex-direction: column; /* 수직 정렬로 바꿈 */
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 24px;
-  }
-  
-  .depositComparison-selectArea {
-    display: flex;
-    justify-content: center;
-    flex-wrap: nowrap !important;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-  
-  .depositComparison-select {
-    padding: 8px 10px;
-    font-size: 14px;
-    border-radius: 8px;
-    border: 1.5px solid #ccc;
-    width: 120px;
-    outline: none;
-    transition: border-color 0.3s;
-  }
-  
-  .depositComparison-select:focus {
-    border-color: #353535;
-  }
-  
-  .depositComparison-input {
-    padding: 8px 10px;
-    font-size: 14px;
-    border-radius: 8px;
-    border: 1.5px solid #ccc;
-    width: 200px;
-    outline: none;
-    transition: border-color 0.3s;
-  }
-  
-  .depositComparison-input:focus {
-    border-color: #555;
-  }
-  
-  .depositComparison-content {
-    animation: fadeInUp 0.4s ease;
-  }
-  
-  .depositComparison-table tbody tr:hover {
-    background-color: #edf1f7;
-    transition: background-color 0.2s ease;
-  }
+  max-width: 1000px;
+  min-height: 560px;
+  margin: 0 auto;
+  margin-top: 50px;
+  margin-bottom: 50px;
+  padding: 36px;
+  background-color: #fff;
+  border: 1.5px solid #e2e4e7;
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  animation: fadeIn 0.4s ease;
+}
 
-  .depositComparison-select,
-.depositComparison-input,
-.depositComparison-btn {
-  height: 40px;
-  padding: 0 12px;
-  font-size: 14px;
-  border-radius: 8px;
-  border: 1.5px solid #ccc;
-  box-sizing: border-box;
+.depositComparison-card {
+  padding: 24px;
+}
+
+.depositComparison-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 20px !important;
+  margin-top: -10px !important;
+  text-align: center;
+  color: #1a1a1a;
+  margin-bottom: 0; /* 기존 여백 제거 */
+  animation: fadeInUp 0.4s ease;
+}
+
+.depositComparison-header {
+  display: flex;
+  flex-direction: column; /* 수직 정렬로 바꿈 */
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.depositComparison-selectArea {
+  display: flex;
+  justify-content: center;
+  flex-wrap: nowrap !important;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .depositComparison-select {
+  padding: 8px 10px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1.5px solid #ccc;
   width: 120px;
-  margin-top: -2px;
-  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.depositComparison-select:focus {
+  border-color: #353535;
 }
 
 .depositComparison-input {
-  width: 280px;
+  padding: 8px 10px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1.5px solid #ccc;
+  width: 200px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.depositComparison-input:focus {
+  border-color: #555;
+}
+
+.depositComparison-content {
+  animation: fadeInUp 0.4s ease;
+}
+
+.depositComparison-table tbody tr:hover {
+  background-color: #edf1f7;
+  transition: background-color 0.2s ease;
+}
+
+.depositComparison-select,
+.depositComparison-input,
+.depositComparison-btn {
+height: 40px;
+padding: 0 12px;
+font-size: 14px;
+border-radius: 8px;
+border: 1.5px solid #ccc;
+box-sizing: border-box;
+}
+
+.depositComparison-select {
+width: 120px;
+margin-top: -2px;
+border-radius: 10px;
+}
+
+.depositComparison-input {
+width: 280px;
 }
 
 .depositComparison-btn {
-  width: 120px;
-  background-color: #333333;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+width: 120px;
+background-color: #333333;
+color: #fff;
+border: none;
+cursor: pointer;
+transition: background-color 0.3s ease;
 }
 
 .depositComparison-btn:hover {
-  background-color: #555;
+background-color: #555;
 }
 
-  
-  .depositComparison-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    background-color: #fafafa;
-    border-radius: 12px;
-    border: 1.5px solid #e2e4e7;
-    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
-    overflow: hidden;
-  }
-  
-  .depositComparison-table th {
-    background-color: #f0f1f3;
-    color: #3a3a3c;
-    font-weight: 600;
-    padding: 12px;
-    font-size: 14px;
-    border-bottom: 1.5px solid #e2e4e7;
-    text-align: center;
-  }
-  
-  .depositComparison-table td {
-    padding: 12px;
-    text-align: center;
-    font-size: 14px;
-    color: #222;
-    border-top: 1px solid #eee;
-  }
-  
-  .depositComparison-row:nth-child(even) {
-    background-color: #f6f7f9;
-  }
-  
-  .depositComparison-details {
-    margin-top: 40px;
-  }
-  
-  .depositComparison-subtitle {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 20px;
-    text-align: center;
-  }
-  
-  .depositComparison-grid {
-    display: flex;
-    justify-content: center;
-    gap: 32px;
-    flex-wrap: wrap;
-  }
-  
-  .depositComparison-cardBox {
-    width: 300px;
-    border: 1.5px solid #e2e4e7;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    padding: 20px;
-    background-color: #fff;
-    animation: fadeIn 0.4s ease;
-  }
-  
-  .depositComparison-cardBox h5 {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 12px;
-    color: #222;
-  }
-  
-  .depositComparison-cardBox p {
-    font-size: 14px;
-    line-height: 1.6;
-    color: #333;
-  }
 
-  .depositComparison-cardBox:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
-    transition: all 0.3s ease;
+.depositComparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: #fafafa;
+  border-radius: 12px;
+  border: 1.5px solid #e2e4e7;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.depositComparison-table th {
+  background-color: #f0f1f3;
+  color: #3a3a3c;
+  font-weight: 600;
+  padding: 12px;
+  font-size: 14px;
+  border-bottom: 1.5px solid #e2e4e7;
+  text-align: center;
+}
+
+.depositComparison-table td {
+  padding: 12px;
+  text-align: center;
+  font-size: 14px;
+  color: #222;
+  border-top: 1px solid #eee;
+}
+
+.depositComparison-row:nth-child(even) {
+  background-color: #f6f7f9;
+}
+
+.depositComparison-details {
+  margin-top: 40px;
+}
+
+.depositComparison-subtitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.depositComparison-grid {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.depositComparison-cardBox {
+  width: 300px;
+  border: 1.5px solid #e2e4e7;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  background-color: #fff;
+  animation: fadeIn 0.4s ease;
+}
+
+.depositComparison-cardBox h5 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #222;
+}
+
+.depositComparison-cardBox p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333;
+}
+
+.depositComparison-cardBox:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  transition: all 0.3s ease;
+}
+
+.depositComparison-highlight {
+  color: #1b8e3e;
+  font-weight: 500;
+  margin-left: 6px;
+}
+
+/* 애니메이션 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
-  
-  .depositComparison-highlight {
-    color: #1b8e3e;
-    font-weight: 500;
-    margin-left: 6px;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  /* 애니메이션 */
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-  
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
+}
