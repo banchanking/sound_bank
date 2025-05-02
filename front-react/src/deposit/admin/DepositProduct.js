@@ -24,7 +24,7 @@ function SavingsProduct() {
 
   const fetchProducts = async () => {
     try {
-      const res = await RefreshToken.get('/deposit/products/savings');
+      const res = await RefreshToken.get('/deposit/products/deposit');
       setProducts(res.data);
     } catch (err) {
       alert('상품 조회 실패');
@@ -62,8 +62,8 @@ function SavingsProduct() {
 
   const handleSubmit = async () => {
     const endpoint = editingId
-      ? `/deposit/products/savings/${editingId}`
-      : `/deposit/products/savings`;
+      ? `/deposit/products/deposit/${editingId}`
+      : `/deposit/products/deposit`;
     const method = editingId ? 'put' : 'post';
 
     try {
