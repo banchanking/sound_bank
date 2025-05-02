@@ -1,117 +1,84 @@
-.depositContainer {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-.depositCard {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    padding: 24px;
-}
-
-.depositProductHeader {
-    margin-bottom: 24px;
-    text-align: center;
-}
-
-.depositProductHeader h2 {
-    color: #333;
-    font-size: 24px;
-    margin: 0;
-}
-
-.depositForm {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.formGroup {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.formGroup label {
-    font-weight: 500;
-    color: #333;
-}
-
-.formGroup select,
-.formGroup input {
-    padding: 8px 12px;
-    border: 1px solid #d9d9d9;
-    border-radius: 4px;
-    font-size: 14px;
-    transition: all 0.3s;
-}
-
-.formGroup select:focus,
-.formGroup input:focus {
-    border-color: #1890ff;
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
-}
-
-.formGroup input[disabled] {
-    background-color: #f5f5f5;
-    cursor: not-allowed;
-}
-
-.depositBtn {
-    background-color: #ff4d4f;
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 4px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: all 0.3s;
-    margin-top: 16px;
-}
-
-.depositBtn:hover {
-    background-color: #ff7875;
-}
-
-.depositBtn:disabled {
-    background-color: #d9d9d9;
-    cursor: not-allowed;
-}
-
-.depositTitle {
-    font-size: 22px;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    color: #111;
-    text-align: center;
-}
-
-.depositForm label {
-    font-weight: 500;
-    margin-bottom: 8px;
-    display: block;
-}
-
-.depositForm input {
+/* 전체 레이아웃 */
+.depositCancel-container {
+    max-width: 700px;
+    margin: 3rem auto;
+    min-height: 492px;
+    padding: 2rem;
+    background-color: #fff;
+    border: 1.5px solid #e2e4e7;
+    border-radius: 24px;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.2);
+    font-family: "Pretendard", sans-serif;
+    animation: fadeIn 0.4s ease;
+  }
+  
+  .depositCancel-card {
     width: 100%;
-    padding: 10px;
-    margin-bottom: 16px;
-    border: 1px solid #ddd;
+  }
+  
+  .depositCancel-header {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    color: #1a1a1a;
+    animation: fadeInUp 0.4s ease;
+  }
+  
+  .depositCancel-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .depositCancel-formGroup label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: block;
+    color: #333;
+  }
+  
+  .depositCancel-formGroup select,
+  .depositCancel-formGroup input {
+    width: 100%;
+    padding: 0.6rem;
+    border: 1px solid #ccc;
     border-radius: 8px;
-    font-size: 15px;
-}
-
-.depositBtn {
-    padding: 10px 20px;
+    font-size: 1rem;
+  }
+  
+  .depositCancel-hint {
+    font-size: 0.95rem;
+    color: #555;
+  }
+  
+  .depositCancel-submitBtn {
+    margin-left: 38%;
+    margin-top: 50px;
+    padding: 0.75rem;
+    background-color: #383838;
+    color: white;
+    width: 150px !important;
+    font-size: 1rem;
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 16px;
-    background-color: #000;
-    color: #fff;
-    transition: all 0.2s ease;
-}
-
+    transition: background-color 0.4s ease;
+    width: 100%;
+  }
+  
+  .depositCancel-submitBtn:hover {
+    background-color: #555;
+  }
+  
+  /* 애니메이션 */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
