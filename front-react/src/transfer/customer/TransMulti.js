@@ -235,7 +235,7 @@ function TransMulti() {
             </tbody>
           </table>
           <button onClick={addRow} className={styles['multi-btnAdd']}>
-            행 추가
+            추가
           </button>
         </div>
 
