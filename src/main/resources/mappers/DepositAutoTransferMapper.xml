@@ -6,16 +6,24 @@
 
 
     <!-- 오늘 날짜에 맞는 자동이체 리스트 조회 -->
-    <select id="getTodayAutoTransfers" resultType="com.boot.sound.deposit.dto.DepositAutoTransferDTO">
-        SELECT *
-        FROM DEPOSIT_AUTO_TRANSFER_TBL
-        WHERE transfer_day = #{today}
-          AND transfer_status = 'ACTIVE'
-    </select>
+		<select id="getTodayAutoTransfers" resultType="com.boot.sound.deposit.dto.DepositAutoTransferDTO">
+		    SELECT
+		        id,
+		        withdraw_account_number AS withdrawAccountNumber,
+		        target_account_number AS targetAccountNumber,
+		        target_account_type AS targetAccountType,
+		        transfer_amount AS transferAmount,
+		        transfer_day AS transferDay,
+		        transfer_status AS transferStatus
+		    FROM deposit_auto_transfer_tbl
+		    WHERE transfer_day = #{today}
+		      AND transfer_status = 'ACTIVE'
+		</select>
+
 
     <!-- 기본 입출금 계좌에서 출금 -->
     <update id="withdrawFromBasicAccount">
-        UPDATE ACCOUNT_TBL
+        UPDATE account_tbl
         SET balance = balance - #{amount}
         WHERE account_number = #{accountNumber}
           AND balance >= #{amount}
@@ -23,21 +31,21 @@
 
     <!-- 예금 계좌로 입금 -->
     <update id="depositToDepositAccount">
-        UPDATE DEPOSIT_ACCOUNT_TBL
+        UPDATE deposit_account_tbl
         SET balance = balance + #{amount}
         WHERE account_number = #{accountNumber}
     </update>
 
     <!-- 적금 계좌로 입금 -->
     <update id="depositToSavingsAccount">
-        UPDATE SAVINGS_ACCOUNT_TBL
+        UPDATE savings_account_tbl
         SET balance = balance + #{amount}
         WHERE account_number = #{accountNumber}
     </update>
 
     <!-- 자동이체 등록 -->
     <insert id="createAutoTransfer">
-        INSERT INTO DEPOSIT_AUTO_TRANSFER_TBL
+        INSERT INTO deposit_auto_transfer_tbl
         (withdraw_account_number, target_account_number, target_account_type, transfer_amount, transfer_day, transfer_status, created_at)
         VALUES
         (#{withdrawAccountNumber}, #{targetAccountNumber}, #{targetAccountType}, #{transferAmount}, #{transferDay}, #{transferStatus}, now())
@@ -54,7 +62,7 @@
         transfer_day AS transferDay,
         transfer_status AS transferStatus,
         created_at AS createdAt
-    FROM DEPOSIT_AUTO_TRANSFER_TBL
+    FROM deposit_auto_transfer_tbl
     WHERE withdraw_account_number = #{withdrawAccountNumber}
       AND transfer_status = 'ACTIVE'
 </select>
@@ -62,13 +70,13 @@
 
     <!-- 자동이체 삭제 -->
     <delete id="deleteAutoTransfer">
-        DELETE FROM DEPOSIT_AUTO_TRANSFER_TBL
+        DELETE FROM deposit_auto_transfer_tbl
         WHERE id = #{id}
     </delete>
     
     <!-- 자동이체 수정 -->
    <update id="updateAutoTransfer">
-       UPDATE DEPOSIT_AUTO_TRANSFER_TBL
+       UPDATE deposit_auto_transfer_tbl
        SET 
            target_account_number = #{targetAccountNumber},
            target_account_type = #{targetAccountType},
@@ -77,6 +85,53 @@
            transfer_status = #{transferStatus}
        WHERE id = #{id}
    </update>
+   
+   
+   <!-- 예금 계좌 거래내역 추가 -->
+<insert id="insertDepositTransaction">
+    INSERT INTO deposit_transaction_tbl (
+        dat_id, transaction_type, amount, transaction_date, description, balance
+    )
+    SELECT 
+        dat_id, 'DEPOSIT', #{amount}, NOW(), #{description}, balance
+    FROM deposit_account_tbl
+    WHERE account_number = #{accountNumber}
+</insert>
+
+
+<!-- 적금 계좌 거래내역 추가 -->
+<insert id="insertSavingsTransaction">
+    INSERT INTO savings_transaction_tbl (
+        sat_id, transaction_type, transaction_amount, transaction_date, description, balance
+    )
+    SELECT 
+        sat_id, 'DEPOSIT', #{amount}, NOW(), #{description}, balance
+    FROM savings_account_tbl
+    WHERE account_number = #{accountNumber}
+</insert>
+
+   
+   
+
+<insert id="insertBasicAccountTransaction">
+  INSERT INTO transaction_tbl (
+    ACCOUNT_NUMBER, CUSTOMER_NAME, ACCOUNT_TYPE,
+    TRANSACTION_TYPE, AMOUNT, CURRENCY, COMMENT, TRANSACTION_DATE
+  )
+  SELECT
+    #{accountNumber}, c.customer_name, '입출금',
+     <![CDATA[
+      CASE WHEN #{amount} < 0 THEN '출금' ELSE '입금' END
+    ]]>,
+    ABS(#{amount}), 'KRW', #{memo}, NOW()
+  FROM customer_tbl c
+  WHERE c.customer_id = (
+    SELECT customer_id FROM account_tbl WHERE account_number = #{accountNumber}
+  )
+</insert>
+
+   
+   
     
     
 
