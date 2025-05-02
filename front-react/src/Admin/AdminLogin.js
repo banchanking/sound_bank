@@ -20,6 +20,7 @@ const AdminLogin = () => {
   // 로그인 요청
   const onLogin = (e) => {
     e.preventDefault();
+
     AdminAxios.post("/login", {
       customerId: admin.customerId,
       password: admin.password,
@@ -34,12 +35,16 @@ const AdminLogin = () => {
       })
       .catch((error) => {
         console.error("로그인 실패:", error);
-        const msg = error.response?.data?.message || "서버 오류";
-        if (msg === "UnKnown user" || msg === "Invalid password") {
-          alert("아이디 또는 비밀번호를 다시 확인하세요");
+        const msg = error.response?.data?.error || "서버 오류";
+
+        if (msg.includes("존재하지 않는")) {
+          alert("존재하지 않는 관리자 입니다.");
+        } else if (msg.includes("비밀번호가 일치하지")) {
+          alert("비밀번호가 일치하지 않습니다.");
         } else {
           alert("서버 오류가 발생했습니다");
         }
+
         setAuthToken(null);
       });
   };

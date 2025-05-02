@@ -3,10 +3,11 @@ import RefreshToken from "../../jwt/RefreshToken";
 import "../../Css/loan/MyLoanStatus.css";
 import { useNavigate } from "react-router-dom";
 
-const MyLoanStatus = ({ onRefresh = () => {} }) => {
+const MainLoanStatus = () => {
   const [loanStatusList, setLoanStatusList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const formatDate = (timestamp) => {
     if (!timestamp) return "-";
@@ -32,7 +33,7 @@ const MyLoanStatus = ({ onRefresh = () => {} }) => {
         if (res.data.status === "success") {
           console.log(res);
           alert(res.data.message); // ✅ "중도상환 완료"
-          onRefresh();
+          setRefreshKey((prev) => prev + 1);
         } else {
           alert(res.data.message); // ✅ 실패 메시지 ("중도상환 실패" 등)
         }
@@ -66,7 +67,7 @@ const MyLoanStatus = ({ onRefresh = () => {} }) => {
         alert("서버 통신 중 오류가 발생했습니다.");
         setIsLoading(false);
       });
-  }, []);
+  }, [refreshKey]);
 
   return (
     <div className="myLoanStatus-cardContainer">
@@ -148,4 +149,4 @@ const MyLoanStatus = ({ onRefresh = () => {} }) => {
   );
 };
 
-export default MyLoanStatus;
+export default MainLoanStatus;

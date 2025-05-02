@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.boot.sound.admin.dao.AdminDAO;
 import com.boot.sound.admin.dto.AdminDTO;
 import com.boot.sound.admin.dto.AdminRequestDTO;
+import com.boot.sound.customer.CustomerDTO;
+import com.boot.sound.jwt.config.EncryptionUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -79,5 +81,22 @@ public class AdminService {
     @Transactional
     public Boolean logout(String customerId) {
     	return dao.logout(customerId);
+    }
+    
+    @Transactional
+    public List<CustomerDTO> adminPageCustomerList() {
+        List<CustomerDTO> customerList = dao.adminPageCustomerList();
+
+        for (CustomerDTO customer : customerList) {
+            try {
+                customer.setCustomer_phone_number(EncryptionUtils.decrypt(customer.getCustomer_phone_number()));
+            } catch (Exception e) {
+                // 복호화 실패 시 처리
+
+                e.printStackTrace();
+            }
+        }
+
+        return customerList;
     }
 }
