@@ -111,5 +111,38 @@ public class DepositTransactionController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    
+    
+    
+    // 예금 해지
+    @PostMapping("/deposit/accounts/deposit/close")
+    public ResponseEntity<?> closeDeposit(@RequestBody DepositTransactionDTO request) {
+        try {
+        	
+        	System.out.println("해지 요청 - 계좌번호: " + request.getAccountNumber());
+        	System.out.println("해지 요청 - 비밀번호: " + request.getAccountPassword());
+
+        	depositTransactionService.closeDepositAccount(request);
+            return ResponseEntity.ok("예금 계좌 해지 완료");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // 적금 해지
+    @PostMapping("/deposit/accounts/savings/close")
+    public ResponseEntity<?> closeSavings(@RequestBody DepositTransactionDTO request) {
+        try {
+        	
+        	System.out.println("해지 요청 - 계좌번호: " + request.getAccountNumber());
+        	System.out.println("해지 요청 - 비밀번호: " + request.getAccountPassword());
+
+        	depositTransactionService.closeSavingsAccount(request);
+            return ResponseEntity.ok("적금 계좌 해지 완료");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    
 
 }
