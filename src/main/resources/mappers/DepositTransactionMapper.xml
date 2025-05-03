@@ -189,7 +189,7 @@
      and  status = 'ACTIVE'
 </select>
 
-
+<!--  예금 해지  -->
 <select id="getDepositAccountDetailByAccountNumber" resultMap="depositAccountDetailMap">
     SELECT 
         account_number,
@@ -203,6 +203,22 @@
     FROM deposit_account_tbl
     WHERE account_number = #{accountNumber}
 </select>
+
+<!-- 적금 해지 -->
+<select id="getSavingsAccountDetailByAccountNumber" resultMap="depositAccountDetailMap">
+    SELECT 
+        account_number,
+        customer_id,
+        account_password,
+        account_status,
+        product_id,
+        balance,
+        created_at,
+        updated_at
+    FROM savings_account_tbl
+    WHERE account_number = #{accountNumber}
+</select>
+
 
 
 <resultMap id="depositAccountDetailMap" type="com.boot.sound.deposit.dto.DepositTransactionDTO">
