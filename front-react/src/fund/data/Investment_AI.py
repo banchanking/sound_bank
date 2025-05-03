@@ -6,7 +6,6 @@ import pandas as pd
 import os
 from tensorflow.keras.models import load_model
 import requests
-import subprocess
 
 # ----------- FastAPI 서버 기본 설정 -----------
 app = FastAPI()
@@ -65,8 +64,8 @@ async def predict_user(data: InvestmentRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# ----------- 전체 펀드 투자성향 예측 엔드포인트 -----------
-@app.post("/predict-fund")
+# ----------- 전체 펀드 투자성향 예측 및 CSV 저장 엔드포인트 -----------
+@app.post("/predict-fund")  # 백엔드에서 DB 전체 불러옴
 async def predict_fund():
     try:
         response = requests.get("http://localhost:8081/api/registeredFunds")
@@ -125,8 +124,8 @@ async def predict_fund():
         print("[ERROR] predict_fund error:", e)
         raise HTTPException(status_code=500, detail=str(e))
 
-# ----------- 단일 펀드 투자성향 예측 엔드포인트 -----------
-@app.post("/predict-fund-one")
+# ----------- 개별 펀드 등록 시 투자성향 예측 엔드포인트 -----------
+@app.post("/predict-fund-one")  # 프론트에서 DTO 단일 객체 전달
 async def predict_fund_one(data: FundSingleRequest):
     try:
         features = np.array([[data.fund_fee_rate, data.fund_upfront_fee, data.fund_grade, data.return_1m, data.return_3m, data.return_6m, data.return_12m]])
@@ -137,27 +136,10 @@ async def predict_fund_one(data: FundSingleRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# ----------- AI 모델 재학습 엔드포인트 -----------
-@app.post("/retrain")
-async def retrain():
-    try:
-        result = subprocess.run(
-            ["python", os.path.join(BASE_DIR, "..", "..", "Generate_fund_model.py")],
-            capture_output=True,
-            text=True,
-            check=True
-        )
-        print("[retrain stdout]\n", result.stdout)
-        print("[retrain stderr]\n", result.stderr)
-        return {"message": "AI 모델 재학습 완료"}
-    except subprocess.CalledProcessError as e:
-        print("[ERROR] retrain failed:", e.stderr)
-        raise HTTPException(status_code=500, detail="재학습 중 오류 발생")
-
 # ----------- FastAPI 실행 설정 -----------
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
 
-# 개발 환경 실행 예: uvicorn Investment_AI:app --reload --host 0.0.0.0 --port 8000
-# 운영 환경 실행 예: uvicorn Investment_AI:app --host 0.0.0.0 --port 8000
+# 개발 환경 실행 (테스트): uvicorn Investment_AI:app --reload --host 0.0.0.0 --port 8000
+# 운영 환경 실행 (배포): uvicorn Investment_AI:app --host 0.0.0.0 --port 8000
