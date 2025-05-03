@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import RefreshToken from '../../jwt/RefreshToken';
-import '../../Css/depositcss/DepositProduct.css';
+import React, { useEffect, useState } from "react";
+import RefreshToken from "../../jwt/RefreshToken";
+import "../../Css/depositcss/DepositProduct.css";
 
 function DepositProduct() {
   const [products, setProducts] = useState([]);
   const [form, setForm] = useState({
-    productName: '',
-    productType: '',
-    interestRate: '',
-    minAmount: '',
-    maxAmount: '',
-    termMonths: '',
-    productDescription: ''
+    productName: "",
+    productType: "",
+    interestRate: "",
+    minAmount: "",
+    maxAmount: "",
+    termMonths: "",
+    productDescription: "",
   });
   const [editingId, setEditingId] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -24,16 +24,16 @@ function DepositProduct() {
 
   const fetchProducts = async () => {
     try {
-      const res = await RefreshToken.get('/deposit/products/deposit'); // 경로 확인 필요
+      const res = await RefreshToken.get("/deposit/products/deposit"); // 경로 확인 필요
       setProducts(res.data);
     } catch (err) {
-      alert('예금 상품 조회 실패');
+      alert("예금 상품 조회 실패");
     }
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const openModal = (product = null) => {
@@ -42,13 +42,13 @@ function DepositProduct() {
       setEditingId(product.id);
     } else {
       setForm({
-        productName: '',
-        productType: '',
-        interestRate: '',
-        minAmount: '',
-        maxAmount: '',
-        termMonths: '',
-        productDescription: ''
+        productName: "",
+        productType: "",
+        interestRate: "",
+        minAmount: "",
+        maxAmount: "",
+        termMonths: "",
+        productDescription: "",
       });
       setEditingId(null);
     }
@@ -61,31 +61,38 @@ function DepositProduct() {
   };
 
   const handleSubmit = async () => {
+    const min = Number(form.minAmount);
+    const max = Number(form.maxAmount);
+
+    if (min > max) {
+      alert("최소 금액은 최대 금액보다 클 수 없습니다.");
+      return;
+    }
     const endpoint = editingId
       ? `/deposit/products/deposit/${editingId}`
       : `/deposit/products/deposit`;
-    const method = editingId ? 'put' : 'post';
+    const method = editingId ? "put" : "post";
 
     try {
       await RefreshToken[method](endpoint, {
         ...form,
-        productType: form.productType.toLowerCase()
+        productType: form.productType.toLowerCase(),
       });
-      alert('예금 상품 저장 완료');
+      alert("예금 상품 저장 완료");
       fetchProducts();
       closeModal();
     } catch {
-      alert('예금 상품 저장 실패');
+      alert("예금 상품 저장 실패");
     }
   };
 
   const handleDelete = async (id) => {
     try {
       await RefreshToken.delete(`/deposit/products/deposit/${id}`);
-      alert('삭제 완료');
+      alert("삭제 완료");
       fetchProducts();
     } catch {
-      alert('삭제 실패');
+      alert("삭제 실패");
     }
   };
 
@@ -96,8 +103,8 @@ function DepositProduct() {
   );
 
   const typeLabel = {
-    fixed: '정기예금',
-    regular: '자유예금'
+    fixed: "정기예금",
+    regular: "자유예금",
   };
 
   return (
@@ -105,7 +112,9 @@ function DepositProduct() {
       <div className="deposit-header">
         <h2>예금 상품 관리</h2>
       </div>
-      <button className="depositAddP-btn" onClick={() => openModal()}>상품 추가</button>
+      <button className="depositAddP-btn" onClick={() => openModal()}>
+        상품 추가
+      </button>
 
       <table className="deposit-table">
         <thead>
@@ -120,7 +129,7 @@ function DepositProduct() {
           </tr>
         </thead>
         <tbody>
-          {currentData.map(p => (
+          {currentData.map((p) => (
             <tr key={p.id}>
               <td>{p.productName}</td>
               <td>{typeLabel[p.productType] || p.productType}</td>
@@ -129,8 +138,12 @@ function DepositProduct() {
               <td>{Number(p.maxAmount).toLocaleString()}원</td>
               <td>{p.termMonths}개월</td>
               <td>
-                <button onClick={() => openModal(p)} className="btnBlue">수정</button>
-                <button onClick={() => handleDelete(p.id)} className="btnRed">삭제</button>
+                <button onClick={() => openModal(p)} className="btnBlue">
+                  수정
+                </button>
+                <button onClick={() => handleDelete(p.id)} className="btnRed">
+                  삭제
+                </button>
               </td>
             </tr>
           ))}
@@ -142,7 +155,9 @@ function DepositProduct() {
           {Array.from({ length: totalPages }, (_, idx) => (
             <button
               key={idx + 1}
-              className={`pageButton ${currentPage === idx + 1 ? 'activePage' : ''}`}
+              className={`pageButton ${
+                currentPage === idx + 1 ? "activePage" : ""
+              }`}
               onClick={() => setCurrentPage(idx + 1)}
             >
               {idx + 1}
@@ -154,21 +169,59 @@ function DepositProduct() {
       {modalOpen && (
         <div className="modal-overlay">
           <div className="modal-box">
-            <h3>{editingId ? '상품 수정' : '상품 추가'}</h3>
-            <input name="productName" placeholder="상품명" value={form.productName} onChange={handleChange} />
-            <select name="productType" value={form.productType} onChange={handleChange}>
+            <h3>{editingId ? "상품 수정" : "상품 추가"}</h3>
+            <input
+              name="productName"
+              placeholder="상품명"
+              value={form.productName}
+              onChange={handleChange}
+            />
+            <select
+              name="productType"
+              value={form.productType}
+              onChange={handleChange}
+            >
               <option value="">유형 선택</option>
               <option value="fixed">정기예금</option>
               <option value="regular">자유예금</option>
             </select>
-            <input name="interestRate" placeholder="이자율 (%)" value={form.interestRate} onChange={handleChange} />
-            <input name="minAmount" placeholder="최소금액" value={form.minAmount} onChange={handleChange} />
-            <input name="maxAmount" placeholder="최대금액" value={form.maxAmount} onChange={handleChange} />
-            <input name="termMonths" placeholder="기간(개월)" value={form.termMonths} onChange={handleChange} />
-            <textarea name="productDescription" placeholder="상품 설명" value={form.productDescription} onChange={handleChange}></textarea>
+            <input
+              name="interestRate"
+              placeholder="이자율 (%)"
+              value={form.interestRate}
+              onChange={handleChange}
+            />
+            <input
+              name="minAmount"
+              placeholder="최소금액"
+              value={form.minAmount}
+              onChange={handleChange}
+            />
+            <input
+              name="maxAmount"
+              placeholder="최대금액"
+              value={form.maxAmount}
+              onChange={handleChange}
+            />
+            <input
+              name="termMonths"
+              placeholder="기간(개월)"
+              value={form.termMonths}
+              onChange={handleChange}
+            />
+            <textarea
+              name="productDescription"
+              placeholder="상품 설명"
+              value={form.productDescription}
+              onChange={handleChange}
+            ></textarea>
             <div className="modal-btns">
-              <button onClick={handleSubmit} className="btnBlue">저장</button>
-              <button onClick={closeModal} className="btnGray">취소</button>
+              <button onClick={handleSubmit} className="btnBlue">
+                저장
+              </button>
+              <button onClick={closeModal} className="btnGray">
+                취소
+              </button>
             </div>
           </div>
         </div>
