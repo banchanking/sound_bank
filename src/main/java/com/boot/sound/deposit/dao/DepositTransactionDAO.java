@@ -54,8 +54,12 @@ public interface DepositTransactionDAO {
 
 	void insertAccountTransaction(DepositTransactionDTO tx);
 	
-
+ 
+	// 예금 해지
 	DepositTransactionDTO getDepositAccountDetailByAccountNumber(@Param("accountNumber") String accountNumber);
+	
+	// 적금 해지
+	DepositTransactionDTO getSavingsAccountDetailByAccountNumber(@Param("accountNumber") String accountNumber);
 
 	
 

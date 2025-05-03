@@ -139,6 +139,7 @@ public interface DepositDAO {
 	
 	int insertBasicTransaction(DepositTransactionDTO transaction);
 
+	void insertBasicTransaction(DepositDTO dto);
 
 
 
