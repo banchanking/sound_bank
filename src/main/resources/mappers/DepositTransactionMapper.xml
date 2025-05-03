@@ -147,4 +147,80 @@
             updated_at = NOW()
         WHERE account_number = #{accountNumber}
     </update>
+
+<update id="closeDepositAccount">
+    UPDATE deposit_account_tbl
+    SET account_status = 'CLOSED', updated_at = NOW()
+    WHERE account_number = #{accountNumber}
+    AND account_status = 'ACTIVE'
+</update>
+
+<update id="closeSavingsAccount">
+    UPDATE savings_account_tbl
+    SET account_status = 'CLOSED', updated_at = NOW()
+    WHERE account_number = #{accountNumber}
+    AND account_status = 'ACTIVE'
+</update>
+
+
+
+<update id="depositToBasicAccount">
+    UPDATE account_tbl
+    SET balance = balance + #{amount}
+    WHERE account_number = #{accountNumber}
+</update>
+
+<!-- 입출금 거래내역 저장 -->
+<insert id="insertBasicTransaction" parameterType="DepositTransactionDTO">
+    INSERT INTO transaction_tbl (
+        account_number, transaction_type, amount, currency,
+        comment, customer_name, account_type, transaction_date
+    ) VALUES (
+        #{accountNumber}, #{transactionType}, #{amount}, 'KRW',
+        #{transactionDescription}, #{customerName}, #{accountType}, NOW()
+    )
+</insert>
+
+
+<select id="findBasicAccountNumberByCustomer" resultType="string">
+    SELECT account_number
+    FROM account_tbl
+    WHERE customer_id = #{customerId}
+     and  status = 'ACTIVE'
+</select>
+
+
+<select id="getDepositAccountDetailByAccountNumber" resultMap="depositAccountDetailMap">
+    SELECT 
+        account_number,
+        customer_id,
+        account_password,
+        account_status,
+        product_id,
+        balance,
+        created_at,
+        updated_at
+    FROM deposit_account_tbl
+    WHERE account_number = #{accountNumber}
+</select>
+
+
+<resultMap id="depositAccountDetailMap" type="com.boot.sound.deposit.dto.DepositTransactionDTO">
+    <result property="accountNumber" column="account_number"/>
+    <result property="customerId" column="customer_id"/>
+    <result property="accountPassword" column="account_password"/>
+    <result property="accountStatus" column="account_status"/>
+    <result property="productId" column="product_id"/>
+    <result property="balance" column="balance"/>
+    <result property="createdAt" column="created_at"/>
+    <result property="updatedAt" column="updated_at"/>
+</resultMap>
+
+
+		
+		    
+    
+    
+    
+    
 </mapper> 

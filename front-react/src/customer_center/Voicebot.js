@@ -1,130 +1,113 @@
-import React, { useState, useRef, useEffect } from "react";
+ import { useEffect, useRef } from "react";
+// import { connectWebSocket, disconnectWebSocket } from "../utils/websocketClient";
 
-const VoiceBot = () => {
-  const [messages, setMessages] = useState([]);
-  const [isRecording, setIsRecording] = useState(false);
-  const mediaRecorderRef = useRef(null);
-  const audioChunks = useRef([]);
+ const VoiceBot = ({ onResponse }) => {
 
-  // WebSocket 연결 및 첫 인사
-  useEffect(() => {
-    const ws = new WebSocket("ws://localhost:8002/ws");
-    console.log("웹소켓이 연결되었습니다."); // 확인용 로그
-
-    ws.onopen = () => {
-      console.log("WebSocket 연결 완료");
-
-      // 첫 번째 메시지 출력
-      setMessages((prev) => [
-        ...prev,
-        { sender: "bot", text: "안녕하세요. Sound_bank 입니다 무엇을 도와드릴까요?" },
-      ]);
-
-      // 첫 인사 음성 재생
-      const welcomeAudio = new Audio("http://localhost:8002/static/welcome.mp3");
-      welcomeAudio.play().catch((err) => console.error("Audio play error:", err));
-
-      // WebSocket 연결이 완료되었음을 메시지로 UI에 반영
-      setMessages((prev) => [
-        ...prev,
-        { sender: "bot", text: "WebSocket 연결이 완료되었습니다." },
-      ]);
-    };
-
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.type === "text") {
-        setMessages((prev) => [...prev, { sender: "bot", text: data.text }]);
-      } else if (data.type === "audio") {
-        const audio = new Audio("http://localhost:8002" + data.audio_path);
-        audio.play();
-      }
-    };
-
-    ws.onclose = () => {
-      console.log("WebSocket 연결 종료");
-    };
-
-    navigator.mediaDevices.getUserMedia({ audio: true }).catch((err) => {
-      console.error("마이크 권한 요청 실패:", err);
-    });
-
-    return () => {
-      ws.close();
-    };
-  }, []); // 'messages' 상태를 의존성 배열에서 제거
-
-  // 음성 녹음 제어
-  const toggleRecording = async () => {
-    if (!isRecording) {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorderRef.current = new MediaRecorder(stream);
-      audioChunks.current = [];
-
-      mediaRecorderRef.current.ondataavailable = (e) => {
-        audioChunks.current.push(e.data);
-      };
-
-      mediaRecorderRef.current.onstop = async () => {
-        const blob = new Blob(audioChunks.current, { type: "audio/webm" });
-
-        const formData = new FormData();
-        formData.append("file", blob, "voice.webm");
-
-        setMessages((prev) => [...prev, { sender: "user", text: "음성 메시지 전송됨" }]);
-
-        const res = await fetch("http://localhost:8002/upload-audio", {
-          method: "POST",
-          body: formData,
-        });
-        const result = await res.json();
-
-        if (result.text) {
-          setMessages((prev) => [...prev, { sender: "user", text: result.text }]);
-        }
-
-        if (result.audio_path) {
-          const audio = new Audio("http://localhost:8002" + result.audio_path);
-          audio.play();
-        }
-        if (result.answer) {
-          setMessages((prev) => [...prev, { sender: "bot", text: result.answer }]);
-        }
-      };
-
-      mediaRecorderRef.current.start();
-      setIsRecording(true);
-    } else {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
-    }
-  };
-
-  return (
-    <div style={{ minHeight: 620, padding: 20, maxWidth: 600, margin: "0 auto" }}>
-      <h3>Sound_Bank 음성 상담</h3>
-      <div style={{ border: "1px solid #ccc", borderRadius: 10, padding: 15, height: 400, overflowY: "auto" }}>
-        {messages.map((msg, idx) => (
-          <div key={idx} style={{ textAlign: msg.sender === "bot" ? "left" : "right", margin: "10px 0" }}>
-            <div
-              style={{
-                display: "inline-block",
-                padding: 10,
-                borderRadius: 10,
-                backgroundColor: msg.sender === "bot" ? "#f1f0f0" : "#aee1f9",
-                maxWidth: "70%",
-              }}
-            >
-              {msg.text}
-            </div>
-          </div>
-        ))}
+    return(
+      <div>
+        
       </div>
-      <button onClick={toggleRecording} style={{ marginTop: 15 }}>
-        {isRecording ? "녹음 중지" : "음성 질문하기"}
-      </button>
-    </div>
-  );
-};
+    )
+ }
+//   const wsRef = useRef(null);
+//   const mediaRecorderRef = useRef(null);
+//   const streamRef = useRef(null);
 
-export default VoiceBot;
+//   const startMicrophone = async () => {
+//     try {
+//       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+//       streamRef.current = stream;
+//       const mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+//       mediaRecorderRef.current = mediaRecorder;
+//       mediaRecorder.ondataavailable = (event) => {
+//         if (event.data.size > 0 && wsRef.current?.readyState === WebSocket.OPEN) {
+//           console.log(`전송된 오디오 데이터 크기: ${event.data.size} bytes`);
+//           wsRef.current.send(event.data);
+//         }
+//       };
+//       mediaRecorder.start(1000);
+//       console.log("마이크 시작");
+//     } catch (err) {
+//       console.error("마이크 접근 오류:", err);
+//     }
+//   };
+
+//   const stopMicrophone = () => {
+//     if (mediaRecorderRef.current) {
+//       mediaRecorderRef.current.stop();
+//       mediaRecorderRef.current = null;
+//     }
+//     if (streamRef.current) {
+//       streamRef.current.getTracks().forEach((track) => track.stop());
+//       streamRef.current = null;
+//     }
+//     console.log("마이크 중지");
+//   };
+
+//   const handleMessage = (data) => {
+//     try {
+//       const parsed = JSON.parse(data);
+//       console.log("수신된 JSON 데이터:", parsed);
+
+//       // 초기 welcome 메시지 (배열 형식)
+//       if (Array.isArray(parsed)) {
+//         let text = "";
+//         let audioUrl = "";
+//         parsed.forEach((item) => {
+//           if (item.type === "text") {
+//             text = item.content;
+//           } else if (item.type === "audio") {
+//             audioUrl = item.content;
+//           }
+//         });
+//         if (text || audioUrl) {
+//           onResponse({ text, audioUrl });
+//         }
+//         return;
+//       }
+
+//       // 일반 응답 (main.py 형식)
+//       if (parsed.status === "error") {
+//         console.error("서버 오류:", parsed.message);
+//         return;
+//       }
+//       let audioUrl = "";
+//       if (parsed.audio && parsed.content_type) {
+//         if (!["audio/wav", "audio/mpeg"].includes(parsed.content_type)) {
+//           console.error("지원되지 않는 오디오 형식:", parsed.content_type);
+//           return;
+//         }
+//         const audioData = new Uint8Array(parsed.audio.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)));
+//         const blob = new Blob([audioData], { type: parsed.content_type });
+//         audioUrl = URL.createObjectURL(blob);
+//         console.log("오디오 URL 생성:", audioUrl);
+//       }
+//       onResponse({ text: parsed.text || "", audioUrl });
+//     } catch (err) {
+//       console.error("WebSocket 메시지 파싱 오류:", err);
+//     }
+//   };
+
+//   useEffect(() => {
+//     const ws = connectWebSocket((data) => handleMessage(data), {
+//       onError: (error) => {
+//         console.error("[WebSocket] 오류 상세:", error);
+//       },
+//       onClose: (event) => {
+//         console.log("[WebSocket] 연결 종료:", event.code, event.reason);
+//       },
+//     });
+//     wsRef.current = ws;
+//     startMicrophone();
+
+//    return () => {
+//       disconnectWebSocket(wsRef.current);
+//       wsRef.current = null;
+//       stopMicrophone();
+//     };
+//   }, [onResponse]);
+
+//   return null;
+// };
+
+ export default VoiceBot;

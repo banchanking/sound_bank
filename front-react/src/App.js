@@ -96,6 +96,8 @@ function App() {
           <Route path="/depositJoin" element={<DepositJoin />} />
           <Route path="/savingsJoin" element={<SavingsJoin />} />
           <Route path="/depositChange" element={<DepositChange />} />
+          <Route path="/deposit/join" element={<DepositJoin />} />
+          <Route path="/savings/join" element={<SavingsJoin />} />
           <Route
             path="/depositAutosettings"
             element={<DepositAutosettings />}

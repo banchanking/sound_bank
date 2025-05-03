@@ -78,7 +78,7 @@ const MyFundInfo = () => {
 
     approvedTransactions.forEach((tx) => {
       const name = tx.fund_name?.trim();
-      if (!name || addedNames.has(name)) return; // ✅ 중복 방지
+      if (!name || addedNames.has(name)) return; // 중복 방지
 
       const fund = fundRates[name];
       if (!fund) return;
@@ -89,7 +89,7 @@ const MyFundInfo = () => {
       if (!price || !invest) return;
 
       headers.push(name);
-      addedNames.add(name); // ✅ 헤더와 데이터 모두 동일 기준으로 추가
+      addedNames.add(name); // 헤더와 데이터 모두 동일 기준으로 추가
 
       const getRate = (r) => price * (1 + r / 100);
 
@@ -135,7 +135,7 @@ const MyFundInfo = () => {
 
   return (
       <div className={styles.fundContainer}>
-        <h2 className={styles.fundTitle}>내 펀드 수익 분석</h2>
+        <h2 className={styles.fundTitle}>📊 내 펀드 수익 분석</h2>
         <p>총 투자금: {summary.totalInvested.toLocaleString()}원</p>
         <p>예상 수익률 (12개월 기준): {summary.totalRate}%</p>
 
