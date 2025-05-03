@@ -145,6 +145,86 @@
   animation: transfer-fadeIn 0.4s ease;
 }
 
+/* 페이징 */
+
+.pageButtonGroup {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap; /* 너무 많을 경우 자동 줄바꿈 허용 */
+  margin-top: 20px;
+}
+
+.pageButton {
+  width: 36px;
+  height: 32px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  background: #282828;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+  margin: 4px;
+}
+
+
+.pageButton:hover {
+  background: #555;
+}
+
+.activePage {
+  background: #282828;
+  color: white;
+  font-weight: bold;
+  border: 1px solid #282828;
+  border-radius: 4px;
+  width: 40px;
+  height: 36px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pageButtonArea {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 24px;
+  flex-wrap: wrap; /* 넘치면 다음 줄로 */
+}
+
+.pageArrow {
+  width: 36px;
+  height: 32px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  background: #282828;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+  margin: 0 2px;
+}
+
+.pageArrow:hover {
+  background: #555;
+}
+
+.pageArrow:disabled {
+  background: #282828;
+  color: white;
+  opacity: 1;
+  cursor: default;
+}
+
 @keyframes transfer-fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }

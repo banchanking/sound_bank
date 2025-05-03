@@ -63,4 +63,18 @@ public class DepositAutoTransferController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    
+    // 자동이체 수정
+    @PutMapping("/update")
+    public ResponseEntity<?> updateAutoTransfer(@RequestBody DepositAutoTransferDTO transferDTO) {
+        try {
+            autoTransferService.updateAutoTransfer(transferDTO);
+            return ResponseEntity.ok("자동이체가 성공적으로 수정되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    
+    
 }

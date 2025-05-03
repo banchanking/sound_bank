@@ -27,9 +27,9 @@ const handleUpload = async () => {
       const result = await response.json();
       console.log("서버 응답:", result);
       if (response.ok && result && result.status === "success") {
-          setMessage("인증 성공: " + (result.message || "성공"));
+          setMessage("인증 성공: " + (result.message || "인증 완료되었습니다."));
       } else {
-          setMessage("인증 실패: " + (result.message || "서버 응답 오류"));
+          setMessage("인증 실패: " + (result.message || "등록되지 않은 주민번호 입니다."));
       }
   } catch (error) {
       setMessage("통신 실패: " + error.message);
@@ -37,7 +37,7 @@ const handleUpload = async () => {
 };
 
   return (
-    // ✅ 전체 wrap (사뱅 스타일)
+    // 전체 wrap (사뱅 스타일)
     <div className={styles["wrap"]}>
       {/* 기존 클래스명: roi-container */}
       <div className={styles["roi-container"]}>

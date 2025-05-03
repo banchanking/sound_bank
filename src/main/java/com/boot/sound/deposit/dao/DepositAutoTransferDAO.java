@@ -36,6 +36,34 @@ public interface DepositAutoTransferDAO {
     // 자동이체 삭제
     void deleteAutoTransfer(@Param("id") Long id);
     
+    // 자동이체 수정
+    void updateAutoTransfer(DepositAutoTransferDTO transferDTO);
+    
+    // 기본 계좌 거래내역 기록 (단일 쿼리)
+    int insertBasicAccountTransaction(@Param("accountNumber") String accountNumber,
+                                      @Param("amount") BigDecimal amount,
+                                      @Param("memo") String memo);
+
+    
+    // 예금 거래내역 저장
+    int insertDepositTransaction(@Param("accountNumber") String accountNumber,
+            @Param("amount") BigDecimal amount,
+            @Param("description") String description);
+
+    // 적금 거래내역 저장
+    int insertSavingsTransaction(@Param("accountNumber") String accountNumber,
+            @Param("amount") BigDecimal amount,
+            @Param("description") String description);
+
+
+    // 비밀번호 체크 
+    String getAccountPassword(@Param("accountNumber") String accountNumber);
+
+    
+
+
+
+    
  
 
 }
