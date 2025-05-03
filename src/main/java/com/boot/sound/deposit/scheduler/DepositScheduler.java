@@ -15,7 +15,7 @@ public class DepositScheduler {
 
    
     // 매일 새벽 2시에 자동이체 실행
-    @Scheduled(cron = "* * 2 * * *")
+    @Scheduled(cron = "10 44 21 * * ?")
     public void runAutoTransfers() {
         autoTransferService.processTodayAutoTransfers();
     }
