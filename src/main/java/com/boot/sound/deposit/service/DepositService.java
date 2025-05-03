@@ -188,7 +188,7 @@ public class DepositService {
         transaction.setTransactionAmount(account.getBalance());
         transaction.setBalance(account.getBalance());
         transaction.setTransactionDate(LocalDateTime.now());
-        transaction.setTransactionDescription("초기 입금");
+        transaction.setTransactionDescription("예금 계좌 개설");
 
         depositDAO.createDepositTransaction(transaction);
 
