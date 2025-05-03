@@ -13,7 +13,9 @@ const DepositAccountInquiry = () => {
 
   useEffect(() => {
     if (!customerId) {
-      const goLogin = window.confirm("로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?");
+      const goLogin = window.confirm(
+        "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
+      );
       if (goLogin) navigate("/login");
       else navigate("/");
       return;
@@ -35,24 +37,26 @@ const DepositAccountInquiry = () => {
       <div className="accountCard" key={account.id}>
         <div>
           <div className="accountTitle">{account.productName}</div>
-  
+
           <div className="accountInfo">
             <strong>계좌 번호</strong>
             <span>{account.accountNumber}</span>
           </div>
-  
+
           {type === "DEPOSIT" && (
             <div className="accountInfo">
               <strong>별명</strong>
               <span>{account.nickname || "없음"}</span>
             </div>
           )}
-  
+
           <div className="accountInfo">
             <strong>이자율</strong>
-            <span>{account.interestRate ? `${account.interestRate}%` : "없음"}</span>
+            <span>
+              {account.interestRate ? `${account.interestRate}%` : "없음"}
+            </span>
           </div>
-  
+
           <div className="accountInfo">
             <strong>잔액</strong>
             <span className="balance">
@@ -60,7 +64,7 @@ const DepositAccountInquiry = () => {
             </span>
           </div>
         </div>
-  
+
         <div className="accountInfo">
           <strong>상태</strong>
           <span>
@@ -77,16 +81,16 @@ const DepositAccountInquiry = () => {
     <div className="depositDainquiry-container">
       <h3 className="depositDainquiry-title">예금 계좌 목록</h3>
       {depositAccounts.length === 0 ? (
-        <div className="depositDainquiry-empty">현재 조회 가능한 예금 계좌가 없습니다.</div>
+        <div className="depositDainquiry-empty">
+          현재 조회 가능한 예금 계좌가 없습니다.
+        </div>
       ) : (
         <div className="depositDainquiry-row">
-          {depositAccounts
-            .filter((account) => account.accountStatus === "ACTIVE")
-            .map((account) => (
-              <div className="depositDainquiry-col" key={account.id}>
-                {renderAccountInfo(account, "DEPOSIT")}
-              </div>
-            ))}
+          {depositAccounts.map((account) => (
+            <div className="depositDainquiry-col" key={account.id}>
+              {renderAccountInfo(account, "DEPOSIT")}
+            </div>
+          ))}
         </div>
       )}
 
@@ -94,16 +98,16 @@ const DepositAccountInquiry = () => {
 
       <h3 className="depositDainquiry-title">적금 계좌 목록</h3>
       {savingsAccounts.length === 0 ? (
-        <div className="depositDainquiry-empty">현재 조회 가능한 적금 계좌가 없습니다.</div>
+        <div className="depositDainquiry-empty">
+          현재 조회 가능한 적금 계좌가 없습니다.
+        </div>
       ) : (
         <div className="depositDainquiry-row">
-          {savingsAccounts
-            .filter((account) => account.accountStatus === "ACTIVE")
-            .map((account) => (
-              <div className="depositDainquiry-col" key={account.id}>
-                {renderAccountInfo(account, "SAVINGS")}
-              </div>
-            ))}
+          {savingsAccounts.map((account) => (
+            <div className="depositDainquiry-col" key={account.id}>
+              {renderAccountInfo(account, "SAVINGS")}
+            </div>
+          ))}
         </div>
       )}
     </div>
