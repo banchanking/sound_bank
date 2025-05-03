@@ -160,7 +160,7 @@ public class DepositTransactionService {
 
         DepositTransactionDTO tx = new DepositTransactionDTO();
         tx.setAccountNumber(basicAccountNumber);
-        tx.setTransactionType("예금");
+        tx.setTransactionType("입금");
         tx.setAmount(amount); 
         tx.setTransactionDescription("예금 해지로 인한 입금");
         tx.setCustomerId(dto.getCustomerId());
@@ -214,7 +214,7 @@ public class DepositTransactionService {
         // 6. 거래내역 기록 (기본 계좌에만)
         DepositTransactionDTO tx = new DepositTransactionDTO();
         tx.setAccountNumber(basicAccountNumber);
-        tx.setTransactionType("적금");
+        tx.setTransactionType("입금");
         tx.setAmount(amount); 
         tx.setTransactionDescription("적금 해지로 인한 입금");
         tx.setCustomerId(dto.getCustomerId());
