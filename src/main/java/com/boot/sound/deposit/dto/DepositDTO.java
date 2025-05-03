@@ -46,6 +46,9 @@ public class DepositDTO {
     private String productType;           // 상품 유형
     private BigDecimal minAmount;         // 최소 금액
     private BigDecimal maxAmount;         // 최대 금액
+    
+    private String accountType;    // 계좌 유형
+
 
     
     

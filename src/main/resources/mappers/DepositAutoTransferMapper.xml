@@ -111,7 +111,7 @@
 <!-- 적금 계좌 거래내역 추가 -->
 <insert id="insertSavingsTransaction">
     INSERT INTO savings_transaction_tbl (
-        sat_id, transaction_type, transaction_amount, transaction_date, description, balance
+        sat_id, transaction_type, amount, transaction_date, description, balance
     )
     SELECT 
         sat_id, 'DEPOSIT', #{amount}, NOW(), #{description}, balance
