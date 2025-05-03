@@ -168,6 +168,9 @@ public class DepositTransactionService {
         tx.setAccountType("BASIC");
 
         depositTransactionDAO.insertBasicTransaction(tx);
+        
+        // 예금 잔액 변동
+        depositTransactionDAO.updateDepositAccountBalance(dto.getAccountNumber(), BigDecimal.ZERO);
         System.out.println("▶▶▶ 거래내역 insert 완료");
     }
 
@@ -222,6 +225,9 @@ public class DepositTransactionService {
         tx.setAccountType("BASIC");              
 
         depositTransactionDAO.insertBasicTransaction(tx);
+        
+        // 적금 잔액 수정
+        depositTransactionDAO.updateSavingsAccountBalance(dto.getAccountNumber(), BigDecimal.ZERO);
     }
     }
     

@@ -80,7 +80,7 @@
     
     <!-- 예금 거래 내역 생성 -->
     <insert id="createDepositTransaction" parameterType="com.boot.sound.deposit.dto.DepositTransactionDTO">
-        INSERT INTO DEPOSIT_TRANSACTION_TBL (
+        INSERT INTO deposit_transaction_tbl (
             account_number,
             transaction_type,
             amount,
@@ -134,7 +134,7 @@
     
     <!-- 예금 계좌 잔액 업데이트 -->
     <update id="updateDepositAccountBalance">
-        UPDATE DEPOSIT_ACCOUNT_TBL
+        UPDATE deposit_account_tbl
         SET balance = #{balance},
             updated_at = NOW()
         WHERE account_number = #{accountNumber}
@@ -142,7 +142,7 @@
     
     <!-- 적금 계좌 잔액 업데이트 -->
     <update id="updateSavingsAccountBalance">
-        UPDATE SAVINGS_ACCOUNT_TBL
+        UPDATE savings_account_tbl
         SET balance = #{balance},
             updated_at = NOW()
         WHERE account_number = #{accountNumber}
