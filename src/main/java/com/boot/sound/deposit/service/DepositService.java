@@ -167,14 +167,23 @@ public class DepositService {
         if (depositDAO.checkAccountNumber(account.getAccountNumber()) > 0) {
             throw new RuntimeException("이미 존재하는 계좌번호입니다.");
         }
-        System.out.println("✅ 출금 계좌번호: " + account.getWithdrawalAccountNumber());
-        System.out.println("✅ 출금할 금액: " + account.getBalance());
+        
         String cleanAccountNumber = account.getWithdrawalAccountNumber().replaceAll("-", "");
 
 	     // 기본 계좌에서 출금
         if (depositDAO.withdrawFromBasicAccount(account.getWithdrawalAccountNumber(), account.getBalance(), account.getCustomerId()) != 1) {
             throw new RuntimeException("출금 계좌 잔액 차감 실패");
         }
+        
+        DepositDTO basicTx = new DepositDTO();
+        basicTx.setAccountNumber(account.getWithdrawalAccountNumber());
+        basicTx.setTransactionType("출금");
+        basicTx.setTransactionAmount(account.getBalance());
+        basicTx.setTransactionDate(LocalDateTime.now());
+        basicTx.setTransactionDescription("예금계좌개설");
+        basicTx.setCustomerId(account.getCustomerId());
+        basicTx.setAccountType("BASIC");
+        depositDAO.insertBasicTransaction(basicTx);
 
 
 
@@ -182,13 +191,15 @@ public class DepositService {
             throw new RuntimeException("예금 계좌 생성 실패");
         }
 
+        
+        
         DepositDTO transaction = new DepositDTO();
         transaction.setAccountId(account.getId());
         transaction.setTransactionType("DEPOSIT");
         transaction.setTransactionAmount(account.getBalance());
         transaction.setBalance(account.getBalance());
         transaction.setTransactionDate(LocalDateTime.now());
-        transaction.setTransactionDescription("초기 입금");
+        transaction.setTransactionDescription("예금 계좌 개설");
 
         depositDAO.createDepositTransaction(transaction);
 
@@ -208,6 +219,16 @@ public class DepositService {
         if (depositDAO.withdrawFromBasicAccount(account.getWithdrawalAccountNumber(), account.getMonthlyAmount(), account.getCustomerId()) != 1) {
             throw new RuntimeException("출금 계좌 잔액 차감 실패");
         }
+        
+        DepositDTO basicTx = new DepositDTO();
+        basicTx.setAccountNumber(account.getWithdrawalAccountNumber());
+        basicTx.setTransactionType("출금");
+        basicTx.setTransactionAmount(account.getMonthlyAmount()); 
+        basicTx.setTransactionDate(LocalDateTime.now());
+        basicTx.setTransactionDescription("적금계좌개설");
+        basicTx.setCustomerId(account.getCustomerId());
+        basicTx.setAccountType("BASIC");
+        depositDAO.insertBasicTransaction(basicTx);
 
         // 계좌번호 중복 체크
         if (depositDAO.checkAccountNumber(account.getAccountNumber()) > 0) {
@@ -221,10 +242,13 @@ public class DepositService {
             throw new RuntimeException("적금 계좌 생성 실패");
         }
         
+
+        
         // 적금 계좌 생성시 금액 입금
         if (depositDAO.updateSavingsBalance(account.getAccountNumber(), account.getMonthlyAmount()) != 1) {
             throw new RuntimeException("적금 계좌 잔액 갱신 실패");
         }
+        
 
         // 적금 거래내역 등록
         DepositDTO transaction = new DepositDTO();
@@ -281,6 +305,16 @@ public class DepositService {
         if (result == 0) {
             throw new RuntimeException("기본 계좌 잔액이 부족합니다.");
         }
+        DepositDTO basicTx = new DepositDTO();
+        basicTx.setAccountNumber(withdrawalAccountNumber);
+        basicTx.setTransactionType("입금");
+        basicTx.setTransactionAmount(amount);
+        basicTx.setTransactionDate(LocalDateTime.now());
+        basicTx.setTransactionDescription("예금 계좌로 이체된 출금");
+        basicTx.setCustomerId(account.getCustomerId());
+        basicTx.setAccountType("BASIC");
+        depositDAO.insertBasicTransaction(basicTx);
+  
 
         BigDecimal newBalance = account.getBalance().add(amount);
         depositDAO.updateDepositBalance(account.getAccountNumber(), newBalance);
@@ -312,17 +346,26 @@ public class DepositService {
             withdrawalAccountNumber = withdrawalAccountNumber.replaceAll("(\\d{3})(\\d{6})(\\d{4})", "$1-$2-$3");
         }
 
-        if (account.getBalance().compareTo(amount) < 0) {
-            throw new RuntimeException("잔액이 부족합니다.");
-        }
-
-        BigDecimal newBalance = account.getBalance().subtract(amount);
-        depositDAO.updateDepositBalance(account.getAccountNumber(), newBalance);
-
         int rows = depositDAO.depositToBasicAccount(withdrawalAccountNumber, amount, account.getCustomerId());
         if (rows == 0) {
             throw new RuntimeException("기본 계좌 입금 실패");
         }
+
+        // ✅ 기본 계좌 거래내역 추가
+        DepositDTO basicTx = new DepositDTO();
+        basicTx.setAccountNumber(withdrawalAccountNumber);
+        basicTx.setTransactionType("출금");
+        basicTx.setTransactionAmount(amount);
+        basicTx.setTransactionDate(LocalDateTime.now());
+        basicTx.setTransactionDescription("예금 계좌에서 이체된 입금");
+        basicTx.setCustomerId(account.getCustomerId());
+        basicTx.setAccountType("BASIC");
+        depositDAO.insertBasicTransaction(basicTx);
+
+
+        BigDecimal newBalance = account.getBalance().subtract(amount);
+        depositDAO.updateDepositBalance(account.getAccountNumber(), newBalance);
+
 
         DepositDTO transaction = new DepositDTO();
         transaction.setAccountId(accountId);
@@ -355,6 +398,18 @@ public class DepositService {
             throw new RuntimeException("기본 계좌 잔액이 부족합니다.");
         }
 
+        // ✅ 기본 계좌 거래내역 추가
+        DepositDTO basicTx = new DepositDTO();
+        basicTx.setAccountNumber(withdrawalAccountNumber);
+        basicTx.setTransactionType("입금");
+        basicTx.setTransactionAmount(amount);
+        basicTx.setTransactionDate(LocalDateTime.now());
+        basicTx.setTransactionDescription("적금 계좌로 이체된 출금");
+        basicTx.setCustomerId(account.getCustomerId());
+        basicTx.setAccountType("BASIC");
+        depositDAO.insertBasicTransaction(basicTx);
+
+
         BigDecimal newBalance = account.getBalance().add(amount);
         depositDAO.updateSavingsBalance(account.getAccountNumber(), newBalance);
 
@@ -382,18 +437,25 @@ public class DepositService {
         if (withdrawalAccountNumber != null && !withdrawalAccountNumber.contains("-")) {
             withdrawalAccountNumber = withdrawalAccountNumber.replaceAll("(\\d{3})(\\d{6})(\\d{4})", "$1-$2-$3");
         }
-
-        if (account.getBalance().compareTo(amount) < 0) {
-            throw new RuntimeException("잔액이 부족합니다.");
-        }
-
-        BigDecimal newBalance = account.getBalance().subtract(amount);
-        depositDAO.updateSavingsBalance(account.getAccountNumber(), newBalance);
-
+        
         int rows = depositDAO.depositToBasicAccount(withdrawalAccountNumber, amount, account.getCustomerId());
         if (rows == 0) {
             throw new RuntimeException("기본 계좌 입금 실패");
         }
+
+        DepositDTO basicTx = new DepositDTO();
+        basicTx.setAccountNumber(withdrawalAccountNumber);
+        basicTx.setTransactionType("출금");
+        basicTx.setTransactionAmount(amount);
+        basicTx.setTransactionDate(LocalDateTime.now());
+        basicTx.setTransactionDescription("적금 계좌에서 이체된 입금");
+        basicTx.setCustomerId(account.getCustomerId());
+        basicTx.setAccountType("BASIC");
+        depositDAO.insertBasicTransaction(basicTx);
+
+        BigDecimal newBalance = account.getBalance().subtract(amount);
+        depositDAO.updateSavingsBalance(account.getAccountNumber(), newBalance);
+
 
         DepositDTO transaction = new DepositDTO();
         transaction.setAccountId(accountId);

@@ -160,7 +160,7 @@ public class DepositTransactionService {
 
         DepositTransactionDTO tx = new DepositTransactionDTO();
         tx.setAccountNumber(basicAccountNumber);
-        tx.setTransactionType("예금");
+        tx.setTransactionType("입금");
         tx.setAmount(amount); 
         tx.setTransactionDescription("예금 해지로 인한 입금");
         tx.setCustomerId(dto.getCustomerId());
@@ -175,7 +175,7 @@ public class DepositTransactionService {
     @Transactional
     public void closeSavingsAccount(DepositTransactionDTO dto) {
         // 1. 계좌 정보 조회
-    	    DepositTransactionDTO account = depositTransactionDAO.getDepositAccountDetailByAccountNumber(dto.getAccountNumber());
+    	    DepositTransactionDTO account = depositTransactionDAO.getSavingsAccountDetailByAccountNumber(dto.getAccountNumber());
 
 
         if (account == null) {
@@ -214,9 +214,9 @@ public class DepositTransactionService {
         // 6. 거래내역 기록 (기본 계좌에만)
         DepositTransactionDTO tx = new DepositTransactionDTO();
         tx.setAccountNumber(basicAccountNumber);
-        tx.setTransactionType("적금");
+        tx.setTransactionType("입금");
         tx.setAmount(amount); 
-        tx.setTransactionDescription("적금 해지");
+        tx.setTransactionDescription("적금 해지로 인한 입금");
         tx.setCustomerId(dto.getCustomerId());
         tx.setCustomerName(dto.getCustomerId());
         tx.setAccountType("BASIC");              
