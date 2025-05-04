@@ -60,7 +60,7 @@
 		          CASE WHEN EXISTS (SELECT 1 FROM account_tbl WHERE customer_id = #{customerId}  AND status = 'ACTIVE')
 		       THEN '입출금계좌' ELSE NULL END AS account_tbl,
 		       
-		  CASE WHEN EXISTS (SELECT 1 FROM fund_account_tbl WHERE customer_id = #{customerId} AND loan_progress = 'CLOSED')
+		  CASE WHEN EXISTS (SELECT 1 FROM fund_account_tbl WHERE customer_id = #{customerId} AND status = 'CLOSED')
 		       THEN '펀드계좌' ELSE NULL END AS fund_account_tbl,
 		       
 		  CASE WHEN EXISTS (SELECT 1 FROM loan_status_tbl WHERE customer_id = #{customerId} AND loan_progress = '승인')

@@ -238,11 +238,11 @@ const ExRequest = () => {
           <p>
             거래 시간: {result.exchange_transaction_date ? result.exchange_transaction_date.replace("T", " ") : "시간 정보 없음"}
           </p>
-          <button className={styles.resultBox}>
-            <a href="/exchange_wallet_status" style={{ textDecoration: "none", color: "inherit" }}>
-              지갑으로 이동
-            </a>
+        <div>
+          <button onClick={()=>{navigate('/exchange_wallet_status')}} className={styles.resultBox}>
+            지갑으로 이동
           </button>
+        </div>
         </div>
       )}
     </div>
