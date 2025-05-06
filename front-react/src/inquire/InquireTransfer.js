@@ -43,9 +43,18 @@ function CheckTx() {
         let list = Array.isArray(response.data)
           ? response.data
           : Object.values(response.data).flat();
-        setAccountList(list);
-        if (list.length > 0) {
-          setSelectedAccount(list[0].account_number || list[0].dat_account_num);
+
+        // 입출금 계좌만 필터링
+        const demandDepositAccounts = list.filter(
+          (account) => account.account_type === "입출금"
+        );
+        setAccountList(demandDepositAccounts);
+
+        if (demandDepositAccounts.length > 0) {
+          setSelectedAccount(
+            demandDepositAccounts[0].account_number ||
+              demandDepositAccounts[0].dat_account_num
+          );
         }
       })
       .catch((error) => {
@@ -85,7 +94,6 @@ function CheckTx() {
     currentPage * itemsPerPage
   );
   const totalPages = Math.ceil(txResultList.length / itemsPerPage);
-
   const pageGroup = Math.floor((currentPage - 1) / 10);
   const startPage = pageGroup * 10 + 1;
   const endPage = Math.min(startPage + 9, totalPages);
@@ -102,17 +110,15 @@ function CheckTx() {
           value={selectedAccount}
           onChange={(e) => setSelectedAccount(e.target.value)}
         >
-          {accountList
-            .filter((account) => account.account_type === "입출금")
-            .map((account) => (
-              <option
-                key={account.account_number || account.dat_account_num}
-                value={account.account_number || account.dat_account_num}
-              >
-                {account.account_number || account.dat_account_num} (
-                {account.account_type || account.dat_account_type})
-              </option>
-            ))}
+          {accountList.map((account) => (
+            <option
+              key={account.account_number || account.dat_account_num}
+              value={account.account_number || account.dat_account_num}
+            >
+              {account.account_number || account.dat_account_num} (
+              {account.account_type || account.dat_account_type})
+            </option>
+          ))}
         </select>
       </div>
 
@@ -199,7 +205,6 @@ function CheckTx() {
                 &lt;
               </button>
             )}
-
             {Array.from(
               { length: endPage - startPage + 1 },
               (_, i) => startPage + i

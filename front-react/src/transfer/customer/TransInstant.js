@@ -137,7 +137,9 @@ function TransInstant() {
             required
           >
             <option value="">출금 계좌 선택</option>
-            {accounts.map(acc => (
+            {accounts
+            .filter((account) => account.account_type === "입출금") 
+            .map(acc => (
               <option
                 key={acc.account_number || acc.dat_account_num}
                 value={acc.account_number || acc.dat_account_num}
