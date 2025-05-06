@@ -54,21 +54,22 @@
     </insert>
 
     <select id="loanCustomer" parameterType="map" resultType="com.boot.sound.loan.dto.LoanCustomerDTO">
-        select 
-            l.*,
-            (select group_concat(a.account_number separator ', ')
-             from account_tbl a 
-             where a.customer_id = #{customerId}) as accountNumbers,
-            (select a.customer_id 
-             from account_tbl a 
-             where a.customer_id = #{customerId} 
-             limit 1) as customer_id
-        from loan_tbl l
-        where l.loan_id = #{loan_id}
-    </select>
+	    select 
+	        l.*,
+	        l.prepayment_penalty, 
+	        (select group_concat(a.account_number separator ', ')
+	         from account_tbl a 
+	         where a.customer_id = #{customerId}) as accountNumbers,
+	        (select a.customer_id 
+	         from account_tbl a 
+	         where a.customer_id = #{customerId} 
+	         limit 1) as customer_id
+	    from loan_tbl l
+	    where l.loan_id = #{loan_id}
+	</select>
 
     <insert id="loanApply" parameterType="com.boot.sound.loan.dto.LoanApplyWithTermsDTO">
-        insert into loan_status_tbl(loan_name, loan_id, interest_rate, customer_id, customer_credit_score, loan_amount, balance, account_number, repayment_method, repayment_date, loan_type, loan_progress, loan_term, remaining_term)
+        insert into loan_status_tbl(loan_name, loan_id, interest_rate, customer_id, customer_credit_score, loan_amount, balance, account_number, repayment_method, repayment_date, loan_type, loan_progress, loan_term, remaining_term,prepayment_penalty)
         values(#{loanInfo.loanName}
         , #{loanInfo.loanId}
         , #{loanInfo.interestRate}
@@ -82,7 +83,8 @@
         , #{loanInfo.loanType}
         , '신청'
         , #{loanInfo.loanTerm}
-        , #{loanInfo.remainingTerm})
+        , #{loanInfo.remainingTerm}
+        , #{loanInfo.prepayment_penalty})
     </insert>
 
     <select id="loanStatus" resultType="com.boot.sound.loan.dto.LoanStatusDTO">
@@ -314,6 +316,7 @@
 	    <result property="loanDate" column="loan_date"/>
 	    <result property="loanTerm" column="loan_term"/>
 	    <result property="remainingTerm" column="remaining_term"/>
+	    <result property="prepayment_penalty" column="prepayment_penalty"/>
 	</resultMap>
     
     <select id="myLoanStatus" parameterType="String" resultMap="LoanStatusMap">
