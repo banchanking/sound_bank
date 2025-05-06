@@ -70,6 +70,7 @@ public class LoanStatusDTO {
     @Transient
     private int no;
     
+    @Column(name = "prepayment_penalty")
     private BigDecimal prepayment_penalty; 
 
 } 
