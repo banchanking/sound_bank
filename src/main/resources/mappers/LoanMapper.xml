@@ -235,6 +235,7 @@
         from loan_status_tbl
         where loan_id = #{loanId}
           and customer_id = #{customerId}
+           and loan_status_tbl.loan_progress ='승인'
     </select>
 
     <select id="getCustomerName" resultType="String">

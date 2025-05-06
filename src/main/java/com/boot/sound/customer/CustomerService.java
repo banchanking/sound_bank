@@ -73,7 +73,7 @@ public class CustomerService {
         dto.setCustomer_email(signUp.getCustomer_email());
         dto.setCustomer_job(signUp.getCustomer_job());
         dto.setCustomer_account_number(accountNumber);
-        
+        dto.setCustomer_status("가입");
         dto.setCustomer_risk_type(signUp.getCustomer_risk_type());
         dto.setCustomer_token(signUp.getCustomer_token());
         dto.setCustomer_password(encoder.encode(CharBuffer.wrap(signUp.getCustomer_password())));
