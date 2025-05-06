@@ -1,6 +1,8 @@
 package com.boot.sound.loan.dto;
 
 
+import java.math.BigDecimal;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,5 +24,6 @@ public class LoanCustomerDTO {
 	private int loan_term;
 	private String loan_type;
 	private String accountNumbers;
+	private BigDecimal prepayment_penalty;
 	
 }

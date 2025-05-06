@@ -23,6 +23,7 @@ const LoanInfoApply = () => {
     accountNumbers: [],
     loan_term: 0,
     remaining_term: 0,
+    prepayment_penalty: 0.0,
   });
 
   const [creditScore, setCreditScore] = useState(0);
@@ -126,6 +127,7 @@ const LoanInfoApply = () => {
             .map((s) => s.trim());
         }
         set_loan_info(data);
+        console.log(data);
       })
       .catch((error) => {
         console.error("데이터 가져오기 오류:", error);
