@@ -15,16 +15,18 @@ function TransLimitEdit() {
   const token = localStorage.getItem("auth_token");
 
   useEffect(() => {
-    if (!customer_id || !token) {
-      alert("로그인이 필요합니다");
-      return;
-    }
+    console.log("customer_id:", customer_id);
+    console.log("token:", token);
+  
     RefreshToken.get(`/transLimit/list/${customer_id}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
-      .then((res) => setList(res.data))
+      .then((res) => {
+        console.log("응답 데이터:", res.data);
+        setList(res.data);
+      })
       .catch((err) => {
-        console.error("조회 실패:", err);
+        console.error("조회 실패:", err.response || err);
         alert("이체한도 내역 조회 실패");
       });
   }, []);
@@ -96,7 +98,6 @@ function TransLimitEdit() {
           </thead>
           <tbody>
             {currentItems
-              .filter((account) => account.account_type === "입출금")
               .map((item) => (
                 <tr key={item.transfer_id}>
                   <td>{item.out_account_number}</td>
