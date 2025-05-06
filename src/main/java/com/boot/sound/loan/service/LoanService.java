@@ -338,9 +338,11 @@ public class LoanService {
 	            .multiply(dayRatio)
 	            .setScale(2, RoundingMode.HALF_UP);
 
-	    System.out.println("▶ 중도상환 수수료 계산 완료: " + penalty + "원");
+	    log.info("▶ 중도상환 수수료 계산 완료: {}원" , penalty);
 	    
 	    BigDecimal totalAmount = repaymentAmount.add(penalty);
+	    
+	    log.info("▶ 중도상환 대출 원금 : {}원" , totalAmount);
 	    
 	    // 대출 상세 정보 조회
 	    status = dao.selectLoanStatusDetail(dto.getLoanStatusNo());

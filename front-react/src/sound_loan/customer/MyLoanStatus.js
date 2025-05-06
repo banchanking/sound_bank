@@ -3,7 +3,7 @@ import RefreshToken from "../../jwt/RefreshToken";
 import "../../Css/loan/MyLoanStatus.css";
 import { useNavigate } from "react-router-dom";
 
-const MyLoanStatus = ({ onRefresh }) => {
+const MyLoanStatus = ({ onRefresh = () => {} }) => {
   const [loanStatusList, setLoanStatusList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
@@ -30,6 +30,7 @@ const MyLoanStatus = ({ onRefresh }) => {
     RefreshToken.post("/calculatePrepaymentPenalty", payload)
       .then((res) => {
         if (res.data.status === "success") {
+          console.log(res);
           alert(res.data.message); // ✅ "중도상환 완료"
           onRefresh();
         } else {
@@ -65,7 +66,7 @@ const MyLoanStatus = ({ onRefresh }) => {
         alert("서버 통신 중 오류가 발생했습니다.");
         setIsLoading(false);
       });
-  }, [onRefresh]);
+  }, []);
 
   return (
     <div className="myLoanStatus-cardContainer">

@@ -1,12 +1,16 @@
 package com.boot.sound.deposit.service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.boot.sound.deposit.dao.DepositTransactionDAO;
+import com.boot.sound.deposit.dto.DepositDTO;
 import com.boot.sound.deposit.dto.DepositTransactionDTO;
 
 import lombok.RequiredArgsConstructor;
@@ -111,7 +115,124 @@ public class DepositTransactionService {
         
         return result;
     }
+    
+    // 예금 계좌 해지 처리
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Transactional
+    public void closeDepositAccount(DepositTransactionDTO dto) {      
+
+        DepositTransactionDTO account = depositTransactionDAO.getDepositAccountDetailByAccountNumber(dto.getAccountNumber());
+
+
+
+        if (account == null) {
+            throw new RuntimeException("계좌 정보를 찾을 수 없습니다.");
+        }
+  
+
+        if (account.getAccountPassword() == null || account.getAccountPassword().isBlank()) {
+            throw new RuntimeException("계좌에 저장된 비밀번호 정보가 없습니다.");
+        }
+
+        if (!passwordEncoder.matches(dto.getAccountPassword(), account.getAccountPassword())) {
+            throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+        }
+
+
+        int result = depositTransactionDAO.closeDepositAccount(dto.getAccountNumber());
+
+
+        if (result != 1) {
+            throw new RuntimeException("계좌 해지 실패.");
+        }
+
+        String basicAccountNumber = depositTransactionDAO.findBasicAccountNumberByCustomer(dto.getCustomerId());
+
+        if (basicAccountNumber == null) {
+            throw new RuntimeException("기본 계좌가 존재하지 않습니다.");
+        }
+
+        BigDecimal amount = account.getBalance();
+
+        depositTransactionDAO.depositToBasicAccount(basicAccountNumber, amount);
+
+        DepositTransactionDTO tx = new DepositTransactionDTO();
+        tx.setAccountNumber(basicAccountNumber);
+        tx.setTransactionType("입금");
+        tx.setAmount(amount); 
+        tx.setTransactionDescription("예금 해지로 인한 입금");
+        tx.setCustomerId(dto.getCustomerId());
+        tx.setCustomerName(dto.getCustomerId());
+        tx.setAccountType("BASIC");
+
+        depositTransactionDAO.insertBasicTransaction(tx);
+        
+        // 예금 잔액 변동
+        depositTransactionDAO.updateDepositAccountBalance(dto.getAccountNumber(), BigDecimal.ZERO);
+        System.out.println("▶▶▶ 거래내역 insert 완료");
+    }
+
+    // 적금 계좌 해지 처리
+    @Transactional
+    public void closeSavingsAccount(DepositTransactionDTO dto) {
+        // 1. 계좌 정보 조회
+    	    DepositTransactionDTO account = depositTransactionDAO.getSavingsAccountDetailByAccountNumber(dto.getAccountNumber());
+
+
+        if (account == null) {
+            throw new RuntimeException("계좌 정보를 찾을 수 없습니다.");
+        }
+        
+        // 2. 비밀번호 입력 및 검증
+        if (dto.getAccountPassword() == null || dto.getAccountPassword().isBlank()) {
+            throw new RuntimeException("비밀번호가 입력되지 않았습니다.");
+        }
+
+        if (account.getAccountPassword() == null || account.getAccountPassword().isBlank()) {
+            throw new RuntimeException("계좌에 저장된 비밀번호 정보가 없습니다.");
+        }
+
+        if (!passwordEncoder.matches(dto.getAccountPassword(), account.getAccountPassword())) {
+            throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+        }
+
+
+        // 3. 계좌 해지 처리
+        int result = depositTransactionDAO.closeSavingsAccount(dto.getAccountNumber());
+        if (result != 1) {
+            throw new RuntimeException("계좌 해지 실패. 이미 해지되었거나 오류 발생.");
+        }
+        // 4. 기본 계좌 조회
+        String basicAccountNumber = depositTransactionDAO.findBasicAccountNumberByCustomer(dto.getCustomerId());
+        if (basicAccountNumber == null) {
+            throw new RuntimeException("기본 계좌가 존재하지 않습니다.");
+        }
+
+        // 5. 기본 계좌에 잔액 입금
+        BigDecimal amount = account.getBalance();
+        depositTransactionDAO.depositToBasicAccount(basicAccountNumber, amount);
+
+        // 6. 거래내역 기록 (기본 계좌에만)
+        DepositTransactionDTO tx = new DepositTransactionDTO();
+        tx.setAccountNumber(basicAccountNumber);
+        tx.setTransactionType("입금");
+        tx.setAmount(amount); 
+        tx.setTransactionDescription("적금 해지로 인한 입금");
+        tx.setCustomerId(dto.getCustomerId());
+        tx.setCustomerName(dto.getCustomerId());
+        tx.setAccountType("BASIC");              
+
+        depositTransactionDAO.insertBasicTransaction(tx);
+        
+        // 적금 잔액 수정
+        depositTransactionDAO.updateSavingsAccountBalance(dto.getAccountNumber(), BigDecimal.ZERO);
+    }
+    }
+    
+    
+    
 
     
     
-} 

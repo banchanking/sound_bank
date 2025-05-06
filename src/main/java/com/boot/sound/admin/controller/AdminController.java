@@ -1,6 +1,7 @@
 package com.boot.sound.admin.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.boot.sound.admin.dto.AdminDTO;
 import com.boot.sound.admin.dto.AdminRequestDTO;
 import com.boot.sound.admin.service.AdminService;
+import com.boot.sound.customer.CustomerDTO;
 import com.boot.sound.jwt.config.UserAuthProvider;
 
 import lombok.RequiredArgsConstructor;
@@ -37,7 +39,9 @@ public class AdminController {
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody AdminRequestDTO request, HttpServletResponse response) {
 		// 서비스에서 로그인 처리 + 검증 + 관리자 정보 리턴
-	    AdminDTO admin = adminService.login(request);
+	    try {
+		
+		AdminDTO admin = adminService.login(request);
 
 	    // 토큰 발급
 	    String token = provider.createAdminToken(admin.getCustomerId());
@@ -61,6 +65,14 @@ public class AdminController {
                 "customerId", admin.getCustomerId(),
                 "role","ADMIN"
             ));
+	    }catch (RuntimeException e) {
+	        // 예외 메시지 포함해서 클라이언트에 전달
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", e.getMessage()));
+	    } catch (Exception e) {
+	        // 내부 서버 오류 처리
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "서버 오류가 발생했습니다."));
+	    }
 
 	}
 
@@ -104,6 +116,18 @@ public class AdminController {
 		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 		                             .body("삭제 중 오류가 발생했습니다"); 
 		    }
+	}
+	
+	@GetMapping("/adminPageCustomerList")
+	public ResponseEntity<?> adminPageCustomerList() {
+	    try {
+	        List<CustomerDTO> list = adminService.adminPageCustomerList();
+	        return ResponseEntity.ok(list); // ✅ 리스트 응답으로 전달
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                             .body("고객 목록 조회 중 오류가 발생했습니다.");
+	    }
 	}
 
 }

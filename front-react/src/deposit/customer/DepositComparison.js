@@ -1,4 +1,3 @@
-// DepositComparison.jsx (최신 수정본)
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getCustomerID } from "../../jwt/AxiosToken";
@@ -34,24 +33,26 @@ const DepositComparison = () => {
 
       const depositProducts = depositRes.data.map(p => ({
         ...p,
-        id: `deposit_${p.id}`,
+        id: p.id,
         name: p.productName || '상품명 없음',
         type: p.productType,
         baseRate: p.interestRate ?? 0,
         minAmount: p.minAmount ?? 0,
         maxAmount: p.maxAmount ?? 0,
-        term: p.termMonths ?? 0
+        term: p.termMonths ?? 0,
+        category: 'deposit'
       }));
 
       const savingsProducts = savingsRes.data.map(p => ({
         ...p,
-        id: `savings_${p.id}`,
+        id: p.id,
         name: p.productName || '상품명 없음',
         type: p.productType,
         baseRate: p.interestRate ?? 0,
         minAmount: p.minAmount ?? 0,
         maxAmount: p.maxAmount ?? 0,
-        term: p.termMonths ?? 0
+        term: p.termMonths ?? 0,
+        category: 'savings'
       }));
 
       setProducts([...depositProducts, ...savingsProducts]);
@@ -63,22 +64,28 @@ const DepositComparison = () => {
     }
   };
 
-  const handleProductSelect = (productId) => {
-    const selectedProduct = products.find(p => p.id === productId);
+  const handleProductSelect = (productId, category) => {
+    const selectedKey = `${category}_${productId}`;
+    const selectedProduct = products.find(p => p.id === productId && p.category === category);
     const selectedType = selectedProduct?.type;
 
     setSelectedProducts(prev => {
-      const details = products.filter(p => prev.includes(p.id));
+      const details = products.filter(p => prev.includes(`${p.category}_${p.id}`));
       if (details.length > 0 && details[0].type !== selectedType) {
         alert('같은 유형끼리만 비교할 수 있습니다.');
         return prev;
       }
-      if (prev.includes(productId)) return prev.filter(id => id !== productId);
+
+      if (prev.includes(selectedKey)) {
+        return prev.filter(id => id !== selectedKey);
+      }
+
       if (prev.length >= 2) {
         alert('2개까지만 선택할 수 있습니다.');
         return prev;
       }
-      return [...prev, productId];
+
+      return [...prev, selectedKey];
     });
   };
 
@@ -88,7 +95,9 @@ const DepositComparison = () => {
     return matchesName && matchesType;
   });
 
-  const selectedProductDetails = products.filter(p => selectedProducts.includes(p.id));
+  const selectedProductDetails = products.filter(p =>
+    selectedProducts.includes(`${p.category}_${p.id}`)
+  );
 
   const typeMap = {
     REGULAR: '일반예금',
@@ -96,10 +105,17 @@ const DepositComparison = () => {
     INSTALLMENT: '적금',
     HOUSING: '주택청약',
     PENSION: '연금적금',
-    YOUTH: '청년적금'
+    YOUTH: '청년적금',
+    regular: '일반예금',
+    fixed: '정기예금',
+    installment: '적금',
+    housing: '주택청약',
+    pension: '연금적금',
+    youth: '청년적금'
   };
 
-  const isDepositType = (type) => ['REGULAR', 'FIXED'].includes(type);
+  const isDepositType = (type) =>
+    ['REGULAR', 'FIXED', 'regular', 'fixed'].includes(type);
 
   return (
     <div className="depositComparison-container">
@@ -153,12 +169,12 @@ const DepositComparison = () => {
                 <tr><td colSpan="7">검색 결과가 없습니다.</td></tr>
               ) : (
                 filteredProducts.map(product => (
-                  <tr key={product.id} className="depositComparison-row">
+                  <tr key={`${product.category}_${product.id}`} className="depositComparison-row">
                     <td>
                       <input
                         type="checkbox"
-                        checked={selectedProducts.includes(product.id)}
-                        onChange={() => handleProductSelect(product.id)}
+                        checked={selectedProducts.includes(`${product.category}_${product.id}`)}
+                        onChange={() => handleProductSelect(product.id, product.category)}
                       />
                     </td>
                     <td>{product.name}</td>
@@ -181,7 +197,7 @@ const DepositComparison = () => {
               {selectedProductDetails.map((product, index) => {
                 const opponent = selectedProductDetails[1 - index];
                 return (
-                  <div key={product.id} className="depositComparison-cardBox">
+                  <div key={`${product.category}_${product.id}`} className="depositComparison-cardBox">
                     <h5>{product.name}</h5>
                     <p><strong>상품유형:</strong> {typeMap[product.type] || product.type}</p>
                     <p><strong>기본이율:</strong> {product.baseRate}%

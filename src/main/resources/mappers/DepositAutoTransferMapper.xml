@@ -4,6 +4,15 @@
 
 
 
+<!-- 비밀번호 체크  -->
+<select id="getAccountPassword" resultType="String">
+    SELECT account_pwd
+    FROM account_tbl
+    WHERE account_number = #{accountNumber}
+</select>
+
+
+
 
     <!-- 오늘 날짜에 맞는 자동이체 리스트 조회 -->
 		<select id="getTodayAutoTransfers" resultType="com.boot.sound.deposit.dto.DepositAutoTransferDTO">
@@ -102,7 +111,7 @@
 <!-- 적금 계좌 거래내역 추가 -->
 <insert id="insertSavingsTransaction">
     INSERT INTO savings_transaction_tbl (
-        sat_id, transaction_type, transaction_amount, transaction_date, description, balance
+        sat_id, transaction_type, amount, transaction_date, description, balance
     )
     SELECT 
         sat_id, 'DEPOSIT', #{amount}, NOW(), #{description}, balance

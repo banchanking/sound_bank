@@ -66,29 +66,35 @@ const ExchangeWalletStatus = () => {
   if (isLoading) return <div className={styles.loading}>지갑 정보를 불러오는 중입니다...</div>;
   if (error) return <div className={styles.error}>지갑 정보 조회 실패: {error}</div>;
 
- // 수익률 계산용 차트 데이터 생성
-const profitChartData = wallet.map(item => {
-  // 해당 통화의 현재 환율(=DB에서 normalize된 buy_rate·sell_rate)
+ // 수익률 계산용 차트 데이터 생성 (+1 적용)
+const profitChartData = wallet
+.map(item => {
+  // 해당 통화의 현재 환율 (DB에서 가져온 buy_rate)
   const rateData = rates.find(r => r.currency_code === item.currency_code);
   if (!rateData) return null;
 
   // 1) 내가 산 평균 단가 (SQL에서 가중평균으로 계산된 값)
   const purchaseRate = parseFloat(item.average_rate);
   // 2) 지금 내가 팔 때 적용받는 환율 (TTB → buy_rate)
-  const sellRate     = parseFloat(rateData.buy_rate);
+  const buy_rate = parseFloat(rateData.buy_rate);
 
   // 유효성 체크
-  if (!purchaseRate || isNaN(sellRate)) return null;
+  if (!purchaseRate || isNaN(buy_rate)) return null;
 
   // (지금 팔 때 가격 - 평균 매입가) / 평균 매입가 * 100
-  const profitPercent = ((sellRate - purchaseRate) / purchaseRate) * 100;
-  const profitFixed   = parseFloat(profitPercent.toFixed(2));
+  const rawProfitPercent = ((buy_rate - purchaseRate) / purchaseRate) * 100;
+  // +1 적용
+  const profitPercent = rawProfitPercent + 1;
+  // 소수점 2자리로 고정
+  const profitFixed = parseFloat(profitPercent.toFixed(2));
 
   // 상승: 초록, 하락: 빨강
   const color = profitPercent >= 0 ? "#4CAF50" : "#f44336";
 
-  return [ item.currency_code, profitFixed, color ];
-}).filter(Boolean);
+  return [item.currency_code, profitFixed, color];
+})
+.filter(Boolean);
+
 
   return (
     <div className={styles.container}>

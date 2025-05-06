@@ -144,6 +144,7 @@
 
 /* 모달 콘텐츠 */
 .fundmodalContent, .fundmodal {
+  position: relative;
   background: #ffffff;
   padding: 2.5rem;
   border-radius: 24px;
@@ -197,6 +198,7 @@
 
 .fundmodalCloseBtn:hover {
   color: #222;
+  background-color: #ffffff;
 }
 
 /* 페딩 라벨 */

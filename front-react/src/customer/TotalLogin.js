@@ -7,9 +7,9 @@ const TotalLogin = () => {
 
   return (
     <div style={{ padding: "30px" }}>
-      <h2>SoundBank 로그인</h2>
-      <div style={{ textAlign: "center", marginBottom: "20px" }}>
-        <button onClick={() => setActiveTab("customer")}>고객 로그인</button>
+      <h1 style={{  textAlign: "center"}}>SoundBank</h1>
+      <div style={{ textAlign: "center", marginBottom: "-50px" , marginTop: "50px" }}>
+        <button style={{width:'110px'}}onClick={() => setActiveTab("customer")}>고객 로그인</button>
         <button
           onClick={() => setActiveTab("admin")}
           style={{ marginLeft: "10px" }}

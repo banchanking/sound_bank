@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import RefreshToken from "../jwt/RefreshToken";
-import styles from '../Css/inquire/InquireTransfer.module.css';
+import styles from "../Css/inquire/InquireTransfer.module.css";
 import { getCustomerID } from "../jwt/AxiosToken";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 function CheckTx() {
   const navigate = useNavigate();
   const [accountList, setAccountList] = useState([]);
-  const [selectedAccount, setSelectedAccount] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [txType, setTxType] = useState('전체');
+  const [selectedAccount, setSelectedAccount] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [txType, setTxType] = useState("전체");
   const [txResultList, setTxResultList] = useState([]);
-  const [customerId, setCustomerId] = useState('');
+  const [customerId, setCustomerId] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
@@ -29,7 +29,9 @@ function CheckTx() {
   useEffect(() => {
     const id = getCustomerID();
     if (!id) {
-      const goLogin = window.confirm("로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?");
+      const goLogin = window.confirm(
+        "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
+      );
       if (goLogin) navigate("/login");
       else navigate("/");
       return;
@@ -38,62 +40,83 @@ function CheckTx() {
 
     RefreshToken.get(`/accounts/allAccount/${id}`)
       .then((response) => {
-        let list = Array.isArray(response.data) ? response.data : Object.values(response.data).flat();
-        setAccountList(list);
-        if (list.length > 0) {
-          setSelectedAccount(list[0].account_number || list[0].dat_account_num);
+        let list = Array.isArray(response.data)
+          ? response.data
+          : Object.values(response.data).flat();
+
+        // 입출금 계좌만 필터링
+        const demandDepositAccounts = list.filter(
+          (account) => account.account_type === "입출금"
+        );
+        setAccountList(demandDepositAccounts);
+
+        if (demandDepositAccounts.length > 0) {
+          setSelectedAccount(
+            demandDepositAccounts[0].account_number ||
+              demandDepositAccounts[0].dat_account_num
+          );
         }
       })
       .catch((error) => {
-        console.error('계좌 목록 불러오기 실패:', error);
+        console.error("계좌 목록 불러오기 실패:", error);
         setAccountList([]);
       });
   }, []);
 
   const formatFullDate = (dateStr) => {
     const d = new Date(dateStr);
-    const pad = (n) => n.toString().padStart(2, '0');
-    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    const pad = (n) => n.toString().padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(
+      d.getDate()
+    )} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
   };
 
   const fetchTransactions = () => {
-    RefreshToken.get('/transactions', {
+    RefreshToken.get("/transactions", {
       params: {
         account_number: selectedAccount,
         start_date: startDate,
         end_date: endDate,
         transaction_type: txType,
-      }
+      },
     })
       .then((response) => {
         setTxResultList(response.data);
         setCurrentPage(1);
       })
       .catch((error) => {
-        console.error('거래내역 조회 실패:', error);
+        console.error("거래내역 조회 실패:", error);
       });
   };
 
-  const pagedTxList = txResultList.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const pagedTxList = txResultList.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
   const totalPages = Math.ceil(txResultList.length / itemsPerPage);
-
   const pageGroup = Math.floor((currentPage - 1) / 10);
   const startPage = pageGroup * 10 + 1;
   const endPage = Math.min(startPage + 9, totalPages);
 
   return (
     <div className={styles["transfer-wrapper"]}>
-      <h2 className={styles["transfer-title"]}>{customerId}님의 거래내역 조회</h2>
+      <h2 className={styles["transfer-title"]}>
+        {customerId}님의 거래내역 조회
+      </h2>
 
       <div className={styles["transfer-inputGroup"]}>
         <label>계좌:</label>
-        <select value={selectedAccount} onChange={e => setSelectedAccount(e.target.value)}>
-          {accountList.map(account => (
+        <select
+          value={selectedAccount}
+          onChange={(e) => setSelectedAccount(e.target.value)}
+        >
+          {accountList.map((account) => (
             <option
               key={account.account_number || account.dat_account_num}
               value={account.account_number || account.dat_account_num}
             >
-              {account.account_number || account.dat_account_num} ({account.account_type || account.dat_account_type})
+              {account.account_number || account.dat_account_num} (
+              {account.account_type || account.dat_account_type})
             </option>
           ))}
         </select>
@@ -101,9 +124,17 @@ function CheckTx() {
 
       <div className={styles["transfer-inputGroup"]}>
         <label>기간:</label>
-        <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} />
+        <input
+          type="date"
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+        />
         ~
-        <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} />
+        <input
+          type="date"
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
+        />
       </div>
 
       <div className={styles["transfer-rangeButtons"]}>
@@ -115,7 +146,7 @@ function CheckTx() {
 
       <div className={styles["transfer-inputGroup"]}>
         <label>유형:</label>
-        <select value={txType} onChange={e => setTxType(e.target.value)}>
+        <select value={txType} onChange={(e) => setTxType(e.target.value)}>
           <option>전체</option>
           <option>입금</option>
           <option>출금</option>
@@ -123,7 +154,12 @@ function CheckTx() {
       </div>
 
       <div className={styles["transfer-buttonArea"]}>
-        <button className={styles["transfer-blackButton"]} onClick={fetchTransactions}>조회</button>
+        <button
+          className={styles["transfer-blackButton"]}
+          onClick={fetchTransactions}
+        >
+          조회
+        </button>
       </div>
 
       <div className={styles["transfer-resultArea"]}>
@@ -141,16 +177,18 @@ function CheckTx() {
           <tbody>
             {pagedTxList.length === 0 ? (
               <tr>
-                <td colSpan="5" className={styles["transfer-noData"]}>거래내역이 없습니다.</td>
+                <td colSpan="5" className={styles["transfer-noData"]}>
+                  거래내역이 없습니다.
+                </td>
               </tr>
             ) : (
-              pagedTxList.map(tx => (
+              pagedTxList.map((tx) => (
                 <tr key={tx.transaction_id}>
                   <td>{formatFullDate(tx.transaction_date)}</td>
                   <td>{tx.transaction_type}</td>
                   <td>{tx.amount.toLocaleString("ko-KR")} 원</td>
                   <td>{tx.currency}</td>
-                  <td>{tx.comment || '-'}</td>
+                  <td>{tx.comment || "-"}</td>
                 </tr>
               ))
             )}
@@ -159,7 +197,6 @@ function CheckTx() {
 
         {txResultList.length > 0 && (
           <div className={styles.pageButtonArea}>
-
             {startPage > 1 && (
               <button
                 className={styles.pageArrow}
@@ -168,11 +205,15 @@ function CheckTx() {
                 &lt;
               </button>
             )}
-
-            {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map(num => (
+            {Array.from(
+              { length: endPage - startPage + 1 },
+              (_, i) => startPage + i
+            ).map((num) => (
               <button
                 key={num}
-                className={`${styles.pageButton} ${currentPage === num ? styles.activePage : ""}`}
+                className={`${styles.pageButton} ${
+                  currentPage === num ? styles.activePage : ""
+                }`}
                 onClick={() => setCurrentPage(num)}
               >
                 {num}

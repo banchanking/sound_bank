@@ -1,35 +1,64 @@
-import React, { useState, useRef, useEffect } from "react";
+ import { useEffect, useRef } from "react";
+// import { connectWebSocket, disconnectWebSocket } from "../utils/websocketClient";
 
-const VoiceBot = () => {
-  const [messages, setMessages] = useState([]);
-  const [isRecording, setIsRecording] = useState(false);
-  const mediaRecorderRef = useRef(null);
-  const audioChunks = useRef([]);
+ const VoiceBot = ({ onResponse }) => {
 
   // WebSocket 연결 및 첫 인사
   useEffect(() => {
     const ws = new WebSocket("wss://sound-bank.duckdns.org:8002/ws");
     console.log("웹소켓이 연결되었습니다."); // 확인용 로그
 
-    ws.onopen = () => {
-      console.log("WebSocket 연결 완료");
+//   const startMicrophone = async () => {
+//     try {
+//       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+//       streamRef.current = stream;
+//       const mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+//       mediaRecorderRef.current = mediaRecorder;
+//       mediaRecorder.ondataavailable = (event) => {
+//         if (event.data.size > 0 && wsRef.current?.readyState === WebSocket.OPEN) {
+//           console.log(`전송된 오디오 데이터 크기: ${event.data.size} bytes`);
+//           wsRef.current.send(event.data);
+//         }
+//       };
+//       mediaRecorder.start(1000);
+//       console.log("마이크 시작");
+//     } catch (err) {
+//       console.error("마이크 접근 오류:", err);
+//     }
+//   };
 
-      // 첫 번째 메시지 출력
-      setMessages((prev) => [
-        ...prev,
-        { sender: "bot", text: "안녕하세요. Sound_bank 입니다 무엇을 도와드릴까요?" },
-      ]);
+//   const stopMicrophone = () => {
+//     if (mediaRecorderRef.current) {
+//       mediaRecorderRef.current.stop();
+//       mediaRecorderRef.current = null;
+//     }
+//     if (streamRef.current) {
+//       streamRef.current.getTracks().forEach((track) => track.stop());
+//       streamRef.current = null;
+//     }
+//     console.log("마이크 중지");
+//   };
 
       // 첫 인사 음성 재생
       const welcomeAudio = new Audio("https://sound-bank.duckdns.org/static/welcome.mp3");
       welcomeAudio.play().catch((err) => console.error("Audio play error:", err));
 
-      // WebSocket 연결이 완료되었음을 메시지로 UI에 반영
-      setMessages((prev) => [
-        ...prev,
-        { sender: "bot", text: "WebSocket 연결이 완료되었습니다." },
-      ]);
-    };
+//       // 초기 welcome 메시지 (배열 형식)
+//       if (Array.isArray(parsed)) {
+//         let text = "";
+//         let audioUrl = "";
+//         parsed.forEach((item) => {
+//           if (item.type === "text") {
+//             text = item.content;
+//           } else if (item.type === "audio") {
+//             audioUrl = item.content;
+//           }
+//         });
+//         if (text || audioUrl) {
+//           onResponse({ text, audioUrl });
+//         }
+//         return;
+//       }
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
@@ -41,18 +70,27 @@ const VoiceBot = () => {
       }
     };
 
-    ws.onclose = () => {
-      console.log("WebSocket 연결 종료");
-    };
+//   useEffect(() => {
+//     const ws = connectWebSocket((data) => handleMessage(data), {
+//       onError: (error) => {
+//         console.error("[WebSocket] 오류 상세:", error);
+//       },
+//       onClose: (event) => {
+//         console.log("[WebSocket] 연결 종료:", event.code, event.reason);
+//       },
+//     });
+//     wsRef.current = ws;
+//     startMicrophone();
 
-    navigator.mediaDevices.getUserMedia({ audio: true }).catch((err) => {
-      console.error("마이크 권한 요청 실패:", err);
-    });
+//    return () => {
+//       disconnectWebSocket(wsRef.current);
+//       wsRef.current = null;
+//       stopMicrophone();
+//     };
+//   }, [onResponse]);
 
-    return () => {
-      ws.close();
-    };
-  }, []); // 'messages' 상태를 의존성 배열에서 제거
+//   return null;
+// };
 
   // 음성 녹음 제어
   const toggleRecording = async () => {

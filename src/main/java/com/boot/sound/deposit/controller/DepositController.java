@@ -101,27 +101,6 @@ public class DepositController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    // 예금 계좌 해지
-    @PostMapping("/deposit/accounts/deposit/close")
-    public ResponseEntity<?> closeDepositAccount(@RequestBody DepositTransactionDTO request) {
-        try {
-            depositService.closeDepositAccount(request.getAccountNumber(), request.getAccountPassword());
-            return new ResponseEntity<>("예금 계좌가 성공적으로 해지되었습니다.", HttpStatus.OK);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-    // 적금 계좌 해지
-    @PostMapping("/deposit/accounts/savings/close")
-    public ResponseEntity<?> closeSavingsAccount(@RequestBody DepositTransactionDTO request) {
-        try {
-            depositService.closeSavingsAccount(request.getAccountNumber(), request.getAccountPassword());
-            return new ResponseEntity<>("적금 계좌가 성공적으로 해지되었습니다.", HttpStatus.OK);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
 
     // 예금 계좌 입금
     @PostMapping("/deposit/accounts/deposit/{accountId}/deposit")

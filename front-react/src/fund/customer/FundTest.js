@@ -182,7 +182,7 @@ const FundTest = () => {
       <button className={styles.fundtestsubmit} onClick={handleSubmit}>
         결과 확인
       </button>
-      {result !== null && <h3 className={styles.fundtestresult}>예측된 투자 성향: {result}</h3>}
+      {result !== null && <h3 className={styles.fundtestresult}> ⏳ 투자 성향 예측중 ... </h3>}
     </div>
     </div>
   );

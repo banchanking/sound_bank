@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.boot.sound.deposit.dto.DepositDTO;
+import com.boot.sound.deposit.dto.DepositTransactionDTO;
 
 @Mapper
 public interface DepositDAO {
@@ -128,7 +129,17 @@ public interface DepositDAO {
     
     // 기본계좌 잔액조회
     BigDecimal getBasicAccountBalanceByAccountNumber(@Param("accountNumber") String accountNumber);
+    
+    // 해지 후 기본계좌에 입금
+    
+    
+    String findBasicAccountNumberByCustomer(String customerId);
 
+    
+	
+	int insertBasicTransaction(DepositTransactionDTO transaction);
+
+	void insertBasicTransaction(DepositDTO dto);
 
 
 
