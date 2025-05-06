@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from '../Css/customer/Join.module.css';
 import SignupSMSModal from "../smsmodal/SignupSMSModal";
+import IdAuth from '../customer_center/Idauth';
 
 const Join = () => {
   const [step, setStep] = useState(0);
@@ -33,10 +34,38 @@ const Join = () => {
   const [pwdMsg, setPwdMsg] = useState('');
   const [isSMSModalOpen, setIsSMSModalOpen] = useState(false);
   const [isPhoneVerified, setIsPhoneVerified] = useState(false);
+  const [isIdVerified, setIsIdVerified] = useState(false);
+  const [messageIdAuth, setMessageIdAuth] = useState('');
+  const [isIdModalOpen, setIsIdModalOpen] = useState(false);
+  const [isIdLoading, setIsIdLoading] = useState(false); // 인증 인식 중 표시
 
+ 
+
+    // 신분증 인증 메시지 수신
+    useEffect(() => {
+      const handler = (e) => {
+        if (e.data && e.data.status === 'success') {
+          setIsIdVerified(true);
+          setMessageIdAuth('신분증 인증 완료');
+          setIsIdLoading(false);
+          setIsIdModalOpen(false);  // 모달도 자동으로 닫기
+        }
+      };
+      window.addEventListener('message', handler);
+      return () => window.removeEventListener('message', handler);
+    }, []);
+
+  // 정규식: 최소 8자 이상, 영문자, 숫자, 특수문자 포함
+  const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
   useEffect(() => {
     if (form.customer_password && form.re_password) {
-      setPwdMsg(form.customer_password === form.re_password ? '비밀번호가 일치합니다' : '비밀번호가 일치하지 않습니다');
+      if (form.customer_password !== form.re_password) {
+        setPwdMsg('비밀번호가 일치하지 않습니다.');
+      } else if (!passwordPattern.test(form.customer_password)) {
+        setPwdMsg('비밀번호는 최소 8자 이상, 영문자, 숫자, 특수문자를 포함해야 합니다.');
+      } else {
+        setPwdMsg('비밀번호가 일치합니다.');
+      }
     } else {
       setPwdMsg('');
     }
@@ -44,8 +73,12 @@ const Join = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
-
+    setForm(prev => ({ 
+    ...prev, 
+    [name]: value,
+    ...(name === 'customer_id' && { hiddenUserid: '0' })
+  }));
+    
     if (name === 'customer_email3') {
       setForm(prev => ({
         ...prev,
@@ -79,6 +112,7 @@ const Join = () => {
       hiddenUserid: '0'
     });
     setIsPhoneVerified(false);
+    setIsIdVerified(false);
   };
 
   const confirmId = async () => {
@@ -99,6 +133,26 @@ const Join = () => {
 
   const joinSubmit = async (e) => {
     e.preventDefault();
+    const requiredFields = [
+      form.customer_password,
+      form.re_password,
+      form.account_pwd,
+      form.customer_resident1,
+      form.customer_resident2,
+      form.sample6_address,
+      form.sample6_detailAddress,
+      form.customer_hp1,
+      form.customer_hp2,
+      form.customer_hp3,
+      form.customer_email1,
+      form.customer_email2,
+      form.customer_job,
+      form.customer_risk_type
+    ];
+    if (requiredFields.some(f => f == null || f.trim() === '')) {
+      alert('모든 필수 항목을 입력해주세요.');
+      return;
+    }
 
     if (form.hiddenUserid === '0') {
       alert('아이디 중복확인을 해주세요!');
@@ -109,6 +163,10 @@ const Join = () => {
       alert('휴대폰 인증을 완료해주세요!');
       return;
     }
+
+    if (!passwordPattern.test(form.customer_password)) return alert('비밀번호가 보안 기준을 충족하지 않습니다.');
+    if (form.customer_password !== form.re_password) return alert('비밀번호가 일치하지 않습니다.');
+    if (!isIdVerified) return alert('신분증 인증을 완료해주세요!');
 
     const fullAddress = `${form.sample6_address} ${form.sample6_extraAddress} ${form.sample6_detailAddress}`.trim();
     const requestData = {
@@ -155,6 +213,37 @@ const Join = () => {
     setIsPhoneVerified(true);
     setIsSMSModalOpen(false);
     alert("휴대폰 인증이 완료되었습니다.");
+  };
+  
+  // 모달 오픈 전 로딩 시작 함수
+  const openIdModal = () => {
+    setIsIdLoading(true);  // 로딩 표시
+    setIsIdModalOpen(true);
+  };
+
+  // 신분증 인증 성공 시 OCR 결과를 받는다.
+  const handleIdSuccess = (ocrData) => {
+    setIsIdVerified(true);
+    setMessageIdAuth('신분증 인증 완료');
+    setIsIdLoading(false);
+    setIsIdModalOpen(false);
+    // // 주민등록번호 분리
+    // const[front, back] = (ocrData.ocr_fields_rrn || '').split('-');
+
+    // // 주소 전체 세팅
+    // const ocr_customer_name = ocrData.ocr_fields_name || '';
+    // const fullAddress = ocrData.ocr_fields_address || '';
+    // const ocrPostcode = ocrData.ocr_fields_postcode || '';    
+    
+    // setForm(prev => ({
+    //   ...prev,
+    //   customer_name: ocr_customer_name || prev.customer_name,
+    //   customer_resident1: front || prev.customer_resident1,
+    //   customer_resident2: back  || prev.customer_resident2,
+    //   sample6_postcode: ocrPostcode || prev.sample6_postcode,
+    //   sample6_address: fullAddress || prev.sample6_address
+    // }));
+    alert('신분증 인증이 완료되었습니다.');
   };
 
   const execDaumPostcode = () => {
@@ -222,35 +311,63 @@ const Join = () => {
           <h1>계좌개설</h1>
           <form onSubmit={joinSubmit}>
             <div>
-              <label>아이디</label>
+              <label>아이디 *</label>
               <div className={styles.rowGroup1}>
-                <input type="text" name="customer_id" value={form.customer_id} onChange={handleChange} required />
+                <input type="text" name="customer_id" value={form.customer_id} onChange={handleChange} />
                 <button className={styles.idButton} type="button" onClick={confirmId}>중복확인</button>
               </div>
             </div>
             <div>
-              <label>비밀번호</label>
-              <input type="password" name="customer_password" value={form.customer_password} onChange={handleChange} required />
+              <label>비밀번호 *</label>
+              <input type="password" name="customer_password" value={form.customer_password} onChange={handleChange} />
             </div>
             <div>
-              <label>비밀번호 확인</label>
-              <input type="password" name="re_password" value={form.re_password} onChange={handleChange} required />
+              <label>비밀번호 확인 *</label>
+              <input type="password" name="re_password" value={form.re_password} onChange={handleChange} />
               <span style={{ color: form.customer_password === form.re_password ? 'blue' : 'red' }}>{pwdMsg}</span>
             </div>
+
+            {/* 신분증 인증 버튼 및 모달 */}
             <div>
-              <label>이름</label>
-              <input type="text" name="customer_name" value={form.customer_name} onChange={handleChange} required />
+              <button
+                type="button"
+                className={styles.joinSendBtn}
+                onClick={openIdModal}
+                disabled={isIdLoading}
+              >
+                신분증 인증 *
+              </button>
+              {messageIdAuth && <span style={{ color: 'green', marginLeft: 10 }}>{messageIdAuth}</span>}
+              {isIdModalOpen && (
+                <div className={styles.idAuthModal}>
+                  {/* 인증 인식 중 UI */}
+                  {isIdLoading && (
+                    <div className={styles.loading}>
+                      <p>신분증 인증 인식중입니다...</p>
+                    </div>
+                  )}
+                  <button onClick={() => { setIsIdModalOpen(false); setIsIdLoading(false); }}>
+                    닫기
+                  </button>
+                  <IdAuth onSuccess={handleIdSuccess} />
+                </div>
+              )}
+            </div> 
+
+            <div>
+              <label>이름 *</label>
+              <input type="text" name="customer_name" value={form.customer_name} onChange={handleChange} />
             </div>
             <div>
-              <label>주민번호</label>
+              <label>주민번호 *</label>
               <div className={styles.rowGroup1}>
-                <input type="text" name="customer_resident1" className={styles.shortInput} value={form.customer_resident1} onChange={handleChange} />
+                <input type="text" name="customer_resident1" className={styles.shortInput} value={form.customer_resident1} onChange={handleChange} /> 
                 -
-                <input type="text" name="customer_resident2" className={styles.shortInput} value={form.customer_resident2} onChange={handleChange} />
+                <input type="text" name="customer_resident2" className={styles.shortInput} value={form.customer_resident2} onChange={handleChange} /> 
               </div>
             </div>
             <div>
-              <label>주소</label>
+              <label>주소 *</label>
               <div className={styles.addressGroup}>
                 <input type="text" name="sample6_postcode" className={styles.postcode} value={form.sample6_postcode} readOnly />
                 <button type="button" className={styles.searchCodeBtn} onClick={execDaumPostcode}>우편번호 찾기</button>
@@ -259,25 +376,25 @@ const Join = () => {
                 </div>
                 <div className={styles.row3}>
                   <input type="text" name="sample6_extraAddress" value={form.sample6_extraAddress} readOnly />
-                  <input type="text" name="sample6_detailAddress" value={form.sample6_detailAddress} onChange={handleChange} required />
+                  <input type="text" name="sample6_detailAddress" value={form.sample6_detailAddress} onChange={handleChange} />
                 </div>
               </div>
             </div>
             <div>
-            <label>전화번호</label>
+            <label>전화번호 *</label>
             <div className={styles.rowGroup}>
               <input type="text" name="customer_hp1" className={styles.shortInput} value={form.customer_hp1} onChange={handleChange} />
               -
               <input type="text" name="customer_hp2" className={styles.shortInput} value={form.customer_hp2} onChange={handleChange} />
               -
               <input type="text" name="customer_hp3" className={styles.shortInput} value={form.customer_hp3} onChange={handleChange} />
-              <button className={styles.phoneButton} type="button" onClick={handleSendSMS}>휴대폰 인증</button>
+              <button className={styles.phoneButton} type="button" onClick={handleSendSMS}>휴대폰 인증 *</button>
             </div>
             {isPhoneVerified && (
               <span style={{ color: "green", fontSize: "14px", marginLeft: "10px" }}>
                 휴대폰 인증 완료
               </span>
-            )}
+            )} <br/>
           </div>
 
           <SignupSMSModal
@@ -290,9 +407,9 @@ const Join = () => {
             <div>
               <label>이메일</label>
               <div className={styles.rowGroup}>
-                <input type="text" name="customer_email1" className={styles.emailInput} value={form.customer_email1} onChange={handleChange} required />
+                <input type="text" name="customer_email1" className={styles.emailInput} value={form.customer_email1} onChange={handleChange}  />
                 <span>@</span>
-                <input type="text" name="customer_email2" className={styles.emailInput} value={form.customer_email2} onChange={handleChange} required />
+                <input type="text" name="customer_email2" className={styles.emailInput} value={form.customer_email2} onChange={handleChange}  />
                 <select name="customer_email3" className={styles.emailSelect} value={form.customer_email3} onChange={handleChange}>
                   <option value="0">직접입력</option>
                   <option value="naver.com">네이버</option>
@@ -303,12 +420,12 @@ const Join = () => {
               </div>
             </div>
             <div>
-              <label>직업</label>
+              <label>직업 *</label>
               <input type="text" name="customer_job" value={form.customer_job} onChange={handleChange} />
             </div>
             <div>
               <label>투자성향</label>
-              <select name="customer_risk_type" value={form.customer_risk_type} onChange={handleChange} required>
+              <select name="customer_risk_type" value={form.customer_risk_type} onChange={handleChange} >
                 <option value="">선택하세요</option>
                 <option value="안정형">안정형</option>
                 <option value="중립형">보수형</option>
