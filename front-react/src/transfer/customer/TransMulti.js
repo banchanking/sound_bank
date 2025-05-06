@@ -149,7 +149,9 @@ function TransMulti() {
             required
           >
             <option value="">출금 계좌 선택</option>
-            {accounts.map(acc => (
+            {accounts
+            .filter((account) => account.account_type === "입출금") 
+            .map(acc => (
               <option key={acc.account_number} value={acc.account_number}>
                 {acc.account_number} ({getAccountTypeLabel(acc.account_type)})
               </option>
