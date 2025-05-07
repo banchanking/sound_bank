@@ -10,6 +10,16 @@ const FindFundCustomer = () => {
   const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태
   const itemsPerPage = 10; // 페이지당 표시할 항목 수
 
+  // 날짜 포맷팅 함수
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A"; // 날짜가 없을 경우
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // 월은 0부터 시작하므로 +1
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}/${month}/${day}`;
+  };
+
   // 거래 목록 조회 함수
   const fetchPendingTransactions = async () => {
     console.log("fetchPendingTransactions 호출됨"); // 함수 호출 여부 확인
@@ -106,7 +116,7 @@ const FindFundCustomer = () => {
                   <td>{tx.fundId}</td> {/* 펀드 ID */}
                   <td>{tx.fundInvestAmount?.toLocaleString()}</td> {/* 투자 금액 */}
                   <td>{tx.fundUnitsPurchased}</td> {/* 좌수 */}
-                  <td>{tx.fundTransactionDate}</td> {/* 신청일 */}
+                  <td>{formatDate(tx.fundTransactionDate)}</td> {/* 신청일 */}
                   <td>{tx.fundTransactionType}</td> {/* 거래 유형 */}
                   <td>{tx.status}</td> {/* 상태 */}
                   <td>

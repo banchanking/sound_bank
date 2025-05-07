@@ -6,7 +6,12 @@ import styles from "../../Css/exchange/ExRequestList.module.css";
 const ExRequestList = () => {
   const [requests, setRequests] = useState([]); // 환전 신청 목록
   const customerId = getCustomerID();
-
+  
+  const statusMap = {
+    PENDING: "대기",
+    APPROVED: "승인",
+    REJECTED: "거절"
+  };
   useEffect(() => {
     RefreshToken.get(`/admin/requestList`)
       .then((res) => {
@@ -75,7 +80,7 @@ const ExRequestList = () => {
                   ? new Date(req.EXCHANGE_TRANSACTION_DATE).toLocaleDateString()
                   : "-"}
               </td>
-              <td>{req.APPROVAL_STATUS}</td>
+              <td>{statusMap[req.APPROVAL_STATUS] || req.APPROVAL_STATUS}</td>
               {/* {isAdmin &&  */}
               {/* ( */}
                 <td className={styles.actions}>

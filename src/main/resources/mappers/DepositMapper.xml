@@ -157,6 +157,7 @@
     FROM deposit_account_tbl a
     JOIN deposit_product_tbl p ON a.product_id = p.product_id
     WHERE a.customer_id = #{customerId}
+      AND a.account_status = 'ACTIVE'
     ORDER BY a.dat_id DESC
 </select>
 
@@ -218,6 +219,7 @@
     FROM savings_account_tbl a
     JOIN savings_product_tbl p ON a.product_id = p.product_id
     WHERE a.customer_id = #{customerId}
+      AND a.account_status = 'ACTIVE'
     ORDER BY a.sat_id DESC
 </select>
 
