@@ -338,8 +338,18 @@ const Header = () => {
                       이용안내시간
                     </NavDropdown.Item>
                   </li>
+                  <li>
+                    <NavDropdown.Item as={Link} to="/faq">
+                      자주 묻는 질문
+                    </NavDropdown.Item>
+                  </li>
+                  <li>
+                    <NavDropdown.Item as={Link} to="/chatbot">
+                      누르는 상담
+                    </NavDropdown.Item>
+                  </li>
                 </ul>
-                <ul>
+                {/* <ul>
                   <div className="dropdown-mid-title">온라인상담</div>
                   <li>
                     <NavDropdown.Item as={Link} to="/faq">
@@ -355,8 +365,8 @@ const Header = () => {
                     <NavDropdown.Item as={Link} to="/voicebot">
                       말하는 상담
                     </NavDropdown.Item>
-                  </li>
-                </ul>
+                  </li> 
+                </ul> */}
                 <ul>
                   <div className="dropdown-mid-title">인증도우미</div>
                   <li>
@@ -370,14 +380,14 @@ const Header = () => {
                     </NavDropdown.Item>
                   </li>
                 </ul>
-                <ul>
+                {/* <ul>
                   <div className="dropdown-mid-title">문의</div>
                   <li>
                     <NavDropdown.Item as={Link} to="/Stopgambling">
                       불법도박 계좌 신고
                     </NavDropdown.Item>
                   </li>
-                </ul>
+                </ul> */}
               </div>
             </NavDropdown>
           </Nav>
