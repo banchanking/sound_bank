@@ -2,7 +2,7 @@
   padding: 36px 24px;
   background-color: #ffffff;
   max-width: 1200px;
-  min-height: 560px;
+  min-height: 650px;
   margin: 48px auto;
   border: 1.5px solid #e2e4e7;
   border-radius: 24px;
@@ -192,4 +192,27 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.notice-detail-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+}
+
+.notice-detail-th,
+.notice-detail-td {
+  border: 1px solid #ddd;
+  padding: 0.75rem;
+}
+
+.notice-detail-th {
+  width: 20%;
+  background-color: #f5f5f5;
+  text-align: left;
+  font-weight: 500;
+}
+
+.notice-detail-td .notice-content {
+  white-space: pre-wrap; /* 줄바꿈 유지 */
 }

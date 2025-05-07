@@ -1,0 +1,69 @@
+/* Wrapper for the entire form */
+.noticeFormContainer {
+    max-width: 720px;
+    min-height: 650px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Space between each form field */
+  .formGroup {
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Labels for inputs */
+  .formLabel {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #333333;
+  }
+  
+  /* Standard input and select controls */
+  .formControl {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+  
+  /* Textarea specific adjustments */
+  .textAreaControl {
+    min-height: 200px;
+    resize: vertical;
+  }
+  
+  /* Container for action buttons */
+  .buttonGroup {
+    margin-top: 2rem;
+    display: flex;
+    gap: 0.75rem;
+  }
+  
+  /* Primary (submit) button styling */
+  .primaryButton {
+    padding: 0.5rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: #ffffff;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  
+  /* Secondary (cancel) button styling */
+  .secondaryButton {
+    padding: 0.5rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    background-color: #6c757d;
+    color: #ffffff;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  

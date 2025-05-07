@@ -2,6 +2,9 @@ package com.boot.sound.customer_center;
 
 import lombok.*;
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -23,6 +26,7 @@ public class Notice {
     private String content; // 내용
 
     @Column(name = "date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime date; // 공지사항 날짜
 
     @Column(name = "created_at", updatable = false) 

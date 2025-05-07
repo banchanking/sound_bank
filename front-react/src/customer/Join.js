@@ -114,6 +114,13 @@ const Join = () => {
     setIsPhoneVerified(false);
     setIsIdVerified(false);
   };
+  
+  // 입력된 뒷자리 문자열(rrnBack)을 받아, 첫 문자 뒤를 모두 '*'로 대체합니다.
+  const maskRRNBack = (rrnBack) => {
+    if (!rrnBack) return '';
+    // charAt(0): 앞 자리, repeat: 나머지 길이만큼 '*' 생성
+    return rrnBack.charAt(0) + '*'.repeat(rrnBack.length - 1);
+  };
 
   const confirmId = async () => {
     if (!form.customer_id.trim()) {
@@ -223,26 +230,19 @@ const Join = () => {
 
   // 신분증 인증 성공 시 OCR 결과를 받는다.
   const handleIdSuccess = (ocrData) => {
+
+    // 주민등록번호 분리
+    const[front, back] = (ocrData.ocr_fields_rrn || '').split('-');
+    setForm(prev => ({
+      ...prev,
+      customer_name: ocrData.ocr_fields_name || prev.customer_name,
+      customer_resident1: front || prev.customer_resident1,
+      customer_resident2: back  || prev.customer_resident2,
+    }));
     setIsIdVerified(true);
     setMessageIdAuth('신분증 인증 완료');
     setIsIdLoading(false);
     setIsIdModalOpen(false);
-    // // 주민등록번호 분리
-    // const[front, back] = (ocrData.ocr_fields_rrn || '').split('-');
-
-    // // 주소 전체 세팅
-    // const ocr_customer_name = ocrData.ocr_fields_name || '';
-    // const fullAddress = ocrData.ocr_fields_address || '';
-    // const ocrPostcode = ocrData.ocr_fields_postcode || '';    
-    
-    // setForm(prev => ({
-    //   ...prev,
-    //   customer_name: ocr_customer_name || prev.customer_name,
-    //   customer_resident1: front || prev.customer_resident1,
-    //   customer_resident2: back  || prev.customer_resident2,
-    //   sample6_postcode: ocrPostcode || prev.sample6_postcode,
-    //   sample6_address: fullAddress || prev.sample6_address
-    // }));
     alert('신분증 인증이 완료되었습니다.');
   };
 
@@ -356,14 +356,19 @@ const Join = () => {
 
             <div>
               <label>이름 *</label>
-              <input type="text" name="customer_name" value={form.customer_name} onChange={handleChange} />
+              <input type="text" name="customer_name" value={form.customer_name} onChange={handleChange} readOnly/>
             </div>
             <div>
               <label>주민번호 *</label>
               <div className={styles.rowGroup1}>
-                <input type="text" name="customer_resident1" className={styles.shortInput} value={form.customer_resident1} onChange={handleChange} /> 
+                <input type="text" name="customer_resident1" className={styles.shortInput} value={form.customer_resident1} onChange={handleChange} readOnly/> 
                 -
-                <input type="text" name="customer_resident2" className={styles.shortInput} value={form.customer_resident2} onChange={handleChange} /> 
+                {/* 상태(form.customer_resident2)에는 원본이 남아있지만,
+                화면에는 maskRRNBack 함수로 마스킹된 값만 보여줌 */}
+                <input type="text" name="customer_resident2" className={styles.shortInput}value={maskRRNBack(form.customer_resident2)}readOnly
+                />
+                  
+                  
               </div>
             </div>
             <div>
