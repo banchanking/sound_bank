@@ -88,7 +88,7 @@ const Main = () => {
         <div className="focus-wrapper">
           <TrueFocus
             items={[
-              { src: "/Images/main/soundAI.png", alt: "soundAI" },
+              // { src: "/Images/main/soundAI.png", alt: "soundAI" },
               { src: "/Images/main/chatAI.png", alt: "chatBot" },
             ]}
             manualMode={true}
