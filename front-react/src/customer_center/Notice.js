@@ -13,19 +13,19 @@ const Notice = () => {
   const [activeTab, setActiveTab] = useState('전체');
   const [searchQuery, setSearchQuery] = useState('');
   const isAdmin = localStorage.getItem('role') === 'ADMIN';
-  
+
   useEffect(() => {
     fetchNotices(activeTab, searchQuery);
   }, [activeTab]);
 
   const fetchNotices = async (category, query = '') => {
     try {
-        const url = `/notices/category?category=${encodeURIComponent(category)}&search=${encodeURIComponent(query)}`;
-        const { data } = await RefreshToken.get(url);
-        setNotices(data);  
+      const url = `/notices/category?category=${encodeURIComponent(category)}&search=${encodeURIComponent(query)}`;
+      const { data } = await RefreshToken.get(url);
+      setNotices(data);
     } catch (error) {
       console.error('Error fetching notices:', error.response?.data || error.message);
-      setNotices([]); // 오류 시 빈 배열
+      setNotices([]);
     }
   };
 
@@ -36,31 +36,21 @@ const Notice = () => {
   const handleTabChange = (tab) => {
     setActiveTab(tab);
     setVisibleNotices(10);
-    setSearchQuery(''); // 탭 변경 시 검색어 초기화
+    setSearchQuery('');
     fetchNotices(tab);
   };
 
   const handleSearch = (e) => {
     e.preventDefault();
-    fetchNotices(activeTab, searchQuery); // 서버 측 검색
+    fetchNotices(activeTab, searchQuery);
   };
 
   return (
     <div className={styles['notice-container']}>
       <h2 className={styles['notice-title']}>공지사항</h2>
-              
-       {isAdmin && (
-          <Button
-            variant="success"
-            onClick={() => navigate('/notices/create')}
-            className={styles['notice-create-btn']}
-          >
-            등록
-          </Button>
-        )}    
-      
+
       <div className={styles['notice-tabs']}>
-        {['전체','서비스', '개정', '대출통지', '시스템 점검'].map((tab) => (
+        {['전체', '서비스', '개정', '대출통지', '시스템 점검'].map((tab) => (
           <div
             key={tab}
             className={`${styles['notice-tab']} ${activeTab === tab ? styles.active : ''}`}
@@ -70,6 +60,7 @@ const Notice = () => {
           </div>
         ))}
       </div>
+
       <Form className={styles['notice-search-box']} onSubmit={handleSearch}>
         <Form.Control
           type="search"
@@ -82,6 +73,7 @@ const Notice = () => {
           <FontAwesomeIcon icon={faMagnifyingGlass} />
         </Button>
       </Form>
+
       <table className={styles['notice-list']}>
         <thead>
           <tr>
@@ -106,6 +98,19 @@ const Notice = () => {
           ))}
         </tbody>
       </table>
+
+      {/* 고정된 하단 등록 버튼 */}
+      {isAdmin && (
+        <div className={styles['notice-footer']}>
+          <button
+            onClick={() => navigate('/notices/create')}
+            className={styles['notice-create-btn']}
+          >
+            등록
+          </button>
+        </div>
+      )}
+
       {visibleNotices < notices.length && (
         <Button className={styles['notice-load-more']} onClick={handleLoadMore}>
           더보기

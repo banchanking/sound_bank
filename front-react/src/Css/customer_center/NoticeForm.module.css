@@ -1,69 +1,102 @@
-/* Wrapper for the entire form */
 .noticeFormContainer {
-    max-width: 720px;
-    min-height: 650px;
-    margin: 2rem auto;
-    padding: 2rem;
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 720px;
+  min-height: 650px;
+  margin: 3rem auto;
+  padding: 2rem 2.5rem;
+  background-color: #ffffff;
+  border-radius: 24px;
+  border: 1.5px solid #e2e4e7;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  font-family: 'Pretendard', sans-serif;
+  animation: fadeIn 0.4s ease;
+}
+
+/* 각 항목 간격 */
+.formGroup {
+  margin-bottom: 1.8rem;
+}
+
+/* 라벨 */
+.formLabel {
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 0.5rem;
+  display: block;
+  color: #1a1a1a;
+}
+
+/* 입력 필드 */
+.formControl {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1.5px solid #ccc;
+  font-size: 15px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.formControl:focus {
+  border-color: #537697;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(83, 118, 151, 0.1);
+}
+
+/* 텍스트에어리어 */
+.textAreaControl {
+  min-height: 240px;
+  resize: vertical;
+}
+
+/* 버튼 그룹 */
+.buttonGroup {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 2.5rem;
+}
+
+/* 등록 버튼 */
+.primaryButton {
+  padding: 10px 24px;
+  border-radius: 8px;
+  border: none;
+  background-color: #333333;
+  color: white;
+  font-weight: 500;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(58, 58, 60, 0.12);
+  transition: background-color 0.3s ease;
+}
+
+.primaryButton:hover {
+  background-color: #555;
+}
+
+/* 취소 버튼 */
+.secondaryButton {
+  padding: 10px 24px;
+  border-radius: 8px;
+  border: none;
+  background-color: #333333;
+  color: white;
+  font-weight: 500;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(58, 58, 60, 0.12);
+  transition: background-color 0.3s ease;
+}
+
+.secondaryButton:hover {
+  background-color: #555;
+}
+
+/* 애니메이션 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
   }
-  
-  /* Space between each form field */
-  .formGroup {
-    margin-bottom: 1.5rem;
+  to {
+    opacity: 1;
   }
-  
-  /* Labels for inputs */
-  .formLabel {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-    color: #333333;
-  }
-  
-  /* Standard input and select controls */
-  .formControl {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 1px solid #cccccc;
-    border-radius: 4px;
-    font-size: 1rem;
-    line-height: 1.5;
-  }
-  
-  /* Textarea specific adjustments */
-  .textAreaControl {
-    min-height: 200px;
-    resize: vertical;
-  }
-  
-  /* Container for action buttons */
-  .buttonGroup {
-    margin-top: 2rem;
-    display: flex;
-    gap: 0.75rem;
-  }
-  
-  /* Primary (submit) button styling */
-  .primaryButton {
-    padding: 0.5rem 1.5rem;
-    border: none;
-    border-radius: 4px;
-    background-color: #007bff;
-    color: #ffffff;
-    font-size: 1rem;
-    cursor: pointer;
-  }
-  
-  /* Secondary (cancel) button styling */
-  .secondaryButton {
-    padding: 0.5rem 1.5rem;
-    border: none;
-    border-radius: 4px;
-    background-color: #6c757d;
-    color: #ffffff;
-    font-size: 1rem;
-    cursor: pointer;
-  }
-  
+}

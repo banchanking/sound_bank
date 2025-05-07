@@ -3,15 +3,15 @@ import { Form, Button } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
 import RefreshToken from '../jwt/RefreshToken';
 import styles from '../Css/customer_center/NoticeForm.module.css';
+
 const NoticeForm = () => {
   const { id } = useParams();
-  const isEdit    = Boolean(id);
-  const navigate  = useNavigate();
+  const isEdit = Boolean(id);
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     category: '', title: '', content: ''
   });
 
-  // 수정 모드일 때 기존 데이터 로드
   useEffect(() => {
     if (isEdit) {
       RefreshToken.get(`/notices/${id}`)
@@ -35,7 +35,7 @@ const NoticeForm = () => {
       .then(() => {
         alert(isEdit ? '수정 완료' : '등록 완료');
         navigate('/notices');
-      })      
+      })
       .catch(err => console.error('Error saving notice:', err));
   };
 
@@ -43,8 +43,14 @@ const NoticeForm = () => {
     <Form className={styles.noticeFormContainer} onSubmit={handleSubmit}>
       <Form.Group className={styles.formGroup} controlId="category">
         <Form.Label className={styles.formLabel}>카테고리</Form.Label>
-        <Form.Control as="select" name="category" className={styles.formControl}
-          value={form.category} onChange={handleChange} required>
+        <Form.Control
+          as="select"
+          name="category"
+          className={styles.formControl}
+          value={form.category}
+          onChange={handleChange}
+          required
+        >
           <option value="">-- 선택 --</option>
           <option value="서비스">서비스</option>
           <option value="개정">개정</option>
@@ -53,30 +59,45 @@ const NoticeForm = () => {
         </Form.Control>
       </Form.Group>
 
-      <Form.Group controlId="title">
-        <Form.Label>제목</Form.Label>
+      <Form.Group className={styles.formGroup} controlId="title">
+        <Form.Label className={styles.formLabel}>제목</Form.Label>
         <Form.Control
-          type="text" name="title" value={form.title}
+          type="text"
+          name="title"
+          className={styles.formControl}
+          value={form.title}
           onChange={handleChange}
-          placeholder="제목을 입력하세요" required
+          placeholder="제목을 입력하세요"
+          required
         />
       </Form.Group>
 
-      <Form.Group controlId="content">
-        <Form.Label>내용</Form.Label>
+      <Form.Group className={styles.formGroup} controlId="content">
+        <Form.Label className={styles.formLabel}>내용</Form.Label>
         <Form.Control
-          as="textarea" name="content" value={form.content}
-          onChange={handleChange} rows={10}
-          placeholder="내용을 입력하세요" required
+          as="textarea"
+          name="content"
+          className={`${styles.formControl} ${styles.textAreaControl}`}
+          value={form.content}
+          onChange={handleChange}
+          rows={10}
+          placeholder="내용을 입력하세요"
+          required
         />
       </Form.Group>
 
-      <Button variant="primary" type="submit" className={styles.buttonGroup}>
-        {isEdit ? '수정' : '등록'}
-      </Button>
-      <Button variant="secondary" onClick={() => navigate(-1)} className={`${styles.secondaryButton}`} >
-        취소
-      </Button>
+      <div className={styles.buttonGroup}>
+        <Button type="submit" className={styles.primaryButton}>
+          {isEdit ? '수정' : '등록'}
+        </Button>
+        <Button
+          type="button"
+          onClick={() => navigate(-1)}
+          className={styles.secondaryButton}
+        >
+          취소
+        </Button>
+      </div>
     </Form>
   );
 };
