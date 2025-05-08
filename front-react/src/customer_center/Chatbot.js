@@ -36,7 +36,7 @@ function Chatbot() {
         setLoading(true);
 
         const response = await axios.post(
-          'http://localhost:8001/ask',
+          'https://sound-bank.duckdns.org:8001/ask',
           { question: question },
           {
             headers: { 'Content-Type': 'application/json' },

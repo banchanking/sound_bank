@@ -68,7 +68,7 @@ async def predict_user(data: InvestmentRequest):
 @app.post("/predict-fund")  # 백엔드에서 DB 전체 불러옴
 async def predict_fund():
     try:
-        response = requests.get("http://localhost:8081/api/registeredFunds")
+        response = requests.get("https://sound-bank.duckdns.org:8081/api/registeredFunds")
         response.raise_for_status()
         df = pd.DataFrame(response.json())
         print("등록된 펀드 수:", len(df))

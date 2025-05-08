@@ -10,7 +10,7 @@ chatbot = FastAPI()
 
 # CORS 설정 추가
 origins = [
-    "http://localhost:3000",  # React 클라이언트가 실행되는 주소
+    "https://sound-bank.duckdns.org:3000",  # React 클라이언트가 실행되는 주소
 ]
 
 chatbot.add_middleware(

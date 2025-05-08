@@ -14,7 +14,7 @@ export const connectWebSocket = (onMessage) => {
     return currentWS;
   }
 
-  const ws = new WebSocket('ws://localhost:8002/ws/voice');
+  const ws = new WebSocket('ws:///sound-bank.duckdns.org:8002/ws/voice');
   currentWS = ws;
 
   ws.onopen = () => {

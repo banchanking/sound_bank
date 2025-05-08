@@ -8,7 +8,6 @@ import java.util.List;
 @RestController
 @CrossOrigin
 @RequestMapping("/api/notices")
-@CrossOrigin
 public class NoticeController {
 
     @Autowired
