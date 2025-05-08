@@ -36,7 +36,7 @@ function IdAuth({ onSuccess }) {
             setExtractedData(result.extracted_data); // 추출된 데이터 저장
             // Join 컴포넌트에 인증 성공 알림
           if (typeof onSuccess === 'function') {            
-            onSuccess();
+            onSuccess(result.extracted_data);
           }
         } else {
             setMessage("인증 실패: " + (result.message || "등록되지 않은 주민번호 입니다."));

@@ -49,6 +49,8 @@ import Join from "./customer/Join";
 import TotalLogin from "./customer/TotalLogin";
 import SecurityBlocker from "./Common/SecurityBlocker";
 import Notice from "./customer_center/Notice";
+import NoticeForm from "./customer_center/NoticeForm";
+import NoticeDetail from './customer_center/NoticeDetail';
 import IdAuth from "./customer_center/Idauth";
 import LoanAgreement from "./sound_loan/customer/LoanAgreement";
 import LoanInfoApply from "./sound_loan/customer/LoanInfoApply";
@@ -196,8 +198,16 @@ function App() {
           <Route path="/idauth" element={<IdAuth />} />{" "}
           {/* 신분증 인증 (OCR) */}
           <Route path="/notice" element={<Notice />} /> {/* 공지사항(고객용) */}
-          <Route path="/businesshour" element={<BusinessHour />} />{" "}
+          {/* 목록 조회 */}
+          <Route path="/notices" element={<Notice />} />
+          {/* 공지 작성 */}
+          <Route path="/notices/create" element={<NoticeForm />} />
+          {/* 공지 수정 */}
+          <Route path="/notices/edit/:id" element={<NoticeForm />} />
+          {/* 상세 보기 */}
+          <Route path="/notices/:id" element={<NoticeDetail />} />
           {/* 이용 시간 */}
+          <Route path="/businesshour" element={<BusinessHour />} />{" "}          
           <Route path="/charge" element={<Charge />} /> {/* 금리 안내 */}
           <Route path="/stopgambling" element={<Stopgambling />} />{" "}
           {/* 불법 도박 계좌 신고 안내 */}

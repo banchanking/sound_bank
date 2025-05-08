@@ -10,6 +10,12 @@ const ExRequestList = () => {
   const [isAdmin, setIsAdmin] = useState(false); // 관리자 여부 확인
   const customerId = getCustomerID();
 
+  const statusMap = {
+    PENDING: "대기",
+    APPROVED: "승인",
+    REJECTED: "거절"
+  };
+
   useEffect(() => {
     const id = getCustomerID();
         if (!id) {
@@ -28,7 +34,7 @@ const ExRequestList = () => {
               }
             }
         }
-
+    
     RefreshToken.get(`/exchange/requestList/${customerId}`)
       .then((res) => {
         setRequests(res.data);
@@ -64,7 +70,7 @@ const ExRequestList = () => {
               <td>{req.request_amount.toLocaleString()} {req.from_currency}</td>              
               <td>{req.exchanged_amount.toLocaleString()} {req.to_currency}</td>
               <td>{req.exchange_transaction_date?.slice(0, 10)}</td>
-              <td>{req.approval_status}</td>              
+              <td>{statusMap[req.approval_status] || req.approval_status}</td> 
             </tr>
           ))}
         </tbody>

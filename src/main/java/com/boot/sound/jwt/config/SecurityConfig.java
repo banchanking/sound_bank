@@ -41,7 +41,7 @@ public class SecurityConfig {
 							"/api/joinAction.do",
 							"/api/sms/signup/request",
 							"/api/sms/signup/verify").permitAll()
-					.antMatchers(HttpMethod.GET,"/api/idConfirmAction.do","/api/loanList","/api/registeredFunds").permitAll()
+					.antMatchers(HttpMethod.GET,"/api/idConfirmAction.do","/api/loanList","/api/registeredFunds", "/api/notices/**").permitAll()
 					.anyRequest().authenticated()
 		);			
 		

@@ -1,8 +1,6 @@
 package com.boot.sound.customer_center;
 
-import com.boot.sound.jwt.config.UserAuthProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,51 +8,50 @@ import java.util.List;
 @RestController
 @CrossOrigin
 @RequestMapping("/api/notices")
+@CrossOrigin
 public class NoticeController {
 
-    private final NoticeService noticeService;
-    private final UserAuthProvider userAuthProvider;
-
     @Autowired
-    public NoticeController(NoticeService noticeService, UserAuthProvider userAuthProvider) {
-        this.noticeService = noticeService;
-        this.userAuthProvider = userAuthProvider;
+    private NoticeService noticeService;
+
+    // 1) 카테고리별·검색어 옵션 목록 조회
+    @GetMapping("/category")
+    public List<Notice> getByCategory(@RequestParam String category, @RequestParam(required = false) String search) {
+        System.out.println("category = " + category);
+
+        return noticeService.getNotices(category, search);
     }
 
-    // 1. 공지사항 등록 (Create)
+    // 2) 공지 상세 조회
+    @GetMapping("/{id}")
+    public Notice getOne(@PathVariable Long id) {
+
+        System.out.println("controller id = " + id);
+
+        return noticeService.getNotice(id);
+    }
+
+    // 3) 공지 생성
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Notice createNotice(@RequestBody Notice notice, @RequestHeader("Authorization") String token) {
-        userAuthProvider.validationToken(token.substring(7)); // JWT 토큰 검증
+    public Notice create(@RequestBody Notice notice) {
         return noticeService.createNotice(notice);
     }
 
-    // 2. 모든 공지사항 조회 (Read)
-    @GetMapping
-    public List<Notice> getAllNotices(@RequestHeader("Authorization") String token) {
-        userAuthProvider.validationToken(token.substring(7)); // JWT 토큰 검증
-        return noticeService.getAllNotices();
-    }
-
-    // 3. 특정 공지사항 조회 (Read)
-    @GetMapping("/{id}")
-    public Notice getNoticeById(@PathVariable Long id, @RequestHeader("Authorization") String token) {
-        userAuthProvider.validationToken(token.substring(7)); // JWT 토큰 검증
-        return noticeService.getNoticeById(id);
-    }
-
-    // 4. 공지사항 수정 (Update)
-    @PutMapping("/{id}")
-    public Notice updateNotice(@PathVariable Long id, @RequestBody Notice notice, @RequestHeader("Authorization") String token) {
-        userAuthProvider.validationToken(token.substring(7)); // JWT 토큰 검증
+    // 4) 공지 수정
+    @PutMapping("/edit/{id}")
+    public Notice update(
+            @PathVariable Long id,
+            @RequestBody Notice notice
+    ) {
+        notice.setId(id);
         return noticeService.updateNotice(id, notice);
     }
 
-    // 5. 공지사항 삭제 (Delete)
+    // 5) 공지 삭제
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteNotice(@PathVariable Long id, @RequestHeader("Authorization") String token) {
-        userAuthProvider.validationToken(token.substring(7)); // JWT 토큰 검증
+    public void delete(@PathVariable Long id) {
+        System.out.println("controller id = " + id);
         noticeService.deleteNotice(id);
+        System.out.println("controller id = " + id + " 삭제 완료");
     }
 }

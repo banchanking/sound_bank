@@ -1,23 +1,29 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { debounce } from 'lodash';
-import styles from '../Css/customer_center/Chatbot.module.css'; // 모듈화된 스타일 CSS
+import styles from '../Css/customer_center/Chatbot.module.css';
 
 function Chatbot() {
   const [question, setQuestion] = useState('');
   const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(false); // 로딩 상태 추가
+  const [loading, setLoading] = useState(false);
   const chatEndRef = useRef(null);
 
   const scrollToBottom = () => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const container = chatEndRef.current?.parentNode;
+    if (container) {
+      container.scrollTop = container.scrollHeight;
+    }
   };
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages.length]); // 최적화를 위해 messages.length로 의존성 변경
+    const timeout = setTimeout(() => {
+      scrollToBottom();
+    }, 150); // 렌더 후 레이아웃 안정될 때까지 기다림
 
-  // 디바운스를 통해 질문 처리
+    return () => clearTimeout(timeout);
+  }, [messages.length]);
+
   const sendRequest = useCallback(
     debounce(async (question) => {
       const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -27,7 +33,7 @@ function Chatbot() {
           ...prevMessages,
           { type: 'user', text: question, time },
         ]);
-        setLoading(true); // 로딩 시작
+        setLoading(true);
 
         const response = await axios.post(
           'http://localhost:8001/ask',
@@ -44,7 +50,6 @@ function Chatbot() {
           ...prevMessages,
           { type: 'bot', text: answerText, time, label: 'FAQ 답변' },
         ]);
-
       } catch (error) {
         console.error(error);
         setMessages((prevMessages) => [
@@ -57,7 +62,7 @@ function Chatbot() {
           },
         ]);
       } finally {
-        setLoading(false); // 로딩 종료
+        setLoading(false);
       }
     }, 1000),
     []
@@ -66,7 +71,6 @@ function Chatbot() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // 질문이 비어있지 않은 경우에만 전송
     if (question.trim()) {
       sendRequest(question);
     } else {
@@ -81,7 +85,7 @@ function Chatbot() {
       ]);
     }
 
-    setQuestion(''); // 질문 입력 후 초기화
+    setQuestion('');
   };
 
   return (
